@@ -27,3 +27,6 @@ dist/
 # Lock files
 package-lock.json
 yarn.lock
+
+# Generated or third-party UI components with parsing issues
+app/components/ui/
