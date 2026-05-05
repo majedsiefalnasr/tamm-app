@@ -1,4 +1,5 @@
 # BMAD Method — Cheat Sheet
+
 ### TAMM Frontend Team · Claude Code · v6.6.0
 
 > **BMAD** = Breakthrough Method for Agile AI-Driven Development
@@ -31,27 +32,28 @@ All planning docs exist. We start directly at **Phase 4**.
 
 ## Installed modules
 
-| Module | Version | Purpose |
-|---|---|---|
-| core | 6.6.0 | `/bmad-help`, Party Mode, doc tools |
-| bmm | 6.6.0 | Full agile workflow — sprints, stories, dev agent |
-| cis | v0.2.0 | Creative Intelligence Suite — brainstorming, design thinking |
-| tea | v1.15.1 | Test Architecture Enterprise — test design, ATDD, CI |
+| Module | Version | Purpose                                                      |
+| ------ | ------- | ------------------------------------------------------------ |
+| core   | 6.6.0   | `/bmad-help`, Party Mode, doc tools                          |
+| bmm    | 6.6.0   | Full agile workflow — sprints, stories, dev agent            |
+| cis    | v0.2.0  | Creative Intelligence Suite — brainstorming, design thinking |
+| tea    | v1.15.1 | Test Architecture Enterprise — test design, ATDD, CI         |
 
 ---
 
 ## The key agents (BMM module)
 
-| Agent | Slash command | When to use |
-|---|---|---|
-| **SM** (Scrum Master) | `/bmad-create-story` | Break an epic into individual story files |
-| **Dev** | `/bmad-dev-story` | Implement a specific story |
-| **Code Review** | `/bmad-code-review` | Review code after dev completes a story |
-| **QA** | `/bmad-qa-generate-e2e-tests` | Generate automated tests for implemented code |
-| **Sprint Planning** | `/bmad-sprint-planning` | Plan the sprint before stories begin |
-| **Sprint Status** | `/bmad-sprint-status` | Check current sprint progress at any time |
+| Agent                 | Slash command                 | When to use                                   |
+| --------------------- | ----------------------------- | --------------------------------------------- |
+| **SM** (Scrum Master) | `/bmad-create-story`          | Break an epic into individual story files     |
+| **Dev**               | `/bmad-dev-story`             | Implement a specific story                    |
+| **Code Review**       | `/bmad-code-review`           | Review code after dev completes a story       |
+| **QA**                | `/bmad-qa-generate-e2e-tests` | Generate automated tests for implemented code |
+| **Sprint Planning**   | `/bmad-sprint-planning`       | Plan the sprint before stories begin          |
+| **Sprint Status**     | `/bmad-sprint-status`         | Check current sprint progress at any time     |
 
 **Quick rule:**
+
 - Breaking epics into tasks → SM (`/bmad-create-story`)
 - Building a story → Dev (`/bmad-dev-story`)
 - Reviewing code → CR (`/bmad-code-review`)
@@ -64,27 +66,27 @@ All planning docs exist. We start directly at **Phase 4**.
 
 ### Phase 4 — Implementation (what you use daily)
 
-| Command | What it does |
-|---|---|
-| `/bmad-sprint-planning` | Plan the sprint — produces sprint status file |
-| `/bmad-sprint-status` | Show current sprint progress, what's done, what's next |
-| `/bmad-create-story` | SM generates a story file from an epic |
-| `/bmad-dev-story` | Dev implements a story (always pass the story file path) |
-| `/bmad-code-review` | Review code produced by dev |
-| `/bmad-qa-generate-e2e-tests` | Generate automated tests for a completed story |
-| `/bmad-retrospective` | Optional end-of-epic review |
-| `/bmad-checkpoint-preview` | Human walkthrough of a commit, branch, or PR |
+| Command                       | What it does                                             |
+| ----------------------------- | -------------------------------------------------------- |
+| `/bmad-sprint-planning`       | Plan the sprint — produces sprint status file            |
+| `/bmad-sprint-status`         | Show current sprint progress, what's done, what's next   |
+| `/bmad-create-story`          | SM generates a story file from an epic                   |
+| `/bmad-dev-story`             | Dev implements a story (always pass the story file path) |
+| `/bmad-code-review`           | Review code produced by dev                              |
+| `/bmad-qa-generate-e2e-tests` | Generate automated tests for a completed story           |
+| `/bmad-retrospective`         | Optional end-of-epic review                              |
+| `/bmad-checkpoint-preview`    | Human walkthrough of a commit, branch, or PR             |
 
 ### Anytime commands
 
-| Command | What it does |
-|---|---|
-| `/bmad-help` | Intelligent guide — tells you the right next step |
-| `/bmad-quick-dev` | One-shot: clarify → plan → implement → review |
-| `/bmad-correct-course` | Navigate significant scope changes |
-| `/bmad-generate-project-context` | Scan codebase, produce lean project-context.md |
-| `/bmad-code-review` | Also usable anytime for document or PR review |
-| `/bmad-party-mode` | Multi-agent discussion for decisions |
+| Command                          | What it does                                      |
+| -------------------------------- | ------------------------------------------------- |
+| `/bmad-help`                     | Intelligent guide — tells you the right next step |
+| `/bmad-quick-dev`                | One-shot: clarify → plan → implement → review     |
+| `/bmad-correct-course`           | Navigate significant scope changes                |
+| `/bmad-generate-project-context` | Scan codebase, produce lean project-context.md    |
+| `/bmad-code-review`              | Also usable anytime for document or PR review     |
+| `/bmad-party-mode`               | Multi-agent discussion for decisions              |
 
 ---
 
@@ -119,6 +121,7 @@ tamm-frontend/
 ```
 
 **Key rules:**
+
 - `_bmad/` = BMAD's own code — never edit directly. Use `_bmad/custom/` for overrides.
 - `_bmad-output/planning-artifacts/` = where our 8 epics live (source for story creation).
 - `_bmad-output/implementation-artifacts/` = where generated story files go.
@@ -129,15 +132,15 @@ tamm-frontend/
 
 ### What we already have ✅
 
-| BMAD artifact | TAMM equivalent | Location |
-|---|---|---|
-| Product brief | MVP decisions + system overview | `CLAUDE.md` |
-| PRD | 8 epics with all stories | `_bmad-output/planning-artifacts/` |
-| Architecture | Stack decisions + rules | `CLAUDE.md` + `docs/coding-standards.md` |
-| UX spec | Design system | `docs/frontend-spec.md` |
-| State machine | Status flows | `docs/status-flows.md` |
-| API contract | All endpoints | `docs/api-contracts.md` |
-| Build order | Phase + branch plan | `docs/build-order.md` |
+| BMAD artifact | TAMM equivalent                 | Location                                 |
+| ------------- | ------------------------------- | ---------------------------------------- |
+| Product brief | MVP decisions + system overview | `CLAUDE.md`                              |
+| PRD           | 8 epics with all stories        | `_bmad-output/planning-artifacts/`       |
+| Architecture  | Stack decisions + rules         | `CLAUDE.md` + `docs/coding-standards.md` |
+| UX spec       | Design system                   | `docs/frontend-spec.md`                  |
+| State machine | Status flows                    | `docs/status-flows.md`                   |
+| API contract  | All endpoints                   | `docs/api-contracts.md`                  |
+| Build order   | Phase + branch plan             | `docs/build-order.md`                    |
 
 ### Sprint cycle — repeat every sprint
 
@@ -201,27 +204,33 @@ Sprint end:
 ## Status: draft | ready | in-progress | complete
 
 ## Context
+
 Why this story exists. Which epic. What the previous story delivered.
 
 ## Goal
+
 One sentence: what does "done" look like?
 
 ## Acceptance criteria
+
 - [ ] Specific, testable criterion
 - [ ] RTL verified in Arabic
 - [ ] TypeScript clean — no errors, no `any`
 - [ ] No console errors or warnings
 
 ## Technical notes
+
 - Composable to create/use
 - Store to update
 - Endpoint (or mock path if not yet available)
 - Components to build
 
 ## Out of scope
+
 What this story explicitly does NOT cover.
 
 ## Dependencies
+
 - Requires: [previous story slug] to be complete
 - Blocked by: [endpoint] — use mock at [mock path] until available
 ```
@@ -230,18 +239,18 @@ What this story explicitly does NOT cover.
 
 ## When to use which command
 
-| Situation | Command |
-|---|---|
-| Don't know what to do next | `/bmad-help` |
-| Starting a new sprint | `/bmad-sprint-planning` |
-| Need story files from an epic | `/bmad-create-story` |
-| Ready to implement a story | `/bmad-dev-story` |
-| Story is done, need review | `/bmad-code-review` |
-| Need tests for a story | `/bmad-qa-generate-e2e-tests` |
-| Docs feel inconsistent | `/bmad-correct-course` |
-| Architecture decision needed | `/bmad-party-mode` |
-| Check sprint health | `/bmad-sprint-status` |
-| End of epic | `/bmad-retrospective` |
+| Situation                     | Command                       |
+| ----------------------------- | ----------------------------- |
+| Don't know what to do next    | `/bmad-help`                  |
+| Starting a new sprint         | `/bmad-sprint-planning`       |
+| Need story files from an epic | `/bmad-create-story`          |
+| Ready to implement a story    | `/bmad-dev-story`             |
+| Story is done, need review    | `/bmad-code-review`           |
+| Need tests for a story        | `/bmad-qa-generate-e2e-tests` |
+| Docs feel inconsistent        | `/bmad-correct-course`        |
+| Architecture decision needed  | `/bmad-party-mode`            |
+| Check sprint health           | `/bmad-sprint-status`         |
+| End of epic                   | `/bmad-retrospective`         |
 
 ---
 
@@ -264,26 +273,26 @@ Use for **decisions**. Never for implementation.
 
 ## What NOT to do
 
-| Don't | Do instead |
-|---|---|
-| `/bmad-dev-story` without a story file | `/bmad-create-story` first |
-| Skip plan approval before coding | Always approve plan before code |
-| Generate all story files at once | 2–3 at a time, review before continuing |
-| Edit files inside `_bmad/` directly | Use `_bmad/custom/` TOML overrides |
-| Use Dev agent for architecture decisions | Use `/bmad-party-mode` |
-| Paste TAMM rules into chat | They auto-load via `project_knowledge` in config |
+| Don't                                    | Do instead                                       |
+| ---------------------------------------- | ------------------------------------------------ |
+| `/bmad-dev-story` without a story file   | `/bmad-create-story` first                       |
+| Skip plan approval before coding         | Always approve plan before code                  |
+| Generate all story files at once         | 2–3 at a time, review before continuing          |
+| Edit files inside `_bmad/` directly      | Use `_bmad/custom/` TOML overrides               |
+| Use Dev agent for architecture decisions | Use `/bmad-party-mode`                           |
+| Paste TAMM rules into chat               | They auto-load via `project_knowledge` in config |
 
 ---
 
 ## BMAD complexity levels — where TAMM fits
 
-| Level | Project type | Stories | Requirements |
-|---|---|---|---|
-| 0 | Single atomic change | 1 | Skip to dev |
-| 1 | Small feature | 1–10 | Tech spec only |
-| 2 | Medium feature set | 5–15 | PRD + Architecture |
+| Level | Project type            | Stories   | Requirements             |
+| ----- | ----------------------- | --------- | ------------------------ |
+| 0     | Single atomic change    | 1         | Skip to dev              |
+| 1     | Small feature           | 1–10      | Tech spec only           |
+| 2     | Medium feature set      | 5–15      | PRD + Architecture       |
 | **3** | **Complex integration** | **12–40** | **Full workflow ← TAMM** |
-| 4 | Enterprise expansion | 40+ | Full workflow + modules |
+| 4     | Enterprise expansion    | 40+       | Full workflow + modules  |
 
 TAMM is **Level 3** — 40 stories across 8 epics. Full workflow applies.
 
@@ -291,15 +300,15 @@ TAMM is **Level 3** — 40 stories across 8 epics. Full workflow applies.
 
 ## Config files — quick reference
 
-| File | Purpose | Edit? |
-|---|---|---|
-| `_bmad/_config/manifest.yaml` | Installed module versions | No — managed by installer |
-| `_bmad/bmm/config.yaml` | BMM settings: project name, output paths | Only via `_bmad/custom/` |
-| `_bmad/config.toml` | Central BMAD config | Only via `_bmad/custom/` |
-| `_bmad/custom/config.toml` | Your overrides (survives BMAD updates) | Yes — your override file |
+| File                          | Purpose                                  | Edit?                     |
+| ----------------------------- | ---------------------------------------- | ------------------------- |
+| `_bmad/_config/manifest.yaml` | Installed module versions                | No — managed by installer |
+| `_bmad/bmm/config.yaml`       | BMM settings: project name, output paths | Only via `_bmad/custom/`  |
+| `_bmad/config.toml`           | Central BMAD config                      | Only via `_bmad/custom/`  |
+| `_bmad/custom/config.toml`    | Your overrides (survives BMAD updates)   | Yes — your override file  |
 
 ---
 
-*BMAD v6.6.0 · core 6.6.0 · bmm 6.6.0 · cis v0.2.0 · tea v1.15.1*
-*TAMM Frontend Team · Claude Code*
-*Reference: https://github.com/bmad-code-org/BMAD-METHOD*
+_BMAD v6.6.0 · core 6.6.0 · bmm 6.6.0 · cis v0.2.0 · tea v1.15.1_
+_TAMM Frontend Team · Claude Code_
+_Reference: https://github.com/bmad-code-org/BMAD-METHOD_

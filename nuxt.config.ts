@@ -1,10 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  future: {compatibilityVersion: 4}, // enables app/ directory
-  devtools: {enabled: true},
+  future: { compatibilityVersion: 4 }, // enables app/ directory
+  devtools: { enabled: true },
 
-  modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/i18n', '@pinia/nuxt'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    'shadcn-nuxt',
+    '@nuxtjs/i18n',
+    '@pinia/nuxt',
+  ],
 
   vite: {
     optimizeDeps: {
@@ -16,8 +21,8 @@ export default defineNuxtConfig({
 
   i18n: {
     locales: [
-      {code: 'ar', dir: 'rtl', file: 'ar.json'},
-      {code: 'en', dir: 'ltr', file: 'en.json'},
+      { code: 'ar', dir: 'rtl', file: 'ar.json' },
+      { code: 'en', dir: 'ltr', file: 'en.json' },
     ],
     defaultLocale: 'ar',
   },

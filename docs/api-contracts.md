@@ -9,13 +9,16 @@
 ## How to use this document
 
 ### For Claude Code
+
 1. Before implementing any API call — check if the endpoint is listed here
 2. If listed → implement against this exact contract (method, URL, request, response)
 3. If not listed → create a mock in `app/composables/__mocks__/`, add TODO comment
 4. When an endpoint is added here → remove the corresponding mock
 
 ### For the Laravel team
+
 When delivering a new endpoint:
+
 1. Add it to the correct section below
 2. Mark it `✅ Available` with the date
 3. Include exact request/response shapes
@@ -25,11 +28,11 @@ When delivering a new endpoint:
 
 ## Status legend
 
-| Symbol | Meaning |
-|---|---|
-| ✅ Available | Endpoint is live — implement against it |
-| 🔄 In progress | Laravel team is building it — use mock |
-| ⏳ Not started | Not yet — use mock |
+| Symbol         | Meaning                                 |
+| -------------- | --------------------------------------- |
+| ✅ Available   | Endpoint is live — implement against it |
+| 🔄 In progress | Laravel team is building it — use mock  |
+| ⏳ Not started | Not yet — use mock                      |
 
 ---
 
@@ -96,17 +99,17 @@ Accept-Language: ar | en
 
 ### Standard HTTP status codes used
 
-| Code | Meaning |
-|---|---|
-| 200 | Success |
-| 201 | Created |
-| 204 | No content (delete) |
-| 400 | Bad request |
-| 401 | Unauthenticated → frontend redirects to /login |
-| 403 | Forbidden (wrong role or invalid transition) |
-| 404 | Not found |
-| 422 | Validation error (errors field populated) |
-| 500 | Server error |
+| Code | Meaning                                        |
+| ---- | ---------------------------------------------- |
+| 200  | Success                                        |
+| 201  | Created                                        |
+| 204  | No content (delete)                            |
+| 400  | Bad request                                    |
+| 401  | Unauthenticated → frontend redirects to /login |
+| 403  | Forbidden (wrong role or invalid transition)   |
+| 404  | Not found                                      |
+| 422  | Validation error (errors field populated)      |
+| 500  | Server error                                   |
 
 ---
 
@@ -119,6 +122,7 @@ Status: ⏳ Not started
 ```
 
 **Request**
+
 ```json
 {
   "email": "string",
@@ -127,6 +131,7 @@ Status: ⏳ Not started
 ```
 
 **Response 200**
+
 ```json
 {
   "data": {
@@ -143,6 +148,7 @@ Status: ⏳ Not started
 ```
 
 **Errors**
+
 - 401: Invalid credentials
 
 ---
@@ -165,6 +171,7 @@ Status: ⏳ Not started
 ```
 
 **Response 200**
+
 ```json
 {
   "data": {
@@ -189,6 +196,7 @@ Roles: admin, super_admin
 ```
 
 **Request**
+
 ```json
 {
   "status": "open_for_bids | under_review | active | on_hold"
@@ -196,6 +204,7 @@ Roles: admin, super_admin
 ```
 
 **Response 200**
+
 ```json
 {
   "data": <Project>,
@@ -204,6 +213,7 @@ Roles: admin, super_admin
 ```
 
 **Errors**
+
 - 403: Invalid transition for current status
 - 422: Transition not allowed (e.g., milestones not defined)
 
@@ -221,6 +231,7 @@ Roles: admin, super_admin
 Invite one or more contractors to bid on a project.
 
 **Request**
+
 ```json
 {
   "contractor_ids": ["string"]
@@ -228,6 +239,7 @@ Invite one or more contractors to bid on a project.
 ```
 
 **Response 201**
+
 ```json
 {
   "data": [
@@ -255,6 +267,7 @@ Roles: admin, super_admin
 List all contractors invited to bid on a project.
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -280,6 +293,7 @@ Roles: contractor (must be invited)
 Contractor submits a proposal for a project.
 
 **Request**
+
 ```json
 {
   "total_price": 250000,
@@ -289,6 +303,7 @@ Contractor submits a proposal for a project.
 ```
 
 **Response 201**
+
 ```json
 {
   "data": {
@@ -306,6 +321,7 @@ Contractor submits a proposal for a project.
 ```
 
 **Errors**
+
 - 403: Contractor not invited to this project
 - 422: Proposal already submitted for this project
 
@@ -321,6 +337,7 @@ Roles: admin, super_admin, client (project owner only)
 List all submitted proposals for a project. Contractors cannot see this list.
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -352,6 +369,7 @@ All other proposals are automatically marked `rejected`.
 **Request**: No body
 
 **Response 200**
+
 ```json
 {
   "data": {
@@ -363,6 +381,7 @@ All other proposals are automatically marked `rejected`.
 ```
 
 **Errors**
+
 - 403: Not the project owner, or project not in `under_review` status
 - 404: Proposal not found
 
@@ -375,6 +394,7 @@ Status: ⏳ Not started
 ```
 
 **Query params**
+
 ```
 ?status=new|active|on_hold|completed   (optional)
 ?page=1                                 (optional, default 1)
@@ -382,6 +402,7 @@ Status: ⏳ Not started
 ```
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -416,6 +437,7 @@ Contractor is assigned after the proposal/bidding phase.
 Milestones are defined after contractor selection.
 
 **Request**
+
 ```json
 {
   "title": "string",
@@ -425,6 +447,7 @@ Milestones are defined after contractor selection.
 ```
 
 **Response 201**
+
 ```json
 {
   "data": {
@@ -446,6 +469,7 @@ Status: ⏳ Not started
 ```
 
 **Response 200**
+
 ```json
 {
   "data": {
@@ -483,6 +507,7 @@ Define a milestone for a project. Only available after contractor selection.
 Admin and contractor collaborate to define milestones before project goes active.
 
 **Request**
+
 ```json
 {
   "title": "string",
@@ -493,6 +518,7 @@ Admin and contractor collaborate to define milestones before project goes active
 ```
 
 **Response 201**
+
 ```json
 {
   "data": {
@@ -511,6 +537,7 @@ Admin and contractor collaborate to define milestones before project goes active
 ```
 
 **Errors**
+
 - 403: Project not in `contractor_selected` status
 - 422: Validation error
 
@@ -523,6 +550,7 @@ Status: ⏳ Not started
 ```
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -557,6 +585,7 @@ Roles: supervisor_engineer (supervisor_approved), client (approved)
 ```
 
 **Request**
+
 ```json
 {
   "role": "supervisor | client"
@@ -564,6 +593,7 @@ Roles: supervisor_engineer (supervisor_approved), client (approved)
 ```
 
 **Response 200**
+
 ```json
 {
   "data": <Milestone>,
@@ -572,6 +602,7 @@ Roles: supervisor_engineer (supervisor_approved), client (approved)
 ```
 
 **Errors**
+
 - 403: Not authorized for this action
 - 422: Invalid transition (milestone not in correct state)
 
@@ -585,6 +616,7 @@ Roles: supervisor_engineer, client
 ```
 
 **Request**
+
 ```json
 {
   "reason": "string (required)"
@@ -592,6 +624,7 @@ Roles: supervisor_engineer, client
 ```
 
 **Response 200**
+
 ```json
 {
   "data": <Milestone>,
@@ -612,6 +645,7 @@ Status: ⏳ Not started
 ```
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -641,12 +675,14 @@ Roles: field_engineer
 ```
 
 **Request** (multipart/form-data)
+
 ```
 content: string
 images[]: File[]   (optional, max 10, each max 5MB, jpg/png/webp)
 ```
 
 **Response 201**
+
 ```json
 {
   "data": <Report>,
@@ -665,6 +701,7 @@ Roles: field_engineer
 
 **Request**: No body
 **Response 200**
+
 ```json
 {
   "data": <Report with status: "submitted">,
@@ -673,6 +710,7 @@ Roles: field_engineer
 ```
 
 **Errors**
+
 - 422: Report is not in draft status
 
 ---
@@ -687,6 +725,7 @@ Roles: client
 ```
 
 **Request**
+
 ```json
 {
   "payment_method": "string"
@@ -694,6 +733,7 @@ Roles: client
 ```
 
 **Response 200**
+
 ```json
 {
   "data": {
@@ -718,6 +758,7 @@ Roles: admin, super_admin
 
 **Request**: No body
 **Response 200**
+
 ```json
 {
   "data": {
@@ -740,12 +781,14 @@ Status: ⏳ Not started
 ```
 
 **Query params**
+
 ```
 ?unread_only=true   (optional)
 ?page=1
 ```
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -796,12 +839,14 @@ Roles: admin, super_admin
 ```
 
 **Query params**
+
 ```
 ?role=contractor|field_engineer|supervisor_engineer|client
 ?page=1
 ```
 
 **Response 200**
+
 ```json
 {
   "data": [
@@ -828,6 +873,7 @@ Roles: admin, super_admin
 ```
 
 **Request**
+
 ```json
 {
   "name": "string",
@@ -838,6 +884,7 @@ Roles: admin, super_admin
 ```
 
 **Response 201**
+
 ```json
 {
   "data": <User>,
@@ -849,12 +896,12 @@ Roles: admin, super_admin
 
 ## Changelog
 
-| Date | Endpoint | Change |
-|---|---|---|
-| — | — | No endpoints available yet |
+| Date | Endpoint | Change                     |
+| ---- | -------- | -------------------------- |
+| —    | —        | No endpoints available yet |
 
-*When the Laravel team delivers endpoints, they update this table and change ⏳ to ✅.*
+_When the Laravel team delivers endpoints, they update this table and change ⏳ to ✅._
 
 ---
 
-*Last updated: MVP v1.0 — awaiting Laravel team*
+_Last updated: MVP v1.0 — awaiting Laravel team_

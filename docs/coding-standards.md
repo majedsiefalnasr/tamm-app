@@ -150,8 +150,10 @@ const { can } = usePermission()
 const isSubmitting = ref(false)
 
 // ── 6. Computed ────────────────────────────────────────
-const canApprove = computed(() =>
-  can('approve_milestone') && canTransition(props.milestone.status, 'supervisor_approved')
+const canApprove = computed(
+  () =>
+    can('approve_milestone') &&
+    canTransition(props.milestone.status, 'supervisor_approved')
 )
 
 // ── 7. Methods ─────────────────────────────────────────
@@ -177,7 +179,6 @@ async function handleApprove() {
 <template>
   <!-- ✅ single root element -->
   <div>
-
     <!-- ✅ v-if / v-else on sibling elements — use template wrapper -->
     <template v-if="isLoading">
       <Skeleton class="h-10 w-full" />
@@ -203,7 +204,6 @@ async function handleApprove() {
 
     <!-- ❌ never — v-html -->
     <!-- <div v-html="content" /> -->
-
   </div>
 </template>
 ```
@@ -313,8 +313,8 @@ import { defineStore } from 'pinia'
 import type { Milestone, MilestoneStatus } from '~/shared/types/milestone'
 
 interface MilestonesState {
-  items: Record<string, Milestone>   // keyed by id for O(1) lookup
-  loading: Record<string, boolean>   // per-item loading state
+  items: Record<string, Milestone> // keyed by id for O(1) lookup
+  loading: Record<string, boolean> // per-item loading state
   error: string | null
 }
 
@@ -327,11 +327,13 @@ export const useMilestonesStore = defineStore('milestones', {
 
   getters: {
     // ✅ computed from state — never duplicate data
-    byProject: (state) => (projectId: string) =>
+    byProject: state => (projectId: string) =>
       Object.values(state.items).filter(m => m.projectId === projectId),
 
-    getById: (state) => (id: string): Milestone | undefined =>
-      state.items[id],
+    getById:
+      state =>
+      (id: string): Milestone | undefined =>
+        state.items[id],
   },
 
   actions: {
@@ -347,7 +349,9 @@ export const useMilestonesStore = defineStore('milestones', {
     },
 
     upsertMany(milestones: Milestone[]) {
-      milestones.forEach(m => { this.items[m.id] = m })
+      milestones.forEach(m => {
+        this.items[m.id] = m
+      })
     },
   },
 })
@@ -404,16 +408,21 @@ export async function useApi<T>(
   }
 
   try {
-    const response = await $fetch<{ data: T; message?: string }>(url.toString(), {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Accept-Language': useI18n().locale.value,
-        ...(authStore.token && { Authorization: `Bearer ${authStore.token}` }),
-        ...options.headers,
-      },
-    })
+    const response = await $fetch<{ data: T; message?: string }>(
+      url.toString(),
+      {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Accept-Language': useI18n().locale.value,
+          ...(authStore.token && {
+            Authorization: `Bearer ${authStore.token}`,
+          }),
+          ...options.headers,
+        },
+      }
+    )
     return response
   } catch (error: unknown) {
     if (isApiError(error) && error.status === 401) {
@@ -437,7 +446,11 @@ function isApiError(e: unknown): e is { status: number } {
 function normalizeApiError(error: unknown): ApiError {
   if (isApiError(error) && 'data' in error) {
     const data = (error as { data: ApiError }).data
-    return { message: data.message, errors: data.errors, status: (error as { status: number }).status }
+    return {
+      message: data.message,
+      errors: data.errors,
+      status: (error as { status: number }).status,
+    }
   }
   return { message: 'An unexpected error occurred' }
 }
@@ -457,45 +470,50 @@ import type { ProjectStatus } from '~/shared/types/project'
 import type { ReportStatus } from '~/shared/types/report'
 
 // ── Milestone ──────────────────────────────────────────────────────────────
-export const MILESTONE_TRANSITIONS: Record<MilestoneStatus, MilestoneStatus[]> = {
-  not_started:          ['in_progress'],
-  in_progress:          ['under_review'],
-  under_review:         ['supervisor_approved', 'rejected'],
-  supervisor_approved:  ['approved', 'rejected'],
-  rejected:             ['in_progress'],   // never terminal — always bounces back
-  approved:             [],                // terminal
-}
+export const MILESTONE_TRANSITIONS: Record<MilestoneStatus, MilestoneStatus[]> =
+  {
+    not_started: ['in_progress'],
+    in_progress: ['under_review'],
+    under_review: ['supervisor_approved', 'rejected'],
+    supervisor_approved: ['approved', 'rejected'],
+    rejected: ['in_progress'], // never terminal — always bounces back
+    approved: [], // terminal
+  }
 
 // ── Project ────────────────────────────────────────────────────────────────
 export const PROJECT_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
-  new:       ['active'],
-  active:    ['completed', 'on_hold'],
-  on_hold:   ['active'],
-  completed: [],  // terminal
+  new: ['active'],
+  active: ['completed', 'on_hold'],
+  on_hold: ['active'],
+  completed: [], // terminal
 }
 
 // ── Report ─────────────────────────────────────────────────────────────────
 export const REPORT_TRANSITIONS: Record<ReportStatus, ReportStatus[]> = {
-  draft:        ['submitted'],
-  submitted:    ['under_review'],
-  under_review: [],  // terminal (outcome drives milestone, not report)
+  draft: ['submitted'],
+  submitted: ['under_review'],
+  under_review: [], // terminal (outcome drives milestone, not report)
 }
 
 // ── Payment ────────────────────────────────────────────────────────────────
 // Payment status is DERIVED from milestone — treat as read-only in the frontend
 export const PAYMENT_TRANSITIONS: Record<PaymentStatus, PaymentStatus[]> = {
-  pending_payment:   ['paid'],
-  paid:              ['awaiting_approval'],
+  pending_payment: ['paid'],
+  paid: ['awaiting_approval'],
   awaiting_approval: ['ready_for_payout'],
-  ready_for_payout:  ['paid_out'],
-  paid_out:          [],  // terminal
+  ready_for_payout: ['paid_out'],
+  paid_out: [], // terminal
 }
 
 // ── Shared validator ───────────────────────────────────────────────────────
 type AnyStatus = MilestoneStatus | ProjectStatus | ReportStatus | PaymentStatus
 type TransitionMap = Record<string, string[]>
 
-function canTransitionWith(map: TransitionMap, from: string, to: string): boolean {
+function canTransitionWith(
+  map: TransitionMap,
+  from: string,
+  to: string
+): boolean {
   return map[from]?.includes(to) ?? false
 }
 
@@ -506,37 +524,60 @@ export function canTransition(
 ): boolean {
   const maps: Record<string, TransitionMap> = {
     milestone: MILESTONE_TRANSITIONS,
-    project:   PROJECT_TRANSITIONS,
-    report:    REPORT_TRANSITIONS,
-    payment:   PAYMENT_TRANSITIONS,
+    project: PROJECT_TRANSITIONS,
+    report: REPORT_TRANSITIONS,
+    payment: PAYMENT_TRANSITIONS,
   }
   return canTransitionWith(maps[type], from, to)
 }
 
 // ── Status metadata (for UI rendering) ────────────────────────────────────
-export type StatusVariant = 'default' | 'success' | 'warning' | 'destructive' | 'outline'
+export type StatusVariant =
+  | 'default'
+  | 'success'
+  | 'warning'
+  | 'destructive'
+  | 'outline'
 
-export const MILESTONE_STATUS_META: Record<MilestoneStatus, {
-  labelKey: string       // i18n key
-  variant: StatusVariant
-}> = {
-  not_started:         { labelKey: 'status.milestone.not_started',        variant: 'outline' },
-  in_progress:         { labelKey: 'status.milestone.in_progress',        variant: 'default' },
-  under_review:        { labelKey: 'status.milestone.under_review',       variant: 'warning' },
-  supervisor_approved: { labelKey: 'status.milestone.supervisor_approved', variant: 'warning' },
-  approved:            { labelKey: 'status.milestone.approved',            variant: 'success' },
-  rejected:            { labelKey: 'status.milestone.rejected',            variant: 'destructive' },
+export const MILESTONE_STATUS_META: Record<
+  MilestoneStatus,
+  {
+    labelKey: string // i18n key
+    variant: StatusVariant
+  }
+> = {
+  not_started: { labelKey: 'status.milestone.not_started', variant: 'outline' },
+  in_progress: { labelKey: 'status.milestone.in_progress', variant: 'default' },
+  under_review: {
+    labelKey: 'status.milestone.under_review',
+    variant: 'warning',
+  },
+  supervisor_approved: {
+    labelKey: 'status.milestone.supervisor_approved',
+    variant: 'warning',
+  },
+  approved: { labelKey: 'status.milestone.approved', variant: 'success' },
+  rejected: { labelKey: 'status.milestone.rejected', variant: 'destructive' },
 }
 
-export const PAYMENT_STATUS_META: Record<PaymentStatus, {
-  labelKey: string
-  variant: StatusVariant
-}> = {
-  pending_payment:   { labelKey: 'status.payment.pending',          variant: 'outline' },
-  paid:              { labelKey: 'status.payment.paid',              variant: 'default' },
-  awaiting_approval: { labelKey: 'status.payment.awaiting_approval', variant: 'warning' },
-  ready_for_payout:  { labelKey: 'status.payment.ready_for_payout',  variant: 'warning' },
-  paid_out:          { labelKey: 'status.payment.paid_out',          variant: 'success' },
+export const PAYMENT_STATUS_META: Record<
+  PaymentStatus,
+  {
+    labelKey: string
+    variant: StatusVariant
+  }
+> = {
+  pending_payment: { labelKey: 'status.payment.pending', variant: 'outline' },
+  paid: { labelKey: 'status.payment.paid', variant: 'default' },
+  awaiting_approval: {
+    labelKey: 'status.payment.awaiting_approval',
+    variant: 'warning',
+  },
+  ready_for_payout: {
+    labelKey: 'status.payment.ready_for_payout',
+    variant: 'warning',
+  },
+  paid_out: { labelKey: 'status.payment.paid_out', variant: 'success' },
 }
 ```
 
@@ -551,23 +592,30 @@ import type { UserRole } from '~/shared/types/user'
 // Maps each action to the roles that can perform it
 export const ROLE_PERMISSIONS: Record<string, UserRole[]> = {
   // Projects
-  'create_project':          ['client', 'admin', 'super_admin'],
-  'view_project':            ['client', 'contractor', 'field_engineer', 'supervisor_engineer', 'admin', 'super_admin'],
-  'manage_all_projects':     ['admin', 'super_admin'],
+  create_project: ['client', 'admin', 'super_admin'],
+  view_project: [
+    'client',
+    'contractor',
+    'field_engineer',
+    'supervisor_engineer',
+    'admin',
+    'super_admin',
+  ],
+  manage_all_projects: ['admin', 'super_admin'],
 
   // Milestones
-  'submit_report':           ['field_engineer'],
-  'approve_milestone_supervisor': ['supervisor_engineer'],
-  'approve_milestone_client':     ['client'],
-  'reject_milestone':        ['supervisor_engineer', 'client'],
+  submit_report: ['field_engineer'],
+  approve_milestone_supervisor: ['supervisor_engineer'],
+  approve_milestone_client: ['client'],
+  reject_milestone: ['supervisor_engineer', 'client'],
 
   // Payments
-  'pay_milestone':           ['client'],
-  'release_payment':         ['admin', 'super_admin'],
+  pay_milestone: ['client'],
+  release_payment: ['admin', 'super_admin'],
 
   // Users
-  'manage_users':            ['admin', 'super_admin'],
-  'view_all_users':          ['admin', 'super_admin'],
+  manage_users: ['admin', 'super_admin'],
+  view_all_users: ['admin', 'super_admin'],
 }
 
 export function hasPermission(role: UserRole, action: string): boolean {
@@ -604,7 +652,9 @@ export function usePermission() {
 <script setup lang="ts">
 const { can } = usePermission()
 // passing allowedActions from API response is most accurate
-const canApprove = computed(() => can('approve_milestone_supervisor', milestone.value.allowedActions))
+const canApprove = computed(() =>
+  can('approve_milestone_supervisor', milestone.value.allowedActions)
+)
 </script>
 
 <template>
@@ -639,14 +689,14 @@ const { handleSubmit, setErrors } = useForm<FormValues>({
 })
 
 // ── 3. Submit handler ──────────────────────────────────
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit(async values => {
   try {
     await milestoneStore.create(values)
     emit('success')
   } catch (error) {
     // Map API field errors → VeeValidate field errors
     if (error.errors) {
-      setErrors(error.errors)   // { title: ['Title is required'] }
+      setErrors(error.errors) // { title: ['Title is required'] }
     }
   }
 })
@@ -660,7 +710,8 @@ const onSubmit = handleSubmit(async (values) => {
         <FormControl>
           <Input v-bind="componentField" />
         </FormControl>
-        <FormMessage />   <!-- shows validation error -->
+        <FormMessage />
+        <!-- shows validation error -->
       </FormItem>
     </FormField>
 
@@ -681,16 +732,23 @@ const onSubmit = handleSubmit(async (values) => {
 const route = useRoute()
 
 // ✅ useAsyncData — server-side, cached, shared key
-const { data: project, pending, error } = await useAsyncData(
+const {
+  data: project,
+  pending,
+  error,
+} = await useAsyncData(
   `project-${route.params.id}`,
   () => useApi<Project>(`/projects/${route.params.id}`).then(r => r.data),
-  { lazy: false }  // block navigation until data is ready for critical pages
+  { lazy: false } // block navigation until data is ready for critical pages
 )
 
 // ✅ lazy: true for non-critical sections — page loads immediately, data fills in
 const { data: activity } = await useAsyncData(
   `project-activity-${route.params.id}`,
-  () => useApi<Activity[]>(`/projects/${route.params.id}/activity`).then(r => r.data),
+  () =>
+    useApi<Activity[]>(`/projects/${route.params.id}/activity`).then(
+      r => r.data
+    ),
   { lazy: true }
 )
 </script>
@@ -722,16 +780,16 @@ async function approve(milestoneId: string) {
   }
 
   const previousStatus = milestone.status
-  store.setStatus(milestoneId, 'supervisor_approved')  // optimistic
+  store.setStatus(milestoneId, 'supervisor_approved') // optimistic
 
   try {
     const { data } = await useApi<Milestone>(
       `/milestones/${milestoneId}/approve`,
       { method: 'POST' }
     )
-    store.upsert(data)  // sync with server truth
+    store.upsert(data) // sync with server truth
   } catch (error) {
-    store.setStatus(milestoneId, previousStatus)  // rollback
+    store.setStatus(milestoneId, previousStatus) // rollback
     notify.error(t('errors.approval_failed'))
   }
 }
@@ -745,24 +803,24 @@ async function approve(milestoneId: string) {
 
 ```css
 /* app/assets/css/main.css — the only place for design tokens */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Brand colors */
-  --color-brand-50:  oklch(0.97 0.015 250);
-  --color-brand-100: oklch(0.93 0.03  250);
-  --color-brand-500: oklch(0.55 0.20  250);
-  --color-brand-600: oklch(0.47 0.18  250);
-  --color-brand-900: oklch(0.25 0.10  250);
+  --color-brand-50: oklch(0.97 0.015 250);
+  --color-brand-100: oklch(0.93 0.03 250);
+  --color-brand-500: oklch(0.55 0.2 250);
+  --color-brand-600: oklch(0.47 0.18 250);
+  --color-brand-900: oklch(0.25 0.1 250);
 
   /* Status colors */
-  --color-status-approved:   oklch(0.55 0.15 145);
-  --color-status-rejected:   oklch(0.55 0.18 25);
-  --color-status-review:     oklch(0.72 0.16 85);
-  --color-status-pending:    oklch(0.60 0.00 0);
+  --color-status-approved: oklch(0.55 0.15 145);
+  --color-status-rejected: oklch(0.55 0.18 25);
+  --color-status-review: oklch(0.72 0.16 85);
+  --color-status-pending: oklch(0.6 0 0);
 
   /* Typography */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
   /* Spacing overrides if needed */
   --spacing-18: 4.5rem;
@@ -771,18 +829,18 @@ async function approve(milestoneId: string) {
 
 ### RTL — logical properties only
 
-| Use this | Never this | CSS property |
-|---|---|---|
-| `ms-*` | `ml-*` | `margin-inline-start` |
-| `me-*` | `mr-*` | `margin-inline-end` |
-| `ps-*` | `pl-*` | `padding-inline-start` |
-| `pe-*` | `pr-*` | `padding-inline-end` |
-| `border-s-*` | `border-l-*` | `border-inline-start` |
-| `border-e-*` | `border-r-*` | `border-inline-end` |
-| `start-*` | `left-*` | `inset-inline-start` |
-| `end-*` | `right-*` | `inset-inline-end` |
-| `rounded-s-*` | `rounded-l-*` | `border-start-radius` |
-| `text-start` | `text-left` | `text-align: start` |
+| Use this      | Never this    | CSS property           |
+| ------------- | ------------- | ---------------------- |
+| `ms-*`        | `ml-*`        | `margin-inline-start`  |
+| `me-*`        | `mr-*`        | `margin-inline-end`    |
+| `ps-*`        | `pl-*`        | `padding-inline-start` |
+| `pe-*`        | `pr-*`        | `padding-inline-end`   |
+| `border-s-*`  | `border-l-*`  | `border-inline-start`  |
+| `border-e-*`  | `border-r-*`  | `border-inline-end`    |
+| `start-*`     | `left-*`      | `inset-inline-start`   |
+| `end-*`       | `right-*`     | `inset-inline-end`     |
+| `rounded-s-*` | `rounded-l-*` | `border-start-radius`  |
+| `text-start`  | `text-left`   | `text-align: start`    |
 
 ### Class merging — always use `cn()`
 
@@ -886,7 +944,7 @@ const label = t(MILESTONE_STATUS_META[milestone.status].labelKey)
 // app/composables/useNotifications.ts
 export function useNotifications() {
   const store = useNotificationsStore()
-  const POLL_INTERVAL = 30_000  // 30 seconds
+  const POLL_INTERVAL = 30_000 // 30 seconds
 
   let intervalId: ReturnType<typeof setInterval> | null = null
 
@@ -897,7 +955,7 @@ export function useNotifications() {
   }
 
   function startPolling() {
-    poll()  // immediate first fetch
+    poll() // immediate first fetch
     intervalId = setInterval(poll, POLL_INTERVAL)
     document.addEventListener('visibilitychange', onVisibilityChange)
   }
@@ -908,7 +966,7 @@ export function useNotifications() {
   }
 
   function onVisibilityChange() {
-    if (!document.hidden) poll()  // fetch immediately when tab becomes active
+    if (!document.hidden) poll() // fetch immediately when tab becomes active
   }
 
   onMounted(startPolling)
@@ -931,10 +989,7 @@ export function useNotifications() {
     <PageSkeleton />
   </template>
   <template v-else-if="error">
-    <ErrorState
-      :title="t('errors.load_failed')"
-      :action="refresh"
-    />
+    <ErrorState :title="t('errors.load_failed')" :action="refresh" />
   </template>
   <template v-else>
     <PageContent :data="data" />
@@ -966,31 +1021,31 @@ async function handleAction() {
 
 ## 14. Naming conventions — complete reference
 
-| Item | Convention | Example |
-|---|---|---|
-| Component file | PascalCase | `MilestoneCard.vue` |
-| Composable file | camelCase | `useMilestones.ts` |
-| Store file | camelCase | `milestones.ts` |
-| Utility file | camelCase | `statusMachine.ts` |
-| Type file | camelCase | `milestone.ts` |
-| i18n key | dot.case | `milestone.approve` |
-| CSS variable | kebab-case | `--color-brand-500` |
-| Tailwind class | as-is | `ms-4 ps-2` |
-| API endpoint const | SCREAMING_SNAKE | `const ENDPOINTS = { PROJECTS: '/projects' }` |
-| Component in template | PascalCase | `<MilestoneCard />` |
-| Event name (emit) | camelCase | `emit('approveSuccess')` |
+| Item                  | Convention      | Example                                       |
+| --------------------- | --------------- | --------------------------------------------- |
+| Component file        | PascalCase      | `MilestoneCard.vue`                           |
+| Composable file       | camelCase       | `useMilestones.ts`                            |
+| Store file            | camelCase       | `milestones.ts`                               |
+| Utility file          | camelCase       | `statusMachine.ts`                            |
+| Type file             | camelCase       | `milestone.ts`                                |
+| i18n key              | dot.case        | `milestone.approve`                           |
+| CSS variable          | kebab-case      | `--color-brand-500`                           |
+| Tailwind class        | as-is           | `ms-4 ps-2`                                   |
+| API endpoint const    | SCREAMING_SNAKE | `const ENDPOINTS = { PROJECTS: '/projects' }` |
+| Component in template | PascalCase      | `<MilestoneCard />`                           |
+| Event name (emit)     | camelCase       | `emit('approveSuccess')`                      |
 
 ---
 
 ## 15. File size limits
 
-| File type | Soft limit | Action if exceeded |
-|---|---|---|
-| `.vue` component | 200 lines | Split into sub-components |
-| Composable | 100 lines | Split by sub-concern |
-| Pinia store | 150 lines | Split into sub-stores |
-| Utility | 80 lines | Split by function group |
+| File type        | Soft limit | Action if exceeded        |
+| ---------------- | ---------- | ------------------------- |
+| `.vue` component | 200 lines  | Split into sub-components |
+| Composable       | 100 lines  | Split by sub-concern      |
+| Pinia store      | 150 lines  | Split into sub-stores     |
+| Utility          | 80 lines   | Split by function group   |
 
 ---
 
-*Last updated: MVP v1.0 — Frontend team*
+_Last updated: MVP v1.0 — Frontend team_

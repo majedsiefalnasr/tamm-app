@@ -19,14 +19,14 @@ No transition is valid unless it appears in this document.
 
 ### Statuses
 
-| Status | Constant | Who sees it | Meaning |
-|---|---|---|---|
-| Not started | `not_started` | All | Milestone created, work not begun |
-| In progress | `in_progress` | All | Contractor is executing |
-| Under review | `under_review` | All | Report submitted, awaiting supervisor |
-| Supervisor approved | `supervisor_approved` | All | Supervisor approved, awaiting client |
-| Approved | `approved` | All | Client approved — terminal, payment released |
-| Rejected | `rejected` | All | Temporary — immediately returns to `in_progress` |
+| Status              | Constant              | Who sees it | Meaning                                          |
+| ------------------- | --------------------- | ----------- | ------------------------------------------------ |
+| Not started         | `not_started`         | All         | Milestone created, work not begun                |
+| In progress         | `in_progress`         | All         | Contractor is executing                          |
+| Under review        | `under_review`        | All         | Report submitted, awaiting supervisor            |
+| Supervisor approved | `supervisor_approved` | All         | Supervisor approved, awaiting client             |
+| Approved            | `approved`            | All         | Client approved — terminal, payment released     |
+| Rejected            | `rejected`            | All         | Temporary — immediately returns to `in_progress` |
 
 ### Transition map
 
@@ -68,6 +68,7 @@ under_review
 `rejected` is NOT a resting state. It is a brief notification state.
 
 **Flow after rejection:**
+
 1. System sets status to `rejected`
 2. UI shows "Rejected" badge with the rejection reason
 3. System immediately transitions to `in_progress`
@@ -79,26 +80,26 @@ under_review
 
 ### Who can trigger each transition
 
-| Transition | Triggered by | Condition |
-|---|---|---|
-| `not_started` → `in_progress` | Admin / System | Project is active |
-| `in_progress` → `under_review` | Field Engineer | Report submitted |
-| `under_review` → `supervisor_approved` | Supervisor Engineer | Reviewed and approved |
-| `under_review` → `rejected` | Supervisor Engineer | Issues found |
-| `supervisor_approved` → `approved` | Client | Final approval given |
-| `supervisor_approved` → `rejected` | Client | Client rejects after supervisor |
-| `rejected` → `in_progress` | System (automatic) | Always, immediately after rejection |
+| Transition                             | Triggered by        | Condition                           |
+| -------------------------------------- | ------------------- | ----------------------------------- |
+| `not_started` → `in_progress`          | Admin / System      | Project is active                   |
+| `in_progress` → `under_review`         | Field Engineer      | Report submitted                    |
+| `under_review` → `supervisor_approved` | Supervisor Engineer | Reviewed and approved               |
+| `under_review` → `rejected`            | Supervisor Engineer | Issues found                        |
+| `supervisor_approved` → `approved`     | Client              | Final approval given                |
+| `supervisor_approved` → `rejected`     | Client              | Client rejects after supervisor     |
+| `rejected` → `in_progress`             | System (automatic)  | Always, immediately after rejection |
 
 ### UI behaviour per status
 
-| Status | Client sees | Contractor sees | Supervisor sees |
-|---|---|---|---|
-| `not_started` | "Not started" badge | "Not started" badge | "Not started" badge |
-| `in_progress` | Progress tracker | Active work panel | Monitoring view |
-| `under_review` | "Under review" badge | "Under review" badge | **Action required** — review report |
-| `supervisor_approved` | **Action required** — approve or reject | "Awaiting your approval" | Approved badge |
-| `approved` | "Approved" + payment released | "Approved" + payment pending | "Approved" badge |
-| `rejected` | Rejection badge + reason | Rejection reason + new report required | Rejection confirmation |
+| Status                | Client sees                             | Contractor sees                        | Supervisor sees                     |
+| --------------------- | --------------------------------------- | -------------------------------------- | ----------------------------------- |
+| `not_started`         | "Not started" badge                     | "Not started" badge                    | "Not started" badge                 |
+| `in_progress`         | Progress tracker                        | Active work panel                      | Monitoring view                     |
+| `under_review`        | "Under review" badge                    | "Under review" badge                   | **Action required** — review report |
+| `supervisor_approved` | **Action required** — approve or reject | "Awaiting your approval"               | Approved badge                      |
+| `approved`            | "Approved" + payment released           | "Approved" + payment pending           | "Approved" badge                    |
+| `rejected`            | Rejection badge + reason                | Rejection reason + new report required | Rejection confirmation              |
 
 ---
 
@@ -106,15 +107,15 @@ under_review
 
 ### Statuses
 
-| Status | Constant | Meaning |
-|---|---|---|
-| New | `new` | Just created by client — scope only, no contractor |
-| Open for bids | `open_for_bids` | Admin opened bidding — invited contractors can submit proposals |
-| Under review | `under_review` | Client is comparing proposals |
-| Contractor selected | `contractor_selected` | Client chose a contractor — setup phase begins |
-| Active | `active` | Milestones defined, work is ongoing |
-| On hold | `on_hold` | Temporarily paused |
-| Completed | `completed` | All milestones approved — terminal |
+| Status              | Constant              | Meaning                                                         |
+| ------------------- | --------------------- | --------------------------------------------------------------- |
+| New                 | `new`                 | Just created by client — scope only, no contractor              |
+| Open for bids       | `open_for_bids`       | Admin opened bidding — invited contractors can submit proposals |
+| Under review        | `under_review`        | Client is comparing proposals                                   |
+| Contractor selected | `contractor_selected` | Client chose a contractor — setup phase begins                  |
+| Active              | `active`              | Milestones defined, work is ongoing                             |
+| On hold             | `on_hold`             | Temporarily paused                                              |
+| Completed           | `completed`           | All milestones approved — terminal                              |
 
 ### Transition map
 
@@ -153,15 +154,15 @@ completed (terminal)
 
 ### Who triggers
 
-| Transition | Triggered by | Condition |
-|---|---|---|
-| `new` → `open_for_bids` | Admin | Admin invites at least one contractor |
-| `open_for_bids` → `under_review` | Admin | Admin closes bidding for review |
-| `under_review` → `contractor_selected` | Client | Client selects a proposal |
-| `contractor_selected` → `active` | Admin | Engineers assigned + milestones defined |
-| `active` → `on_hold` | Admin | — |
-| `on_hold` → `active` | Admin | — |
-| `active` → `completed` | System | Automatic when last milestone approved |
+| Transition                             | Triggered by | Condition                               |
+| -------------------------------------- | ------------ | --------------------------------------- |
+| `new` → `open_for_bids`                | Admin        | Admin invites at least one contractor   |
+| `open_for_bids` → `under_review`       | Admin        | Admin closes bidding for review         |
+| `under_review` → `contractor_selected` | Client       | Client selects a proposal               |
+| `contractor_selected` → `active`       | Admin        | Engineers assigned + milestones defined |
+| `active` → `on_hold`                   | Admin        | —                                       |
+| `on_hold` → `active`                   | Admin        | —                                       |
+| `active` → `completed`                 | System       | Automatic when last milestone approved  |
 
 ---
 
@@ -169,11 +170,11 @@ completed (terminal)
 
 ### Statuses
 
-| Status | Constant | Meaning |
-|---|---|---|
-| Draft | `draft` | Being written, not yet submitted |
-| Submitted | `submitted` | Sent to supervisor for review |
-| Under review | `under_review` | Supervisor is reviewing |
+| Status       | Constant       | Meaning                          |
+| ------------ | -------------- | -------------------------------- |
+| Draft        | `draft`        | Being written, not yet submitted |
+| Submitted    | `submitted`    | Sent to supervisor for review    |
+| Under review | `under_review` | Supervisor is reviewing          |
 
 ### Transition map
 
@@ -207,13 +208,13 @@ under_review
 
 ### Statuses
 
-| Status | Constant | Meaning |
-|---|---|---|
-| Pending payment | `pending_payment` | Awaiting client to pay this milestone upfront |
-| Paid | `paid` | Client has paid — funds held in escrow |
-| Awaiting approval | `awaiting_approval` | Milestone work complete, awaiting final approval |
-| Ready for payout | `ready_for_payout` | Milestone approved — ready to release to contractor |
-| Paid out | `paid_out` | Funds released to contractor — terminal |
+| Status            | Constant            | Meaning                                             |
+| ----------------- | ------------------- | --------------------------------------------------- |
+| Pending payment   | `pending_payment`   | Awaiting client to pay this milestone upfront       |
+| Paid              | `paid`              | Client has paid — funds held in escrow              |
+| Awaiting approval | `awaiting_approval` | Milestone work complete, awaiting final approval    |
+| Ready for payout  | `ready_for_payout`  | Milestone approved — ready to release to contractor |
+| Paid out          | `paid_out`          | Funds released to contractor — terminal             |
 
 ### Transition map
 
@@ -247,14 +248,14 @@ ready_for_payout
 
 ### Milestone → Payment status mapping
 
-| Milestone status | Payment status |
-|---|---|
-| `not_started` | `pending_payment` |
-| `in_progress` | `paid` (client has already paid) |
-| `under_review` | `paid` |
-| `supervisor_approved` | `awaiting_approval` |
-| `approved` | `ready_for_payout` |
-| After admin releases | `paid_out` |
+| Milestone status      | Payment status                   |
+| --------------------- | -------------------------------- |
+| `not_started`         | `pending_payment`                |
+| `in_progress`         | `paid` (client has already paid) |
+| `under_review`        | `paid`                           |
+| `supervisor_approved` | `awaiting_approval`              |
+| `approved`            | `ready_for_payout`               |
+| After admin releases  | `paid_out`                       |
 
 ---
 
@@ -278,24 +279,24 @@ Every status transition fires a notification to the relevant parties.
 
 ### Project / bidding phase
 
-| Transition | Notified | Message |
-|---|---|---|
-| Project created (`new`) | Admin | "New project created — [project name]" |
-| Contractor invited (`open_for_bids`) | Invited Contractor | "You've been invited to bid on [project name]" |
-| Bidding closed (`under_review`) | Client | "Proposals are ready for your review — [project name]" |
-| Contractor selected (`contractor_selected`) | Selected Contractor, Admin | "Your proposal was selected for [project name]" |
-| Project activated (`active`) | Contractor, Supervisor, Field Engineer | "Project [project name] is now active" |
+| Transition                                  | Notified                               | Message                                                |
+| ------------------------------------------- | -------------------------------------- | ------------------------------------------------------ |
+| Project created (`new`)                     | Admin                                  | "New project created — [project name]"                 |
+| Contractor invited (`open_for_bids`)        | Invited Contractor                     | "You've been invited to bid on [project name]"         |
+| Bidding closed (`under_review`)             | Client                                 | "Proposals are ready for your review — [project name]" |
+| Contractor selected (`contractor_selected`) | Selected Contractor, Admin             | "Your proposal was selected for [project name]"        |
+| Project activated (`active`)                | Contractor, Supervisor, Field Engineer | "Project [project name] is now active"                 |
 
 ### Milestone / execution phase
 
-| Transition | Notified | Message |
-|---|---|---|
-| Report submitted (`in_progress` → `under_review`) | Supervisor Engineer | "New report ready for review — [milestone]" |
-| Supervisor approves (`under_review` → `supervisor_approved`) | Client | "Milestone awaiting your approval — [milestone]" |
-| Supervisor rejects (`under_review` → `rejected`) | Contractor | "Milestone rejected — [reason]. Please revise." |
-| Client approves (`supervisor_approved` → `approved`) | Contractor, Admin | "Milestone approved — payment pending" |
-| Client rejects (`supervisor_approved` → `rejected`) | Contractor | "Milestone rejected by client — [reason]" |
-| Payment released (`ready_for_payout` → `paid_out`) | Contractor | "Payment released for [milestone]" |
+| Transition                                                   | Notified            | Message                                          |
+| ------------------------------------------------------------ | ------------------- | ------------------------------------------------ |
+| Report submitted (`in_progress` → `under_review`)            | Supervisor Engineer | "New report ready for review — [milestone]"      |
+| Supervisor approves (`under_review` → `supervisor_approved`) | Client              | "Milestone awaiting your approval — [milestone]" |
+| Supervisor rejects (`under_review` → `rejected`)             | Contractor          | "Milestone rejected — [reason]. Please revise."  |
+| Client approves (`supervisor_approved` → `approved`)         | Contractor, Admin   | "Milestone approved — payment pending"           |
+| Client rejects (`supervisor_approved` → `rejected`)          | Contractor          | "Milestone rejected by client — [reason]"        |
+| Payment released (`ready_for_payout` → `paid_out`)           | Contractor          | "Payment released for [milestone]"               |
 
 ---
 
@@ -314,4 +315,4 @@ For every status transition implemented in the UI:
 
 ---
 
-*Last updated: MVP v1.0 — Frontend team*
+_Last updated: MVP v1.0 — Frontend team_

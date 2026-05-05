@@ -44,14 +44,14 @@ You are building the **Nuxt 4 frontend only**. There is a separate Laravel team 
 
 ## 2. The 6 user roles — memorize these
 
-| Role | Constant | What they do |
-|---|---|---|
-| Super Admin | `super_admin` | Full system access, can create admin accounts |
-| Admin | `admin` | Creates users, assigns engineers, manages project lifecycle, releases payments |
-| Client | `client` | Creates projects, pays milestones, gives final approval |
-| Contractor | `contractor` | Submits proposals, defines milestones with admin, executes work |
-| Field Engineer | `field_engineer` | Submits progress reports |
-| Supervisor Engineer | `supervisor_engineer` | Reviews reports, first approval gate |
+| Role                | Constant              | What they do                                                                   |
+| ------------------- | --------------------- | ------------------------------------------------------------------------------ |
+| Super Admin         | `super_admin`         | Full system access, can create admin accounts                                  |
+| Admin               | `admin`               | Creates users, assigns engineers, manages project lifecycle, releases payments |
+| Client              | `client`              | Creates projects, pays milestones, gives final approval                        |
+| Contractor          | `contractor`          | Submits proposals, defines milestones with admin, executes work                |
+| Field Engineer      | `field_engineer`      | Submits progress reports                                                       |
+| Supervisor Engineer | `supervisor_engineer` | Reviews reports, first approval gate                                           |
 
 **Important:** Engineers are neutral — assigned by admin, not affiliated with contractors.
 
@@ -68,6 +68,7 @@ git --version
 ```
 
 You also need:
+
 - **Claude Code** CLI installed and authenticated (`claude --version`)
 - Access to the GitHub repository
 
@@ -95,20 +96,20 @@ No errors on first run = you're set up correctly.
 
 ## 5. The tech stack — locked, no exceptions
 
-| Concern | Choice |
-|---|---|
-| Framework | Nuxt 4 (app/ directory structure) |
-| UI layer | Vue 3.5 — Composition API only, no Options API |
-| Language | TypeScript strict mode — no `any`, ever |
-| State | Pinia 3 — one store per domain |
-| Styling | Tailwind CSS v4 — CSS-first config, no tailwind.config.js |
-| UI components | shadcn-vue — lives in `app/components/ui/`, you own these files |
-| API calls | `$fetch` / `useFetch` — never axios |
-| Forms | VeeValidate + Zod — schema-first |
-| i18n | @nuxtjs/i18n — Arabic default (RTL), English secondary |
-| Icons | lucide-vue-next |
-| Testing | Vitest (unit) + Playwright (e2e) |
-| Package manager | pnpm |
+| Concern         | Choice                                                          |
+| --------------- | --------------------------------------------------------------- |
+| Framework       | Nuxt 4 (app/ directory structure)                               |
+| UI layer        | Vue 3.5 — Composition API only, no Options API                  |
+| Language        | TypeScript strict mode — no `any`, ever                         |
+| State           | Pinia 3 — one store per domain                                  |
+| Styling         | Tailwind CSS v4 — CSS-first config, no tailwind.config.js       |
+| UI components   | shadcn-vue — lives in `app/components/ui/`, you own these files |
+| API calls       | `$fetch` / `useFetch` — never axios                             |
+| Forms           | VeeValidate + Zod — schema-first                                |
+| i18n            | @nuxtjs/i18n — Arabic default (RTL), English secondary          |
+| Icons           | lucide-vue-next                                                 |
+| Testing         | Vitest (unit) + Playwright (e2e)                                |
+| Package manager | pnpm                                                            |
 
 **Do not install any package not listed here.** If a task seems to require a new package — stop, ask the team lead first.
 
@@ -160,13 +161,13 @@ tamm-frontend/
 
 Open each of these and read them fully before writing your first story:
 
-| Document | What it covers | Why it matters |
-|---|---|---|
-| `CLAUDE.md` | Behavioral rules + stack decisions + what never to do | Violated rules mean rejected PRs |
-| `docs/coding-standards.md` | TypeScript patterns, composable structure, store patterns | How every file must be written |
-| `docs/status-flows.md` | Every state machine in the app | Source of truth — never hardcode status strings |
-| `docs/api-contracts.md` | All API endpoints + their status | Know what's real vs what needs a mock |
-| `docs/build-order.md` | Which epics/stories to build and in what order | Know your branch name before you start |
+| Document                   | What it covers                                            | Why it matters                                  |
+| -------------------------- | --------------------------------------------------------- | ----------------------------------------------- |
+| `CLAUDE.md`                | Behavioral rules + stack decisions + what never to do     | Violated rules mean rejected PRs                |
+| `docs/coding-standards.md` | TypeScript patterns, composable structure, store patterns | How every file must be written                  |
+| `docs/status-flows.md`     | Every state machine in the app                            | Source of truth — never hardcode status strings |
+| `docs/api-contracts.md`    | All API endpoints + their status                          | Know what's real vs what needs a mock           |
+| `docs/build-order.md`      | Which epics/stories to build and in what order            | Know your branch name before you start          |
 
 ---
 
@@ -184,6 +185,7 @@ The Scrum Master agent generates story files from epics using `/bmad-create-stor
 ### Each story has a clear contract
 
 A story file tells you exactly:
+
 - What to build (acceptance criteria)
 - What's out of scope
 - What mock to use if the API isn't ready
@@ -227,6 +229,7 @@ git push -u origin feature/01-01-login-page
 ```
 
 Rules:
+
 - Branch from `develop`, merge to `develop`
 - Never commit directly to `develop`
 - One story = one branch = one PR
@@ -239,6 +242,7 @@ Rules:
 The Laravel API is built by a separate team and delivered incrementally.
 
 **Before implementing any API call:**
+
 1. Open `docs/api-contracts.md`
 2. Find the endpoint — is it marked ✅ Available or ⏳ Not started?
 3. If ✅ → implement against the exact contract
@@ -270,13 +274,13 @@ TAMM defaults to Arabic (RTL). Every layout you build must work in RTL.
 
 **The rule:** Never use directional CSS classes. Always use logical properties:
 
-| Instead of | Use |
-|---|---|
-| `ml-4` / `mr-4` | `ms-4` / `me-4` |
-| `pl-2` / `pr-2` | `ps-2` / `pe-2` |
-| `left-0` / `right-0` | `start-0` / `end-0` |
+| Instead of                 | Use                       |
+| -------------------------- | ------------------------- |
+| `ml-4` / `mr-4`            | `ms-4` / `me-4`           |
+| `pl-2` / `pr-2`            | `ps-2` / `pe-2`           |
+| `left-0` / `right-0`       | `start-0` / `end-0`       |
 | `text-left` / `text-right` | `text-start` / `text-end` |
-| `border-l` / `border-r` | `border-s` / `border-e` |
+| `border-l` / `border-r`    | `border-s` / `border-e`   |
 
 Before marking any story done, switch the browser locale to Arabic and verify the layout. The dev server picks up locale from `?locale=ar` or the i18n switcher.
 
@@ -296,9 +300,7 @@ Every action in the UI must be permission-checked through `usePermission()`, not
 
 <!-- ❌ never — brittle, untestable, wrong -->
 <template>
-  <Button v-if="auth.user.role === 'supervisor_engineer'">
-    Approve
-  </Button>
+  <Button v-if="auth.user.role === 'supervisor_engineer'"> Approve </Button>
 </template>
 ```
 
@@ -334,11 +336,14 @@ Every store action that changes state must optimistically update the UI and roll
 // stores/milestones.ts
 async function approveMilestone(id: string) {
   const prev = getById(id).status
-  setStatus(id, 'supervisor_approved')        // optimistic — UI updates immediately
+  setStatus(id, 'supervisor_approved') // optimistic — UI updates immediately
   try {
-    await useApi(`/milestones/${id}/approve`, { method: 'POST', body: { role: 'supervisor' } })
+    await useApi(`/milestones/${id}/approve`, {
+      method: 'POST',
+      body: { role: 'supervisor' },
+    })
   } catch {
-    setStatus(id, prev)                        // rollback on failure
+    setStatus(id, prev) // rollback on failure
     notify.error(t('errors.approval_failed'))
   }
 }
@@ -351,17 +356,20 @@ Never call the API from a component directly. Always go through a store action.
 ## 15. Definition of done — a story is complete only when all of this is true
 
 **Behavioral**
+
 - [ ] Assumptions were stated before implementation started
 - [ ] Nothing was changed outside the story's scope
 - [ ] Unused imports/variables introduced by this story are removed
 
 **Functional**
+
 - [ ] Feature works correctly for all relevant roles
 - [ ] Status transitions validated via `canTransition()`
 - [ ] Permissions checked via `usePermission().can()`
 - [ ] Optimistic update + rollback implemented for every mutation
 
 **Quality**
+
 - [ ] RTL layout verified in Arabic
 - [ ] All UI strings use i18n keys — no hardcoded text
 - [ ] Only logical CSS properties used (`ms-`, `ps-`, `border-s-`, etc.)
@@ -375,38 +383,38 @@ Never call the API from a component directly. Always go through a store action.
 
 ## 16. Quick reference — where to find things
 
-| I need to know... | Look here |
-|---|---|
-| What to build next | `docs/build-order.md` |
-| My branch name | `docs/build-order.md` |
-| How a status transitions | `docs/status-flows.md` |
-| If an API endpoint exists | `docs/api-contracts.md` |
-| How to write a component | `docs/coding-standards.md` |
-| Design system / colors / components | `docs/frontend-spec.md` |
-| Stack decisions and rules | `CLAUDE.md` |
-| What stories are in my sprint | `_bmad-output/implementation-artifacts/` |
-| The full epic scope | `_bmad-output/planning-artifacts/` |
-| BMAD commands reference | `docs/BMAD-cheat-sheet.md` |
+| I need to know...                   | Look here                                |
+| ----------------------------------- | ---------------------------------------- |
+| What to build next                  | `docs/build-order.md`                    |
+| My branch name                      | `docs/build-order.md`                    |
+| How a status transitions            | `docs/status-flows.md`                   |
+| If an API endpoint exists           | `docs/api-contracts.md`                  |
+| How to write a component            | `docs/coding-standards.md`               |
+| Design system / colors / components | `docs/frontend-spec.md`                  |
+| Stack decisions and rules           | `CLAUDE.md`                              |
+| What stories are in my sprint       | `_bmad-output/implementation-artifacts/` |
+| The full epic scope                 | `_bmad-output/planning-artifacts/`       |
+| BMAD commands reference             | `docs/BMAD-cheat-sheet.md`               |
 
 ---
 
 ## 17. Common mistakes — read this before your first PR
 
-| Mistake | What to do instead |
-|---|---|
-| Used `ml-4` or `pl-2` | Replace with `ms-4` / `ps-2` |
-| Hardcoded a string in a template | Add it to `i18n/locales/ar.json` and `en.json` |
-| Called `$fetch` directly in a component | Create a composable, call through the store |
-| Used `any` in TypeScript | Find the correct type in `shared/types/` |
-| Checked `auth.user.role === '...'` in template | Use `usePermission().can()` |
-| Hardcoded `'approved'` status string | Import constant from `utils/statusMachine.ts` |
-| Wrote a 200-line component | Break it into smaller composables + child components |
-| Added a new npm package | Ask the team lead first |
-| Committed directly to `develop` | Never. Always use a feature branch + PR. |
-| Marked story done without RTL check | Switch to Arabic locale and verify layout |
+| Mistake                                        | What to do instead                                   |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| Used `ml-4` or `pl-2`                          | Replace with `ms-4` / `ps-2`                         |
+| Hardcoded a string in a template               | Add it to `i18n/locales/ar.json` and `en.json`       |
+| Called `$fetch` directly in a component        | Create a composable, call through the store          |
+| Used `any` in TypeScript                       | Find the correct type in `shared/types/`             |
+| Checked `auth.user.role === '...'` in template | Use `usePermission().can()`                          |
+| Hardcoded `'approved'` status string           | Import constant from `utils/statusMachine.ts`        |
+| Wrote a 200-line component                     | Break it into smaller composables + child components |
+| Added a new npm package                        | Ask the team lead first                              |
+| Committed directly to `develop`                | Never. Always use a feature branch + PR.             |
+| Marked story done without RTL check            | Switch to Arabic locale and verify layout            |
 
 ---
 
-*Stack: Nuxt 4 · Vue 3.5 · Tailwind v4 · shadcn-vue · Pinia 3 · BMAD v6.6.0*
-*TAMM Frontend Team*
-*Last updated: 2026-05-05*
+_Stack: Nuxt 4 · Vue 3.5 · Tailwind v4 · shadcn-vue · Pinia 3 · BMAD v6.6.0_
+_TAMM Frontend Team_
+_Last updated: 2026-05-05_
