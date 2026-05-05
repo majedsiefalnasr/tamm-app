@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.pnpm/
+pnpm-lock.yaml
+
+# Build output
+dist/
+.output/
+.nuxt/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.env.local
+.env.*.local
+
+# Build files
+*.min.js
+*.min.css
+
+# Lock files
+package-lock.json
+yarn.lock
