@@ -181,6 +181,193 @@ Status: ⏳ Not started
 
 ## ── PROJECTS ──────────────────────────────────────────────────────────────
 
+### ⏳ PATCH /projects/:id/status
+
+```
+Status: ⏳ Not started
+Roles: admin, super_admin
+```
+
+**Request**
+```json
+{
+  "status": "open_for_bids | under_review | active | on_hold"
+}
+```
+
+**Response 200**
+```json
+{
+  "data": <Project>,
+  "message": "Project status updated"
+}
+```
+
+**Errors**
+- 403: Invalid transition for current status
+- 422: Transition not allowed (e.g., milestones not defined)
+
+---
+
+## ── PROPOSALS ─────────────────────────────────────────────────────────────
+
+### ⏳ POST /projects/:id/invitations
+
+```
+Status: ⏳ Not started
+Roles: admin, super_admin
+```
+
+Invite one or more contractors to bid on a project.
+
+**Request**
+```json
+{
+  "contractor_ids": ["string"]
+}
+```
+
+**Response 201**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "project_id": "string",
+      "contractor": { "id": "string", "name": "string" },
+      "status": "invited",
+      "invited_at": "ISO8601"
+    }
+  ],
+  "message": "Contractors invited"
+}
+```
+
+---
+
+### ⏳ GET /projects/:id/invitations
+
+```
+Status: ⏳ Not started
+Roles: admin, super_admin
+```
+
+List all contractors invited to bid on a project.
+
+**Response 200**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "contractor": { "id": "string", "name": "string" },
+      "status": "invited | submitted | declined",
+      "invited_at": "ISO8601"
+    }
+  ]
+}
+```
+
+---
+
+### ⏳ POST /projects/:id/proposals
+
+```
+Status: ⏳ Not started
+Roles: contractor (must be invited)
+```
+
+Contractor submits a proposal for a project.
+
+**Request**
+```json
+{
+  "total_price": 250000,
+  "timeline_days": 90,
+  "notes": "string | null"
+}
+```
+
+**Response 201**
+```json
+{
+  "data": {
+    "id": "string",
+    "project_id": "string",
+    "contractor": { "id": "string", "name": "string" },
+    "total_price": 250000,
+    "timeline_days": 90,
+    "notes": "string | null",
+    "status": "submitted",
+    "submitted_at": "ISO8601"
+  },
+  "message": "Proposal submitted"
+}
+```
+
+**Errors**
+- 403: Contractor not invited to this project
+- 422: Proposal already submitted for this project
+
+---
+
+### ⏳ GET /projects/:id/proposals
+
+```
+Status: ⏳ Not started
+Roles: admin, super_admin, client (project owner only)
+```
+
+List all submitted proposals for a project. Contractors cannot see this list.
+
+**Response 200**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "contractor": { "id": "string", "name": "string" },
+      "total_price": 250000,
+      "timeline_days": 90,
+      "notes": "string | null",
+      "status": "submitted | selected | rejected",
+      "submitted_at": "ISO8601"
+    }
+  ]
+}
+```
+
+---
+
+### ⏳ POST /projects/:id/proposals/:proposalId/select
+
+```
+Status: ⏳ Not started
+Roles: client (project owner only)
+```
+
+Client selects a contractor's proposal. Project transitions to `contractor_selected`.
+All other proposals are automatically marked `rejected`.
+
+**Request**: No body
+
+**Response 200**
+```json
+{
+  "data": {
+    "project": <Project with status: "contractor_selected">,
+    "selected_proposal": <Proposal with status: "selected">
+  },
+  "message": "Contractor selected"
+}
+```
+
+**Errors**
+- 403: Not the project owner, or project not in `under_review` status
+- 404: Proposal not found
+
+---
+
 ### ⏳ GET /projects
 
 ```
@@ -224,21 +411,16 @@ Status: ⏳ Not started
 Roles: client, admin, super_admin
 ```
 
+Project is created with scope only. No contractor or milestones at this stage.
+Contractor is assigned after the proposal/bidding phase.
+Milestones are defined after contractor selection.
+
 **Request**
 ```json
 {
   "title": "string",
   "description": "string",
-  "address": "string",
-  "contractor_id": "string",
-  "milestones": [
-    {
-      "title": "string",
-      "description": "string",
-      "amount": 50000,
-      "order": 1
-    }
-  ]
+  "address": "string"
 }
 ```
 
@@ -249,7 +431,6 @@ Roles: client, admin, super_admin
     "id": "string",
     "title": "string",
     "status": "new",
-    "milestones": [ ... ],
     "created_at": "ISO8601"
   },
   "message": "Project created successfully"
@@ -290,6 +471,50 @@ Status: ⏳ Not started
 ---
 
 ## ── MILESTONES ────────────────────────────────────────────────────────────
+
+### ⏳ POST /projects/:id/milestones
+
+```
+Status: ⏳ Not started
+Roles: admin, super_admin, contractor (only when project is contractor_selected)
+```
+
+Define a milestone for a project. Only available after contractor selection.
+Admin and contractor collaborate to define milestones before project goes active.
+
+**Request**
+```json
+{
+  "title": "string",
+  "description": "string | null",
+  "amount": 50000,
+  "order": 1
+}
+```
+
+**Response 201**
+```json
+{
+  "data": {
+    "id": "string",
+    "project_id": "string",
+    "title": "string",
+    "description": "string | null",
+    "amount": 50000,
+    "order": 1,
+    "status": "not_started",
+    "payment": { "status": "pending_payment" },
+    "created_at": "ISO8601"
+  },
+  "message": "Milestone created"
+}
+```
+
+**Errors**
+- 403: Project not in `contractor_selected` status
+- 422: Validation error
+
+---
 
 ### ⏳ GET /projects/:projectId/milestones
 

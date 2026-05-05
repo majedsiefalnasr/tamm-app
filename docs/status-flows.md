@@ -108,8 +108,11 @@ under_review
 
 | Status | Constant | Meaning |
 |---|---|---|
-| New | `new` | Just created, not yet active |
-| Active | `active` | Work is ongoing |
+| New | `new` | Just created by client — scope only, no contractor |
+| Open for bids | `open_for_bids` | Admin opened bidding — invited contractors can submit proposals |
+| Under review | `under_review` | Client is comparing proposals |
+| Contractor selected | `contractor_selected` | Client chose a contractor — setup phase begins |
+| Active | `active` | Milestones defined, work is ongoing |
 | On hold | `on_hold` | Temporarily paused |
 | Completed | `completed` | All milestones approved — terminal |
 
@@ -118,7 +121,19 @@ under_review
 ```
 new
  │
- │  [admin activates / first milestone starts]
+ │  [admin opens bidding, invites contractors]
+ ▼
+open_for_bids
+ │
+ │  [admin moves to review / all invited contractors have submitted]
+ ▼
+under_review
+ │
+ │  [client selects a contractor]
+ ▼
+contractor_selected
+ │
+ │  [admin assigns engineers + milestones defined → admin activates]
  ▼
 active ◄────────────────────────────────┐
  │                                      │
@@ -138,12 +153,15 @@ completed (terminal)
 
 ### Who triggers
 
-| Transition | Triggered by |
-|---|---|
-| `new` → `active` | Admin |
-| `active` → `on_hold` | Admin |
-| `on_hold` → `active` | Admin |
-| `active` → `completed` | System (automatic when last milestone approved) |
+| Transition | Triggered by | Condition |
+|---|---|---|
+| `new` → `open_for_bids` | Admin | Admin invites at least one contractor |
+| `open_for_bids` → `under_review` | Admin | Admin closes bidding for review |
+| `under_review` → `contractor_selected` | Client | Client selects a proposal |
+| `contractor_selected` → `active` | Admin | Engineers assigned + milestones defined |
+| `active` → `on_hold` | Admin | — |
+| `on_hold` → `active` | Admin | — |
+| `active` → `completed` | System | Automatic when last milestone approved |
 
 ---
 
@@ -258,6 +276,18 @@ pending → processing → shipped → delivered
 
 Every status transition fires a notification to the relevant parties.
 
+### Project / bidding phase
+
+| Transition | Notified | Message |
+|---|---|---|
+| Project created (`new`) | Admin | "New project created — [project name]" |
+| Contractor invited (`open_for_bids`) | Invited Contractor | "You've been invited to bid on [project name]" |
+| Bidding closed (`under_review`) | Client | "Proposals are ready for your review — [project name]" |
+| Contractor selected (`contractor_selected`) | Selected Contractor, Admin | "Your proposal was selected for [project name]" |
+| Project activated (`active`) | Contractor, Supervisor, Field Engineer | "Project [project name] is now active" |
+
+### Milestone / execution phase
+
 | Transition | Notified | Message |
 |---|---|---|
 | Report submitted (`in_progress` → `under_review`) | Supervisor Engineer | "New report ready for review — [milestone]" |
@@ -266,7 +296,6 @@ Every status transition fires a notification to the relevant parties.
 | Client approves (`supervisor_approved` → `approved`) | Contractor, Admin | "Milestone approved — payment pending" |
 | Client rejects (`supervisor_approved` → `rejected`) | Contractor | "Milestone rejected by client — [reason]" |
 | Payment released (`ready_for_payout` → `paid_out`) | Contractor | "Payment released for [milestone]" |
-| Project created | Admin | "New project created — [project name]" |
 
 ---
 
