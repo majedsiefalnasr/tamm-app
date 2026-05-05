@@ -1,0 +1,117 @@
+# Sprint Status for TAMM Frontend
+# Generated: 2026-05-05T12:24:00Z
+# Last updated: 2026-05-05T12:24:00Z
+# Project: TAMM
+# Project key: NOKEY
+# Tracking system: file-system
+# Story location: {project-root}/_bmad-output/implementation-artifacts
+#
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review
+
+generated: 2026-05-05T12:24:00Z
+last_updated: 2026-05-05T12:24:00Z
+project: TAMM
+project_key: NOKEY
+tracking_system: file-system
+story_location: {project-root}/_bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 01 — Authentication & Session Management
+  epic-01: backlog
+  01-01-login-page: backlog
+  01-02-session-persistence-and-auto-logout: backlog
+  01-03-role-based-redirect-after-login: backlog
+  01-04-topbar-user-menu: backlog
+  epic-01-retrospective: optional
+
+  # Epic 02 — Project Management
+  epic-02: backlog
+  02-01-project-list-page: backlog
+  02-02-create-project-client: backlog
+  02-03-project-detail-page: backlog
+  02-04-milestone-definition-admin-and-contractor: backlog
+  02-05-project-status-management-admin: backlog
+  epic-02-retrospective: optional
+
+  # Epic 03 — Milestones, Reports & Approval Flow
+  epic-03: backlog
+  03-01-milestone-card: backlog
+  03-02-milestone-detail-page: backlog
+  03-03-field-engineer-submits-report: backlog
+  03-04-supervisor-reviews-and-approves-milestone: backlog
+  03-05-client-gives-final-approval: backlog
+  03-06-pending-reviews-dashboard-supervisor: backlog
+  03-07-client-approval-queue: backlog
+  epic-03-retrospective: optional
+
+  # Epic 04 — Payments & Escrow
+  epic-04: backlog
+  04-01-client-pays-for-a-milestone: backlog
+  04-02-payment-status-badge-on-milestone: backlog
+  04-03-admin-releases-payment-to-contractor: backlog
+  04-04-contractor-payment-history: backlog
+  04-05-client-payment-overview: backlog
+  epic-04-retrospective: optional
+
+  # Epic 05 — In-App Notifications
+  epic-05: backlog
+  05-01-notification-bell-and-unread-count: backlog
+  05-02-notification-drawer: backlog
+  05-03-mark-notification-as-read: backlog
+  05-04-notification-content-per-event: backlog
+  epic-05-retrospective: optional
+
+  # Epic 06 — Admin Panel & User Management
+  epic-06: backlog
+  06-01-admin-user-list: backlog
+  06-02-create-user-admin: backlog
+  06-03-assign-engineers-to-project: backlog
+  06-04-admin-project-overview: backlog
+  06-05-admin-dashboard: backlog
+  epic-06-retrospective: optional
+
+  # Epic 07 — Proposals & Contractor Selection
+  epic-07: backlog
+  07-01-admin-opens-bidding-and-invites-contractors: backlog
+  07-02-contractor-submits-proposal: backlog
+  07-03-admin-closes-bidding-for-review: backlog
+  07-04-client-reviews-proposals: backlog
+  07-05-client-selects-a-contractor: backlog
+  07-06-admin-assigns-engineers-after-contractor-selection: backlog
+  epic-07-retrospective: optional
+
+  # Epic 08 — Role-Based Dashboards
+  epic-08: backlog
+  08-01-client-dashboard: backlog
+  08-02-contractor-dashboard: backlog
+  08-03-field-engineer-dashboard-and-assignments-page: backlog
+  08-04-supervisor-engineer-dashboard: backlog
+  08-05-admin-dashboard: backlog
+  epic-08-retrospective: optional
