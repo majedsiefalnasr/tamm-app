@@ -30,3 +30,14 @@ yarn.lock
 
 # Generated or third-party UI components with parsing issues
 app/components/ui/
+
+# AI
+_bmad/
+_bmad-output/
+.agents/
+.claude/
+.cursor/
+AGENTS.md
+CLAUDE.md
+.mcp.json
+opencode.json
