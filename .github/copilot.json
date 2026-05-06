@@ -1,0 +1,12 @@
+{
+  "mcp": {
+    "enabled": true,
+    "servers": {
+      "shadcnVue": {
+        "type": "local",
+        "command": "npx",
+        "args": ["shadcn-vue@latest", "mcp"]
+      }
+    }
+  }
+}

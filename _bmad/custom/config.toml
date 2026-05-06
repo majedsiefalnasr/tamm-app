@@ -2,6 +2,40 @@
 # Committed to the repo — applies to every developer on the project.
 # Tables deep-merge over base config; keyed entries merge by key.
 # Example: override an agent descriptor, or add a new agent.
-#
-# [agents.bmad-agent-pm]
-# description = "Prefers short, bulleted PRDs over narrative drafts."
+
+# ─────────────────────────────────────────────────────────────────
+# SocratiCode MCP Server Integration
+# Enables semantic codebase search and dependency analysis for agents
+# ─────────────────────────────────────────────────────────────────
+
+[mcp_servers.socraticode]
+enabled = true
+description = "SocratiCode semantic codebase search and dependency graph analysis"
+capabilities = ["codebase_search", "code_graph", "symbol_exploration"]
+project_path = "{project-root}"
+
+# ─────────────────────────────────────────────────────────────────
+# Agent Enhancements with SocratiCode
+# ─────────────────────────────────────────────────────────────────
+
+[agents.bmad-agent-dev]
+mcp_servers = ["socraticode"]
+use_semantic_search = true
+use_dependency_analysis = true
+enhanced_description = "Senior Software Engineer — now with semantic codebase understanding via SocratiCode. Can explore code structure, trace dependencies, and answer 'how does this work?' questions before implementing."
+
+[agents.bmad-agent-architect]
+mcp_servers = ["socraticode"]
+use_semantic_search = true
+use_dependency_analysis = true
+enhanced_description = "System Architect — leverages SocratiCode for deep codebase analysis. Maps dependencies, identifies coupling patterns, validates architectural decisions against actual code structure."
+
+[agents.bmad-agent-tech-writer]
+mcp_servers = ["socraticode"]
+use_semantic_search = true
+enhanced_description = "Technical Writer — uses SocratiCode to extract code examples, trace API surfaces, and understand actual implementation for accurate documentation."
+
+[agents.bmad-agent-analyst]
+mcp_servers = ["socraticode"]
+use_semantic_search = true
+enhanced_description = "Business Analyst — uses SocratiCode to validate requirements against codebase, identify scope, and surface technical constraints early."
