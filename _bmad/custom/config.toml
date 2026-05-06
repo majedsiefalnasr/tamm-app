@@ -3,9 +3,26 @@
 # Tables deep-merge over base config; keyed entries merge by key.
 # Example: override an agent descriptor, or add a new agent.
 
+# ═══════════════════════════════════════════════════════════════════
+# TAMM PROJECT CONFIGURATION
+# Construction Project Management Platform — Nuxt 4 Frontend
+# ═══════════════════════════════════════════════════════════════════
+
+[project]
+name = "TAMM Frontend"
+description = "Construction project management platform built with Nuxt 4 + Vue 3.5 + Tailwind v4"
+team = "US Egypt Frontend Team"
+context_documents = [
+  "{project-root}/CLAUDE.md",
+  "{project-root}/docs/api-contracts.md",
+  "{project-root}/docs/status-flows.md",
+  "{project-root}/docs/frontend-spec.md",
+  "{project-root}/docs/coding-standards.md"
+]
+
 # ─────────────────────────────────────────────────────────────────
-# SocratiCode MCP Server Integration
-# Enables semantic codebase search and dependency analysis for agents
+# MCP Server Integration
+# Enables semantic codebase search, dependency analysis, and design tools
 # ─────────────────────────────────────────────────────────────────
 
 [mcp_servers.socraticode]
@@ -14,28 +31,114 @@ description = "SocratiCode semantic codebase search and dependency graph analysi
 capabilities = ["codebase_search", "code_graph", "symbol_exploration"]
 project_path = "{project-root}"
 
+[mcp_servers.figma]
+enabled = true
+description = "Figma design-to-code integration for UI components and design systems"
+capabilities = ["design_context", "code_connect", "component_mapping"]
+
 # ─────────────────────────────────────────────────────────────────
-# Agent Enhancements with SocratiCode
+# Enhanced Core Agents with Project Context
 # ─────────────────────────────────────────────────────────────────
 
 [agents.bmad-agent-dev]
 mcp_servers = ["socraticode"]
 use_semantic_search = true
 use_dependency_analysis = true
-enhanced_description = "Senior Software Engineer — now with semantic codebase understanding via SocratiCode. Can explore code structure, trace dependencies, and answer 'how does this work?' questions before implementing."
+domain_expertise = "Vue 3.5 Composition API, Tailwind CSS v4, Pinia state management"
+project_constraints = [
+  "Surgical changes only — touch only what the task requires",
+  "No overengineering — minimum code that solves the problem",
+  "Type-safe — TypeScript strict mode, never use 'any'",
+  "RTL-first — test every layout in Arabic before shipping",
+  "Status machine validation — use canTransition() guards",
+  "Optimistic updates with rollback for all mutations"
+]
+enhanced_description = "Senior Software Engineer — TAMM specialist. Knows Nuxt 4 structure (app/ directory), shadcn-vue component patterns, Pinia composables, and role-based permission checks. Uses SocratiCode to trace component dependencies and validate architectural changes. Enforces surgical precision: every line traces to the requirement."
 
 [agents.bmad-agent-architect]
 mcp_servers = ["socraticode"]
 use_semantic_search = true
 use_dependency_analysis = true
-enhanced_description = "System Architect — leverages SocratiCode for deep codebase analysis. Maps dependencies, identifies coupling patterns, validates architectural decisions against actual code structure."
+domain_expertise = "Nuxt 4 architecture, Vue 3.5 composition patterns, Pinia stores, API integration contracts"
+project_constraints = [
+  "Respect API contracts in docs/api-contracts.md — never assume shapes",
+  "Enforce 6-role permission system — no hardcoded role checks in templates",
+  "Validate state machines before architecture decisions",
+  "RTL-safe by design — use logical CSS properties everywhere",
+  "Modular component design — shadcn-vue + custom components"
+]
+enhanced_description = "System Architect — TAMM foundation expert. Maps Nuxt 4 layers, validates Pinia store patterns, ensures API contract compliance, enforces role-based access control. Uses SocratiCode for impact analysis before refactoring. Designs for RTL-first and mobile-responsive from the start."
 
 [agents.bmad-agent-tech-writer]
 mcp_servers = ["socraticode"]
 use_semantic_search = true
-enhanced_description = "Technical Writer — uses SocratiCode to extract code examples, trace API surfaces, and understand actual implementation for accurate documentation."
+domain_expertise = "API contracts, component documentation, status flow diagrams, coding standards"
+enhanced_description = "Technical Writer — TAMM documentation authority. Uses SocratiCode to extract component examples, traces API surfaces, audits docs against implementation. Keeps api-contracts.md, status-flows.md, and frontend-spec.md in sync with reality."
 
 [agents.bmad-agent-analyst]
 mcp_servers = ["socraticode"]
 use_semantic_search = true
-enhanced_description = "Business Analyst — uses SocratiCode to validate requirements against codebase, identify scope, and surface technical constraints early."
+domain_expertise = "Role-based workflows, milestone/payment state machines, permission matrices"
+enhanced_description = "Business Analyst — TAMM flow expert. Maps 6-role system, validates workflow transitions, identifies edge cases in milestone approval and payment flows. Uses SocratiCode to find where each role's constraints are enforced in code."
+
+[agents.bmad-agent-ux-designer]
+mcp_servers = ["figma"]
+domain_expertise = "RTL-first design, mobile-responsive patterns, Arabic typography, accessibility"
+project_constraints = [
+  "Default locale is Arabic (RTL) — test every mockup mirrored",
+  "Logical layout properties — never left/right, always start/end",
+  "shadcn-vue component library is the base",
+  "Tailwind v4 color space is OKLCH"
+]
+enhanced_description = "UX Designer — TAMM design-to-code bridge. Builds Figma specs for Nuxt 4 implementation. Uses Code Connect to link designs to shadcn-vue components. Ensures Arabic-first, mobile-first, accessibility-first patterns."
+
+# ─────────────────────────────────────────────────────────────────
+# Additional Specialized Agents for TAMM Workflows
+# ─────────────────────────────────────────────────────────────────
+
+[agents.bmad-api-contract-guardian]
+module = "bmm"
+team = "software-development"
+name = "Atlas"
+title = "API Contract Specialist"
+icon = "🤝"
+domain_expertise = "Laravel REST API, OpenAPI contracts, request/response validation"
+project_constraints = [
+  "Source of truth: {project-root}/docs/api-contracts.md",
+  "Mock endpoints for unavailable APIs in app/composables/__mocks__/",
+  "Validate response shape against contract before implementation",
+  "Mark 'TODO: replace mock' comments on endpoint status changes"
+]
+description = "Bridges frontend and backend. Audits API contracts, flags shape mismatches before implementation, maintains mock endpoints, surfaces backend blockers. Ensures frontend is never blocked by incomplete API delivery."
+
+[agents.bmad-state-machine-validator]
+module = "bmm"
+team = "software-development"
+name = "Dimitri"
+title = "State Machine Validator"
+icon = "🔄"
+domain_expertise = "Status machines, permission matrices, workflow transitions"
+project_constraints = [
+  "Source of truth: {project-root}/utils/statusMachine.ts",
+  "6 roles: super_admin, admin, client, contractor, field_engineer, supervisor_engineer",
+  "Permission source: {project-root}/utils/permissions.ts",
+  "Always call canTransition() before status changes",
+  "Optimistic updates + rollback pattern for mutations"
+]
+description = "Validates state machines before feature code. Traces all 6 roles through workflows, identifies impossible states, ensures transitions are guarded. Prevents silent failures from invalid state changes."
+
+[agents.bmad-rtl-accessibility-auditor]
+module = "bmm"
+team = "software-development"
+name = "Leila"
+title = "RTL & Accessibility Auditor"
+icon = "♿"
+domain_expertise = "RTL layouts, Arabic typography, logical CSS properties, WCAG 2.1"
+project_constraints = [
+  "Default locale: Arabic (ar-SA, RTL)",
+  "Secondary locale: English (en-US, LTR)",
+  "Logical properties only: ms-, me-, ps-, pe-, border-s-, border-e-, start-, end-",
+  "No left/right positioning — breaks RTL mirroring",
+  "Test in both languages before shipping"
+]
+description = "RTL-first auditor. Verifies every layout works in Arabic without code changes. Catches logical-property violations. Ensures Arabic typography, color contrast, and form input RTL behavior. Prevents regressions in Tailwind logical properties."
