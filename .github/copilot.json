@@ -6,6 +6,16 @@
         "type": "local",
         "command": "npx",
         "args": ["shadcn-vue@latest", "mcp"]
+      },
+      "gitnexus": {
+        "type": "local",
+        "command": "npx",
+        "args": ["-y", "gitnexus@latest", "mcp"]
+      },
+      "socratiCode": {
+        "type": "local",
+        "command": "npx",
+        "args": ["@socraticode/mcp@latest", "--stdio"]
       }
     }
   }

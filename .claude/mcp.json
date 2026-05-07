@@ -1,12 +1,5 @@
 {
   "mcpServers": {
-    "shadcnVue": {
-      "command": "npx",
-      "args": [
-        "shadcn-vue@latest",
-        "mcp"
-      ]
-    },
     "gitnexus": {
       "command": "npx",
       "args": ["-y", "gitnexus@latest", "mcp"]

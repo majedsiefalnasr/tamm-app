@@ -57,9 +57,9 @@ You are building the **Nuxt 4 frontend only**. There is a separate Laravel team 
 
 ---
 
-## 3. Prerequisites — set up your machine
+## 3. Machine setup — do this once before cloning
 
-Before cloning the repo, ensure you have:
+### 3.1 Core tools
 
 ```bash
 node --version   # must be 20+
@@ -67,10 +67,100 @@ pnpm --version   # install: npm install -g pnpm
 git --version
 ```
 
-You also need:
+If any are missing, install them before continuing.
 
-- **Claude Code** CLI installed and authenticated (`claude --version`)
-- Access to the GitHub repository
+---
+
+### 3.2 AI tools — required for this project
+
+TAMM uses a structured AI-driven workflow (BMAD). All developers are expected to work with AI assistance. The project ships MCP server configs for every editor in the repo — you only need to install the tools themselves, not configure MCP manually.
+
+#### Which editor do you use?
+
+| Editor                | What you install                           | MCP config in repo               | Extra steps needed |
+| --------------------- | ------------------------------------------ | -------------------------------- | ------------------ |
+| **Claude Code**       | `npm install -g @anthropic-ai/claude-code` | `.claude/mcp.json` — auto-loaded | Yes — see §3.3     |
+| **Cursor**            | Download from cursor.com                   | `.cursor/mcp.json` — auto-loaded | No                 |
+| **VS Code + Copilot** | VS Code + GitHub Copilot extension         | `.vscode/mcp.json` — auto-loaded | No                 |
+| **OpenCode**          | `npm install -g opencode-ai`               | `opencode.json` — auto-loaded    | No                 |
+
+For Cursor, VS Code, and OpenCode: the MCP servers (GitNexus, SocratiCode, shadcnVue) are already configured in the repo. No extra steps after installing the editor.
+
+**Claude Code requires three extra steps** — see §3.3 below.
+
+---
+
+### 3.3 Claude Code setup (three one-time steps)
+
+Claude Code gets the deepest AI integration on this project: MCP servers, BMAD agent skills, and PreToolUse/PostToolUse hooks that automatically enrich searches with graph context and detect a stale index after commits.
+
+**Step 1 — Install GitNexus globally**
+
+Install globally rather than relying on `npx`. A cold `npx` cache can exceed Claude Code's MCP timeout (~30s) and fail to start the server.
+
+```bash
+npm install -g gitnexus
+```
+
+**Step 2 — Register the GitNexus MCP server with Claude Code**
+
+```bash
+# macOS / Linux
+claude mcp add gitnexus -- npx -y gitnexus@latest mcp
+
+# Windows
+claude mcp add gitnexus -- cmd /c npx -y gitnexus@latest mcp
+```
+
+**Step 3 — Install the SocratiCode plugin**
+
+```bash
+claude plugin add socraticode@socraticode
+```
+
+Restart Claude Code after these three steps. The project-level `.claude/mcp.json` handles the rest — both MCP servers are available to every BMAD agent automatically.
+
+---
+
+### 3.4 GitNexus index — run after cloning (all editors)
+
+GitNexus builds a local knowledge graph of the codebase. The index lives in `.gitnexus/` (gitignored — never committed) and is unique to your machine.
+
+**Run once after cloning:**
+
+```bash
+# From the project root
+npx gitnexus analyze
+```
+
+This command:
+
+- Parses all source files and builds the dependency graph in `.gitnexus/`
+- Installs GitNexus agent skills into your global Claude Code installation
+- Registers PreToolUse/PostToolUse hooks that auto-enrich AI searches with graph context
+- Enables stale-index detection — Claude Code will prompt you to re-index after large commits
+
+> **Important — review AGENTS.md and CLAUDE.md after running:** `npx gitnexus analyze` may append generated context to `AGENTS.md` and `CLAUDE.md`. Both files are carefully maintained in this repo. After running `analyze` for the first time, check `git diff AGENTS.md CLAUDE.md` and revert any unwanted additions before committing.
+
+**When to re-run `npx gitnexus analyze`:**
+
+- After a large refactor (renamed composables, restructured stores, major component moves)
+- When your AI tool reports "index is stale" in a GitNexus response
+- After pulling a branch that adds many new files
+
+---
+
+### 3.5 AI tool capabilities — when to use what
+
+| Tool              | Best for                                                                                            |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| **SocratiCode**   | Semantic search: "find where X is used", "show components related to milestone approval"            |
+| **GitNexus**      | Blast-radius: "what breaks if I change this composable?", "rename this type across 30 files safely" |
+| **shadcnVue MCP** | UI components: "which shadcn components are available?", installing new components                  |
+| **context7**      | Library docs: "what's the Nuxt 4 API for X?", version-specific docs lookup                          |
+| **BMAD agents**   | Story creation, architecture decisions, code review, sprint planning — uses all tools above         |
+
+SocratiCode and GitNexus complement each other: SocratiCode finds things, GitNexus tells you what depends on them.
 
 ---
 
@@ -81,6 +171,12 @@ git clone https://github.com/your-org/tamm-frontend.git
 cd tamm-frontend
 git checkout develop
 pnpm install
+```
+
+Build the GitNexus index (required — see §3.4 for details):
+
+```bash
+npx gitnexus analyze
 ```
 
 Verify the app runs:
@@ -385,6 +481,7 @@ Never call the API from a component directly. Always go through a store action.
 
 | I need to know...                   | Look here                                |
 | ----------------------------------- | ---------------------------------------- |
+| How to set up AI tools              | This file §3                             |
 | What to build next                  | `docs/build-order.md`                    |
 | My branch name                      | `docs/build-order.md`                    |
 | How a status transitions            | `docs/status-flows.md`                   |
@@ -416,5 +513,6 @@ Never call the API from a component directly. Always go through a store action.
 ---
 
 _Stack: Nuxt 4 · Vue 3.5 · Tailwind v4 · shadcn-vue · Pinia 3 · BMAD v6.6.0_
+_AI: Claude Code · Cursor · VS Code + Copilot · OpenCode · GitNexus · SocratiCode_
 _TAMM Frontend Team_
-_Last updated: 2026-05-05_
+_Last updated: 2026-05-07_

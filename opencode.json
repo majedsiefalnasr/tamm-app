@@ -9,6 +9,20 @@
         "shadcn-vue@latest",
         "mcp"
       ]
+    },
+    "gitnexus": {
+      "type": "local",
+      "enabled": true,
+      "command": ["gitnexus", "mcp"]
+    },
+    "socratiCode": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "@socraticode/mcp@latest",
+        "--stdio"
+      ]
     }
   }
 }

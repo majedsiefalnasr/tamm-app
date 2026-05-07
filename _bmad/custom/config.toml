@@ -31,6 +31,12 @@ description = "SocratiCode semantic codebase search and dependency graph analysi
 capabilities = ["codebase_search", "code_graph", "symbol_exploration"]
 project_path = "{project-root}"
 
+[mcp_servers.gitnexus]
+enabled = true
+description = "GitNexus knowledge graph — blast-radius analysis, cross-file rename, execution flow tracing, Cypher graph queries"
+capabilities = ["impact_analysis", "coordinated_rename", "execution_flows", "graph_queries"]
+project_path = "{project-root}"
+
 [mcp_servers.figma]
 enabled = true
 description = "Figma design-to-code integration for UI components and design systems"
@@ -41,7 +47,7 @@ capabilities = ["design_context", "code_connect", "component_mapping"]
 # ─────────────────────────────────────────────────────────────────
 
 [agents.bmad-agent-dev]
-mcp_servers = ["socraticode"]
+mcp_servers = ["socraticode", "gitnexus"]
 use_semantic_search = true
 use_dependency_analysis = true
 domain_expertise = "Vue 3.5 Composition API, Tailwind CSS v4, Pinia state management"
@@ -53,10 +59,10 @@ project_constraints = [
   "Status machine validation — use canTransition() guards",
   "Optimistic updates with rollback for all mutations"
 ]
-enhanced_description = "Senior Software Engineer — TAMM specialist. Knows Nuxt 4 structure (app/ directory), shadcn-vue component patterns, Pinia composables, and role-based permission checks. Uses SocratiCode to trace component dependencies and validate architectural changes. Enforces surgical precision: every line traces to the requirement."
+enhanced_description = "Senior Software Engineer — TAMM specialist. Knows Nuxt 4 structure (app/ directory), shadcn-vue component patterns, Pinia composables, and role-based permission checks. Uses SocratiCode for semantic component search; uses GitNexus for blast-radius checks and coordinated cross-file renames before refactoring. Enforces surgical precision: every line traces to the requirement."
 
 [agents.bmad-agent-architect]
-mcp_servers = ["socraticode"]
+mcp_servers = ["socraticode", "gitnexus"]
 use_semantic_search = true
 use_dependency_analysis = true
 domain_expertise = "Nuxt 4 architecture, Vue 3.5 composition patterns, Pinia stores, API integration contracts"
@@ -67,13 +73,13 @@ project_constraints = [
   "RTL-safe by design — use logical CSS properties everywhere",
   "Modular component design — shadcn-vue + custom components"
 ]
-enhanced_description = "System Architect — TAMM foundation expert. Maps Nuxt 4 layers, validates Pinia store patterns, ensures API contract compliance, enforces role-based access control. Uses SocratiCode for impact analysis before refactoring. Designs for RTL-first and mobile-responsive from the start."
+enhanced_description = "System Architect — TAMM foundation expert. Maps Nuxt 4 layers, validates Pinia store patterns, ensures API contract compliance, enforces role-based access control. Uses SocratiCode for semantic search across the codebase; uses GitNexus impact analysis and execution-flow tracing before any architectural refactor. Designs for RTL-first and mobile-responsive from the start."
 
 [agents.bmad-agent-tech-writer]
-mcp_servers = ["socraticode"]
+mcp_servers = ["socraticode", "gitnexus"]
 use_semantic_search = true
 domain_expertise = "API contracts, component documentation, status flow diagrams, coding standards"
-enhanced_description = "Technical Writer — TAMM documentation authority. Uses SocratiCode to extract component examples, traces API surfaces, audits docs against implementation. Keeps api-contracts.md, status-flows.md, and frontend-spec.md in sync with reality."
+enhanced_description = "Technical Writer — TAMM documentation authority. Uses SocratiCode to extract component examples and trace API surfaces. Uses GitNexus process and cluster views to document execution flows accurately. Keeps api-contracts.md, status-flows.md, and frontend-spec.md in sync with reality."
 
 [agents.bmad-agent-analyst]
 mcp_servers = ["socraticode"]

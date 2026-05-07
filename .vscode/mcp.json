@@ -1,5 +1,5 @@
 {
-  "mcpServers": {
+  "servers": {
     "shadcnVue": {
       "command": "npx",
       "args": [
@@ -13,7 +13,17 @@
     },
     "socratiCode": {
       "command": "npx",
-      "args": ["@socraticode/mcp@latest", "--stdio"]
+      "args": [
+        "@socraticode/mcp@latest",
+        "--stdio"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "ctx7@latest",
+        "--mcp"
+      ]
     }
   }
 }
