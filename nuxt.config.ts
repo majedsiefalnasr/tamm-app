@@ -19,6 +19,12 @@ export default defineNuxtConfig({
 
   css: ['@/assets/css/main.css', '@/assets/css/tailwind.css'],
 
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
+    },
+  },
+
   i18n: {
     locales: [
       { code: 'ar', dir: 'rtl', file: 'ar.json' },

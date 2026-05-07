@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-07T23:00:00Z
+last_updated: 2026-05-07T23:30:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -46,7 +46,7 @@ development_status:
   # Epic 01 — Authentication & Session Management
   epic-01: in-progress
   01-01-login-page: done
-  01-02-session-persistence-and-auto-logout: backlog
+  01-02-session-persistence-and-auto-logout: review
   01-03-role-based-redirect-after-login: backlog
   01-04-topbar-user-menu: backlog
   epic-01-retrospective: optional
