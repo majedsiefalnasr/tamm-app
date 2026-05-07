@@ -1,7 +1,7 @@
-import eslintPluginVue from 'eslint-plugin-vue'
-import vueParser from 'vue-eslint-parser'
 import tsParser from '@typescript-eslint/parser'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import eslintPluginVue from 'eslint-plugin-vue'
+import vueParser from 'vue-eslint-parser'
 
 export default [
   {
@@ -13,6 +13,7 @@ export default [
       '.git',
       '.env*',
       'pnpm-lock.yaml',
+      'lovable-design',
     ],
   },
   ...eslintPluginVue.configs['flat/recommended'],

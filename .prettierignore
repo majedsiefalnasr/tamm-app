@@ -28,6 +28,9 @@ dist/
 package-lock.json
 yarn.lock
 
+# Separate projects
+lovable-design/
+
 # Generated or third-party UI components with parsing issues
 app/components/ui/
 

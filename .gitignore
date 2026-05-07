@@ -25,3 +25,6 @@ logs
 
 # GitNexus — local knowledge graph index (each dev builds their own)
 .gitnexus/
+
+# Design references
+lovable-design/
