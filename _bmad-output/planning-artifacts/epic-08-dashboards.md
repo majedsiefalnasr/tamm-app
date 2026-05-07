@@ -4,7 +4,134 @@
 > "What do I need to act on right now?"
 > Dashboards aggregate data from Epics 02–05 and 07.
 > Build this epic last — after all data sources exist.
-> Read `CLAUDE.md §6`, `docs/status-flows.md`, and `docs/frontend-spec.md` before implementing.
+> Read `CLAUDE.md §6`, `docs/status-flows.md`, and `docs/design-spec.md` before implementing.
+
+---
+
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §3 (shell layout), §4 (primitives), §5 (sidebar nav), §7 (dashboard overviews).
+> This epic builds on top of all design primitives. Read the entire design-spec.md before starting.
+
+### Dashboard shell (applies to all stories)
+
+- Default layout: sticky sidebar (`w-64`, right side in RTL) + sticky topbar (`h-20`) + scrollable content
+- Content: `px-4 pb-16 pt-6 md:px-8 md:pb-20 md:pt-8` — max-width controlled by settings
+- Sidebar nav: role-specific (see `design-spec.md §6`)
+- Mobile: sidebar hidden, `<select>` dropdown shown below topbar
+- Dark mode: `.dark` on `<html>`, toggled via Settings
+- Skeleton: all stat cards + section cards show `Skeleton` while loading (never blank page)
+
+### Client dashboard (Story 08-01) — visual spec
+
+Priority layout (top to bottom):
+
+**1. Approval action queue** (conditional alert row):
+```
+rounded-2xl border border-primary/30 bg-primary-soft/50 p-4
+```
+Shown only when `supervisor_approved` milestones exist. Each row:
+- Project name + milestone name (`text-sm font-semibold text-ink`)
+- Amount (`text-sm font-bold text-primary`)
+- "اعتماد" + "رفض" inline buttons (primary + outline-destructive)
+- Badge: pill showing count — `danger` tone if count > 2
+
+**2. Stats row** — 4 `StatCard`s (see `design-spec.md §5.1`):
+- المبلغ المُحرّر / المتبقي محجوز / مراحل مكتملة / طلبات بانتظار الموافقة
+
+**3. Active project hero card** (`rounded-3xl`, gradient background):
+- Project name (h1 style), meta row, overall progress bar
+- Background: `bg-gradient-to-[inline-start] from-primary/10 via-card to-card`
+
+**4. Phases condensed list** (inside or below hero card):
+- Each phase: name, budget, progress bar, status pill, conditional "Pay" button
+
+**5. Budget charts** (lower priority, optional):
+- Area chart: released amount over time
+- Donut: phase status distribution
+
+### Contractor dashboard (Story 08-02) — visual spec
+
+**1. Stats row** — 4 `StatCard`s:
+- الرصيد المتاح (primary) / المراحل النشطة (accent) / تحت المراجعة (info) / إجمالي المكتسب (default)
+
+**2. Active projects** (`SectionCard`):
+- Each project: name, city, current active phase name, progress bar, status pill, "عرض" link
+
+**3. Tasks pending approval** (`SectionCard`):
+- Tasks marked done by contractor, awaiting supervisor approval
+- Status pill: `pending` → accent tone
+
+**4. Payment/withdrawal summary** (`SectionCard`):
+- Available balance prominently: `text-2xl font-extrabold text-primary`
+- "طلب سحب" CTA button
+
+### Supervisor Engineer dashboard (Story 08-03) — visual spec
+
+**1. Pending reviews banner** (urgent — full-width alert card when items exist):
+```
+rounded-2xl border border-danger/30 bg-danger/5 p-5
+```
+Each row: project + milestone + engineer + date + "مراجعة" button
+Badge count: `danger` tone
+
+**2. Stats row** — 3 `StatCard`s:
+- بانتظار المراجعة (danger if > 0) / مشاريع نشطة (primary) / معتمدة هذا الشهر (accent)
+
+**3. My projects** (`SectionCard`): assigned projects with overall progress
+
+**4. Field team** (`SectionCard`): engineers, last report date per engineer
+
+**5. Recent approvals** (`SectionCard`): last 5 decisions with approve/reject outcome pill
+
+### Field Engineer dashboard (Story 08-04) — visual spec
+
+**1. Active assignments** (`SectionCard`) — highest priority:
+- Each: project name, milestone name, city pin icon
+- "رفع تقرير" primary button per row
+- Empty state `§5.7` when none
+
+**2. Due reports** (conditional `SectionCard`):
+- Reports pending submission with due date
+- "متأخر" danger pill for overdue
+
+**3. Recent reports** (`SectionCard`):
+- Last 5 submitted reports + milestone status pill
+
+### Admin dashboard (Story 08-05) — visual spec
+
+**1. Urgent action banners** (row of 3 conditional cards):
+- New project requests / payment proofs / pending reports
+- Each: colored border, icon, title, subtitle, action link
+
+**2. Platform stats** (4 `StatCard`s): see `design-spec.md §7.5`
+
+**3. Activity area chart** (`SectionCard`): 12-month trend
+
+**4. Projects table** (`SectionCard`): all active projects
+
+**5. Disputes** (`SectionCard`): open/mediating disputes with mediate action
+
+### Settings page (all roles — Story 08-new)
+
+The Lovable design includes a full Settings page per role, not present in the original epic.
+Add as Story 08-06.
+
+> **Story 08-06: User settings page**
+> Route: appears as `settings` section in every role's sidebar
+> See `design-spec.md §12` for the full visual spec.
+>
+> Acceptance criteria:
+> - [ ] Theme toggle (light/dark/system) applies immediately to `<html>`
+> - [ ] Font family selector (4 options) applies via CSS variable immediately
+> - [ ] Font size selector (4 options) applies via `document.documentElement.style.fontSize`
+> - [ ] Layout mode selector (boxed/wide/full) applies to content max-width
+> - [ ] Density toggle (comfortable/compact) applies `--radius` override
+> - [ ] Reduced motion toggle applies `animation-duration: 0.001ms` via `data-reduced-motion`
+> - [ ] Per-role preferences shown only for the current user's role
+> - [ ] All settings persisted to localStorage (or user API if available)
+> - [ ] "Restore defaults" button resets all settings
+> - [ ] RTL verified
 
 ---
 

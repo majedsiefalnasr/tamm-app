@@ -6,6 +6,38 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §3 (shell layout) and §14 (shadcn-vue alignment) before building.
+
+### Login page visual spec
+
+- Full-page background: `bg-background` (warm off-white light / near-black dark)
+- Centered auth card: `rounded-3xl border border-border bg-card shadow-elevated p-8 md:p-10`
+- Logo: TAMM mark at top of card, centered, `h-12 w-auto`
+- Card max-width: `max-w-md w-full mx-auto`
+- Form fields: shadcn-vue `Input` — `rounded-xl border border-input` (inherits from tokens)
+- Submit button: primary button style — `rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-cta`
+- Error state: field-level inline error below input, `text-xs text-destructive`
+- Password toggle: icon button inside input, end-aligned
+
+### Topbar (Story 01-04) visual spec
+
+- Height: `h-20`, sticky, `backdrop-blur-xl`
+- Start side: app logo `h-10` + vertical divider + page title
+- End side: notification bell → avatar dropdown
+- Avatar: `h-9 w-9 rounded-full bg-primary-soft text-primary font-bold text-sm` showing initials
+- Dropdown: shadcn-vue `DropdownMenu`, shows name + role label + divider + logout
+- Role label chip: `Pill` component, `muted` tone
+
+### RTL notes
+
+- Login card: all text `text-start`, form labels `text-start`
+- Password show/hide icon: `absolute end-3 top-1/2 -translate-y-1/2`
+- Avatar dropdown opens toward start side in RTL
+
+---
+
 ## Epic goal
 
 Every user can securely log in, land on the correct dashboard for their role,

@@ -6,6 +6,80 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §7.5 (admin overview), §6.5–6.6 (sidebar nav), §11.3 (admin payments).
+
+### Admin dashboard overview (Story 06-05 / Epic 08-05)
+
+**Urgent action banners** — a row of conditional alert cards (`rounded-2xl border bg-card p-4 shadow-card`):
+- Shown only when there are items requiring action
+- Each banner: icon (`h-4 w-4`) + bold title + subtitle + "عرض" link
+- Tone: new project requests=primary, payment proofs=accent, disputes=danger
+
+**Platform stats row** (4 `StatCard`s, `§5.1`):
+- مشاريع نشطة → primary tone
+- المقاولون المسجلون → default tone
+- إجمالي المبالغ المُتتبَّعة → accent tone
+- نزاعات مفتوحة → danger tone (only when count > 0)
+
+**Activity chart** (`SectionCard`):
+- Area chart using Recharts (or equivalent Vue chart library)
+- X-axis: last 12 months (Arabic month names)
+- Y-axis: project/milestone activity count
+- Color: `--primary` fill with 20% opacity
+
+**Projects overview table** (`SectionCard`):
+- Columns: رقم المشروع / الاسم / المدينة / المالك / الإنجاز / الحالة / إجراء
+- Progress: inline progress bar `§5.8`
+- Status: `Pill` `§5.3`
+- Action: "عرض" link → project detail
+
+**Disputes table** (`SectionCard`):
+- Columns: رقم النزاع / المشروع / مقدم الطلب / الموضوع / الحالة / التاريخ / إجراء
+- Status tones: open=danger, mediating=accent, resolved=primary
+- Action: "وساطة" button (opens chat thread)
+
+### User management page (Story 06-01)
+
+- `PageHeader`: "المستخدمون" + "إضافة مستخدم" primary button (end-aligned)
+- Filter tabs: الكل / المقاولون / المهندسون / العملاء / الإداريون
+- Table using shadcn-vue `Table`:
+  - Columns: الاسم / البريد الإلكتروني / الدور / الحالة / تاريخ الإنشاء / إجراءات
+  - Role column: `Pill` component (role label + tone)
+  - Status: active=primary, inactive=muted
+  - Actions: shadcn-vue `DropdownMenu` (Edit / Deactivate / Activate)
+- Skeleton: 5-row ghost table while loading
+
+### Create/edit user dialog (Story 06-02)
+
+shadcn-vue `Dialog`:
+- Fields: الاسم الكامل / البريد الإلكتروني / الدور (`Select`) / الهاتف (optional)
+- Role select excludes super_admin (only super_admin can assign admin roles)
+- Submit: "إنشاء المستخدم" primary button
+- Error: inline field errors for 422 responses
+
+### Workflow settings section
+
+Admin sidebar section `workflow` — controls platform-level settings:
+- Assignment rules (which engineers can be assigned to which project types)
+- Notification preferences (global defaults)
+- Displayed as toggle cards in a 2-column grid (`SectionCard` pattern)
+
+### Super Admin extras
+
+- Additional "النظام" group in sidebar: system flags + system logs
+- System flags page: platform-level feature toggles (`Switch` components in a `SectionCard`)
+- Super admin sees all admin views plus these extras — no separate dashboard
+
+### RTL notes
+
+- Table: text in all cells `text-start`
+- DropdownMenu: opens toward inline-start (left in RTL)
+- Dialog: "Cancel" on start side, "Confirm" on end side
+
+---
+
 ## Epic goal
 
 Admins can manage all users, assign engineers to projects,

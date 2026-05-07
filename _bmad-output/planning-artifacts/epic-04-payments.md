@@ -8,6 +8,90 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §11 (payments/withdrawals section), §5.1 (StatCard), §5.3 (Pill).
+
+### Payment status badge (Story 04-02)
+
+`PaymentStatusTag` uses `Pill` component tones:
+
+| Payment status      | Pill tone | Arabic label         |
+|---------------------|-----------|----------------------|
+| `pending_payment`   | muted     | بانتظار الدفع        |
+| `paid`              | info      | محتجز في الضمان      |
+| `awaiting_approval` | accent    | بانتظار الاعتماد     |
+| `ready_for_payout`  | accent    | جاهز للصرف           |
+| `paid_out`          | primary   | تم الصرف             |
+
+Badge appears alongside (not replacing) the milestone status pill, separated by a thin divider.
+
+### Client payment confirmation dialog (Story 04-01)
+
+shadcn-vue `Dialog`:
+- Phase name as dialog title
+- Amount: `text-3xl font-extrabold text-primary text-center my-4`
+- Escrow explanation: `text-sm text-muted-foreground text-center`
+- Payment proof upload (bank transfer):
+  - Bank name: `Input`
+  - Transaction reference: `Input`
+  - Transfer receipt image: file upload (single image, jpg/png)
+  - Preview thumbnail after selection: `rounded-xl aspect-video object-cover w-full`
+  - Notes (optional): `Textarea`
+- Footer: "إلغاء" (outline) + "تأكيد الدفع" (primary)
+
+### Admin payment release dialog (Story 04-03)
+
+shadcn-vue `Dialog` — cannot undo warning:
+- Warning banner: `rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800`
+  "هذا الإجراء لا يمكن التراجع عنه"
+- Contractor name + milestone + amount summary block
+- "تحرير [amount]" primary button (amount formatted with `formatCurrency()`)
+
+### Client payments page (Story 04-05)
+
+- `PageHeader`: "المدفوعات"
+- 3-column stats row (`StatCard`s): total paid / total in escrow / total released
+- `SectionCard` list grouped by project
+- Each row: milestone name + amount + status pill + date
+
+### Contractor withdrawals page (new — Story 04-06)
+
+The Lovable design includes a withdrawal flow not originally in this epic. Add as Story 04-06.
+
+**Balance summary card** (`rounded-3xl border bg-card p-6 shadow-elevated`):
+- إجمالي المكتسب: `text-2xl font-extrabold text-ink`
+- محجوز أو قيد الصرف: `text-sm text-muted-foreground`
+- متاح للسحب: `text-3xl font-extrabold text-primary`
+- "طلب سحب" CTA: primary button, opens dialog
+
+**Withdrawal request dialog:**
+- Amount: `MoneyInput` (validates ≤ available balance)
+- IBAN: `Input`
+- Notes: `Textarea` optional
+
+**Withdrawals list:**
+- Status tones: pending=accent, approved=info, withdrawable=primary, rejected=danger
+- For `approved`: "متاح للسحب بعد X أيام" countdown hint in `text-xs text-muted-foreground`
+
+> **Story 04-06 acceptance criteria:**
+> - [ ] Contractor sees available balance calculated from completed phases minus pending/approved withdrawals
+> - [ ] "Request withdrawal" opens dialog: amount (validates ≤ balance), IBAN, optional notes
+> - [ ] On submit: `POST /withdrawals` — status starts as `pending`
+> - [ ] Admin sees withdrawal requests in the payments section with approve/reject actions
+> - [ ] On admin approval: status → `approved`, 3-day hold countdown shown to contractor
+> - [ ] After 3 days: status auto-transitions to `withdrawable`
+> - [ ] Admin attaches bank transfer proof (image + tx ref) when approving
+> - [ ] RTL verified
+
+### RTL notes
+
+- Payment status badges: inline-flex, no directional dependency
+- Dialog amounts: `text-center`, no directional dependency
+- Withdrawal list: amounts `text-end` (logical property)
+
+---
+
 ## Epic goal
 
 Clients pay for milestones upfront with confidence.

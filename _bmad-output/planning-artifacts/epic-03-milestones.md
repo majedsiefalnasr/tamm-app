@@ -7,6 +7,81 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §9 (project detail), §9.1 (phase list), §9.2 (task list), §10 (reports), §5.3 (status pills).
+
+### Milestone / phase card visual (Story 03-01)
+
+Each milestone rendered as an expandable card inside the project detail Phases tab:
+
+```
+rounded-2xl border border-border bg-card p-4 transition
+[expanded state]: border-primary/40 shadow-card
+```
+
+**Header row (always visible):**
+- Phase number badge: `h-7 w-7 rounded-full bg-muted text-xs font-bold flex items-center justify-center`
+- Phase name: `text-sm font-extrabold text-ink`
+- Budget: `text-xs font-bold text-muted-foreground`
+- Status pill: `Pill` component — tone by status:
+  - `not_started` → muted
+  - `in_progress` → accent
+  - `under_review` → info
+  - `supervisor_approved` → info (with "action required" indicator for client)
+  - `approved` → primary
+  - `rejected` → danger (flash state only — immediately transitions to `in_progress`)
+- Progress bar: `§5.8` pattern, shown only when `in_progress` or higher
+- Expand/collapse chevron: end-aligned, rotates on open
+
+**Expanded content:**
+- Task list: `§9.2` pattern
+- Action buttons for the current role + status (see action matrix in Story 03-01 above)
+- Payment status badge (client, contractor, admin only): `PaymentStatusTag` — see Epic 04
+
+### Action button styles
+
+- Primary action (Approve, Submit): primary button style `§5.5`
+- Destructive action (Reject): `rounded-full border border-destructive text-destructive px-4 py-2 text-xs font-bold hover:bg-destructive hover:text-destructive-foreground`
+- Secondary (View report): outline button `§5.6`
+
+### Supervisor approval flow dialog (Story 03-04)
+
+shadcn-vue `Dialog`, full content:
+- Title: "مراجعة المرحلة — [name]"
+- Report content (scrollable): full note text + image grid `grid grid-cols-2 md:grid-cols-3 gap-2`
+- Each image: `rounded-xl overflow-hidden aspect-video object-cover`
+- Footer buttons: "رفض" (destructive outline) + "اعتماد المرحلة" (primary)
+- Reject path opens a second dialog step with reason `Textarea` (required, min 10 chars)
+
+### Client final approval dialog (Story 03-05)
+
+- `Dialog` with prominent warning: "هذا الإجراء نهائي ويُحرّر الدفعة للمقاول"
+- Highlighted amount: `text-2xl font-extrabold text-primary`
+- "تأكيد الاعتماد" primary button + "إلغاء" ghost button
+
+### Report form (Story 03-03)
+
+- Opens as `Dialog` (not a page navigation) from milestone card
+- Type selector: `Select` (يومي / أسبوعي / نهاية مرحلة)
+- Notes: `Textarea`, min-height `h-32`
+- Photo upload zone: dashed border `rounded-2xl border-dashed border-border p-6 text-center`
+  - Drag & drop hint text
+  - File input `<input type="file" multiple accept="image/*">` (hidden, triggered by click)
+  - Preview grid: `grid grid-cols-3 gap-2` — each thumbnail `rounded-xl aspect-square object-cover`
+  - Remove button: `absolute top-1 end-1 h-5 w-5 rounded-full bg-card/80`
+- Footer: "حفظ كمسودة" (outline) + "رفع التقرير" (primary)
+
+### RTL notes
+
+- Phase number badge: no directional dependency (centered)
+- Progress bar: fill runs from inline-start (right in RTL)
+- Dialog action buttons: "Cancel" on start side, "Confirm" on end side
+- Image thumbnails: grid, no directional dependency
+- Remove button on photo: `end-1 top-1` (logical) not `right-1 top-1`
+
+---
+
 ## Epic goal
 
 Field engineers submit reports. Supervisors review and approve or reject.

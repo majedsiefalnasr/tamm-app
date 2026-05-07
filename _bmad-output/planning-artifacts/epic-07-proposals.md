@@ -8,6 +8,69 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §9 (project detail), §5.5–5.6 (button styles), §5.3 (Pill).
+
+### Contractor project list — open bids (Story 07-02)
+
+In the contractor's "مشاريعي" section, projects with `open_for_bids` status appear with:
+- Status pill: `Pill` accent tone — "مفتوح للعروض"
+- Prominent "تقديم عرض" CTA button on the project card
+- After submission: pill changes to "تم تقديم العرض" (primary tone), button removed
+
+### Proposal submission dialog (Story 07-02)
+
+shadcn-vue `Dialog`:
+- Title: "تقديم عرض لـ [project name]"
+- Fields (VeeValidate + Zod):
+  - السعر الإجمالي: `MoneyInput` (required, positive, formatted with `formatCurrency()`)
+  - المدة التقديرية بالأيام: `Input` type=number (required, positive integer)
+  - الملاحظات: `Textarea` max 500 chars (optional)
+- Character counter below notes: `text-[10px] text-muted-foreground text-end`
+- Submit: "تقديم العرض" primary button
+- After submission: dialog closes, card shows read-only proposal summary
+
+### Proposal cards (client view — Story 07-04)
+
+Inside project detail, "العروض" tab (visible to client and admin when status ≥ `under_review`):
+
+Each proposal card (`SectionCard` variant):
+```
+rounded-2xl border border-border bg-card p-5 shadow-card
+```
+- Contractor name: `text-base font-extrabold text-ink`
+- Price: `text-2xl font-extrabold text-primary`
+- Timeline: `text-sm text-muted-foreground` — "{N} يوم"
+- Notes: `text-sm text-foreground/80 mt-2` (collapsible if long)
+- Submitted date: `text-[11px] text-muted-foreground`
+- "اختيار هذا المقاول" button: primary button style — only shown when status is `under_review`
+- After another contractor is selected: card dims (`opacity-60`) + "لم يتم الاختيار" muted pill
+
+### Contractor selection confirmation (Story 07-05)
+
+shadcn-vue `AlertDialog` (not regular Dialog — has stronger destructive pattern):
+- Body: contractor name + price + timeline as a summary block
+- Warning: "ستُرفض جميع العروض الأخرى تلقائياً"
+- Confirm: "تأكيد الاختيار" primary button
+- Cancel: outline button
+
+### Engineer assignment dialog (Story 07-06)
+
+shadcn-vue `Dialog`:
+- Two `Select` components: "المهندس المشرف" + "المهندس الميداني"
+- Each shows pool of available engineers (loaded from API)
+- Currently assigned shown as selected default
+- Submit: "حفظ التعيين" primary button
+
+### RTL notes
+
+- Proposal cards: all text `text-start`, price `text-start`
+- Character counter in notes: `text-end` (logical)
+- AlertDialog buttons: cancel start side, confirm end side
+
+---
+
 ## Epic goal
 
 Admin opens a project for bidding and invites specific contractors.

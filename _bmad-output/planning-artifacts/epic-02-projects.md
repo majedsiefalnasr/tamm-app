@@ -8,6 +8,68 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §8 (projects list), §9 (project detail), §5 (primitives).
+
+### Projects list page (Story 02-01)
+
+- `PageHeader` with title + optional "New project" CTA (client only)
+- Grid: `grid gap-4 lg:grid-cols-2`
+- Skeleton: 3 ghost cards while loading (`Skeleton` component)
+- Empty state: `§5.7` dashed border pattern
+
+**ProjectCard visual:**
+```
+rounded-2xl border border-border bg-card p-5 shadow-card
+hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elevated transition
+```
+- Project name: `text-base font-extrabold text-ink`
+- Status pill: `Pill` component, tone mapped from project status (see `design-spec.md §1.4`)
+- City + budget metadata: `text-xs text-muted-foreground flex items-center gap-2`
+- Progress bar: `§5.8` pattern — hidden when no phases yet
+- Bottom: contractor name (if assigned) + "عرض التفاصيل" link, `text-xs font-bold text-primary`
+
+**Admin extras:** filter tabs (All / Active / Pending / Completed / On Hold) above the grid, using shadcn-vue `Tabs`.
+
+### Project detail page (Stories 02-03 to 02-05)
+
+- **Header card:** `rounded-3xl border border-border bg-card shadow-card p-6 md:p-8`
+  Background: `bg-gradient-to-[inline-start] from-primary/10 via-card to-card`
+  Contains: project name (h1, `text-2xl font-extrabold`), status pill, meta (city, type, area, budget, team)
+  + overall progress bar (`§5.8`)
+- **Tab nav** below header: المراحل / المدفوعات / التقارير / المحادثة / السجل
+  Use shadcn-vue `Tabs` component
+
+**Phases tab:** see `design-spec.md §9.1` and `§9.2` for phase cards and task list spec.
+
+**Timeline tab:** vertical timeline using `before:` pseudo-element for the connector line.
+Each event dot color by kind: `approved`=primary, `rejected`=danger, `payment`=accent, `info`=muted.
+
+**Chat tab:** see `design-spec.md §13`.
+
+### New project form (Story 02-02)
+
+- Full-page section (not a dialog — dedicated nav section)
+- `SectionCard` wrapper with `PageHeader`
+- Fields use shadcn-vue `Form` + VeeValidate + Zod:
+  - Project name: `Input`
+  - City: `Select` (dropdown)
+  - Project type: `Select` (villa / apartment / commercial / other)
+  - Area m²: `Input` type=number
+  - Budget estimate: `MoneyInput` (numeric, formatted)
+  - Description: `Textarea`
+- Submit: primary button style, full-width on mobile
+
+### RTL notes
+
+- Project card text: `text-start`
+- Progress bar fill: start from inline-start (right in RTL)
+- Tab list: `dir` inherits from `html`, tabs render right-to-left naturally
+- Status pill: always inline-flex, no directional dependency
+
+---
+
 ## Epic goal
 
 Clients can create construction projects with scope only.

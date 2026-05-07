@@ -333,14 +333,30 @@ A task is complete **only when all** of the following are true:
 
 For deeper context on TAMM-specific topics:
 
-| Topic | Location |
+| Topic | Read this first |
 |---|---|
 | Full project architecture | [CLAUDE.md](./CLAUDE.md) §1-4 |
 | API contracts & endpoints | [docs/api-contracts.md](./docs/api-contracts.md) |
 | Status machine flows | [docs/status-flows.md](./docs/status-flows.md) |
-| Component & styling guide | [docs/frontend-spec.md](./docs/frontend-spec.md) |
+| **Dashboard design spec** | **[docs/design-spec.md](./docs/design-spec.md)** — colors, layout, components, per-role UX |
 | Code patterns & conventions | [docs/coding-standards.md](./docs/coding-standards.md) |
-| User stories & epics | [docs/stories/](./docs/stories/) |
+| Epics & user stories | [_bmad-output/planning-artifacts/](./\_bmad-output/planning-artifacts/) |
+
+### When to read design-spec.md
+
+Read `docs/design-spec.md` before implementing **any** of the following:
+- Dashboard shell or layout (`§3`)
+- Color tokens or CSS variables (`§1`)
+- Typography or font settings (`§2`)
+- Any reusable UI primitive — StatCard, SectionCard, Pill, PageHeader, etc. (`§4`, `§5`)
+- Sidebar navigation for any role (`§6`)
+- Dashboard overview page for any role (`§7`)
+- Projects list or project detail (`§8`, `§9`)
+- Reports section (`§10`)
+- Payments or withdrawals section (`§11`)
+- Settings page (`§12`)
+- Messages / chat section (`§13`)
+- shadcn-vue configuration alignment (`§14`)
 
 ---
 

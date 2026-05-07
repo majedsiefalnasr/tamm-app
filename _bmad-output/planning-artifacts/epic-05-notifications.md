@@ -6,6 +6,56 @@
 
 ---
 
+## Design reference
+
+> Full spec: `docs/design-spec.md` — read §4.3 (topbar bell), §5.3 (Pill/badge).
+
+### Notification bell (Story 05-01)
+
+Located in the topbar, end side:
+
+```
+relative inline-flex h-10 w-10 items-center justify-center
+rounded-full border border-border bg-background
+text-foreground hover:border-primary hover:text-primary transition
+```
+
+Unread badge — positioned `absolute -top-1 -end-1` (logical, RTL-safe):
+```
+h-5 min-w-5 rounded-full bg-destructive
+text-[9px] font-bold text-destructive-foreground
+flex items-center justify-center px-1
+```
+Shows count, or `+99` when over 99. Hidden entirely when count is 0.
+
+### Notification drawer (Story 05-02)
+
+Use shadcn-vue `Sheet` with `side="end"` (opens from the inline-end — left in RTL, right in LTR).
+- Header: `text-lg font-extrabold text-ink` title + "تعليم الكل كمقروء" ghost button (end-aligned)
+- Width: `w-[380px] md:w-[420px]`
+
+**Notification item:**
+```
+relative flex items-start gap-3 px-4 py-3 transition
+hover:bg-muted/50 cursor-pointer
+border-b border-border last:border-0
+```
+- Unread dot: `h-2 w-2 rounded-full bg-primary shrink-0 mt-1.5` (hidden if read)
+- Title: `text-sm font-semibold text-ink`
+- Body: `text-xs text-muted-foreground mt-0.5 line-clamp-2`
+- Time: `text-[10px] text-muted-foreground mt-1`
+- Unread item background: `bg-primary-soft/40`
+
+**Empty state:** centered illustration + "لا توجد إشعارات بعد" (`text-sm text-muted-foreground`).
+
+### RTL notes
+
+- `Sheet` with `side="end"` opens from the left in RTL (inline-end = left)
+- Unread dot: `mt-1.5 shrink-0` — positional, no directional class needed
+- Time text: `text-start` — reads naturally in RTL flow
+
+---
+
 ## Epic goal
 
 Every user is alerted to actions they need to take or events they should know about,

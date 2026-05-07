@@ -519,9 +519,19 @@ A task is complete only when **all** of the following are true:
 | Any task | This file (CLAUDE.md) — especially §0 |
 | API integration | `docs/api-contracts.md` |
 | Status / approval flow | `docs/status-flows.md` |
-| Component / styling | `docs/frontend-spec.md` |
+| **Dashboard layout, shell, sidebar** | **`docs/design-spec.md` §3, §6** |
+| **Colors, tokens, dark mode** | **`docs/design-spec.md` §1** |
+| **Typography, fonts, spacing** | **`docs/design-spec.md` §2** |
+| **Any UI component or primitive** | **`docs/design-spec.md` §4, §5** |
+| **Per-role dashboard overview** | **`docs/design-spec.md` §7** |
+| **Projects list or project detail** | **`docs/design-spec.md` §8, §9** |
+| **Reports section** | **`docs/design-spec.md` §10** |
+| **Payments or withdrawals** | **`docs/design-spec.md` §11** |
+| **Settings page** | **`docs/design-spec.md` §12** |
+| **Messages / chat** | **`docs/design-spec.md` §13** |
+| **shadcn-vue configuration** | **`docs/design-spec.md` §14** |
 | Code patterns | `docs/coding-standards.md` |
-| User story details | `docs/stories/epic-*.md` |
+| User story details | `_bmad-output/planning-artifacts/epic-*.md` |
 
 ---
 
