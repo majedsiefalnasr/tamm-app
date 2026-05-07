@@ -3,7 +3,7 @@
 **API Version:** 1.0.0  
 **Base URL:** `/api/v1`  
 **Authentication:** Bearer JWT token in `Authorization` header  
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-07 — Verified against live server (https://tamm.ultimate-dev2.com/docs?api-docs.json)
 
 ---
 

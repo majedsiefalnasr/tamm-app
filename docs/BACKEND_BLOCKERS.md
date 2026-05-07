@@ -3,7 +3,7 @@
 **Purpose:** Track which backend endpoints block frontend work. Sequenced by what the team needs to build first.
 
 **Current API Status:** `/api/v1` — Version 1.0.0  
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-07 — Verified against live server (https://tamm.ultimate-dev2.com/docs?api-docs.json)
 
 ---
 
@@ -316,5 +316,6 @@ Required endpoints:
 ---
 
 **Document owner:** Frontend team  
-**Last updated:** 2026-05-05  
-**Next review:** When backend answers Q#1–10
+**Last updated:** 2026-05-07  
+**Next review:** When backend delivers milestone/report/payment endpoints or answers Q#1–10
+**API Verification:** Live server verified 2026-05-07 — auth, projects, users, roles endpoints confirmed available. Milestones, reports, payments, notifications still pending.
