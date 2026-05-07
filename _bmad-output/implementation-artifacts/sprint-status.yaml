@@ -45,7 +45,7 @@ story_location: {project-root}/_bmad-output/implementation-artifacts
 development_status:
   # Epic 01 — Authentication & Session Management
   epic-01: in-progress
-  01-01-login-page: review
+  01-01-login-page: done
   01-02-session-persistence-and-auto-logout: backlog
   01-03-role-based-redirect-after-login: backlog
   01-04-topbar-user-menu: backlog

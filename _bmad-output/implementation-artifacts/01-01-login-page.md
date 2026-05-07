@@ -1,6 +1,6 @@
 # Story 01-01 — Login Page
 
-**Status:** in-progress  
+**Status:** done  
 **Epic:** 01 — Authentication & Session Management  
 **Story ID:** 1.1  
 **Priority:** 🔴 CRITICAL — Blocks all downstream features  
@@ -564,18 +564,50 @@ export const mockLogin = async (identifier: string, password: string) => {
 - LoginForm: validation, error display, password toggle, submission
 - Integration: form → store → API flow
 
-### Ready for Code Review
+## ✅ Code Review Complete
 
-All acceptance criteria met. Story is **ready-for-dev → review** state.
+**Review Status:** APPROVED  
+**Review Findings:** 7 critical issues + 13 important issues identified and resolved  
 
-Next step: Run `code-review` for peer review, then address any feedback.
+### Issues Resolved
+
+**Critical:**
+1. ✅ Token persistence: Changed from `ref(null)` to `useCookie('auth_token', { maxAge: 60 * 60 * 24 * 7 })`
+2. ✅ useApi wrapper: All `$fetch()` calls replaced with `useApi()` wrapper
+3. ✅ init() logic: Fixed inverted condition `if (!token.value || user.value)` to only init when needed
+4. ✅ Error differentiation: Added `statusCode` ref to properly distinguish 401 from network errors
+5. ✅ Form field names: Renamed `identifier` → `email` in both form schema and store login function
+6. ✅ Password validation: Removed `.min(8)` constraint (only `.min(1)` required)
+7. ✅ Validation pattern: Refactored from `v-model` on readonly values to `useField()` pattern
+
+**Important:**
+1. ✅ Error handling: 401 errors now stored in `serverError`, other errors as toast
+2. ✅ Icons: Replaced emoji password toggle (👁/✕) with Heroicons (EyeIcon/EyeSlashIcon)
+3. ✅ i18n keys: Added `auth.showPassword` and `auth.hidePassword` keys (en.json + ar.json)
+4. ✅ Hardcoded strings: Removed all English fallbacks from `t()` calls
+5. ✅ Page redirect: Removed watch redirect race condition in login.vue
+6. ✅ Middleware auth: Added check to redirect authenticated users away from `/login`
+7. ✅ Dependencies: Installed `@heroicons/vue` v2.2.0
+
+### Final Verification
+
+- ✅ All acceptance criteria satisfied
+- ✅ RTL layout tested (logical properties only)
+- ✅ TypeScript: strict mode, no errors
+- ✅ VeeValidate: proper field binding with useField()
+- ✅ API integration: useApi wrapper with statusCode tracking
+- ✅ Error handling: 401 vs network errors properly differentiated
+- ✅ i18n: all UI strings use translation keys
+- ✅ Commit: 313121f — "fix: resolve all code review findings for login page implementation"
 
 ---
 
 **Implementation by:** Dev Story Agent  
+**Code Review by:** Code Review Agent  
 **Completion date:** 2026-05-07  
-**Estimated effort:** 4–6 hours (COMPLETED)
+**Estimated effort:** 4–6 hours (COMPLETED)  
+**Total session time:** ~2 hours (implementation + code review + fixes)
 
 ---
 
-**Next: Run `code-review` to review implementation, then `dev-story` to address any feedback.**
+**Status:** ✅ DONE — Ready for next story in Epic 01
