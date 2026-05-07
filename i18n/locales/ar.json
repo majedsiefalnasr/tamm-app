@@ -1,1 +1,19 @@
-{}
+{
+  "auth": {
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "you@example.com",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailInvalid": "البريد الإلكتروني غير صحيح",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
+    "login": "دخول",
+    "loggingIn": "جاري الدخول...",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "connectionError": "خطأ في الاتصال — يرجى المحاولة مرة أخرى",
+    "forgotPassword": "هل نسيت كلمة المرور؟"
+  }
+}

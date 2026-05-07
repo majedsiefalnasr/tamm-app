@@ -1,1 +1,19 @@
-{}
+{
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Email must be valid",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "login": "Login",
+    "loggingIn": "Logging in...",
+    "invalidCredentials": "Invalid email or password",
+    "connectionError": "Connection error — please try again",
+    "forgotPassword": "Forgot password?"
+  }
+}
