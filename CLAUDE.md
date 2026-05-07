@@ -1,8 +1,14 @@
-# CLAUDE.md — TAMM Frontend
+# CLAUDE.md — TAMM Frontend Deep Dive
 
-> This file is read by Claude Code at the start of every session.
-> Two rule sets live here: **how to behave** and **how to build TAMM**.
-> Both are mandatory. Neither overrides the other.
+> **For all AI tools:** Start with [AGENTS.md](./AGENTS.md) — the single source of truth.
+> 
+> **For Claude Code users:** This file provides deep-dive context beyond AGENTS.md.
+> - Detailed architecture explanations
+> - Extensive code examples and patterns
+> - Design system specifications
+> - Full project context
+> 
+> Read in order: [AGENTS.md](./AGENTS.md) → then this file if you need more context.
 
 ---
 
