@@ -84,7 +84,7 @@ development_status:
   # Epic 05 — In-App Notifications
   epic-05: in-progress
   05-01-notification-bell-and-unread-count: review
-  05-02-notification-drawer: backlog
+  05-02-notification-drawer: review
   05-03-mark-notification-as-read: backlog
   05-04-notification-content-per-event: backlog
   epic-05-retrospective: optional

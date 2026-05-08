@@ -357,5 +357,12 @@
       "title": "No withdrawal requests yet",
       "subtitle": "Request a withdrawal from your available balance"
     }
+  },
+  "notif": {
+    "drawer": {
+      "title": "Notifications",
+      "mark_all_read": "Mark all as read",
+      "empty": "No notifications yet"
+    }
   }
 }

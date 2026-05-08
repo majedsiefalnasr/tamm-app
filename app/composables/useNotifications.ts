@@ -1,12 +1,16 @@
 import { ref, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
-import type { NotificationResponse } from '~/shared/types/notification'
+import type {
+  Notification,
+  NotificationResponse,
+} from '~/shared/types/notification'
 
 const POLLING_INTERVAL = 30000 // 30 seconds
 const UNREAD_COUNT_THRESHOLD = 99
 
 export const useNotifications = () => {
   const unreadCount: Ref<number> = ref(0)
+  const notifications: Ref<Notification[]> = ref([])
   let pollTimer: number | undefined
   let visibilityListener: (() => void) | undefined
 
@@ -31,6 +35,7 @@ export const useNotifications = () => {
     try {
       const response = await useApi<NotificationResponse>('/notifications')
       const notifs = response.data ?? []
+      notifications.value = notifs
       unreadCount.value = notifs.filter(n => !n.is_read).length
     } catch (e) {
       console.error('Failed to fetch notifications:', e)
@@ -58,6 +63,37 @@ export const useNotifications = () => {
     unreadCount.value = Math.max(0, unreadCount.value - 1)
   }
 
+  const markAsRead = async (notificationId: string) => {
+    const notification = notifications.value.find(n => n.id === notificationId)
+    if (!notification) return
+
+    // Optimistic update
+    notification.is_read = true
+    decrementUnreadCount()
+
+    // API call (fire-and-forget)
+    try {
+      await useApi(`/notifications/${notificationId}/read`, { method: 'POST' })
+    } catch (error) {
+      notify.error('Failed to mark notification as read')
+    }
+  }
+
+  const markAllAsRead = async () => {
+    // Optimistic update
+    notifications.value.forEach(n => {
+      n.is_read = true
+    })
+    unreadCount.value = 0
+
+    // API call (fire-and-forget)
+    try {
+      await useApi('/notifications/read-all', { method: 'POST' })
+    } catch (error) {
+      notify.error('Failed to mark all notifications as read')
+    }
+  }
+
   onBeforeUnmount(() => {
     stopPolling()
   })
@@ -65,8 +101,11 @@ export const useNotifications = () => {
   return {
     notify,
     unreadCount,
+    notifications,
     startPolling,
     stopPolling,
     decrementUnreadCount,
+    markAsRead,
+    markAllAsRead,
   }
 }
