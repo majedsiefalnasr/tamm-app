@@ -85,7 +85,7 @@ development_status:
   epic-05: in-progress
   05-01-notification-bell-and-unread-count: review
   05-02-notification-drawer: review
-  05-03-mark-notification-as-read: backlog
+  05-03-mark-notification-as-read: review
   05-04-notification-content-per-event: backlog
   epic-05-retrospective: optional
 

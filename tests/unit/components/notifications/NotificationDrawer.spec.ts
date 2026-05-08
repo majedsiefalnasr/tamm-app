@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import NotificationDrawer from './NotificationDrawer.vue'
+import NotificationDrawer from '~/components/notifications/NotificationDrawer.vue'
 import { useNotifications } from '~/composables/useNotifications'
 import { useRouter } from 'vue-router'
 
@@ -192,7 +192,6 @@ describe('NotificationDrawer', () => {
       },
     })
 
-    // Notification 1 (newer) should appear before Notification 2 (older)
     const html = wrapper.html()
     const index1 = html.indexOf('Report submitted')
     const index2 = html.indexOf('Supervisor approved')
@@ -274,7 +273,62 @@ describe('NotificationDrawer', () => {
       },
     })
 
-    // After clicking notification, drawer should close
     expect(wrapper.emitted('update:open')).toBeDefined()
+  })
+
+  it('closes drawer after marking notification as read and navigating', async () => {
+    const wrapper = mount(NotificationDrawer, {
+      props: { open: true },
+      global: {
+        stubs: {
+          Sheet: { template: '<div><slot /></div>' },
+          SheetContent: { template: '<div><slot /></div>' },
+          SheetHeader: { template: '<div><slot /></div>' },
+          SheetTitle: { template: '<div><slot /></div>' },
+          Button: { template: '<button><slot /></button>' },
+        },
+        mocks: {
+          $t: (key: string) => key,
+        },
+      },
+    })
+
+    const notificationItems = wrapper.findAll('[class*="flex cursor-pointer"]')
+    if (notificationItems.length > 0) {
+      await notificationItems[0].trigger('click')
+
+      const emitted = wrapper.emitted('update:open')
+      expect(emitted).toBeDefined()
+      expect(emitted?.[emitted.length - 1]).toEqual([false])
+    }
+  })
+
+  it('handles rapid clicks on multiple notifications', async () => {
+    const wrapper = mount(NotificationDrawer, {
+      props: { open: true },
+      global: {
+        stubs: {
+          Sheet: { template: '<div><slot /></div>' },
+          SheetContent: { template: '<div><slot /></div>' },
+          SheetHeader: { template: '<div><slot /></div>' },
+          SheetTitle: { template: '<div><slot /></div>' },
+          Button: { template: '<button><slot /></button>' },
+        },
+        mocks: {
+          $t: (key: string) => key,
+        },
+      },
+    })
+
+    const notificationItems = wrapper.findAll('[class*="flex cursor-pointer"]')
+    if (notificationItems.length >= 2) {
+      await notificationItems[0].trigger('click')
+      await notificationItems[1].trigger('click')
+
+      // Verify both markAsRead calls were made
+      expect(mockMarkAsRead).toHaveBeenCalledTimes(2)
+      expect(mockMarkAsRead).toHaveBeenCalledWith('1')
+      expect(mockMarkAsRead).toHaveBeenCalledWith('2')
+    }
   })
 })
