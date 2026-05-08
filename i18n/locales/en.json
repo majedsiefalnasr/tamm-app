@@ -48,7 +48,9 @@
   },
   "validation": {
     "required": "Required",
-    "min_length_20": "Minimum 20 characters"
+    "min_length_20": "Minimum 20 characters",
+    "amount_exceeds_available": "Amount exceeds available balance",
+    "invalid_iban": "Invalid IBAN number"
   },
   "notifications": {
     "milestone_added": "Milestone added successfully",
@@ -308,6 +310,38 @@
     "empty": {
       "title": "No Pending Approvals",
       "description": "All milestones have been processed. You're all caught up!"
+    }
+  },
+  "withdrawal": {
+    "title": "Withdrawals",
+    "request": {
+      "title": "Request Withdrawal",
+      "success": "Withdrawal request submitted successfully",
+      "error": "Failed to submit request"
+    },
+    "balance": {
+      "earned": "Total Earned",
+      "locked": "Locked/In-Process",
+      "available": "Available for Withdrawal"
+    },
+    "form": {
+      "amount": "Amount *",
+      "iban": "Bank Account Number *",
+      "notes": "Notes (optional)",
+      "submit": "Submit Request",
+      "cancel": "Cancel"
+    },
+    "status": {
+      "pending": "Under Review",
+      "approved": "Approved",
+      "withdrawable": "Ready for Withdrawal",
+      "rejected": "Rejected",
+      "paid": "Paid"
+    },
+    "approved_at": "Available for withdrawal in {days} days",
+    "empty": {
+      "title": "No withdrawal requests yet",
+      "subtitle": "Request a withdrawal from your available balance"
     }
   }
 }

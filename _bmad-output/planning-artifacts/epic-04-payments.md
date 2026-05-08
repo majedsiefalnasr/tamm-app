@@ -55,34 +55,25 @@ shadcn-vue `Dialog` — cannot undo warning:
 - `SectionCard` list grouped by project
 - Each row: milestone name + amount + status pill + date
 
-### Contractor withdrawals page (new — Story 04-06)
+### Story 04-06 — Contractor Withdrawals
 
-The Lovable design includes a withdrawal flow not originally in this epic. Add as Story 04-06.
+**As a** contractor,
+**I want to** request withdrawals from my earned funds with a 3-day approval hold,
+**so that** I can receive payment after admin vetting and can manage my cash flow.
 
-**Balance summary card** (`rounded-3xl border bg-card p-6 shadow-elevated`):
-- إجمالي المكتسب: `text-2xl font-extrabold text-ink`
-- محجوز أو قيد الصرف: `text-sm text-muted-foreground`
-- متاح للسحب: `text-3xl font-extrabold text-primary`
-- "طلب سحب" CTA: primary button, opens dialog
+#### Acceptance criteria
 
-**Withdrawal request dialog:**
-- Amount: `MoneyInput` (validates ≤ available balance)
-- IBAN: `Input`
-- Notes: `Textarea` optional
-
-**Withdrawals list:**
-- Status tones: pending=accent, approved=info, withdrawable=primary, rejected=danger
-- For `approved`: "متاح للسحب بعد X أيام" countdown hint in `text-xs text-muted-foreground`
-
-> **Story 04-06 acceptance criteria:**
-> - [ ] Contractor sees available balance calculated from completed phases minus pending/approved withdrawals
-> - [ ] "Request withdrawal" opens dialog: amount (validates ≤ balance), IBAN, optional notes
-> - [ ] On submit: `POST /withdrawals` — status starts as `pending`
-> - [ ] Admin sees withdrawal requests in the payments section with approve/reject actions
-> - [ ] On admin approval: status → `approved`, 3-day hold countdown shown to contractor
-> - [ ] After 3 days: status auto-transitions to `withdrawable`
-> - [ ] Admin attaches bank transfer proof (image + tx ref) when approving
-> - [ ] RTL verified
+- [ ] Contractor sees balance card: total earned, locked/in-process, available for withdrawal
+- [ ] "Request withdrawal" opens dialog: amount (validates ≤ balance), IBAN, optional notes
+- [ ] On submit: `POST /withdrawals` — status starts as `pending`, optimistic update shown immediately
+- [ ] Withdrawals list displays with status pills (pending=accent, approved=info, withdrawable=primary, rejected=danger)
+- [ ] On admin approval (story 06-X): status → `approved`, 3-day countdown shown: "متاح للسحب بعد X أيام"
+- [ ] After 3 days: status auto-transitions to `withdrawable` (via polling or auto-refresh)
+- [ ] Admin approval UI is out of scope — contractor UI passive, polls for updates
+- [ ] RTL verified: balance amounts right-aligned, dialog buttons properly ordered
+- [ ] Form validation: required fields, IBAN format, amount ≤ available
+- [ ] Error handling: rollback optimistic update on failure, show error toast
+- [ ] Empty state when no withdrawals exist
 
 ### RTL notes
 
@@ -246,11 +237,13 @@ The system protects all parties.
 
 ## Epic done when
 
-- [ ] All 5 stories complete
+- [ ] All 6 stories complete (04-01 through 04-06)
 - [ ] Full payment lifecycle tested: `pending_payment` → `paid_out`
-- [ ] Role visibility verified: engineers never see amounts
+- [ ] Full withdrawal lifecycle tested: `pending` → `approved` → `withdrawable` → `paid`
+- [ ] Role visibility verified: engineers never see amounts, contractors only see their balance
 - [ ] Admin release flow tested with confirmation + rollback
 - [ ] Contractor payment history renders correctly
+- [ ] Contractor withdrawal request + status tracking verified
 - [ ] `canTransition('payment', ...)` called before release action
-- [ ] RTL verified for all payment UI
-- [ ] Mocks replaced as `POST /milestones/:id/pay` and `POST /payments/:id/release` become available
+- [ ] RTL verified for all payment and withdrawal UI
+- [ ] Mocks replaced as endpoints become available: `POST /milestones/:id/pay`, `POST /payments/:id/release`, `POST /withdrawals`, `GET /withdrawals`

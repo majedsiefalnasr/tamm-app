@@ -78,6 +78,7 @@ development_status:
   04-03-admin-releases-payment-to-contractor: review
   04-04-contractor-payment-history: review
   04-05-client-payment-overview: ready-for-dev
+  04-06-contractor-withdrawals: ready-for-dev
   epic-04-retrospective: optional
 
   # Epic 05 — In-App Notifications

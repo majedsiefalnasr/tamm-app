@@ -2,7 +2,7 @@
 // Source of truth: docs/status-flows.md
 
 export function canTransition(
-  entity: 'project' | 'milestone' | 'payment',
+  entity: 'project' | 'milestone' | 'payment' | 'withdrawal',
   from: string,
   to: string
 ): boolean {
@@ -42,6 +42,17 @@ export function canTransition(
     return validTransitions[from]?.includes(to) ?? false
   }
 
+  if (entity === 'withdrawal') {
+    const validTransitions: Record<string, string[]> = {
+      pending: ['approved', 'rejected'],
+      approved: ['withdrawable'],
+      withdrawable: ['paid'],
+      rejected: [],
+      paid: [],
+    }
+    return validTransitions[from]?.includes(to) ?? false
+  }
+
   return false
 }
 
@@ -66,6 +77,34 @@ export const PAYMENT_STATUS_META = {
     label: 'payment.status.paid_out',
     color: 'primary',
     icon: 'CheckCircle',
+  },
+} as const
+
+export const WITHDRAWAL_STATUS_META = {
+  pending: {
+    label: 'withdrawal.status.pending',
+    tone: 'accent',
+    icon: 'Clock',
+  },
+  approved: {
+    label: 'withdrawal.status.approved',
+    tone: 'info',
+    icon: 'CheckCircle',
+  },
+  withdrawable: {
+    label: 'withdrawal.status.withdrawable',
+    tone: 'primary',
+    icon: 'CheckCircle',
+  },
+  rejected: {
+    label: 'withdrawal.status.rejected',
+    tone: 'danger',
+    icon: 'XCircle',
+  },
+  paid: {
+    label: 'withdrawal.status.paid',
+    tone: 'primary',
+    icon: 'CheckCircle2',
   },
 } as const
 
