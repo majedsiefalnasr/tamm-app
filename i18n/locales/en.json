@@ -304,6 +304,36 @@
   },
   "success": {
     "report_submitted": "Report submitted successfully",
-    "draft_saved": "Draft saved locally"
+    "draft_saved": "Draft saved locally",
+    "milestone_approved": "Milestone approved successfully",
+    "milestone_rejected": "Milestone rejected, contractor returned to work"
+  },
+  "milestones": {
+    "review_dialog": {
+      "title": "Review Milestone — {name}",
+      "approve_button": "Approve Milestone",
+      "reject_button": "Reject"
+    },
+    "approve_confirm": {
+      "title": "Confirm Approval",
+      "message": "This will notify the client for final approval"
+    },
+    "reject_reason_dialog": {
+      "title": "Rejection Reason",
+      "reason_placeholder": "Explain the reason for rejection...",
+      "min_chars_error": "Minimum 10 characters"
+    }
+  },
+  "errors": {
+    "milestone_approval_failed": "Failed to approve milestone: {message}",
+    "milestone_rejection_failed": "Failed to reject milestone: {message}"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "report": {
+    "content": "Content",
+    "images": "Images"
   }
 }

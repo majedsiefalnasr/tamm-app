@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Milestone, ProjectDetail } from '~/shared/types/project'
 import { usePermission } from '~/composables/usePermission'
 import { useMilestones } from '~/composables/useMilestones'
 import { Button } from '~/components/ui/button'
+import ApprovalFlow from './ApprovalFlow.vue'
 
 interface Props {
   milestone: Milestone
@@ -25,6 +26,8 @@ const { t } = useI18n()
 const { can } = usePermission()
 const { approveMilestone, rejectMilestone } = useMilestones()
 
+const approvalFlowOpen = ref(false)
+
 const visibleActions = computed(() => {
   const actions = []
   const { milestone } = props
@@ -41,39 +44,15 @@ const visibleActions = computed(() => {
     })
   }
 
-  // View Report (supervisor_engineer, under_review only)
-  if (
-    milestone.status === 'under_review' &&
-    can('view_report', milestone.allowed_actions)
-  ) {
-    actions.push({
-      type: 'view_report',
-      label: t('milestone.actions.viewReport'),
-      variant: 'outline',
-    })
-  }
-
-  // Approve (supervisor_engineer, under_review only)
+  // Review (supervisor_engineer, under_review only)
   if (
     milestone.status === 'under_review' &&
     can('approve_milestone', milestone.allowed_actions)
   ) {
     actions.push({
-      type: 'approve_supervisor',
-      label: t('milestone.actions.approveMilestone'),
-      variant: 'default',
-    })
-  }
-
-  // Reject (supervisor_engineer, under_review only)
-  if (
-    milestone.status === 'under_review' &&
-    can('reject_milestone', milestone.allowed_actions)
-  ) {
-    actions.push({
-      type: 'reject_supervisor',
-      label: t('milestone.actions.rejectMilestone'),
-      variant: 'destructive',
+      type: 'review',
+      label: t('milestone.actions.viewReport'),
+      variant: 'outline',
     })
   }
 
@@ -119,26 +98,11 @@ const visibleActions = computed(() => {
 const handleAction = async (actionType: string) => {
   try {
     switch (actionType) {
-      case 'approve_supervisor':
-      case 'approve_client':
-        await approveMilestone(
-          props.milestone.id,
-          actionType.includes('supervisor') ? 'supervisor_engineer' : 'client'
-        )
-        emits('actionComplete')
-        break
-      case 'reject_supervisor':
-      case 'reject_client':
-        // For now, use empty reason; Story 03-04/03-05 will add dialogs
-        await rejectMilestone(props.milestone.id, 'Rejected by user')
-        emits('actionComplete')
+      case 'review':
+        approvalFlowOpen.value = true
         break
       case 'submit_report':
         emits('submitReport')
-        break
-      case 'view_report':
-        // Story 03-02 will implement detail page
-        console.log('View report action - to be implemented in Story 03-02')
         break
       case 'pay_milestone':
         // Story 04-01 will implement payment
@@ -149,20 +113,42 @@ const handleAction = async (actionType: string) => {
     console.error(`Error executing action ${actionType}:`, error)
   }
 }
+
+const handleApprovalFlowApproved = () => {
+  approvalFlowOpen.value = false
+  emits('actionComplete')
+}
+
+const handleApprovalFlowRejected = () => {
+  approvalFlowOpen.value = false
+  emits('actionComplete')
+}
 </script>
 
 <template>
-  <div v-if="visibleActions.length > 0" class="flex flex-wrap gap-2">
-    <Button
-      v-for="action in visibleActions"
-      :key="action.type"
-      :variant="action.variant"
-      :disabled="isLoading"
-      size="sm"
-      class="text-xs"
-      @click="handleAction(action.type)"
-    >
-      {{ action.label }}
-    </Button>
+  <div>
+    <div v-if="visibleActions.length > 0" class="flex flex-wrap gap-2">
+      <Button
+        v-for="action in visibleActions"
+        :key="action.type"
+        :variant="action.variant"
+        :disabled="isLoading"
+        size="sm"
+        class="text-xs"
+        @click="handleAction(action.type)"
+      >
+        {{ action.label }}
+      </Button>
+    </div>
+
+    <!-- Approval Flow Dialog -->
+    <ApprovalFlow
+      :open="approvalFlowOpen"
+      :milestone="milestone"
+      :report="milestone.latest_report"
+      @update:open="approvalFlowOpen = $event"
+      @approved="handleApprovalFlowApproved"
+      @rejected="handleApprovalFlowRejected"
+    />
   </div>
 </template>

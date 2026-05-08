@@ -304,6 +304,36 @@
   },
   "success": {
     "report_submitted": "تم رفع التقرير بنجاح",
-    "draft_saved": "تم حفظ المسودة محلياً"
+    "draft_saved": "تم حفظ المسودة محلياً",
+    "milestone_approved": "تم اعتماد المرحلة بنجاح",
+    "milestone_rejected": "تم رفض المرحلة، عاد المقاول للعمل"
+  },
+  "milestones": {
+    "review_dialog": {
+      "title": "مراجعة المرحلة — {name}",
+      "approve_button": "اعتماد المرحلة",
+      "reject_button": "رفض"
+    },
+    "approve_confirm": {
+      "title": "تأكيد الاعتماد",
+      "message": "سيتم إخطار العميل لمراجعة نهائية"
+    },
+    "reject_reason_dialog": {
+      "title": "سبب الرفض",
+      "reason_placeholder": "اشرح سبب الرفض...",
+      "min_chars_error": "الحد الأدنى 10 أحرف"
+    }
+  },
+  "errors": {
+    "milestone_approval_failed": "فشل اعتماد المرحلة: {message}",
+    "milestone_rejection_failed": "فشل رفض المرحلة: {message}"
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "confirm": "تأكيد"
+  },
+  "report": {
+    "content": "المحتوى",
+    "images": "الصور"
   }
 }

@@ -245,10 +245,7 @@ export const useMilestones = () => {
   const approveMilestone = async (
     milestoneId: string,
     role: 'supervisor_engineer' | 'client'
-  ): Promise<void> => {
-    const { notify } = useNotifications()
-    const { t } = useI18n()
-
+  ): Promise<Milestone> => {
     // Find milestone in any project
     let milestone: Milestone | undefined
     let projectId: string | undefined
@@ -265,7 +262,6 @@ export const useMilestones = () => {
     }
 
     if (!milestone || !projectId) {
-      notify.error(t('milestone.errors.notFound'))
       throw new Error('Milestone not found')
     }
 
@@ -273,30 +269,29 @@ export const useMilestones = () => {
     const targetStatus =
       role === 'supervisor_engineer' ? 'supervisor_approved' : 'approved'
     if (!canTransition('milestone', milestone.status, targetStatus)) {
-      notify.error(t('milestone.errors.invalidTransition'))
       throw new Error('Invalid transition')
     }
 
-    const prevStatus = milestone.status
     const prevMilestone = { ...milestone }
 
     // Optimistic update
-    milestonesMap.value[projectId][milestoneIndex] = {
+    const updatedMilestone: Milestone = {
       ...milestone,
       status: targetStatus as MilestoneStatus,
       updated_at: new Date().toISOString(),
     }
 
+    milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
+
     try {
       // TODO: replace mock — POST /milestones/:id/approve endpoint
       await new Promise(resolve => setTimeout(resolve, 300))
-      notify.success(t('milestone.notifications.approved'))
+      return updatedMilestone
     } catch (err) {
       // Rollback on error
       milestonesMap.value[projectId][milestoneIndex] = prevMilestone
       error.value =
         err instanceof Error ? err.message : 'Failed to approve milestone'
-      notify.error(t('milestone.errors.approveFailed'))
       throw err
     }
   }
@@ -304,11 +299,9 @@ export const useMilestones = () => {
   // Reject milestone
   const rejectMilestone = async (
     milestoneId: string,
-    reason: string
-  ): Promise<void> => {
-    const { notify } = useNotifications()
-    const { t } = useI18n()
-
+    reason: string,
+    role: 'supervisor_engineer' | 'client' = 'supervisor_engineer'
+  ): Promise<Milestone> => {
     // Find milestone in any project
     let milestone: Milestone | undefined
     let projectId: string | undefined
@@ -325,45 +318,34 @@ export const useMilestones = () => {
     }
 
     if (!milestone || !projectId) {
-      notify.error(t('milestone.errors.notFound'))
       throw new Error('Milestone not found')
     }
 
     // Validate transition to rejected
     if (!canTransition('milestone', milestone.status, 'rejected')) {
-      notify.error(t('milestone.errors.invalidTransition'))
       throw new Error('Invalid transition')
     }
 
-    const prevStatus = milestone.status
     const prevMilestone = { ...milestone }
 
-    // Optimistic update: show rejected briefly, then transition to in_progress
-    milestonesMap.value[projectId][milestoneIndex] = {
+    // Optimistic update: status goes to in_progress (auto-transitioned)
+    const updatedMilestone: Milestone = {
       ...milestone,
-      status: 'rejected' as MilestoneStatus,
+      status: 'in_progress' as MilestoneStatus,
       updated_at: new Date().toISOString(),
     }
+
+    milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
 
     try {
       // TODO: replace mock — POST /milestones/:id/reject endpoint
       await new Promise(resolve => setTimeout(resolve, 300))
-
-      // Transition to in_progress after brief delay
-      await new Promise(resolve => setTimeout(resolve, 500))
-      milestonesMap.value[projectId][milestoneIndex] = {
-        ...prevMilestone,
-        status: 'in_progress' as MilestoneStatus,
-        updated_at: new Date().toISOString(),
-      }
-
-      notify.success(t('milestone.notifications.rejected'))
+      return updatedMilestone
     } catch (err) {
       // Rollback on error
       milestonesMap.value[projectId][milestoneIndex] = prevMilestone
       error.value =
         err instanceof Error ? err.message : 'Failed to reject milestone'
-      notify.error(t('milestone.errors.rejectFailed'))
       throw err
     }
   }
