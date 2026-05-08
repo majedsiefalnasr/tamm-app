@@ -38,6 +38,30 @@
     "back_to_home": "Back to Home",
     "feature_coming_soon": "Feature coming soon...",
     "logout": "Log out",
-    "home": "Home"
+    "home": "Home",
+    "empty_state": "No items found",
+    "no_items": "There are no items to display",
+    "error_occurred": "Something went wrong",
+    "error_description": "An error occurred while loading the data",
+    "retry": "Try again"
+  },
+  "project": {
+    "status": {
+      "new": "New",
+      "open_for_bids": "Open for Bids",
+      "under_review": "Under Review",
+      "contractor_selected": "Contractor Selected",
+      "active": "Active",
+      "on_hold": "On Hold",
+      "completed": "Completed",
+      "in_progress": "In Progress"
+    },
+    "progress": "Progress",
+    "no_contractor": "No contractor assigned",
+    "view_details": "عرض التفاصيل",
+    "create_project": "Create Project",
+    "subtitle": "Manage your construction projects",
+    "no_projects": "No Projects Yet",
+    "no_projects_description": "You don't have any projects yet. Create one to get started."
   }
 }

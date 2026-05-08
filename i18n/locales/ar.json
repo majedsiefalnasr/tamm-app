@@ -38,6 +38,30 @@
     "back_to_home": "العودة للرئيسية",
     "feature_coming_soon": "الميزة قادمة قريباً...",
     "logout": "تسجيل الخروج",
-    "home": "الرئيسية"
+    "home": "الرئيسية",
+    "empty_state": "لا توجد عناصر",
+    "no_items": "لا توجد عناصر لعرضها",
+    "error_occurred": "حدث خطأ",
+    "error_description": "حدث خطأ أثناء تحميل البيانات",
+    "retry": "حاول مرة أخرى"
+  },
+  "project": {
+    "status": {
+      "new": "جديد",
+      "open_for_bids": "مفتوح للعروض",
+      "under_review": "قيد المراجعة",
+      "contractor_selected": "تم اختيار المقاول",
+      "active": "نشط",
+      "on_hold": "معلق",
+      "completed": "مكتمل",
+      "in_progress": "قيد التنفيذ"
+    },
+    "progress": "التقدم",
+    "no_contractor": "لا يوجد مقاول معين",
+    "view_details": "عرض التفاصيل",
+    "create_project": "إنشاء مشروع",
+    "subtitle": "أدر مشاريعك الإنشائية",
+    "no_projects": "لا توجد مشاريع حتى الآن",
+    "no_projects_description": "ليس لديك أي مشاريع حتى الآن. أنشئ مشروعاً للبدء."
   }
 }
