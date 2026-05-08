@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-08T21:15:00Z
+last_updated: 2026-05-08T22:30:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -77,7 +77,7 @@ development_status:
   04-02-payment-status-badge-on-milestone: review
   04-03-admin-releases-payment-to-contractor: review
   04-04-contractor-payment-history: review
-  04-05-client-payment-overview: backlog
+  04-05-client-payment-overview: ready-for-dev
   epic-04-retrospective: optional
 
   # Epic 05 — In-App Notifications

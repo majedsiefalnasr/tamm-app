@@ -161,6 +161,18 @@
     },
     "error": {
       "message": "فشل معالجة الدفع. يرجى المحاولة مرة أخرى."
+    },
+    "dashboard": {
+      "total_committed": "إجمالي الالتزام",
+      "total_in_escrow": "إجمالي المحجوز",
+      "total_paid_out": "إجمالي المصروف"
+    },
+    "project": {
+      "financial_summary": "الملخص المالي",
+      "value": "قيمة المشروع",
+      "paid": "المبلغ المدفوع",
+      "in_escrow": "المحجوز",
+      "remaining": "المتبقي"
     }
   },
   "project": {

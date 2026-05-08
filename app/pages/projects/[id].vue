@@ -4,6 +4,7 @@ import type { ProjectDetail, ProjectStatus } from '~/shared/types/project'
 import type { MilestoneInput } from '~/composables/useMilestones'
 import { formatCurrency } from '~/utils/formatters'
 import MilestoneCard from '~/components/milestone/MilestoneCard.vue'
+import ProjectFinancialSummary from '~/components/project/ProjectFinancialSummary.vue'
 
 definePageMeta({
   layout: 'default',
@@ -324,39 +325,8 @@ const handleProjectStatusTransition = async (newStatus: string) => {
     </div>
 
     <!-- Financial summary (only for client, contractor, admin) -->
-    <div
-      v-if="showFinancialSummary"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-4 text-lg font-bold">
-        {{ t('project.details.financialSummary') }}
-      </h2>
-      <div class="grid gap-4 sm:grid-cols-3">
-        <div>
-          <p class="text-muted-foreground text-xs">
-            {{ t('project.details.totalAmount') }}
-          </p>
-          <p class="text-ink mt-1 text-lg font-bold">
-            {{ formatCurrency(project.total_amount) }}
-          </p>
-        </div>
-        <div>
-          <p class="text-muted-foreground text-xs">
-            {{ t('project.details.paidAmount') }}
-          </p>
-          <p class="text-success mt-1 text-lg font-bold">
-            {{ formatCurrency(project.total_paid) }}
-          </p>
-        </div>
-        <div>
-          <p class="text-muted-foreground text-xs">
-            {{ t('project.details.remainingAmount') }}
-          </p>
-          <p class="text-warning mt-1 text-lg font-bold">
-            {{ formatCurrency(remainingAmount) }}
-          </p>
-        </div>
-      </div>
+    <div v-if="showFinancialSummary">
+      <ProjectFinancialSummary :project-id="id" :project="project" />
     </div>
 
     <!-- Milestones section -->

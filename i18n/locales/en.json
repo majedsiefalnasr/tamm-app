@@ -161,6 +161,18 @@
     },
     "error": {
       "message": "Failed to process payment. Please try again."
+    },
+    "dashboard": {
+      "total_committed": "Total committed",
+      "total_in_escrow": "Total in escrow",
+      "total_paid_out": "Total paid out"
+    },
+    "project": {
+      "financial_summary": "Financial Summary",
+      "value": "Project value",
+      "paid": "Amount paid",
+      "in_escrow": "In escrow",
+      "remaining": "Remaining"
     }
   },
   "project": {

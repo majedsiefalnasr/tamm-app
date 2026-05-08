@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ApprovalQueueWidget from '~/components/client/ApprovalQueueWidget.vue'
+import DashboardPaymentSummary from '~/components/dashboard/DashboardPaymentSummary.vue'
 
 definePageMeta({
   roles: ['client'],
@@ -21,6 +22,9 @@ definePageMeta({
 
     <!-- Main content -->
     <div class="grid gap-6">
+      <!-- Payment Summary -->
+      <DashboardPaymentSummary />
+
       <!-- Approval Queue Widget -->
       <div class="border-border bg-card rounded-lg border p-6">
         <ApprovalQueueWidget />
