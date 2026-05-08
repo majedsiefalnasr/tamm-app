@@ -81,12 +81,24 @@
     "client_dashboard_subtitle": "Review and approve milestones"
   },
   "roles": {
-    "client": "Client",
-    "contractor": "Contractor",
-    "field_engineer": "Field Engineer",
-    "supervisor_engineer": "Supervisor Engineer",
-    "admin": "Admin",
-    "super_admin": "Super Admin"
+    "client": {
+      "label": "Client"
+    },
+    "contractor": {
+      "label": "Contractor"
+    },
+    "field_engineer": {
+      "label": "Field Engineer"
+    },
+    "supervisor_engineer": {
+      "label": "Supervisor Engineer"
+    },
+    "admin": {
+      "label": "Admin"
+    },
+    "super_admin": {
+      "label": "Super Admin"
+    }
   },
   "common": {
     "cancel": "Cancel",
@@ -387,5 +399,42 @@
         "title": "New Project Created"
       }
     }
+  },
+  "admin": {
+    "users": {
+      "title": "Users",
+      "add_button": "Add User",
+      "filter_all": "All",
+      "filter_contractors": "Contractors",
+      "filter_engineers": "Engineers",
+      "filter_clients": "Clients",
+      "filter_admins": "Admins",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "activate": "Activate",
+        "deactivate": "Deactivate"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "empty_state": "No users found with this role"
+    }
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "days_ago": "{count} days ago",
+    "weeks_ago": "{count} weeks ago",
+    "months_ago": "{count} months ago",
+    "years_ago": "{count} years ago"
   }
 }

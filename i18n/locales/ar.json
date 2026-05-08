@@ -81,12 +81,24 @@
     "client_dashboard_subtitle": "معالجة واعتماد المراحل"
   },
   "roles": {
-    "client": "عميل",
-    "contractor": "مقاول",
-    "field_engineer": "مهندس الموقع",
-    "supervisor_engineer": "مهندس الإشراف",
-    "admin": "مسؤول",
-    "super_admin": "مسؤول النظام"
+    "client": {
+      "label": "عميل"
+    },
+    "contractor": {
+      "label": "مقاول"
+    },
+    "field_engineer": {
+      "label": "مهندس الموقع"
+    },
+    "supervisor_engineer": {
+      "label": "مهندس الإشراف"
+    },
+    "admin": {
+      "label": "مسؤول"
+    },
+    "super_admin": {
+      "label": "مسؤول النظام"
+    }
   },
   "common": {
     "cancel": "إلغاء",
@@ -387,5 +399,42 @@
         "title": "مشروع جديد"
       }
     }
+  },
+  "admin": {
+    "users": {
+      "title": "المستخدمون",
+      "add_button": "إضافة مستخدم",
+      "filter_all": "الكل",
+      "filter_contractors": "المقاولون",
+      "filter_engineers": "المهندسون",
+      "filter_clients": "العملاء",
+      "filter_admins": "الإداريون",
+      "table": {
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "status": "الحالة",
+        "created": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "actions": {
+        "edit": "تحرير",
+        "activate": "تفعيل",
+        "deactivate": "إلغاء تفعيل"
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "empty_state": "لا توجد مستخدمون بهذا الدور"
+    }
+  },
+  "time": {
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "days_ago": "منذ {count} أيام",
+    "weeks_ago": "منذ {count} أسابيع",
+    "months_ago": "منذ {count} أشهر",
+    "years_ago": "منذ {count} سنوات"
   }
 }

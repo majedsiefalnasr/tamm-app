@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-09T14:00:00Z
+last_updated: 2026-05-09T14:15:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -90,8 +90,8 @@ development_status:
   epic-05-retrospective: optional
 
   # Epic 06 — Admin Panel & User Management
-  epic-06: backlog
-  06-01-admin-user-list: backlog
+  epic-06: in-progress
+  06-01-admin-user-list: ready-for-dev
   06-02-create-user-admin: backlog
   06-03-assign-engineers-to-project: backlog
   06-04-admin-project-overview: backlog
