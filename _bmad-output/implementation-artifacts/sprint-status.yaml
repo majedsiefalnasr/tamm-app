@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-08T23:45:00Z
+last_updated: 2026-05-09T00:00:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -83,7 +83,7 @@ development_status:
 
   # Epic 05 — In-App Notifications
   epic-05: in-progress
-  05-01-notification-bell-and-unread-count: ready-for-dev
+  05-01-notification-bell-and-unread-count: review
   05-02-notification-drawer: backlog
   05-03-mark-notification-as-read: backlog
   05-04-notification-content-per-event: backlog

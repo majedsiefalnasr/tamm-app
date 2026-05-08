@@ -1,6 +1,6 @@
 # Story 05-01 — Notification Bell and Unread Count
 
-**Status:** ready-for-dev  
+**Status:** review  
 **Epic:** 05 — In-App Notifications  
 **Story ID:** 5.1  
 **Priority:** 🟡 MEDIUM — Enables core notification UX; blocks other stories in epic  
@@ -328,6 +328,70 @@ This story is **complete** when:
 
 ## 📝 Dev Notes & Learnings
 
-*This section will be populated during implementation with any discoveries or corrections.*
+### Implementation Summary
 
-- [none yet]
+✅ **All acceptance criteria implemented and verified.**
+
+**Key Implementation Details:**
+
+1. **NotificationBell Component** (`app/components/layout/NotificationBell.vue`)
+   - Vue 3 Composition API with TypeScript
+   - Uses `computed` for badge visibility and display count
+   - Calls `startPolling()` on mount via `onMounted` hook
+   - Badge positioned with logical CSS properties (`-end-1`, `-top-1`) for RTL safety
+   - Aria-label uses i18n key `common.notifications`
+
+2. **useNotifications Composable** (`app/composables/useNotifications.ts`)
+   - Added `unreadCount: Ref<number>` — synced across component lifecycle
+   - `startPolling()` — initiates 30-second interval, respects `document.hidden`
+   - `visibilitychange` listener resumes polling immediately when tab regains focus
+   - `stopPolling()` — clears timer and removes event listener (no memory leaks)
+   - `decrementUnreadCount()` — guards against negative values with `Math.max(0, ...)`
+   - Polling calls mocked `GET /notifications` endpoint
+
+3. **Type Definitions** (`shared/types/notification.ts`)
+   - `Notification` type with all fields matching expected API response
+   - `NotificationResponse` wrapper for API consistency
+
+4. **i18n Keys Added**
+   - `common.notifications` — "Notifications" (English), "الإشعارات" (Arabic)
+   - `common.logout` — "Logout", "تسجيل الخروج" (was also missing)
+
+5. **Topbar Integration**
+   - Replaced placeholder button with `<NotificationBell />` component
+   - Removed `notification-click` emit (no longer needed)
+   - Removed `BellIcon` direct import
+
+### Testing & Validation
+
+✅ **Build:** Passed (Nuxt 4.4.4 build successful)
+✅ **Linting:** Passed (ESLint clean, no violations)
+✅ **TypeScript:** No errors or `any` types
+✅ **CSS:** Logical properties used throughout (`-end-1`, not `-right-1`)
+✅ **RTL:** Design verified for both LTR and RTL layouts
+✅ **i18n:** All UI text uses translation keys
+
+### Code Quality
+
+- **Simplicity:** Minimal implementation, no over-engineering
+- **No scope creep:** Only changes required by story acceptance criteria
+- **Surgical edits:** No unrelated refactoring or improvements
+- **Error handling:** Polling gracefully handles failed requests (console.error, continues)
+- **Memory management:** Event listeners properly cleaned up on unmount
+
+### Polling Behavior
+
+**When polling pauses:**
+- Tab is hidden (`document.hidden === true`)
+- Component is unmounted (timer cleared, listener removed)
+
+**When polling resumes:**
+- Immediately when tab regains focus (`visibilitychange` event)
+- Immediately after mount
+- Automatically every 30 seconds
+
+### Known Notes
+
+- Mock `/notifications` endpoint in composable — will be replaced when backend API is available
+- Polling can be extended with exponential backoff or request deduplication if needed in future stories (05-02, 05-03, 05-04)
+- Story 05-02 (drawer) will build on this polling infrastructure
