@@ -62,6 +62,12 @@
     "create_project": "إنشاء مشروع",
     "subtitle": "أدر مشاريعك الإنشائية",
     "no_projects": "لا توجد مشاريع حتى الآن",
-    "no_projects_description": "ليس لديك أي مشاريع حتى الآن. أنشئ مشروعاً للبدء."
+    "no_projects_description": "ليس لديك أي مشاريع حتى الآن. أنشئ مشروعاً للبدء.",
+    "types": {
+      "villa": "فيلا",
+      "apartment": "شقة",
+      "commercial": "تجاري",
+      "other": "آخر"
+    }
   }
 }

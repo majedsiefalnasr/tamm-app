@@ -62,6 +62,12 @@
     "create_project": "Create Project",
     "subtitle": "Manage your construction projects",
     "no_projects": "No Projects Yet",
-    "no_projects_description": "You don't have any projects yet. Create one to get started."
+    "no_projects_description": "You don't have any projects yet. Create one to get started.",
+    "types": {
+      "villa": "Villa",
+      "apartment": "Apartment",
+      "commercial": "Commercial",
+      "other": "Other"
+    }
   }
 }

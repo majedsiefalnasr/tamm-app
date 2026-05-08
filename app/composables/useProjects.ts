@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import type { Project } from '~/shared/types/project'
+import type { Project, ProjectDetail, Milestone } from '~/shared/types/project'
 
 export const useProjects = () => {
   const projects = ref<Project[]>([])
@@ -85,6 +85,99 @@ export const useProjects = () => {
     },
   ]
 
+  // Mock project details
+  const mockProjectDetails: Record<string, ProjectDetail> = {
+    'proj-001': {
+      id: 'proj-001',
+      name: 'Villa Project A',
+      description: 'Modern villa in New Cairo with luxury finishes',
+      city: 'Cairo',
+      area_m2: 400,
+      type: 'villa',
+      budget: 250000,
+      currency: 'EGP',
+      status: 'active',
+      client_id: 'user-101',
+      client_name: 'Ahmed Al-Masri',
+      contractor_id: 'cont-001',
+      contractor_name: 'Elite Builders',
+      supervisor_engineer_id: 'user-201',
+      supervisor_name: 'Khaled Ibrahim',
+      field_engineer_id: 'user-202',
+      field_engineer_name: 'Mohammed Hassan',
+      total_amount: 250000,
+      total_paid: 100000,
+      created_at: '2026-04-15T10:30:00Z',
+      milestones: [
+        {
+          id: 'ms-1',
+          name: 'Foundation & Structure',
+          description: 'Excavation, foundation, concrete structure',
+          amount: 50000,
+          order: 1,
+          status: 'approved',
+          created_at: '2026-04-20T09:00:00Z',
+        },
+        {
+          id: 'ms-2',
+          name: 'Walls & Finishing',
+          description: 'Walls, finishing, internal work',
+          amount: 75000,
+          order: 2,
+          status: 'in_progress',
+          created_at: '2026-05-01T09:00:00Z',
+        },
+        {
+          id: 'ms-3',
+          name: 'Final Handover',
+          description: 'Final checks and handover',
+          amount: 125000,
+          order: 3,
+          status: 'not_started',
+          created_at: '2026-05-05T09:00:00Z',
+        },
+      ],
+    },
+    'proj-002': {
+      id: 'proj-002',
+      name: 'Apartment Complex B',
+      description: 'Residential apartment complex in Giza',
+      city: 'Giza',
+      area_m2: 1200,
+      type: 'apartment',
+      budget: 500000,
+      currency: 'EGP',
+      status: 'contractor_selected',
+      client_id: 'user-102',
+      client_name: 'Fatima Al-Sayed',
+      contractor_id: 'cont-002',
+      contractor_name: 'BuildRight Corp',
+      supervisor_engineer_id: 'user-201',
+      supervisor_name: 'Khaled Ibrahim',
+      total_amount: 500000,
+      total_paid: 0,
+      created_at: '2026-03-20T14:15:00Z',
+      milestones: [],
+    },
+    'proj-003': {
+      id: 'proj-003',
+      name: 'Commercial Space C',
+      description: 'Modern office space in Downtown Cairo',
+      city: 'Cairo',
+      area_m2: 800,
+      type: 'commercial',
+      budget: 350000,
+      currency: 'EGP',
+      status: 'new',
+      client_id: 'user-103',
+      client_name: 'Mohamed Karim',
+      total_amount: 350000,
+      total_paid: 0,
+      created_at: '2026-05-01T09:00:00Z',
+      milestones: [],
+    },
+  }
+
   // Get role-filtered projects
   const getFilteredProjects = (allProjects: Project[]): Project[] => {
     const userRole = auth.user?.role
@@ -136,6 +229,18 @@ export const useProjects = () => {
     }
   }
 
+  const getProjectById = async (id: string): Promise<ProjectDetail> => {
+    // TODO: replace mock — GET /projects/:id endpoint
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 300))
+
+    const detail = mockProjectDetails[id]
+    if (!detail) {
+      throw new Error(`Project ${id} not found`)
+    }
+    return detail
+  }
+
   const retryFetch = async () => {
     await fetchProjects()
   }
@@ -145,6 +250,7 @@ export const useProjects = () => {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     fetchProjects,
+    getProjectById,
     retryFetch,
   }
 }

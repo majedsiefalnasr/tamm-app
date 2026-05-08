@@ -16,6 +16,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const { t } = useI18n()
 const { can } = usePermission()
 const auth = useAuthStore()
 
@@ -43,7 +44,8 @@ const isAdmin = computed(() => {
 })
 
 const progressPercent = computed(() => {
-  const milestones = project.value?.milestones || []
+  if (!project.value?.milestones) return 0
+  const milestones = project.value.milestones
   if (!milestones.length) return 0
   const completed = milestones.filter(m => m.status === 'approved').length
   return Math.round((completed / milestones.length) * 100)
@@ -80,32 +82,29 @@ const showEngineers = computed(() => {
   )
 })
 
-const getTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    villa: 'Villa',
-    apartment: 'Apartment',
-    commercial: 'Commercial',
-    other: 'Other',
-  }
-  return labels[type] || type
-}
-
-const getMilestoneStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    not_started: 'Not Started',
-    in_progress: 'In Progress',
-    under_review: 'Under Review',
-    supervisor_approved: 'Supervisor Approved',
-    approved: 'Approved',
-    rejected: 'Rejected',
-  }
-  return labels[status] || status
-}
+const showFinancialSummary = computed(() => {
+  const role = auth.user?.role
+  if (!project.value?.milestones?.length) return false
+  if (role === 'field_engineer' || role === 'supervisor_engineer') return false
+  return true
+})
 
 const remainingAmount = computed(() => {
   if (!project.value) return 0
   return Math.max(0, project.value.total_amount - project.value.total_paid)
 })
+
+const getMilestoneStatusTone = (status: string) => {
+  const tones: Record<string, string> = {
+    not_started: 'muted',
+    in_progress: 'accent',
+    under_review: 'info',
+    supervisor_approved: 'info',
+    approved: 'primary',
+    rejected: 'danger',
+  }
+  return tones[status] || 'muted'
+}
 </script>
 
 <template>
@@ -124,7 +123,7 @@ const remainingAmount = computed(() => {
   <!-- Error state -->
   <div v-else-if="error" class="min-h-screen">
     <ErrorState
-      :error="`Failed to load project: ${error?.message || 'Unknown error'}`"
+      :error="`${t('errors.failed_to_load')}: ${error?.message || t('errors.unknown_error')}`"
       @retry="refresh()"
     />
   </div>
@@ -135,51 +134,69 @@ const remainingAmount = computed(() => {
     <div
       class="border-border bg-card shadow-card rounded-3xl border p-6 md:p-8"
       :style="{
-        background: `linear-gradient(to inline-start, rgba(var(--color-primary-rgb), 0.1), var(--color-card))`,
+        background: `linear-gradient(to left, rgba(var(--color-primary), 0.1), var(--color-card))`,
       }"
     >
       <div class="flex flex-col gap-4 md:gap-6">
-        <h1 class="text-ink text-2xl font-extrabold md:text-3xl">
-          {{ project.name }}
-        </h1>
+        <div
+          class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+        >
+          <h1 class="text-ink text-2xl font-extrabold md:text-3xl">
+            {{ project.name }}
+          </h1>
+          <Pill
+            :tone="getMilestoneStatusTone(project.status)"
+            :label="t(`project.status.${project.status}`)"
+          />
+        </div>
 
-        <!-- Meta information -->
+        <!-- Meta information grid -->
         <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
           <div>
-            <p class="text-muted-foreground text-xs">Client</p>
-            <p class="text-ink text-sm font-semibold">
-              {{ project.client_name || 'N/A' }}
+            <p class="text-muted-foreground text-xs">
+              {{ t('project.details.clientName') }}
+            </p>
+            <p class="text-ink mt-1 text-sm font-semibold">
+              {{ project.client_name || t('project.details.nA') }}
             </p>
           </div>
           <div>
-            <p class="text-muted-foreground text-xs">Address</p>
-            <p class="text-ink text-sm font-semibold">
-              {{ project.city || 'N/A' }}
+            <p class="text-muted-foreground text-xs">
+              {{ t('project.details.address') }}
+            </p>
+            <p class="text-ink mt-1 text-sm font-semibold">
+              {{ project.city || t('project.details.nA') }}
             </p>
           </div>
           <div>
-            <p class="text-muted-foreground text-xs">Type</p>
-            <p class="text-ink text-sm font-semibold">
-              {{ getTypeLabel(project.type) }}
+            <p class="text-muted-foreground text-xs">
+              {{ t('project.details.type') }}
+            </p>
+            <p class="text-ink mt-1 text-sm font-semibold">
+              {{ t(`project.types.${project.type}`) || project.type }}
             </p>
           </div>
           <div>
-            <p class="text-muted-foreground text-xs">Area</p>
-            <p class="text-ink text-sm font-semibold">
+            <p class="text-muted-foreground text-xs">
+              {{ t('project.details.area') }}
+            </p>
+            <p class="text-ink mt-1 text-sm font-semibold">
               {{ project.area_m2 }} m²
             </p>
           </div>
         </div>
 
-        <!-- Progress bar -->
+        <!-- Progress bar (only when milestones exist) -->
         <div v-if="showFinancial" class="space-y-2">
           <div class="flex items-center justify-between">
-            <p class="text-ink text-sm font-semibold">Progress</p>
+            <p class="text-ink text-sm font-semibold">
+              {{ t('project.details.progressLabel') }}
+            </p>
             <p class="text-muted-foreground text-xs">{{ progressPercent }}%</p>
           </div>
-          <div class="bg-muted-foreground/20 h-2 w-full rounded-full">
+          <div class="bg-muted h-2 w-full overflow-hidden rounded-full">
             <div
-              class="bg-primary h-2 rounded-full transition-all duration-300"
+              class="bg-gradient-to-[inline-start] from-primary h-full rounded-full to-emerald-400 transition-all duration-300"
               :style="{ width: progressPercent + '%' }"
             />
           </div>
@@ -188,94 +205,82 @@ const remainingAmount = computed(() => {
     </div>
 
     <!-- Contractor section -->
-    <div
-      v-if="showContractor"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Contractor</h2>
-      <p class="text-ink text-sm font-semibold">
-        {{ project.contractor_name || 'N/A' }}
-      </p>
-    </div>
-
-    <!-- Awaiting contractor badge -->
-    <div
-      v-else
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Contractor</h2>
-      <div
-        class="border-primary/30 bg-primary/10 inline-flex rounded-full border px-3 py-1"
-      >
-        <p class="text-primary text-xs font-semibold">
-          Awaiting contractor selection
+    <div class="border-border bg-card shadow-card rounded-2xl border p-4">
+      <h2 class="text-ink mb-3 text-lg font-bold">
+        {{ t('project.details.contractor') }}
+      </h2>
+      <div v-if="showContractor">
+        <p class="text-ink text-sm font-semibold">
+          {{ project.contractor_name || t('project.details.nA') }}
         </p>
+      </div>
+      <div v-else>
+        <Pill tone="accent" :label="t('project.details.awaitingContractor')" />
       </div>
     </div>
 
-    <!-- Engineers section -->
-    <div
-      v-if="showEngineers"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Team</h2>
-      <div class="space-y-2">
+    <!-- Team section -->
+    <div class="border-border bg-card shadow-card rounded-2xl border p-4">
+      <h2 class="text-ink mb-3 text-lg font-bold">
+        {{ t('project.details.team') }}
+      </h2>
+      <div v-if="showEngineers" class="space-y-3">
         <div v-if="project.supervisor_name">
-          <p class="text-muted-foreground text-xs">Supervisor Engineer</p>
-          <p class="text-ink text-sm font-semibold">
+          <p class="text-muted-foreground text-xs">
+            {{ t('project.details.supervisorEngineer') }}
+          </p>
+          <p class="text-ink mt-1 text-sm font-semibold">
             {{ project.supervisor_name }}
           </p>
         </div>
         <div v-if="project.field_engineer_name">
-          <p class="text-muted-foreground text-xs">Field Engineer</p>
-          <p class="text-ink text-sm font-semibold">
+          <p class="text-muted-foreground text-xs">
+            {{ t('project.details.fieldEngineer') }}
+          </p>
+          <p class="text-ink mt-1 text-sm font-semibold">
             {{ project.field_engineer_name }}
           </p>
         </div>
         <div v-if="!project.supervisor_name && !project.field_engineer_name">
           <p class="text-muted-foreground text-xs font-semibold">
-            Not yet assigned
+            {{ t('project.details.notAssigned') }}
           </p>
         </div>
       </div>
-    </div>
-
-    <!-- Not yet assigned -->
-    <div
-      v-else
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Team</h2>
-      <div
-        class="border-muted-foreground/30 bg-muted-foreground/10 inline-flex rounded-full border px-3 py-1"
-      >
-        <p class="text-muted-foreground text-xs font-semibold">
-          Not yet assigned
-        </p>
+      <div v-else>
+        <Pill tone="muted" :label="t('project.details.notAssigned')" />
       </div>
     </div>
 
-    <!-- Financial summary -->
+    <!-- Financial summary (only for client, contractor, admin) -->
     <div
-      v-if="showFinancial"
+      v-if="showFinancialSummary"
       class="border-border bg-card shadow-card rounded-2xl border p-4"
     >
-      <h2 class="text-ink mb-4 text-lg font-bold">Financial Summary</h2>
+      <h2 class="text-ink mb-4 text-lg font-bold">
+        {{ t('project.details.financialSummary') }}
+      </h2>
       <div class="grid gap-4 sm:grid-cols-3">
         <div>
-          <p class="text-muted-foreground text-xs">Total Amount</p>
+          <p class="text-muted-foreground text-xs">
+            {{ t('project.details.totalAmount') }}
+          </p>
           <p class="text-ink mt-1 text-lg font-bold">
             {{ formatCurrency(project.total_amount) }}
           </p>
         </div>
         <div>
-          <p class="text-muted-foreground text-xs">Paid Amount</p>
+          <p class="text-muted-foreground text-xs">
+            {{ t('project.details.paidAmount') }}
+          </p>
           <p class="text-success mt-1 text-lg font-bold">
             {{ formatCurrency(project.total_paid) }}
           </p>
         </div>
         <div>
-          <p class="text-muted-foreground text-xs">Remaining</p>
+          <p class="text-muted-foreground text-xs">
+            {{ t('project.details.remainingAmount') }}
+          </p>
           <p class="text-warning mt-1 text-lg font-bold">
             {{ formatCurrency(remainingAmount) }}
           </p>
@@ -286,56 +291,46 @@ const remainingAmount = computed(() => {
     <!-- Milestones section -->
     <div class="border-border bg-card shadow-card rounded-2xl border p-4">
       <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-ink text-lg font-bold">Milestones</h2>
+        <h2 class="text-ink text-lg font-bold">
+          {{ t('project.details.milestones') }}
+        </h2>
         <Button
           v-if="canAddMilestone"
           size="sm"
           variant="outline"
-          aria-label="Add a new milestone"
+          :aria-label="t('project.details.addMilestone')"
         >
-          Add Milestone
+          {{ t('project.details.addMilestone') }}
         </Button>
       </div>
 
       <div
         v-if="!project.milestones?.length"
-        class="border-border rounded-lg border-2 border-dashed p-8 text-center"
+        class="border-border bg-card rounded-lg border-2 border-dashed p-8 text-center"
       >
-        <p class="text-muted-foreground text-sm">No milestones yet</p>
+        <p class="text-muted-foreground text-sm">
+          {{ t('project.details.noMilestones') }}
+        </p>
       </div>
 
       <div v-else class="space-y-3">
         <div
           v-for="milestone in project.milestones"
-          :key="milestone.id || `milestone-${Math.random()}`"
+          :key="milestone.id"
           class="border-border flex items-center justify-between rounded-lg border p-3"
         >
           <div class="flex-1">
             <h3 class="text-ink text-sm font-semibold">{{ milestone.name }}</h3>
-            <p class="text-muted-foreground text-xs">
+            <p class="text-muted-foreground mt-1 text-xs">
               {{ formatCurrency(milestone.amount) }}
             </p>
           </div>
-          <div
-            class="bg-muted-foreground/10 inline-flex rounded-full px-2 py-1"
-          >
-            <span class="text-muted-foreground text-xs font-semibold">
-              {{ getMilestoneStatusLabel(milestone.status) }}
-            </span>
-          </div>
+          <Pill
+            :tone="getMilestoneStatusTone(milestone.status)"
+            :label="t(`project.milestone.${milestone.status}`)"
+          />
         </div>
       </div>
-    </div>
-
-    <!-- Admin actions (placeholder for Story 02-05) -->
-    <div
-      v-if="isAdmin"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-4 text-lg font-bold">Admin Actions</h2>
-      <p class="text-muted-foreground text-sm">
-        Admin actions will be available here (Story 02-05)
-      </p>
     </div>
   </div>
 </template>
