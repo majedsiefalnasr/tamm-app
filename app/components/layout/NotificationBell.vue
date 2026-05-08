@@ -5,7 +5,7 @@ import { Button } from '~/components/ui/button'
 import NotificationDrawer from '~/components/notifications/NotificationDrawer.vue'
 import { useNotifications } from '~/composables/useNotifications'
 
-const { unreadCount, startPolling, stopPolling } = useNotifications()
+const { unreadCount, startPolling } = useNotifications()
 
 const UNREAD_COUNT_THRESHOLD = 99
 const drawerOpen = ref(false)

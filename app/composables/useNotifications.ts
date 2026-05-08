@@ -14,21 +14,6 @@ export const useNotifications = () => {
   let pollTimer: number | undefined
   let visibilityListener: (() => void) | undefined
 
-  const notify = {
-    success: (message: string) => {
-      console.warn('✓ Success:', message)
-    },
-    error: (message: string) => {
-      console.error('✗ Error:', message)
-    },
-    info: (message: string) => {
-      console.warn('ℹ Info:', message)
-    },
-    warning: (message: string) => {
-      console.warn('⚠ Warning:', message)
-    },
-  }
-
   const poll = async () => {
     if (document.hidden) return
 
@@ -71,12 +56,10 @@ export const useNotifications = () => {
     notification.is_read = true
     decrementUnreadCount()
 
-    // API call (fire-and-forget)
-    try {
-      await useApi(`/notifications/${notificationId}/read`, { method: 'POST' })
-    } catch (error) {
-      notify.error('Failed to mark notification as read')
-    }
+    // API call (fire-and-forget, polling will correct any errors)
+    useApi(`/notifications/${notificationId}/read`, { method: 'POST' }).catch(
+      () => {}
+    )
   }
 
   const markAllAsRead = async () => {
@@ -86,12 +69,8 @@ export const useNotifications = () => {
     })
     unreadCount.value = 0
 
-    // API call (fire-and-forget)
-    try {
-      await useApi('/notifications/read-all', { method: 'POST' })
-    } catch (error) {
-      notify.error('Failed to mark all notifications as read')
-    }
+    // API call (fire-and-forget, polling will correct any errors)
+    useApi('/notifications/read-all', { method: 'POST' }).catch(() => {})
   }
 
   onBeforeUnmount(() => {
@@ -99,7 +78,6 @@ export const useNotifications = () => {
   })
 
   return {
-    notify,
     unreadCount,
     notifications,
     startPolling,
