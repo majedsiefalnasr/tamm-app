@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-08T01:00:00Z
+last_updated: 2026-05-08T02:30:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -52,8 +52,8 @@ development_status:
   epic-01-retrospective: optional
 
   # Epic 02 — Project Management
-  epic-02: backlog
-  02-01-project-list-page: backlog
+  epic-02: in-progress
+  02-01-project-list-page: ready-for-dev
   02-02-create-project-client: backlog
   02-03-project-detail-page: backlog
   02-04-milestone-definition-admin-and-contractor: backlog
