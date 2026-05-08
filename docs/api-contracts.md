@@ -1166,6 +1166,93 @@ file: File (required)
 **Frontend Use:** Admin assign engineers UI (Story 06-03)  
 **Implemented:** ✅ Ready to build
 
+---
+
+### `GET /admin/projects`
+
+**Status:** ✅ Available  
+**Purpose:** List all projects across platform with filtering, search, and pagination (admin view)
+
+**Auth Required:** Yes (admin/super_admin)
+
+**Query Parameters:**
+
+```
+status=<filter>  // optional: 'new', 'active', 'in_progress', 'on_hold', 'completed', or 'all' (default)
+search=<query>   // optional: search by project name or client name
+page=<number>    // optional: page number (default: 1)
+per_page=<num>   // optional: items per page (default: 20)
+```
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "project_number": "P001",
+      "name": "مشروع البناء الأول",
+      "status": "active",
+      "client": {
+        "id": "uuid",
+        "name": "اسم العميل"
+      },
+      "contractor": {
+        "id": "uuid",
+        "name": "اسم المقاول"
+      } | null,
+      "total_value": 50000.00,
+      "created_at": "2026-05-01T12:00:00Z",
+      "milestones": [
+        {
+          "id": "uuid",
+          "status": "completed"
+        },
+        {
+          "id": "uuid",
+          "status": "in_progress"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "per_page": 20,
+    "total": 45,
+    "total_pages": 3
+  }
+}
+```
+
+**Error (401 — Unauthorized):**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Unauthorized access"
+  }
+}
+```
+
+**Error (500 — Server Error):**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "SERVER_ERROR",
+    "message": "Failed to fetch projects"
+  }
+}
+```
+
+**Frontend Use:** Admin project overview page (Story 06-04)  
+**Implemented:** ✅ Ready to build
+
 ## Roles & Permissions Endpoints
 
 All require authentication (admin level).

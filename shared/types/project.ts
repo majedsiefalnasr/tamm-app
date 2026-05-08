@@ -125,3 +125,44 @@ export interface ProjectDetailResponse {
   data: ProjectDetail
   message?: string
 }
+
+// Admin project overview types
+export interface AdminProjectOverviewItem {
+  id: string
+  project_number: string
+  name: string
+  status: ProjectStatus
+  client: {
+    id: string
+    name: string
+  }
+  contractor: {
+    id: string
+    name: string
+  } | null
+  total_value: number
+  created_at: string
+  milestones: Array<{
+    id: string
+    status: MilestoneStatus
+  }>
+}
+
+export interface AdminProjectsResponse {
+  success: boolean
+  data: AdminProjectOverviewItem[]
+  pagination: {
+    current_page: number
+    per_page: number
+    total: number
+    total_pages: number
+  }
+}
+
+export type AdminProjectStatus = ProjectStatus | 'all'
+
+export interface ProjectOverviewFilter {
+  status: AdminProjectStatus
+  search: string
+  page: number
+}
