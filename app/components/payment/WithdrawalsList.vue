@@ -68,17 +68,22 @@ const formatDate = (dateString: string) => {
     </div>
 
     <!-- Withdrawal Groups -->
-    <template v-for="(withdrawals, status) in groupedWithdrawals" :key="status">
-      <div v-if="withdrawals.length > 0" class="space-y-3">
+    <template
+      v-for="(statusWithdrawals, status) in groupedWithdrawals"
+      :key="status"
+    >
+      <div v-if="statusWithdrawals.length > 0" class="space-y-3">
         <!-- Status Header -->
         <h4 class="text-muted-foreground text-xs font-bold uppercase">
-          {{ t(`withdrawal.status.${status}`) }} ({{ withdrawals.length }})
+          {{ t(`withdrawal.status.${status}`) }} ({{
+            statusWithdrawals.length
+          }})
         </h4>
 
         <!-- Withdrawal Items -->
         <div class="space-y-2">
           <div
-            v-for="item in withdrawals"
+            v-for="item in statusWithdrawals"
             :key="item.id"
             class="bg-card hover:border-primary/40 hover:shadow-elevated rounded-lg border p-4 transition hover:-translate-y-0.5"
           >
