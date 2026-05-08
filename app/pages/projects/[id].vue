@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { ProjectDetail } from '~/shared/types/project'
+import type { ProjectDetail, ProjectStatus } from '~/shared/types/project'
 import type { MilestoneInput } from '~/composables/useMilestones'
 import { formatCurrency } from '~/utils/formatters'
 
@@ -148,6 +148,26 @@ const handleAddMilestone = async (data: MilestoneInput) => {
     isSubmitting.value = false
   }
 }
+
+const handleProjectStatusTransition = async (newStatus: string) => {
+  if (!project.value) return
+
+  const { transitionProject } = useProjectActions()
+  isSubmitting.value = true
+
+  try {
+    await transitionProject(
+      project.value.id,
+      newStatus as ProjectStatus,
+      project.value
+    )
+    await refresh()
+  } catch (err) {
+    console.error('Failed to transition project:', err)
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>
 
 <template>
@@ -244,6 +264,13 @@ const handleAddMilestone = async (data: MilestoneInput) => {
             />
           </div>
         </div>
+
+        <!-- Project status actions (admin only) -->
+        <ProjectStatusActions
+          :project="project"
+          :is-submitting="isSubmitting"
+          @transition="handleProjectStatusTransition"
+        />
       </div>
     </div>
 

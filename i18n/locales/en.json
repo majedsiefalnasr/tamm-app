@@ -23,10 +23,18 @@
     "milestone_edit_failed": "Failed to edit milestone",
     "milestone_delete_failed": "Failed to delete milestone",
     "failed_to_load": "Failed to load data",
-    "unknown_error": "An unknown error occurred"
+    "unknown_error": "An unknown error occurred",
+    "invalidTransition": "Invalid transition",
+    "transitionFailed": "Transition failed",
+    "milestonesNotDefined": "No milestones defined yet",
+    "engineersNotAssigned": "Engineers not assigned yet",
+    "requirementsNotMet": "Requirements not met",
+    "featureNotReady": "Feature is not available yet"
   },
   "buttons": {
     "cancel": "Cancel",
+    "confirm": "Confirm",
+    "confirming": "Confirming...",
     "add_milestone": "Add Milestone",
     "save_milestone": "Save Milestone",
     "edit_milestone": "Edit",
@@ -88,6 +96,27 @@
     "retry": "Try again"
   },
   "project": {
+    "actions": {
+      "openForBids": "Open for Bids",
+      "activateProject": "Activate Project",
+      "pauseProject": "Pause Project",
+      "resumeProject": "Resume Project"
+    },
+    "confirmations": {
+      "openForBidsTitle": "Open Project for Bidding",
+      "openForBids": "This project will be opened for bidding and contractors will be able to submit their proposals.",
+      "activateProjectTitle": "Activate Project",
+      "activateProject": "This project will be activated and work on the defined milestones will begin. Make sure all milestones are defined and the team is assigned.",
+      "pauseProjectTitle": "Pause Project",
+      "pauseProject": "This project will be paused. You can resume work at any time.",
+      "resumeProjectTitle": "Resume Project",
+      "resumeProject": "Work on this project will be resumed."
+    },
+    "notifications": {
+      "activated": "Project activated successfully",
+      "paused": "Project paused successfully",
+      "resumed": "Project resumed successfully"
+    },
     "status": {
       "new": "New",
       "open_for_bids": "Open for Bids",

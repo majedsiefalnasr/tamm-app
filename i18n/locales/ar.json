@@ -23,10 +23,18 @@
     "milestone_edit_failed": "فشل تعديل المرحلة",
     "milestone_delete_failed": "فشل حذف المرحلة",
     "failed_to_load": "فشل تحميل البيانات",
-    "unknown_error": "حدث خطأ غير معروف"
+    "unknown_error": "حدث خطأ غير معروف",
+    "invalidTransition": "انتقال غير صحيح",
+    "transitionFailed": "فشل الانتقال",
+    "milestonesNotDefined": "لم يتم تعريف أي مراحل بعد",
+    "engineersNotAssigned": "لم يتم تعيين المهندسين بعد",
+    "requirementsNotMet": "لم يتم استيفاء المتطلبات",
+    "featureNotReady": "الميزة غير متاحة حتى الآن"
   },
   "buttons": {
     "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "confirming": "جاري التأكيد...",
     "add_milestone": "إضافة مرحلة",
     "save_milestone": "حفظ المرحلة",
     "edit_milestone": "تعديل",
@@ -88,6 +96,27 @@
     "retry": "حاول مرة أخرى"
   },
   "project": {
+    "actions": {
+      "openForBids": "فتح للمناقصة",
+      "activateProject": "تفعيل المشروع",
+      "pauseProject": "إيقاف مؤقت",
+      "resumeProject": "استئناف"
+    },
+    "confirmations": {
+      "openForBidsTitle": "فتح المشروع للمناقصة",
+      "openForBids": "سيتم فتح هذا المشروع للمناقصة والسماح للمقاولين بتقديم عروضهم.",
+      "activateProjectTitle": "تفعيل المشروع",
+      "activateProject": "سيتم تفعيل هذا المشروع والبدء في العمل على المراحل المحددة. تأكد من تعريف جميع المراحل وتعيين الفريق.",
+      "pauseProjectTitle": "إيقاف المشروع مؤقتاً",
+      "pauseProject": "سيتم إيقاف هذا المشروع مؤقتاً. يمكنك استئناف العمل في أي وقت.",
+      "resumeProjectTitle": "استئناف المشروع",
+      "resumeProject": "سيتم استئناف العمل على هذا المشروع."
+    },
+    "notifications": {
+      "activated": "تم تفعيل المشروع بنجاح",
+      "paused": "تم إيقاف المشروع بنجاح",
+      "resumed": "تم استئناف المشروع بنجاح"
+    },
     "status": {
       "new": "جديد",
       "open_for_bids": "مفتوح للعروض",
