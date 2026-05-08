@@ -1,6 +1,6 @@
 # Story 03-03 — Field Engineer Submits Report
 
-**Status:** ready-for-dev  
+**Status:** review  
 **Epic:** 03 — Milestones, Reports & Approval Flow  
 **Story ID:** 3.3  
 **Priority:** 🔴 CRITICAL — Unblocks entire approval flow (milestones cannot progress without reports)  
@@ -532,6 +532,81 @@ Before marking done:
 
 ---
 
-**Status:** ✅ Ultimate context engine analysis completed — comprehensive developer guide created  
-**Ready for:** dev-story implementation  
-**Next step:** Run `/bmad-dev-story 03-03-field-engineer-submits-report.md`
+## ✅ Implementation Complete
+
+**Completed:** 2026-05-08 16:00 UTC  
+**Developer:** Claude Haiku 4.5  
+
+### What Was Built
+
+1. **ReportForm.vue** (284 lines)
+   - Full-featured report submission dialog
+   - Content textarea with min 20 char validation
+   - Drag-drop + click file upload with preview grid
+   - Image validation (type, size, count limits)
+   - Local draft saving (session-only)
+   - Success/error notifications with i18n
+
+2. **useMilestones.ts** (submitReport function)
+   - Optimistic update: milestone status → under_review
+   - Rollback on error with preserved previous state
+   - Status transition validation via canTransition()
+   - Mock API ready (POST /milestones/:id/reports)
+   - Proper error handling
+
+3. **MilestoneCard.vue** + **MilestoneActions.vue**
+   - ReportForm dialog integration
+   - Submit report button with visibility matrix
+   - Event handling for submission success
+
+4. **i18n Support**
+   - 20+ translation keys (AR + EN)
+   - Form labels, validation, error messages
+
+5. **Test Coverage**
+   - 13 functional tests (ReportForm)
+   - 11 composable tests (submitReport)
+   - File handling, validation, status updates
+
+### Quality Metrics
+
+✅ TypeScript strict mode — no errors  
+✅ Build successful — no warnings in app code  
+✅ Logical CSS properties — RTL safe  
+✅ i18n complete — all strings externalized  
+✅ Permissions checked — visibility matrix enforced  
+✅ Status validated — canTransition() before API  
+✅ Error handling — rollback + notification  
+✅ Code organization — CLAUDE.md compliant
+
+### Files Changed
+
+- `app/components/milestone/ReportForm.vue` (NEW)
+- `app/composables/useMilestones.ts` (MODIFIED)
+- `app/components/milestone/MilestoneCard.vue` (MODIFIED)
+- `app/components/milestone/MilestoneActions.vue` (MODIFIED)
+- `i18n/locales/ar.json` (MODIFIED)
+- `i18n/locales/en.json` (MODIFIED)
+- `tests/unit/components/milestone/ReportForm.spec.ts` (NEW)
+- `tests/unit/composables/useMilestones.submitReport.spec.ts` (NEW)
+
+### Next Steps for QA/Review
+
+1. Open milestone card in `in_progress` status
+2. Click "Submit report" button
+3. Fill form: content (20+ chars) + select images
+4. Verify preview grid shows images
+5. Click "Submit report"
+6. Verify: dialog closes, card updates to `under_review`, notification shown
+7. Check milestone detail page: report visible
+8. Test error case: submit form with < 20 chars (should show error)
+9. Test RTL: switch to Arabic, verify layout
+
+### Unblocks
+
+- ✅ Story 03-04 (Supervisor review & approval)
+- ✅ Story 03-05 (Client final approval)
+- ✅ Story 04-01 (Payment processing)
+
+**Status:** ✅ Implementation complete and committed  
+**Ready for:** Code review via `/code-review`
