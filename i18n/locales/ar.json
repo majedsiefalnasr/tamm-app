@@ -74,6 +74,9 @@
     "projects": "المشاريع",
     "assignments": "التكليفات",
     "reviews": "المراجعات",
+    "reviews.pending": "مراجعات قيد الانتظار",
+    "reviews.empty.title": "لا توجد مراجعات قيد الانتظار",
+    "reviews.empty.description": "أنت محدث! تمت مراجعة جميع التقارير.",
     "admin_dashboard": "لوحة التحكم"
   },
   "roles": {
@@ -97,7 +100,9 @@
     "expand": "توسيع",
     "collapse": "طي",
     "back": "العودة",
-    "completed": "مكتمل"
+    "completed": "مكتمل",
+    "submitted": "تم الرفع في",
+    "by": "بواسطة"
   },
   "nav": {
     "home": "الرئيسية",

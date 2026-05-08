@@ -75,6 +75,10 @@ export interface Milestone {
   allowed_actions: string[]
   created_at: string
   updated_at?: string
+  field_engineer?: {
+    id: string
+    name: string
+  }
 }
 
 export interface ProjectDetail {

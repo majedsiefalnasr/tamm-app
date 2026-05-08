@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-08T17:45:00Z
+last_updated: 2026-05-08T18:15:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -67,7 +67,7 @@ development_status:
   03-03-field-engineer-submits-report: review
   03-04-supervisor-reviews-and-approves-milestone: review
   03-05-client-gives-final-approval: ready-for-dev
-  03-06-pending-reviews-dashboard-supervisor: backlog
+  03-06-pending-reviews-dashboard-supervisor: in-progress
   03-07-client-approval-queue: backlog
   epic-03-retrospective: optional
 

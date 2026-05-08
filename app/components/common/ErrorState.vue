@@ -3,13 +3,13 @@ import { Button } from '~/components/ui/button'
 
 interface Props {
   message?: string
-  retryLabel?: string
+  actionLabel?: string
 }
 
 defineProps<Props>()
 
 interface Emits {
-  retry: []
+  (e: 'action'): void
 }
 
 defineEmits<Emits>()
@@ -26,8 +26,8 @@ defineEmits<Emits>()
     <p class="text-muted-foreground mb-6 text-sm">
       {{ message || $t('common.error_description') }}
     </p>
-    <Button variant="outline" @click="$emit('retry')">
-      {{ retryLabel || $t('common.retry') }}
+    <Button variant="outline" @click="$emit('action')">
+      {{ actionLabel || $t('common.retry') }}
     </Button>
   </div>
 </template>

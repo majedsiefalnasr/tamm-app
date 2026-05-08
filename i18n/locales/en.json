@@ -74,6 +74,9 @@
     "projects": "Projects",
     "assignments": "Assignments",
     "reviews": "Reviews",
+    "reviews.pending": "Pending Reviews",
+    "reviews.empty.title": "No Pending Reviews",
+    "reviews.empty.description": "You're all caught up! All milestone reports have been reviewed.",
     "admin_dashboard": "Admin Dashboard"
   },
   "roles": {
@@ -97,7 +100,9 @@
     "expand": "Expand",
     "collapse": "Collapse",
     "back": "Back",
-    "completed": "Completed"
+    "completed": "Completed",
+    "submitted": "Submitted",
+    "by": "by"
   },
   "nav": {
     "home": "Home",

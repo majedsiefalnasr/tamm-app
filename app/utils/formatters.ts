@@ -1,3 +1,5 @@
+import { useI18n } from 'vue-i18n'
+
 export const formatCurrency = (amount: number, currency = 'EGP'): string => {
   if (typeof amount !== 'number' || isNaN(amount)) {
     return '0'

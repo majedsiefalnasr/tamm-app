@@ -417,6 +417,67 @@ export const useMilestones = () => {
     }
   }
 
+  // Get pending reviews for the authenticated supervisor
+  const pendingReviews = ref<Milestone[]>([])
+
+  const getPendingReviews = async (): Promise<Milestone[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      // TODO: replace mock — GET /milestones?supervisor_id={auth.id}&status=under_review endpoint
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // Mock data: pending reviews sorted by submission date (oldest first)
+      const mockPendingReviews: Milestone[] = [
+        {
+          id: 'ms-2',
+          name: 'Walls & Finishing',
+          description: 'Walls, finishing, internal work',
+          amount: 75000,
+          order: 2,
+          status: 'under_review',
+          tasks: [],
+          payment_status: 'pending_payment',
+          allowed_actions: [
+            'review_milestone',
+            'approve_milestone',
+            'reject_milestone',
+          ],
+          created_at: '2026-05-01T09:00:00Z',
+        },
+      ]
+
+      // Sort by created_at ascending (oldest first)
+      const sorted = [...mockPendingReviews].sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+
+      pendingReviews.value = sorted
+      return sorted
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : 'Failed to load pending reviews'
+      pendingReviews.value = []
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const refreshPendingReviews = async (): Promise<void> => {
+    await getPendingReviews()
+  }
+
+  const removePendingReview = (milestoneId: string): void => {
+    pendingReviews.value = pendingReviews.value.filter(
+      m => m.id !== milestoneId
+    )
+  }
+
+  const pendingReviewsCount = computed(() => pendingReviews.value.length)
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -429,5 +490,10 @@ export const useMilestones = () => {
     approveMilestone,
     rejectMilestone,
     submitReport,
+    getPendingReviews,
+    refreshPendingReviews,
+    removePendingReview,
+    pendingReviews: computed(() => pendingReviews.value),
+    pendingReviewsCount,
   }
 }
