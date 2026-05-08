@@ -79,6 +79,17 @@ export interface Milestone {
     id: string
     name: string
   }
+  project_id?: string
+  project?: {
+    id: string
+    name: string
+  }
+  supervisor_id?: string
+  supervisor?: {
+    id: string
+    name: string
+  }
+  supervisor_approved_at?: string
 }
 
 export interface ProjectDetail {

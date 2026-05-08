@@ -478,6 +478,96 @@ export const useMilestones = () => {
 
   const pendingReviewsCount = computed(() => pendingReviews.value.length)
 
+  // Get pending approvals for the authenticated client
+  const pendingApprovals = ref<Milestone[]>([])
+
+  const getPendingApprovals = async (): Promise<Milestone[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      // TODO: replace mock — GET /milestones?client_id={auth.id}&status=supervisor_approved endpoint
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // Mock data: pending approvals sorted by supervisor_approved_at (oldest first)
+      const mockPendingApprovals: Milestone[] = [
+        {
+          id: 'ms-2',
+          name: 'Walls & Finishing',
+          description: 'Walls, finishing, internal work',
+          amount: 75000,
+          order: 2,
+          status: 'supervisor_approved',
+          tasks: [],
+          payment_status: 'pending_payment',
+          allowed_actions: ['approve_milestone', 'reject_milestone'],
+          created_at: '2026-05-01T09:00:00Z',
+          supervisor_approved_at: '2026-05-06T10:15:00Z',
+          supervisor: {
+            id: 'sup-001',
+            name: 'Fatima Al-Mansouri',
+          },
+          project: {
+            id: 'proj-001',
+            name: 'Downtown Office Tower',
+          },
+          project_id: 'proj-001',
+        },
+        {
+          id: 'ms-3',
+          name: 'Electrical Work',
+          description: 'Electrical installation and testing',
+          amount: 50000,
+          order: 3,
+          status: 'supervisor_approved',
+          tasks: [],
+          payment_status: 'pending_payment',
+          allowed_actions: ['approve_milestone', 'reject_milestone'],
+          created_at: '2026-05-02T09:00:00Z',
+          supervisor_approved_at: '2026-05-05T14:30:00Z',
+          supervisor: {
+            id: 'sup-002',
+            name: 'Ahmed Hassan',
+          },
+          project: {
+            id: 'proj-002',
+            name: 'Azure Plaza Tower',
+          },
+          project_id: 'proj-002',
+        },
+      ]
+
+      // Sort by supervisor_approved_at ascending (oldest first)
+      const sorted = [...mockPendingApprovals].sort(
+        (a, b) =>
+          new Date(a.supervisor_approved_at || a.created_at).getTime() -
+          new Date(b.supervisor_approved_at || b.created_at).getTime()
+      )
+
+      pendingApprovals.value = sorted
+      return sorted
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : 'Failed to load pending approvals'
+      pendingApprovals.value = []
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const refreshPendingApprovals = async (): Promise<void> => {
+    await getPendingApprovals()
+  }
+
+  const removePendingApproval = (milestoneId: string): void => {
+    pendingApprovals.value = pendingApprovals.value.filter(
+      m => m.id !== milestoneId
+    )
+  }
+
+  const pendingApprovalsCount = computed(() => pendingApprovals.value.length)
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -495,5 +585,10 @@ export const useMilestones = () => {
     removePendingReview,
     pendingReviews: computed(() => pendingReviews.value),
     pendingReviewsCount,
+    getPendingApprovals,
+    refreshPendingApprovals,
+    removePendingApproval,
+    pendingApprovals: computed(() => pendingApprovals.value),
+    pendingApprovalsCount,
   }
 }

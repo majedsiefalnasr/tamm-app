@@ -77,7 +77,9 @@
     "reviews.pending": "Pending Reviews",
     "reviews.empty.title": "No Pending Reviews",
     "reviews.empty.description": "You're all caught up! All milestone reports have been reviewed.",
-    "admin_dashboard": "Admin Dashboard"
+    "admin_dashboard": "Admin Dashboard",
+    "client_dashboard": "Client Dashboard",
+    "client_dashboard_subtitle": "Review and approve milestones"
   },
   "roles": {
     "client": "Client",
@@ -295,7 +297,9 @@
     "select_files": "Select Files",
     "save_draft": "Save as Draft",
     "submit_report": "Submit Report",
-    "remove_image": "Remove Image"
+    "remove_image": "Remove Image",
+    "view_details": "View Details",
+    "approve": "Approve"
   },
   "validation": {
     "required": "Required",
@@ -357,5 +361,13 @@
   "report": {
     "content": "Content",
     "images": "Images"
+  },
+  "approval_queue": {
+    "title": "Pending Approvals",
+    "supervisor_approved": "✓ Approved by {name} on {date}",
+    "empty": {
+      "title": "No Pending Approvals",
+      "description": "All milestones have been processed. You're all caught up!"
+    }
   }
 }

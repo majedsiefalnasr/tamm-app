@@ -77,7 +77,9 @@
     "reviews.pending": "مراجعات قيد الانتظار",
     "reviews.empty.title": "لا توجد مراجعات قيد الانتظار",
     "reviews.empty.description": "أنت محدث! تمت مراجعة جميع التقارير.",
-    "admin_dashboard": "لوحة التحكم"
+    "admin_dashboard": "لوحة التحكم",
+    "client_dashboard": "لوحة تحكم العميل",
+    "client_dashboard_subtitle": "معالجة واعتماد المراحل"
   },
   "roles": {
     "client": "عميل",
@@ -295,7 +297,9 @@
     "select_files": "اختر الملفات",
     "save_draft": "حفظ كمسودة",
     "submit_report": "رفع التقرير",
-    "remove_image": "إزالة الصورة"
+    "remove_image": "إزالة الصورة",
+    "view_details": "عرض التفاصيل",
+    "approve": "الموافقة"
   },
   "validation": {
     "required": "مطلوب",
@@ -357,5 +361,13 @@
   "report": {
     "content": "المحتوى",
     "images": "الصور"
+  },
+  "approval_queue": {
+    "title": "قائمة الاعتمادات",
+    "supervisor_approved": "✓ موافق من قبل {name} في {date}",
+    "empty": {
+      "title": "لا توجد موافقات معلقة",
+      "description": "تمت معالجة جميع المراحل. أنت محدث!"
+    }
   }
 }
