@@ -15,5 +15,29 @@
     "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
     "connectionError": "خطأ في الاتصال — يرجى المحاولة مرة أخرى",
     "forgotPassword": "هل نسيت كلمة المرور؟"
+  },
+  "errors": {
+    "forbidden": "غير مخول",
+    "access_denied": "ليس لديك إذن للوصول إلى هذه الصفحة"
+  },
+  "pages": {
+    "projects": "المشاريع",
+    "assignments": "التكليفات",
+    "reviews": "المراجعات",
+    "admin_dashboard": "لوحة التحكم"
+  },
+  "roles": {
+    "client": "عميل",
+    "contractor": "مقاول",
+    "field_engineer": "مهندس الموقع",
+    "supervisor_engineer": "مهندس الإشراف",
+    "admin": "مسؤول",
+    "super_admin": "مسؤول النظام"
+  },
+  "common": {
+    "back_to_home": "العودة للرئيسية",
+    "feature_coming_soon": "الميزة قادمة قريباً...",
+    "logout": "تسجيل الخروج",
+    "home": "الرئيسية"
   }
 }

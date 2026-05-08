@@ -42,6 +42,12 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.success) {
         token.value = response.data.token
         user.value = response.data.user
+
+        // Redirect to role-based home page (not hardcoded /dashboard)
+        const { getHomePageForRole } = useRoleRoutes()
+        const homePage = getHomePageForRole(response.data.user.role)
+        await navigateTo(homePage)
+
         return response.data
       } else {
         throw new Error(response.error?.message || 'Login failed')

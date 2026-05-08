@@ -6,9 +6,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     await auth.init()
   }
 
-  // Redirect authenticated users away from login
+  // Redirect authenticated users away from login to their role-based home
   if (auth.isAuthenticated && to.path === '/login') {
-    return navigateTo('/dashboard')
+    const { getHomePageForRole } = useRoleRoutes()
+    const homePage = getHomePageForRole(auth.user?.role ?? 'client')
+    return navigateTo(homePage)
   }
 
   // Allow access to public routes (login, forgot-password, etc.)

@@ -15,5 +15,29 @@
     "invalidCredentials": "Invalid email or password",
     "connectionError": "Connection error — please try again",
     "forgotPassword": "Forgot password?"
+  },
+  "errors": {
+    "forbidden": "Forbidden",
+    "access_denied": "You do not have permission to access this page"
+  },
+  "pages": {
+    "projects": "Projects",
+    "assignments": "Assignments",
+    "reviews": "Reviews",
+    "admin_dashboard": "Admin Dashboard"
+  },
+  "roles": {
+    "client": "Client",
+    "contractor": "Contractor",
+    "field_engineer": "Field Engineer",
+    "supervisor_engineer": "Supervisor Engineer",
+    "admin": "Admin",
+    "super_admin": "Super Admin"
+  },
+  "common": {
+    "back_to_home": "Back to Home",
+    "feature_coming_soon": "Feature coming soon...",
+    "logout": "Log out",
+    "home": "Home"
   }
 }
