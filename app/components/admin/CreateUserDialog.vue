@@ -20,6 +20,10 @@ const handleSuccess = () => {
   emit('update:open', false)
   emit('success')
 }
+
+const handleCancel = () => {
+  emit('update:open', false)
+}
 </script>
 
 <template>
@@ -30,7 +34,7 @@ const handleSuccess = () => {
           $t('admin.users.create.title')
         }}</DialogTitle>
       </DialogHeader>
-      <CreateUserForm @success="handleSuccess" />
+      <CreateUserForm @success="handleSuccess" @cancel="handleCancel" />
     </DialogContent>
   </Dialog>
 </template>

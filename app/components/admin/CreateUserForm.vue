@@ -19,6 +19,7 @@ import {
 
 interface Emits {
   success: []
+  cancel: []
 }
 
 const emit = defineEmits<Emits>()
@@ -154,6 +155,7 @@ const onSubmit = handleSubmit(async formValues => {
         variant="ghost"
         class="flex-1"
         :disabled="isSubmitting"
+        @click="() => emit('cancel')"
       >
         {{ $t('admin.users.create.cancel') }}
       </Button>
