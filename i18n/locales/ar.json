@@ -94,7 +94,17 @@
     "projects": "المشاريع"
   },
   "milestone": {
-    "project_unknown": "مشروع"
+    "project_unknown": "مشروع",
+    "action": {
+      "pay": "دفع المرحلة"
+    },
+    "actions": {
+      "submitReport": "رفع التقرير",
+      "viewReport": "عرض التقرير",
+      "approveMilestone": "اعتماد المرحلة",
+      "rejectMilestone": "رفض المرحلة",
+      "payMilestone": "دفع المرحلة"
+    }
   },
   "payment": {
     "status": {
@@ -103,6 +113,22 @@
       "awaiting_approval": "في انتظار الموافقة",
       "ready_for_payout": "جاهز للصرف",
       "paid_out": "تم الصرف"
+    },
+    "dialog": {
+      "title": "دفع المرحلة",
+      "escrow_explanation": "سيتم الاحتفاظ بالأموال بشكل آمن في ضمان حتى تتم الموافقة على هذه المرحلة.",
+      "bank_name": "اسم البنك",
+      "transaction_reference": "رقم العملية",
+      "receipt_image": "صورة الإيصال",
+      "notes": "ملاحظات (اختياري)",
+      "cancel": "إلغاء",
+      "confirm": "تأكيد الدفع"
+    },
+    "success": {
+      "message": "تم استلام الدفع. يمكن بدء العمل الآن."
+    },
+    "error": {
+      "message": "فشل معالجة الدفع. يرجى المحاولة مرة أخرى."
     }
   },
   "project": {

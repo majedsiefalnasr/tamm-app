@@ -44,3 +44,38 @@ export function canTransition(
 
   return false
 }
+
+export const PAYMENT_STATUS_META = {
+  pending_payment: {
+    label: 'payment.status.pending_payment',
+    color: 'muted',
+    icon: 'Clock',
+  },
+  paid: { label: 'payment.status.paid', color: 'info', icon: 'Lock' },
+  awaiting_approval: {
+    label: 'payment.status.awaiting_approval',
+    color: 'accent',
+    icon: 'Clock',
+  },
+  ready_for_payout: {
+    label: 'payment.status.ready_for_payout',
+    color: 'accent',
+    icon: 'CheckCircle',
+  },
+  paid_out: {
+    label: 'payment.status.paid_out',
+    color: 'primary',
+    icon: 'CheckCircle',
+  },
+} as const
+
+export function derivePaymentStatus(milestoneStatus: string): string {
+  const mapping: Record<string, string> = {
+    not_started: 'pending_payment',
+    in_progress: 'paid',
+    under_review: 'paid',
+    supervisor_approved: 'awaiting_approval',
+    approved: 'ready_for_payout',
+  }
+  return mapping[milestoneStatus] || 'pending_payment'
+}

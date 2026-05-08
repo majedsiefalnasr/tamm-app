@@ -4,9 +4,11 @@ import { useI18n } from 'vue-i18n'
 import type { Milestone, ProjectDetail } from '~/shared/types/project'
 import { usePermission } from '~/composables/usePermission'
 import { useMilestones } from '~/composables/useMilestones'
+import { useNotifications } from '~/composables/useNotifications'
 import { Button } from '~/components/ui/button'
 import ApprovalFlow from './ApprovalFlow.vue'
 import ClientApprovalFlow from './ClientApprovalFlow.vue'
+import PaymentConfirmDialog from '~/components/payment/PaymentConfirmDialog.vue'
 
 interface Props {
   milestone: Milestone
@@ -25,10 +27,13 @@ const emits = defineEmits<{
 
 const { t } = useI18n()
 const { can } = usePermission()
-const { approveMilestone, rejectMilestone } = useMilestones()
+const { approveMilestone, rejectMilestone, payForMilestone } = useMilestones()
+const { notify } = useNotifications()
 
 const approvalFlowOpen = ref(false)
 const clientApprovalFlowOpen = ref(false)
+const paymentDialogOpen = ref(false)
+const isPaymentSubmitting = ref(false)
 
 const visibleActions = computed(() => {
   const actions = []
@@ -113,12 +118,26 @@ const handleAction = async (actionType: string) => {
         emits('submitReport')
         break
       case 'pay_milestone':
-        // Story 04-01 will implement payment
-        console.log('Pay milestone action - to be implemented in Story 04-01')
+        paymentDialogOpen.value = true
         break
     }
   } catch (error) {
     console.error(`Error executing action ${actionType}:`, error)
+  }
+}
+
+const handlePaymentSubmit = async (payload: any) => {
+  isPaymentSubmitting.value = true
+  try {
+    await payForMilestone(props.milestone.id, payload)
+    paymentDialogOpen.value = false
+    notify.success(t('payment.success.message'))
+    emits('actionComplete')
+  } catch (error) {
+    console.error('Payment error:', error)
+    notify.error(t('payment.error.message'))
+  } finally {
+    isPaymentSubmitting.value = false
   }
 }
 
@@ -177,6 +196,14 @@ const handleClientApprovalFlowRejected = () => {
       @update:open="clientApprovalFlowOpen = $event"
       @approved="handleClientApprovalFlowApproved"
       @rejected="handleClientApprovalFlowRejected"
+    />
+
+    <!-- Payment Dialog -->
+    <PaymentConfirmDialog
+      :milestone="milestone"
+      :open="paymentDialogOpen"
+      @close="paymentDialogOpen = false"
+      @submit="handlePaymentSubmit"
     />
   </div>
 </template>

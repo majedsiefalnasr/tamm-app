@@ -16,6 +16,14 @@ export interface ReportInput {
   images: File[]
 }
 
+export interface PaymentPayload {
+  payment_method: 'bank_transfer'
+  bank_name: string
+  transaction_reference: string
+  receipt_image: File
+  notes?: string
+}
+
 export interface MilestoneWithProject extends Milestone {
   projectId?: string
 }
@@ -567,6 +575,60 @@ export const useMilestones = () => {
 
   const pendingApprovalsCount = computed(() => pendingApprovals.value.length)
 
+  // Pay for a milestone
+  const payForMilestone = async (
+    milestoneId: string,
+    payload: PaymentPayload
+  ): Promise<Milestone> => {
+    // Find milestone in any project
+    let milestone: Milestone | undefined
+    let projectId: string | undefined
+    let milestoneIndex: number = -1
+
+    for (const [pId, milestones] of Object.entries(milestonesMap.value)) {
+      const idx = milestones.findIndex(m => m.id === milestoneId)
+      if (idx !== -1) {
+        projectId = pId
+        milestone = milestones[idx]
+        milestoneIndex = idx
+        break
+      }
+    }
+
+    if (!milestone || !projectId) {
+      throw new Error('Milestone not found')
+    }
+
+    // Validate transition
+    if (!canTransition('payment', milestone.payment_status, 'paid')) {
+      throw new Error('Invalid payment transition')
+    }
+
+    const prevMilestone = { ...milestone }
+
+    // Optimistic update: payment -> paid, milestone -> in_progress
+    const updatedMilestone: Milestone = {
+      ...milestone,
+      status: 'in_progress' as MilestoneStatus,
+      payment_status: 'paid',
+      updated_at: new Date().toISOString(),
+    }
+
+    milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
+
+    try {
+      // TODO: replace mock — POST /milestones/:id/pay endpoint
+      await new Promise(resolve => setTimeout(resolve, 500))
+      return updatedMilestone
+    } catch (err) {
+      // Rollback on error
+      milestonesMap.value[projectId][milestoneIndex] = prevMilestone
+      error.value =
+        err instanceof Error ? err.message : 'Failed to process payment'
+      throw err
+    }
+  }
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -589,5 +651,6 @@ export const useMilestones = () => {
     removePendingApproval,
     pendingApprovals: computed(() => pendingApprovals.value),
     pendingApprovalsCount,
+    payForMilestone,
   }
 }

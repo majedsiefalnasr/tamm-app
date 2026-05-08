@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-09T00:00:00Z
+last_updated: 2026-05-08T12:46:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -72,8 +72,8 @@ development_status:
   epic-03-retrospective: optional
 
   # Epic 04 — Payments & Escrow
-  epic-04: backlog
-  04-01-client-pays-for-a-milestone: backlog
+  epic-04: in-progress
+  04-01-client-pays-for-a-milestone: review
   04-02-payment-status-badge-on-milestone: backlog
   04-03-admin-releases-payment-to-contractor: backlog
   04-04-contractor-payment-history: backlog

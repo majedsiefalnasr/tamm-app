@@ -94,7 +94,17 @@
     "projects": "Projects"
   },
   "milestone": {
-    "project_unknown": "Project"
+    "project_unknown": "Project",
+    "action": {
+      "pay": "Pay Milestone"
+    },
+    "actions": {
+      "submitReport": "Submit Report",
+      "viewReport": "View Report",
+      "approveMilestone": "Approve Milestone",
+      "rejectMilestone": "Reject Milestone",
+      "payMilestone": "Pay Milestone"
+    }
   },
   "payment": {
     "status": {
@@ -103,6 +113,22 @@
       "awaiting_approval": "Awaiting Approval",
       "ready_for_payout": "Ready for Payout",
       "paid_out": "Paid Out"
+    },
+    "dialog": {
+      "title": "Pay for Milestone",
+      "escrow_explanation": "Funds will be held securely in escrow until this milestone is approved.",
+      "bank_name": "Bank Name",
+      "transaction_reference": "Transaction Reference",
+      "receipt_image": "Receipt Image",
+      "notes": "Notes (optional)",
+      "cancel": "Cancel",
+      "confirm": "Confirm Payment"
+    },
+    "success": {
+      "message": "Payment received. Work can now begin."
+    },
+    "error": {
+      "message": "Failed to process payment. Please try again."
     }
   },
   "project": {
