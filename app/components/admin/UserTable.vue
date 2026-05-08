@@ -7,11 +7,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '~/components/ui/table'
-import { Skeleton } from '~/components/ui/skeleton'
-import { Pill } from '~/components/ui/pill'
+} from '../ui/table'
+import { Skeleton } from '../ui/skeleton'
+import { Badge } from '../ui/badge'
 import UserActionMenu from './UserActionMenu.vue'
-import type { User } from '~/composables/useAdminUsers'
+import type { User } from '../../composables/useAdminUsers'
 
 interface Props {
   users?: User[]
@@ -106,17 +106,16 @@ function formatRelativeTime(dateString: string): string {
               {{ user.email }}
             </TableCell>
             <TableCell class="text-start">
-              <Pill :variant="getRolePillVariant(user.role)">
+              <Badge :variant="getRoleVariant(user.role)">
                 {{ $t(`roles.${user.role}.label`) }}
-              </Pill>
+              </Badge>
             </TableCell>
             <TableCell class="text-start">
-              <Pill
-                :variant="user.status === 'active' ? 'primary' : 'muted'"
-                :compact="true"
+              <Badge
+                :variant="user.status === 'active' ? 'default' : 'secondary'"
               >
                 {{ $t(`admin.users.status.${user.status}`) }}
-              </Pill>
+              </Badge>
             </TableCell>
             <TableCell class="text-muted-foreground text-start text-sm">
               {{ user.createdAgo }}
@@ -136,12 +135,12 @@ function formatRelativeTime(dateString: string): string {
 </template>
 
 <script lang="ts">
-function getRolePillVariant(role: string): string {
+function getRoleVariant(role: string): string {
   const roleVariants: Record<string, string> = {
     super_admin: 'destructive',
     admin: 'default',
-    client: 'primary',
-    contractor: 'accent',
+    client: 'outline',
+    contractor: 'secondary',
     field_engineer: 'secondary',
     supervisor_engineer: 'secondary',
   }

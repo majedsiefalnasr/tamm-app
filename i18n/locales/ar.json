@@ -25,7 +25,14 @@
     "projectStatusUpdateFailed": "فشل تحديث حالة المشروع",
     "report_submission_failed": "فشل رفع التقرير",
     "invalid_transition": "انتقال غير صحيح",
-    "release_failed": "فشل تحرير الدفع"
+    "release_failed": "فشل تحرير الدفع",
+    "name_required": "الاسم مطلوب",
+    "email_required": "البريد الإلكتروني مطلوب",
+    "email_invalid": "البريد الإلكتروني غير صحيح",
+    "email_exists": "البريد الإلكتروني مستخدم بالفعل",
+    "role_required": "الدور مطلوب",
+    "user_created": "تم إنشاء المستخدم. تم إرسال بيانات الدخول عبر البريد الإلكتروني.",
+    "user_creation_failed": "فشل إنشاء المستخدم. يرجى المحاولة لاحقاً."
   },
   "buttons": {
     "cancel": "إلغاء",
@@ -426,7 +433,20 @@
         "active": "نشط",
         "inactive": "غير نشط"
       },
-      "empty_state": "لا توجد مستخدمون بهذا الدور"
+      "empty_state": "لا توجد مستخدمون بهذا الدور",
+      "create": {
+        "title": "إنشاء مستخدم جديد",
+        "full_name": "الاسم الكامل",
+        "full_name_placeholder": "مثال: أحمد محمد علي",
+        "email": "البريد الإلكتروني",
+        "email_placeholder": "عنوان البريد",
+        "role": "الدور",
+        "role_placeholder": "اختر دوراً",
+        "phone": "رقم الهاتف (اختياري)",
+        "phone_placeholder": "966501234567",
+        "submit": "إنشاء المستخدم",
+        "cancel": "إلغاء"
+      }
     }
   },
   "time": {

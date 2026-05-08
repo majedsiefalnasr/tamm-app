@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useAdminUsers } from '~/composables/useAdminUsers'
-import { usePermission } from '~/composables/usePermission'
-import { Button } from '~/components/ui/button'
-import UserTable from '~/components/admin/UserTable.vue'
-import type { Role } from '~/shared/types/user'
+import { useAdminUsers } from '../../composables/useAdminUsers'
+import { usePermission } from '../../composables/usePermission'
+import { Button } from '../../components/ui/button'
+import CreateUserDialog from '../../components/admin/CreateUserDialog.vue'
+import UserTable from '../../components/admin/UserTable.vue'
+import type { Role } from '#shared/types/user'
 
 definePageMeta({
   middleware: 'auth',
@@ -26,6 +27,7 @@ const {
   selectedRole,
   userCountByRole,
   toggleUserStatus,
+  refetch,
 } = useAdminUsers()
 
 const showCreateDialog = ref(false)
@@ -129,6 +131,15 @@ const handleCreateUserDialogClose = () => {
     </div>
 
     <!-- Create User Dialog (Story 06-02) -->
-    <!-- TODO: Wire Story 06-02 dialog here when ready -->
+    <CreateUserDialog
+      :open="showCreateDialog"
+      @update:open="handleCreateUserDialogClose"
+      @success="
+        () => {
+          handleCreateUserDialogClose()
+          refetch()
+        }
+      "
+    />
   </div>
 </template>

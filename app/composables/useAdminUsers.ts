@@ -1,5 +1,5 @@
 import { ref, computed, readonly, watch, onMounted } from 'vue'
-import type { Role } from '~/shared/types/user'
+import type { Role, CreateUserPayload } from '#shared/types/user'
 import { mockAdminUsers } from './__mocks__/admin-users'
 
 export interface User {
@@ -62,6 +62,8 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     }
   }
 
+  const creating = ref(false)
+
   const toggleUserStatus = async (userId: string) => {
     const user = users.value.find(u => u.id === userId)
     if (!user) return
@@ -84,6 +86,50 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
       // Rollback on error
       user.status = previousStatus
       error.value = (e as any)?.message || 'Failed to update user status'
+    }
+  }
+
+  const createUser = async (payload: CreateUserPayload) => {
+    creating.value = true
+    error.value = null
+    try {
+      // Generate random password (16 chars) — backend will override with auto-generated
+      const password = Math.random().toString(36).slice(2, 18)
+
+      if (USE_MOCK) {
+        // Mock implementation
+        const newUser: User = {
+          id: `user-${Date.now()}`,
+          ...payload,
+          phone: payload.phone || null,
+          status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+        users.value.unshift(newUser)
+      } else {
+        // Real API implementation
+        const response = await useApi('/users', {
+          method: 'POST',
+          body: { ...payload, password },
+        })
+
+        // Refetch users list to include new user
+        await fetchUsers(
+          selectedRole.value === 'all'
+            ? undefined
+            : (selectedRole.value as Role)
+        )
+      }
+
+      return payload
+    } catch (e: any) {
+      if (e?.data?.error?.errors) {
+        throw e
+      }
+      throw e
+    } finally {
+      creating.value = false
     }
   }
 
@@ -119,8 +165,10 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     error: readonly(error),
     selectedRole,
     userCountByRole,
+    creating: readonly(creating),
     fetchUsers,
     toggleUserStatus,
+    createUser,
     refetch: () => fetchUsers(),
   }
 }

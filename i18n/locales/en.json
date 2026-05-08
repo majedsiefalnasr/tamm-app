@@ -25,7 +25,14 @@
     "projectStatusUpdateFailed": "Failed to update project status",
     "report_submission_failed": "Failed to submit report",
     "invalid_transition": "Invalid status transition",
-    "release_failed": "Failed to release payment"
+    "release_failed": "Failed to release payment",
+    "name_required": "Name is required",
+    "email_required": "Email is required",
+    "email_invalid": "Email must be valid",
+    "email_exists": "Email is already in use",
+    "role_required": "Role is required",
+    "user_created": "User created successfully. Credentials sent via email.",
+    "user_creation_failed": "Failed to create user. Please try again."
   },
   "buttons": {
     "cancel": "Cancel",
@@ -426,7 +433,20 @@
         "active": "Active",
         "inactive": "Inactive"
       },
-      "empty_state": "No users found with this role"
+      "empty_state": "No users found with this role",
+      "create": {
+        "title": "Create New User",
+        "full_name": "Full Name",
+        "full_name_placeholder": "e.g. Ahmed Mohammed Ali",
+        "email": "Email",
+        "email_placeholder": "Email address",
+        "role": "Role",
+        "role_placeholder": "Select a role",
+        "phone": "Phone Number (optional)",
+        "phone_placeholder": "Phone number",
+        "submit": "Create User",
+        "cancel": "Cancel"
+      }
     }
   },
   "time": {

@@ -4,10 +4,10 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuItem,
-} from '~/components/ui/dropdown-menu'
-import { Button } from '~/components/ui/button'
+} from '../ui/dropdown-menu'
+import { Button } from '../ui/button'
 import { MoreVertical } from 'lucide-vue-next'
-import type { User } from '~/composables/useAdminUsers'
+import type { User } from '../../composables/useAdminUsers'
 
 interface Props {
   user: User
