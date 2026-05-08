@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { Skeleton } from '~/components/ui/skeleton'
 import EmptyState from '~/components/common/EmptyState.vue'
@@ -32,14 +32,22 @@ const {
   fetchWithdrawals,
   submitWithdrawalRequest,
   getContractorBalance,
+  startWithdrawalPolling,
+  stopWithdrawalPolling,
 } = usePayments()
 
 // UI state
 const isDialogOpen = ref(false)
 
-// Fetch data on mount
+// Fetch data on mount and start polling
 onMounted(async () => {
   await Promise.all([fetchMilestones(), fetchWithdrawals()])
+  startWithdrawalPolling()
+})
+
+// Stop polling when leaving the page
+onUnmounted(() => {
+  stopWithdrawalPolling()
 })
 
 // Get contractor balance

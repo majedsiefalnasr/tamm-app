@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, onUnmounted } from 'vue'
 import type { Milestone } from '~/shared/types/project'
 import type { Withdrawal, ContractorBalance } from '~/shared/types/payment'
 import { derivePaymentStatus } from '~/utils/statusMachine'
@@ -11,6 +11,8 @@ import {
   mockGetWithdrawalCountdown,
 } from './\_\_mocks\_\_/usePaymentsWithdrawals'
 
+const POLLING_INTERVAL_MS = 30000 // 30 seconds
+
 export const usePayments = () => {
   const { getMilestones } = useMilestones()
   const { projects } = useProjects()
@@ -19,6 +21,7 @@ export const usePayments = () => {
   const withdrawals = ref<Withdrawal[]>([])
   const isLoadingWithdrawals = ref(false)
   const isSubmittingWithdrawal = ref(false)
+  let pollingIntervalId: ReturnType<typeof setInterval> | null = null
 
   // Dashboard aggregates - all milestones across all projects
   const dashboardTotals = computed(() => {
@@ -113,6 +116,31 @@ export const usePayments = () => {
     return mockGetWithdrawalCountdown(approvedAt)
   }
 
+  const startWithdrawalPolling = () => {
+    // Don't start multiple polling intervals
+    if (pollingIntervalId !== null) return
+
+    // Initial fetch
+    fetchWithdrawals()
+
+    // Poll every 30 seconds
+    pollingIntervalId = setInterval(() => {
+      fetchWithdrawals()
+    }, POLLING_INTERVAL_MS)
+  }
+
+  const stopWithdrawalPolling = () => {
+    if (pollingIntervalId !== null) {
+      clearInterval(pollingIntervalId)
+      pollingIntervalId = null
+    }
+  }
+
+  // Cleanup polling when composable is unmounted
+  onUnmounted(() => {
+    stopWithdrawalPolling()
+  })
+
   return {
     dashboardTotals,
     getProjectFinancials,
@@ -125,5 +153,8 @@ export const usePayments = () => {
     submitWithdrawalRequest,
     getContractorBalance,
     getWithdrawalCountdown,
+    // Withdrawal polling
+    startWithdrawalPolling,
+    stopWithdrawalPolling,
   }
 }

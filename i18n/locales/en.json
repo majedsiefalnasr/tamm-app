@@ -100,7 +100,19 @@
   },
   "nav": {
     "home": "Home",
-    "projects": "Projects"
+    "overview": "Dashboard",
+    "projects": "Projects",
+    "reports": "Reports",
+    "payments": "Payments",
+    "messages": "Messages",
+    "withdrawals": "Withdrawals",
+    "settings": "Settings",
+    "tasks": "Tasks",
+    "approvals": "Approvals",
+    "users": "Users",
+    "assignments": "Assignments",
+    "system_flags": "System Flags",
+    "system_logs": "System Logs"
   },
   "milestone": {
     "project_unknown": "Project",

@@ -100,7 +100,19 @@
   },
   "nav": {
     "home": "الرئيسية",
-    "projects": "المشاريع"
+    "overview": "لوحة التحكم",
+    "projects": "المشاريع",
+    "reports": "التقارير",
+    "payments": "المدفوعات",
+    "messages": "المحادثات",
+    "withdrawals": "السحوبات",
+    "settings": "الإعدادات",
+    "tasks": "المهام",
+    "approvals": "الاعتمادات",
+    "users": "المستخدمون",
+    "assignments": "طلبات التعيين",
+    "system_flags": "إشارات النظام",
+    "system_logs": "سجلات النظام"
   },
   "milestone": {
     "project_unknown": "مشروع",
