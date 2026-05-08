@@ -88,7 +88,13 @@
   },
   "common": {
     "cancel": "إلغاء",
-    "confirm": "تأكيد"
+    "confirm": "تأكيد",
+    "none": "لا توجد عناصر",
+    "project": "مشروع",
+    "milestone": "مرحلة",
+    "amount": "المبلغ",
+    "date": "التاريخ",
+    "payment_plural": "مدفوعات"
   },
   "nav": {
     "home": "الرئيسية",
@@ -108,6 +114,8 @@
     }
   },
   "payment": {
+    "heading": "المدفوعات",
+    "subtitle": "تابع سجل مدفوعاتك عبر جميع المشاريع",
     "status": {
       "pending_payment": "في انتظار الدفع",
       "paid": "مدفوع",
@@ -133,6 +141,18 @@
     },
     "contractor": "المقاول",
     "amount": "المبلغ",
+    "label": {
+      "pending_total": "إجمالي المعلق",
+      "received_total": "إجمالي المستلم"
+    },
+    "section": {
+      "pending": "المدفوعات المعلقة",
+      "received": "المدفوعات المستلمة"
+    },
+    "empty": {
+      "none": "لا توجد مدفوعات بعد",
+      "description": "بمجرد اكتمال المراحل والموافقة عليها، ستظهر المدفوعات هنا."
+    },
     "message": {
       "released": "تم تحرير الدفع — {amount}"
     },

@@ -681,6 +681,30 @@ export const useMilestones = () => {
     }
   }
 
+  // Fetch all milestones for contractor (used by payment history page)
+  const allMilestones = ref<Milestone[]>([])
+
+  const fetchMilestones = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      // Flatten all milestones from all projects
+      const flattened: Milestone[] = []
+      for (const projectMilestones of Object.values(mockMilestones)) {
+        flattened.push(...projectMilestones)
+      }
+      allMilestones.value = flattened
+      // TODO: replace mock — GET /milestones?contractor_id={id} endpoint
+      return flattened
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : 'Failed to load milestones'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -705,5 +729,7 @@ export const useMilestones = () => {
     pendingApprovalsCount,
     payForMilestone,
     releaseMilestonePayment,
+    fetchMilestones,
+    milestones: computed(() => allMilestones.value),
   }
 }

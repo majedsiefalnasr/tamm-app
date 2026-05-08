@@ -88,7 +88,13 @@
   },
   "common": {
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "none": "No items",
+    "project": "Project",
+    "milestone": "Milestone",
+    "amount": "Amount",
+    "date": "Date",
+    "payment_plural": "payments"
   },
   "nav": {
     "home": "Home",
@@ -108,6 +114,8 @@
     }
   },
   "payment": {
+    "heading": "Payments",
+    "subtitle": "Track your payment history across all projects",
     "status": {
       "pending_payment": "Pending Payment",
       "paid": "Paid",
@@ -133,6 +141,18 @@
     },
     "contractor": "Contractor",
     "amount": "Amount",
+    "label": {
+      "pending_total": "Pending total",
+      "received_total": "Received total"
+    },
+    "section": {
+      "pending": "Pending payments",
+      "received": "Received payments"
+    },
+    "empty": {
+      "none": "No payments yet",
+      "description": "Once milestones are completed and approved, payments will appear here."
+    },
     "message": {
       "released": "Payment released — {amount}"
     },
