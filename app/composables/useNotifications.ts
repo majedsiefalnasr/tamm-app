@@ -5,7 +5,7 @@ export const useNotifications = () => {
   const notify = {
     success: (message: string) => {
       // TODO: Integrate with toast library or notification system
-      console.log('✓ Success:', message)
+      console.warn('✓ Success:', message)
     },
     error: (message: string) => {
       // TODO: Integrate with toast library or notification system
@@ -13,7 +13,7 @@ export const useNotifications = () => {
     },
     info: (message: string) => {
       // TODO: Integrate with toast library or notification system
-      console.info('ℹ Info:', message)
+      console.warn('ℹ Info:', message)
     },
     warning: (message: string) => {
       // TODO: Integrate with toast library or notification system

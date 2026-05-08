@@ -43,6 +43,10 @@ const handleLogout = async () => {
   await auth.logout()
   // Auth store redirects to /login
 }
+
+const emit = defineEmits<{
+  'notification-click': []
+}>()
 </script>
 
 <template>
