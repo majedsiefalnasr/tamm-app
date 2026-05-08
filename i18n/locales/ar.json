@@ -1,7 +1,7 @@
 {
   "auth": {
     "email": "البريد الإلكتروني",
-    "emailPlaceholder": "you@example.com",
+    "emailPlaceholder": "عنوان البريد",
     "emailRequired": "البريد الإلكتروني مطلوب",
     "emailInvalid": "البريد الإلكتروني غير صحيح",
     "password": "كلمة المرور",
