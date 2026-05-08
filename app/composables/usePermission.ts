@@ -20,6 +20,7 @@ export const usePermission = () => {
         'manage_team_assignment',
         'view_proposals',
         'manage_proposal_status',
+        'view_payment_status',
       ],
       admin: [
         'view_projects',
@@ -30,6 +31,7 @@ export const usePermission = () => {
         'manage_team_assignment',
         'view_proposals',
         'manage_proposal_status',
+        'view_payment_status',
       ],
       client: [
         'view_projects',
@@ -38,12 +40,14 @@ export const usePermission = () => {
         'select_contractor',
         'approve_milestone',
         'pay_milestone',
+        'view_payment_status',
       ],
       contractor: [
         'view_projects',
         'create_milestone',
         'submit_proposal',
         'submit_report',
+        'view_payment_status',
       ],
       field_engineer: ['view_projects', 'submit_report'],
       supervisor_engineer: [

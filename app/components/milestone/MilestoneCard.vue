@@ -10,6 +10,7 @@ import StatusTag from '~/components/common/StatusTag.vue'
 import { Button } from '~/components/ui/button'
 import MilestoneActions from './MilestoneActions.vue'
 import ReportForm from './ReportForm.vue'
+import PaymentStatusTag from '~/components/payment/PaymentStatusTag.vue'
 
 interface Props {
   milestone: Milestone
@@ -117,8 +118,13 @@ const cardClasses = computed(() => {
         {{ formatCurrency(milestone.amount) }}
       </span>
 
-      <!-- Status Pill -->
-      <StatusTag :status="milestone.status" :tone="statusTone" />
+      <!-- Status Badges Row -->
+      <div class="flex items-center gap-1">
+        <!-- Milestone Status -->
+        <StatusTag :status="milestone.status" :tone="statusTone" />
+        <!-- Payment Status -->
+        <PaymentStatusTag :milestone="milestone" />
+      </div>
 
       <!-- Expand Chevron -->
       <button
@@ -207,19 +213,6 @@ const cardClasses = computed(() => {
         @action-complete="handleRefresh"
         @submit-report="handleSubmitReport"
       />
-
-      <!-- Payment Status Badge (Conditional) -->
-      <div
-        v-if="can('view_payment_status', milestone.allowed_actions)"
-        class="border-border flex items-center gap-2 border-t pt-2"
-      >
-        <span class="text-muted-foreground text-xs font-bold">{{
-          $t('milestone.section.paymentStatus')
-        }}</span>
-        <span class="bg-muted text-muted-foreground rounded px-2 py-1 text-xs">
-          {{ $t(`payment.status.${milestone.payment_status}`) }}
-        </span>
-      </div>
     </div>
   </div>
 

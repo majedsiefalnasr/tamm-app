@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { Milestone } from '~/shared/types/project'
+import { useI18n } from 'vue-i18n'
+import { formatCurrency } from '~/utils/formatters'
+import PaymentStatusTag from '~/components/payment/PaymentStatusTag.vue'
 
 interface Props {
   milestone: Milestone
@@ -50,9 +53,7 @@ const { t } = useI18n()
         <p class="text-muted-foreground mb-2 text-xs font-semibold uppercase">
           {{ t('milestone.detail.paymentStatus') }}
         </p>
-        <p class="text-ink text-lg font-bold capitalize">
-          {{ milestone.payment_status.replace(/_/g, ' ') }}
-        </p>
+        <PaymentStatusTag :milestone="milestone" />
       </div>
     </div>
 
