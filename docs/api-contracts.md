@@ -1257,6 +1257,80 @@ per_page=<num>   // optional: items per page (default: 20)
 
 All require authentication (admin level).
 
+### `GET /admin/dashboard`
+
+**Status:** ⏳ Not Available (mock data in use)  
+**Purpose:** Get dashboard summary with stats, banners, recent activity
+
+**Auth Required:** Yes (admin, super_admin)
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "summary_stats": {
+      "active_projects": 12,
+      "total_contractors": 8,
+      "total_tracked_value": 250000.0,
+      "open_disputes": 2
+    },
+    "urgent_actions": {
+      "new_projects": 3,
+      "pending_payments": 5,
+      "disputes": 2
+    },
+    "recent_projects": [
+      {
+        "id": "uuid",
+        "project_number": "P001",
+        "name": "مشروع البناء الأول",
+        "city": "القاهرة",
+        "client_name": "أحمد محمد",
+        "status": "active",
+        "milestones_completed": 2,
+        "milestones_total": 5,
+        "progress_percentage": 40
+      }
+    ],
+    "open_disputes": [
+      {
+        "id": "uuid",
+        "dispute_number": "D001",
+        "project_name": "مشروع البناء الأول",
+        "requester_name": "علي سالم",
+        "subject": "تأخير في التسليم",
+        "status": "open",
+        "created_at": "2026-05-08T10:30:00Z"
+      }
+    ],
+    "activity_data": {
+      "months": ["يناير", "فبراير", "..."],
+      "data": [
+        { "month": "يناير", "milestones": 5, "projects": 2 },
+        { "month": "فبراير", "milestones": 8, "projects": 3 }
+      ]
+    },
+    "recent_events": [
+      {
+        "id": "uuid",
+        "type": "project_created",
+        "title": "مشروع جديد: مشروع البناء الأول",
+        "timestamp": "2026-05-08T15:30:00Z",
+        "related_entity_id": "uuid"
+      }
+    ]
+  }
+}
+```
+
+**Frontend Use:** Admin dashboard page  
+**Implemented:** ✅ Ready to build (mock data in use)  
+**Notes:** Using mock data — replace with real endpoint when available
+
+---
+
 ### `GET /admin/permissions`
 
 **Status:** ✅ Available  

@@ -95,7 +95,7 @@ development_status:
   06-02-create-user-admin: ready-for-dev
   06-03-assign-engineers-to-project: review
   06-04-admin-project-overview: review
-  06-05-admin-dashboard: backlog
+  06-05-admin-dashboard: review
   epic-06-retrospective: optional
 
   # Epic 07 — Proposals & Contractor Selection

@@ -495,6 +495,63 @@
         "submit": "Save Assignment",
         "cancel": "Cancel"
       }
+    },
+    "dashboard": {
+      "page_title": "Dashboard",
+      "welcome": "Welcome back - {date}",
+      "urgent_actions": "Urgent Actions",
+      "banners": {
+        "new_projects_title": "New Project Requests",
+        "new_projects_subtitle": "You have {count} project awaiting review",
+        "pending_payments_title": "Pending Payment Releases",
+        "pending_payments_subtitle": "You have {count} payment ready for release",
+        "disputes_title": "Open Disputes",
+        "disputes_subtitle": "You have {count} dispute needing mediation",
+        "view": "View"
+      },
+      "stats": {
+        "active_projects": "Active Projects",
+        "registered_contractors": "Registered Contractors",
+        "total_tracked_value": "Total Tracked Value",
+        "open_disputes": "Open Disputes"
+      },
+      "activity": {
+        "title": "Platform Activity",
+        "chart_label": "Milestones and Projects Count"
+      },
+      "projects": {
+        "title": "Projects",
+        "view_all": "View All",
+        "columns": {
+          "project_number": "Project #",
+          "name": "Name",
+          "city": "City",
+          "owner": "Owner",
+          "progress": "Progress",
+          "status": "Status",
+          "action": "Action"
+        }
+      },
+      "disputes": {
+        "title": "Open Disputes",
+        "view_all": "View All",
+        "columns": {
+          "dispute_number": "Dispute #",
+          "project": "Project",
+          "requester": "Requester",
+          "subject": "Subject",
+          "status": "Status",
+          "created_date": "Date",
+          "action": "Action"
+        },
+        "mediate": "Mediate"
+      },
+      "empty_states": {
+        "projects": "No projects found",
+        "disputes": "No open disputes"
+      },
+      "error": "Error loading dashboard",
+      "retry": "Try again"
     }
   },
   "time": {
