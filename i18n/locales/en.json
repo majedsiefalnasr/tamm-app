@@ -363,6 +363,29 @@
       "title": "Notifications",
       "mark_all_read": "Mark all as read",
       "empty": "No notifications yet"
+    },
+    "events": {
+      "report_submitted": {
+        "title": "Report Submitted"
+      },
+      "supervisor_approved": {
+        "title": "Approved by Supervisor"
+      },
+      "supervisor_rejected": {
+        "title": "Rejected by Supervisor"
+      },
+      "client_approved": {
+        "title": "Approved by Client"
+      },
+      "client_rejected": {
+        "title": "Rejected by Client"
+      },
+      "payment_released": {
+        "title": "Payment Released"
+      },
+      "project_created": {
+        "title": "New Project Created"
+      }
     }
   }
 }

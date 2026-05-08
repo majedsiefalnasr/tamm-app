@@ -363,6 +363,29 @@
       "title": "الإشعارات",
       "mark_all_read": "تعليم الكل كمقروء",
       "empty": "لا توجد إشعارات بعد"
+    },
+    "events": {
+      "report_submitted": {
+        "title": "تم رفع التقرير"
+      },
+      "supervisor_approved": {
+        "title": "موافقة من المشرف"
+      },
+      "supervisor_rejected": {
+        "title": "رفضت المشرف"
+      },
+      "client_approved": {
+        "title": "موافقة من العميل"
+      },
+      "client_rejected": {
+        "title": "رفضت العميل"
+      },
+      "payment_released": {
+        "title": "تم تحرير الدفع"
+      },
+      "project_created": {
+        "title": "مشروع جديد"
+      }
     }
   }
 }

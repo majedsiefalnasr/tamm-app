@@ -1480,12 +1480,90 @@ These endpoints are **not yet in the Swagger spec**. See `BACKEND_BLOCKERS.md` f
 
 ### Notifications (Phase 7)
 
-- `GET /notifications` — list notifications
-- `PUT /notifications/{id}/read` — mark as read
-- `DELETE /notifications/{id}` — dismiss
-
 **Status:** ⏳ Planned  
 **Impact:** 🟠 HIGH — blocks real-time updates (defer to post-launch)
+
+#### `GET /notifications`
+
+**Status:** ⏳ Planned  
+**Purpose:** Fetch all notifications for authenticated user
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "notif-001",
+      "user_id": "user-123",
+      "title": "Report Submitted",
+      "body": "Foundation Work — Shopping Mall Project",
+      "link": "/projects/proj-001/milestones/m-001",
+      "is_read": false,
+      "created_at": "2026-05-09T10:30:00Z",
+      "read_at": null
+    }
+  ]
+}
+```
+
+**Response Schema:**
+
+- `id` (string) — unique notification identifier
+- `user_id` (string) — recipient user ID
+- `title` (string) — notification title (localized by backend)
+- `body` (string) — notification body/description (localized by backend)
+- `link` (string) — navigation target URL (e.g., `/projects/:id/milestones/:mid`, `/payments`)
+- `is_read` (boolean) — read status
+- `created_at` (string) — ISO 8601 timestamp
+- `read_at` (string | null) — ISO 8601 timestamp when marked as read, or null
+
+**Event Types Supported:**
+
+| Event               | Title                    | Body Example                            | Link                            |
+| ------------------- | ------------------------ | --------------------------------------- | ------------------------------- |
+| Report Submitted    | "Report Submitted"       | "[Milestone] — [Project]"               | `/projects/:id/milestones/:mid` |
+| Supervisor Approved | "Approved by Supervisor" | "[Milestone] — awaiting your approval"  | `/projects/:id/milestones/:mid` |
+| Supervisor Rejected | "Rejected by Supervisor" | "[Milestone] — [reason]"                | `/projects/:id/milestones/:mid` |
+| Client Approved     | "Approved by Client"     | "[Milestone] — payment pending"         | `/projects/:id/milestones/:mid` |
+| Client Rejected     | "Rejected by Client"     | "[Milestone] — [reason]"                | `/projects/:id/milestones/:mid` |
+| Payment Released    | "Payment Released"       | "SAR [amount] released for [milestone]" | `/payments`                     |
+| Project Created     | "New Project Created"    | "[Project name]"                        | `/projects/:id`                 |
+
+#### `POST /notifications/:id/read`
+
+**Status:** ⏳ Planned  
+**Purpose:** Mark a notification as read
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "notif-001",
+    "is_read": true,
+    "read_at": "2026-05-09T10:35:00Z"
+  }
+}
+```
+
+#### `POST /notifications/read-all`
+
+**Status:** ⏳ Planned  
+**Purpose:** Mark all unread notifications as read
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "marked_count": 5
+  }
+}
+```
 
 ---
 
