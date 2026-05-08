@@ -306,7 +306,9 @@
     "report_submitted": "Report submitted successfully",
     "draft_saved": "Draft saved locally",
     "milestone_approved": "Milestone approved successfully",
-    "milestone_rejected": "Milestone rejected, contractor returned to work"
+    "milestone_rejected": "Milestone rejected, contractor returned to work",
+    "client_milestone_approved": "Final approval confirmed — payment will be released to the contractor",
+    "client_milestone_rejected": "Milestone rejected, contractor returned to work"
   },
   "milestones": {
     "review_dialog": {
@@ -322,11 +324,26 @@
       "title": "Rejection Reason",
       "reason_placeholder": "Explain the reason for rejection...",
       "min_chars_error": "Minimum 10 characters"
+    },
+    "client_approval_dialog": {
+      "title": "Final Approval",
+      "supervisor_approved_badge": "✓ Approved by Supervisor",
+      "warning_title": "This action is final",
+      "warning_message": "This will release payment to the contractor",
+      "amount_label": "Milestone Amount",
+      "final_approve_button": "Confirm Final Approval",
+      "reject_button": "Reject"
+    },
+    "client_approve_confirm": {
+      "title": "Confirm Final Approval",
+      "message": "This will release payment to the contractor and complete this milestone"
     }
   },
   "errors": {
     "milestone_approval_failed": "Failed to approve milestone: {message}",
-    "milestone_rejection_failed": "Failed to reject milestone: {message}"
+    "milestone_rejection_failed": "Failed to reject milestone: {message}",
+    "client_milestone_approval_failed": "Failed to give final approval: {message}",
+    "client_milestone_rejection_failed": "Failed to reject milestone: {message}"
   },
   "common": {
     "cancel": "Cancel",

@@ -6,6 +6,7 @@ import { usePermission } from '~/composables/usePermission'
 import { useMilestones } from '~/composables/useMilestones'
 import { Button } from '~/components/ui/button'
 import ApprovalFlow from './ApprovalFlow.vue'
+import ClientApprovalFlow from './ClientApprovalFlow.vue'
 
 interface Props {
   milestone: Milestone
@@ -27,6 +28,7 @@ const { can } = usePermission()
 const { approveMilestone, rejectMilestone } = useMilestones()
 
 const approvalFlowOpen = ref(false)
+const clientApprovalFlowOpen = ref(false)
 
 const visibleActions = computed(() => {
   const actions = []
@@ -101,6 +103,12 @@ const handleAction = async (actionType: string) => {
       case 'review':
         approvalFlowOpen.value = true
         break
+      case 'approve_client':
+        clientApprovalFlowOpen.value = true
+        break
+      case 'reject_client':
+        clientApprovalFlowOpen.value = true
+        break
       case 'submit_report':
         emits('submitReport')
         break
@@ -123,6 +131,16 @@ const handleApprovalFlowRejected = () => {
   approvalFlowOpen.value = false
   emits('actionComplete')
 }
+
+const handleClientApprovalFlowApproved = () => {
+  clientApprovalFlowOpen.value = false
+  emits('actionComplete')
+}
+
+const handleClientApprovalFlowRejected = () => {
+  clientApprovalFlowOpen.value = false
+  emits('actionComplete')
+}
 </script>
 
 <template>
@@ -141,7 +159,7 @@ const handleApprovalFlowRejected = () => {
       </Button>
     </div>
 
-    <!-- Approval Flow Dialog -->
+    <!-- Approval Flow Dialog (Supervisor) -->
     <ApprovalFlow
       :open="approvalFlowOpen"
       :milestone="milestone"
@@ -149,6 +167,16 @@ const handleApprovalFlowRejected = () => {
       @update:open="approvalFlowOpen = $event"
       @approved="handleApprovalFlowApproved"
       @rejected="handleApprovalFlowRejected"
+    />
+
+    <!-- Client Approval Flow Dialog -->
+    <ClientApprovalFlow
+      :open="clientApprovalFlowOpen"
+      :milestone="milestone"
+      :report="milestone.latest_report"
+      @update:open="clientApprovalFlowOpen = $event"
+      @approved="handleClientApprovalFlowApproved"
+      @rejected="handleClientApprovalFlowRejected"
     />
   </div>
 </template>

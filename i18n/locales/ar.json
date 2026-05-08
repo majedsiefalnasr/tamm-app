@@ -306,7 +306,9 @@
     "report_submitted": "تم رفع التقرير بنجاح",
     "draft_saved": "تم حفظ المسودة محلياً",
     "milestone_approved": "تم اعتماد المرحلة بنجاح",
-    "milestone_rejected": "تم رفض المرحلة، عاد المقاول للعمل"
+    "milestone_rejected": "تم رفض المرحلة، عاد المقاول للعمل",
+    "client_milestone_approved": "تم تأكيد الاعتماد النهائي — سيتم تحويل الدفعة للمقاول",
+    "client_milestone_rejected": "تم رفض المرحلة، عاد المقاول للعمل"
   },
   "milestones": {
     "review_dialog": {
@@ -322,11 +324,26 @@
       "title": "سبب الرفض",
       "reason_placeholder": "اشرح سبب الرفض...",
       "min_chars_error": "الحد الأدنى 10 أحرف"
+    },
+    "client_approval_dialog": {
+      "title": "اعتماد نهائي",
+      "supervisor_approved_badge": "✓ تمت الموافقة من قبل المشرف",
+      "warning_title": "هذا الإجراء نهائي",
+      "warning_message": "سيتم تحرير الدفعة للمقاول",
+      "amount_label": "مبلغ المرحلة",
+      "final_approve_button": "تأكيد الاعتماد النهائي",
+      "reject_button": "رفض"
+    },
+    "client_approve_confirm": {
+      "title": "تأكيد الاعتماد النهائي",
+      "message": "سيتم تحرير الدفعة للمقاول وإكمال هذه المرحلة"
     }
   },
   "errors": {
     "milestone_approval_failed": "فشل اعتماد المرحلة: {message}",
-    "milestone_rejection_failed": "فشل رفض المرحلة: {message}"
+    "milestone_rejection_failed": "فشل رفض المرحلة: {message}",
+    "client_milestone_approval_failed": "فشل الاعتماد النهائي: {message}",
+    "client_milestone_rejection_failed": "فشل رفض المرحلة: {message}"
   },
   "common": {
     "cancel": "إلغاء",
