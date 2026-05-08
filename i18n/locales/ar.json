@@ -18,8 +18,50 @@
   },
   "errors": {
     "forbidden": "غير مخول",
-    "access_denied": "ليس لديك إذن للوصول إلى هذه الصفحة"
+    "access_denied": "ليس لديك إذن للوصول إلى هذه الصفحة",
+    "milestone_add_failed": "فشل إضافة المرحلة",
+    "milestone_edit_failed": "فشل تعديل المرحلة",
+    "milestone_delete_failed": "فشل حذف المرحلة",
+    "failed_to_load": "فشل تحميل البيانات",
+    "unknown_error": "حدث خطأ غير معروف"
   },
+  "buttons": {
+    "cancel": "إلغاء",
+    "add_milestone": "إضافة مرحلة",
+    "save_milestone": "حفظ المرحلة",
+    "edit_milestone": "تعديل",
+    "delete_milestone": "حذف"
+  },
+  "forms": {
+    "add_milestone": "إضافة مرحلة جديدة",
+    "edit_milestone": "تعديل المرحلة",
+    "milestone": {
+      "title": "عنوان المرحلة",
+      "description": "الوصف",
+      "amount": "المبلغ",
+      "order": "الترتيب"
+    }
+  },
+  "validation": {
+    "milestone": {
+      "title_required": "عنوان المرحلة مطلوب",
+      "title_min": "يجب أن يكون عنوان المرحلة 3 أحرف على الأقل",
+      "title_max": "يجب ألا يتجاوز عنوان المرحلة 100 حرف",
+      "description_max": "يجب ألا يتجاوز الوصف 500 حرف",
+      "amount_positive": "يجب أن يكون المبلغ أكبر من صفر",
+      "order_positive": "يجب أن يكون الترتيب رقماً موجباً"
+    }
+  },
+  "notifications": {
+    "milestone_added": "تمت إضافة المرحلة بنجاح",
+    "milestone_updated": "تم تحديث المرحلة بنجاح",
+    "milestone_deleted": "تم حذف المرحلة بنجاح"
+  },
+  "confirmations": {
+    "delete_milestone": "هل أنت متأكد من رغبتك في حذف هذه المرحلة؟ لا يمكن التراجع عن هذا الإجراء."
+  },
+  "optional": "اختياري",
+  "loading": "جاري التحميل...",
   "pages": {
     "projects": "المشاريع",
     "assignments": "التكليفات",
@@ -68,6 +110,35 @@
       "apartment": "شقة",
       "commercial": "تجاري",
       "other": "آخر"
-    }
+    },
+    "details": {
+      "clientName": "اسم العميل",
+      "address": "العنوان",
+      "type": "النوع",
+      "area": "المساحة",
+      "contractor": "المقاول",
+      "team": "الفريق",
+      "supervisorEngineer": "مهندس الإشراف",
+      "fieldEngineer": "مهندس الموقع",
+      "notAssigned": "لم يتم التعيين",
+      "awaitingContractor": "في انتظار اختيار المقاول",
+      "financialSummary": "الملخص المالي",
+      "totalAmount": "الإجمالي",
+      "paidAmount": "المدفوع",
+      "remainingAmount": "المتبقي",
+      "milestones": "المراحل",
+      "addMilestone": "إضافة مرحلة",
+      "noMilestones": "لا توجد مراحل حتى الآن",
+      "progressLabel": "التقدم"
+    },
+    "milestone": {
+      "not_started": "لم تبدأ",
+      "in_progress": "قيد التنفيذ",
+      "under_review": "قيد المراجعة",
+      "supervisor_approved": "موافق من الإشراف",
+      "approved": "موافق عليه",
+      "rejected": "مرفوض"
+    },
+    "nA": "غير متاح"
   }
 }

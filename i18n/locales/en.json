@@ -18,8 +18,50 @@
   },
   "errors": {
     "forbidden": "Forbidden",
-    "access_denied": "You do not have permission to access this page"
+    "access_denied": "You do not have permission to access this page",
+    "milestone_add_failed": "Failed to add milestone",
+    "milestone_edit_failed": "Failed to edit milestone",
+    "milestone_delete_failed": "Failed to delete milestone",
+    "failed_to_load": "Failed to load data",
+    "unknown_error": "An unknown error occurred"
   },
+  "buttons": {
+    "cancel": "Cancel",
+    "add_milestone": "Add Milestone",
+    "save_milestone": "Save Milestone",
+    "edit_milestone": "Edit",
+    "delete_milestone": "Delete"
+  },
+  "forms": {
+    "add_milestone": "Add New Milestone",
+    "edit_milestone": "Edit Milestone",
+    "milestone": {
+      "title": "Milestone Title",
+      "description": "Description",
+      "amount": "Amount",
+      "order": "Order"
+    }
+  },
+  "validation": {
+    "milestone": {
+      "title_required": "Milestone title is required",
+      "title_min": "Milestone title must be at least 3 characters",
+      "title_max": "Milestone title must not exceed 100 characters",
+      "description_max": "Description must not exceed 500 characters",
+      "amount_positive": "Amount must be greater than 0",
+      "order_positive": "Order must be a positive number"
+    }
+  },
+  "notifications": {
+    "milestone_added": "Milestone added successfully",
+    "milestone_updated": "Milestone updated successfully",
+    "milestone_deleted": "Milestone deleted successfully"
+  },
+  "confirmations": {
+    "delete_milestone": "Are you sure you want to delete this milestone? This action cannot be undone."
+  },
+  "optional": "Optional",
+  "loading": "Loading...",
   "pages": {
     "projects": "Projects",
     "assignments": "Assignments",
@@ -58,7 +100,7 @@
     },
     "progress": "Progress",
     "no_contractor": "No contractor assigned",
-    "view_details": "عرض التفاصيل",
+    "view_details": "View Details",
     "create_project": "Create Project",
     "subtitle": "Manage your construction projects",
     "no_projects": "No Projects Yet",
@@ -68,6 +110,35 @@
       "apartment": "Apartment",
       "commercial": "Commercial",
       "other": "Other"
-    }
+    },
+    "details": {
+      "clientName": "Client Name",
+      "address": "Address",
+      "type": "Type",
+      "area": "Area",
+      "contractor": "Contractor",
+      "team": "Team",
+      "supervisorEngineer": "Supervisor Engineer",
+      "fieldEngineer": "Field Engineer",
+      "notAssigned": "Not Assigned",
+      "awaitingContractor": "Awaiting Contractor Selection",
+      "financialSummary": "Financial Summary",
+      "totalAmount": "Total Amount",
+      "paidAmount": "Paid Amount",
+      "remainingAmount": "Remaining Amount",
+      "milestones": "Milestones",
+      "addMilestone": "Add Milestone",
+      "noMilestones": "No milestones yet",
+      "progressLabel": "Progress"
+    },
+    "milestone": {
+      "not_started": "Not Started",
+      "in_progress": "In Progress",
+      "under_review": "Under Review",
+      "supervisor_approved": "Supervisor Approved",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "nA": "N/A"
   }
 }

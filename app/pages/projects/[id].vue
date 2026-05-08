@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { ProjectDetail } from '~/shared/types/project'
+import type { MilestoneInput } from '~/composables/useMilestones'
 import { formatCurrency } from '~/utils/formatters'
 
 definePageMeta({
@@ -19,6 +20,7 @@ const route = useRoute()
 const { t } = useI18n()
 const { can } = usePermission()
 const auth = useAuthStore()
+const milestones = useMilestones()
 
 const id = computed(() => {
   const param = route.params.id as string
@@ -27,6 +29,9 @@ const id = computed(() => {
   }
   return param
 })
+
+const dialogOpen = ref(false)
+const isSubmitting = ref(false)
 
 const {
   data: project,
@@ -104,6 +109,44 @@ const getMilestoneStatusTone = (status: string) => {
     rejected: 'danger',
   }
   return tones[status] || 'muted'
+}
+
+const isProjectLocked = computed(() => {
+  return project.value?.status === 'active'
+})
+
+const canAddMilestoneButton = computed(() => {
+  return (
+    canAddMilestone.value &&
+    !isProjectLocked.value &&
+    project.value?.status === 'contractor_selected'
+  )
+})
+
+const nextMilestoneOrder = computed(() => {
+  if (!project.value?.milestones?.length) return 1
+  return Math.max(...project.value.milestones.map(m => m.order)) + 1
+})
+
+const handleAddMilestone = async (data: MilestoneInput) => {
+  if (!project.value) return
+
+  isSubmitting.value = true
+  try {
+    await milestones.addMilestone(project.value.id, data)
+
+    // Refresh project data to get updated milestones
+    await refresh()
+
+    dialogOpen.value = false
+    // Show success notification using existing toast system
+    // This will be integrated with the notification composable
+  } catch (err) {
+    console.error('Failed to add milestone:', err)
+    // Error message will be shown via toast notification
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -295,10 +338,12 @@ const getMilestoneStatusTone = (status: string) => {
           {{ t('project.details.milestones') }}
         </h2>
         <Button
-          v-if="canAddMilestone"
+          v-if="canAddMilestoneButton"
           size="sm"
           variant="outline"
           :aria-label="t('project.details.addMilestone')"
+          :disabled="isSubmitting"
+          @click="dialogOpen = true"
         >
           {{ t('project.details.addMilestone') }}
         </Button>
@@ -332,5 +377,15 @@ const getMilestoneStatusTone = (status: string) => {
         </div>
       </div>
     </div>
+
+    <!-- Milestone Dialog -->
+    <MilestoneDialog
+      :open="dialogOpen"
+      mode="add"
+      :next-order="nextMilestoneOrder"
+      :is-submitting="isSubmitting"
+      @update:open="dialogOpen = $event"
+      @submit="handleAddMilestone"
+    />
   </div>
 </template>
