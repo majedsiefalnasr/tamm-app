@@ -52,23 +52,23 @@ development_status:
   epic-01-retrospective: optional
 
   # Epic 02 — Project Management
-  epic-02: in-progress
-  02-01-project-list-page: ready-for-dev
-  02-02-create-project-client: ready-for-dev
-  02-03-project-detail-page: review
-  02-04-milestone-definition-admin-and-contractor: review
-  02-05-project-status-management-admin: review
+  epic-02: done
+  02-01-project-list-page: done
+  02-02-create-project-client: done
+  02-03-project-detail-page: done
+  02-04-milestone-definition-admin-and-contractor: done
+  02-05-project-status-management-admin: done
   epic-02-retrospective: optional
 
   # Epic 03 — Milestones, Reports & Approval Flow
-  epic-03: in-progress
-  03-01-milestone-card: review
-  03-02-milestone-detail-page: review
-  03-03-field-engineer-submits-report: review
-  03-04-supervisor-reviews-and-approves-milestone: review
-  03-05-client-gives-final-approval: ready-for-dev
-  03-06-pending-reviews-dashboard-supervisor: review
-  03-07-client-approval-queue: review
+  epic-03: done
+  03-01-milestone-card: done
+  03-02-milestone-detail-page: done
+  03-03-field-engineer-submits-report: done
+  03-04-supervisor-reviews-and-approves-milestone: done
+  03-05-client-gives-final-approval: done
+  03-06-pending-reviews-dashboard-supervisor: done
+  03-07-client-approval-queue: done
   epic-03-retrospective: optional
 
   # Epic 04 — Payments & Escrow

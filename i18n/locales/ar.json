@@ -17,19 +17,14 @@
     "forgotPassword": "هل نسيت كلمة المرور؟"
   },
   "errors": {
-    "forbidden": "غير مخول",
-    "access_denied": "ليس لديك إذن للوصول إلى هذه الصفحة",
-    "milestone_add_failed": "فشل إضافة المرحلة",
-    "milestone_edit_failed": "فشل تعديل المرحلة",
-    "milestone_delete_failed": "فشل حذف المرحلة",
-    "failed_to_load": "فشل تحميل البيانات",
-    "unknown_error": "حدث خطأ غير معروف",
-    "invalidTransition": "انتقال غير صحيح",
-    "transitionFailed": "فشل الانتقال",
-    "milestonesNotDefined": "لم يتم تعريف أي مراحل بعد",
-    "engineersNotAssigned": "لم يتم تعيين المهندسين بعد",
-    "requirementsNotMet": "لم يتم استيفاء المتطلبات",
-    "featureNotReady": "الميزة غير متاحة حتى الآن"
+    "approval_queue_load_failed": "فشل تحميل قائمة الاعتمادات",
+    "milestone_approval_failed": "فشل اعتماد المرحلة",
+    "milestone_rejection_failed": "فشل رفض المرحلة",
+    "client_milestone_approval_failed": "فشل الاعتماد النهائي",
+    "client_milestone_rejection_failed": "فشل رفض المرحلة",
+    "projectStatusUpdateFailed": "فشل تحديث حالة المشروع",
+    "report_submission_failed": "فشل رفع التقرير",
+    "invalid_transition": "انتقال غير صحيح"
   },
   "buttons": {
     "cancel": "إلغاء",
@@ -51,14 +46,8 @@
     }
   },
   "validation": {
-    "milestone": {
-      "title_required": "عنوان المرحلة مطلوب",
-      "title_min": "يجب أن يكون عنوان المرحلة 3 أحرف على الأقل",
-      "title_max": "يجب ألا يتجاوز عنوان المرحلة 100 حرف",
-      "description_max": "يجب ألا يتجاوز الوصف 500 حرف",
-      "amount_positive": "يجب أن يكون المبلغ أكبر من صفر",
-      "order_positive": "يجب أن يكون الترتيب رقماً موجباً"
-    }
+    "required": "مطلوب",
+    "min_length_20": "الحد الأدنى 20 حرف"
   },
   "notifications": {
     "milestone_added": "تمت إضافة المرحلة بنجاح",
@@ -73,7 +62,14 @@
   "pages": {
     "projects": "المشاريع",
     "assignments": "التكليفات",
-    "reviews": "المراجعات",
+    "reviews": {
+      "title": "المراجعات",
+      "pending": "مراجعات قيد الانتظار",
+      "empty": {
+        "title": "لا توجد مراجعات قيد الانتظار",
+        "description": "أنت محدث! تمت مراجعة جميع التقارير."
+      }
+    },
     "reviews.pending": "مراجعات قيد الانتظار",
     "reviews.empty.title": "لا توجد مراجعات قيد الانتظار",
     "reviews.empty.description": "أنت محدث! تمت مراجعة جميع التقارير.",
@@ -90,111 +86,15 @@
     "super_admin": "مسؤول النظام"
   },
   "common": {
-    "back_to_home": "العودة للرئيسية",
-    "feature_coming_soon": "الميزة قادمة قريباً...",
-    "logout": "تسجيل الخروج",
-    "home": "الرئيسية",
-    "empty_state": "لا توجد عناصر",
-    "no_items": "لا توجد عناصر لعرضها",
-    "error_occurred": "حدث خطأ",
-    "error_description": "حدث خطأ أثناء تحميل البيانات",
-    "retry": "حاول مرة أخرى",
-    "expand": "توسيع",
-    "collapse": "طي",
-    "back": "العودة",
-    "completed": "مكتمل",
-    "submitted": "تم الرفع في",
-    "by": "بواسطة"
+    "cancel": "إلغاء",
+    "confirm": "تأكيد"
   },
   "nav": {
     "home": "الرئيسية",
     "projects": "المشاريع"
   },
   "milestone": {
-    "header": {
-      "phase": "المرحلة",
-      "amount": "المبلغ"
-    },
-    "status": {
-      "not_started": "لم تبدأ",
-      "in_progress": "قيد التنفيذ",
-      "under_review": "قيد المراجعة",
-      "supervisor_approved": "موافق عليه من المشرف",
-      "approved": "موافق عليه",
-      "rejected": "مرفوض"
-    },
-    "section": {
-      "tasks": "المهام",
-      "latestReport": "آخر تقرير",
-      "paymentStatus": "حالة الدفع"
-    },
-    "actions": {
-      "submitReport": "رفع التقرير",
-      "viewReport": "عرض التقرير",
-      "approveMilestone": "اعتماد المرحلة",
-      "rejectMilestone": "رفض المرحلة",
-      "payMilestone": "دفع المرحلة"
-    },
-    "emptyState": {
-      "noTasks": "لا توجد مهام معرفة",
-      "noReports": "لم يتم رفع أي تقارير بعد"
-    },
-    "notifications": {
-      "approved": "تم اعتماد المرحلة بنجاح",
-      "rejected": "تم رفض المرحلة",
-      "reportSubmitted": "تم رفع التقرير بنجاح"
-    },
-    "errors": {
-      "notFound": "لم يتم العثور على المرحلة",
-      "invalidTransition": "انتقال حالة غير صحيح",
-      "approveFailed": "فشل اعتماد المرحلة",
-      "rejectFailed": "فشل رفض المرحلة",
-      "reportFailed": "فشل رفع التقرير",
-      "loadFailed": "فشل تحميل تفاصيل المرحلة"
-    },
-    "detail": {
-      "title": "تفاصيل المرحلة",
-      "details": "تفاصيل المرحلة",
-      "phase": "المرحلة",
-      "phaseNumber": "المرحلة {number}",
-      "budget": "الميزانية",
-      "status": "الحالة",
-      "createdAt": "تاريخ الإنشاء",
-      "updatedAt": "آخر تحديث",
-      "paymentStatus": "حالة الدفع",
-      "tasks": "المهام",
-      "noTasks": "لا توجد مهام معرفة لهذه المرحلة",
-      "assignedTo": "مسندة إلى: {name}",
-      "noReport": "لم يتم رفع أي تقرير بعد"
-    },
-    "report": {
-      "title": "التقرير",
-      "content": "المحتوى",
-      "submittedAt": "تاريخ الرفع",
-      "submittedBy": "رفع بواسطة",
-      "status": {
-        "draft": "مسودة",
-        "submitted": "مرفوع",
-        "approved": "موافق عليه",
-        "rejected": "مرفوض"
-      },
-      "images": "الصور"
-    },
-    "history": {
-      "title": "سجل التقارير",
-      "empty": "لا توجد تقارير سابقة"
-    },
-    "timeline": {
-      "title": "خط زمني الاعتمادات",
-      "empty": "لا توجد إجراءات بعد",
-      "created": "تم إنشاء المرحلة",
-      "inProgress": "بدء العمل",
-      "underReview": "تم رفع التقرير للمراجعة",
-      "supervisorApproved": "تم الموافقة من قبل المشرف",
-      "clientApproved": "تم الموافقة من قبل العميل",
-      "rejected": "تم الرفض",
-      "rejectionReason": "سبب الرفض"
-    }
+    "project_unknown": "مشروع"
   },
   "payment": {
     "status": {
@@ -281,9 +181,8 @@
     "nA": "غير متاح"
   },
   "report": {
-    "submit_title": "تقديم تقرير",
-    "draft_saved": "تم حفظ المسودة محلياً",
-    "submission_failed": "فشل رفع التقرير"
+    "content": "المحتوى",
+    "images": "الصور"
   },
   "fields": {
     "content": "المحتوى",
@@ -294,30 +193,15 @@
     "characters": "أحرف"
   },
   "actions": {
-    "select_files": "اختر الملفات",
-    "save_draft": "حفظ كمسودة",
-    "submit_report": "رفع التقرير",
-    "remove_image": "إزالة الصورة",
     "view_details": "عرض التفاصيل",
-    "approve": "الموافقة"
-  },
-  "validation": {
-    "required": "مطلوب",
-    "min_length_20": "الحد الأدنى 20 حرف"
-  },
-  "errors": {
-    "max_images": "الحد الأقصى 10 صور",
-    "file_too_large": "{filename} يتجاوز 5 ميجابايت",
-    "unsupported_format": "{filename} ليس صيغة مدعومة",
-    "submission_failed": "فشل رفع التقرير: {message}"
+    "approve": "اعتماد"
   },
   "success": {
-    "report_submitted": "تم رفع التقرير بنجاح",
-    "draft_saved": "تم حفظ المسودة محلياً",
     "milestone_approved": "تم اعتماد المرحلة بنجاح",
-    "milestone_rejected": "تم رفض المرحلة، عاد المقاول للعمل",
-    "client_milestone_approved": "تم تأكيد الاعتماد النهائي — سيتم تحويل الدفعة للمقاول",
-    "client_milestone_rejected": "تم رفض المرحلة، عاد المقاول للعمل"
+    "report_submitted": "تم رفع التقرير بنجاح",
+    "milestone_rejected": "تم رفض المرحلة",
+    "client_milestone_approved": "تم تأكيد الاعتماد النهائي",
+    "client_milestone_rejected": "تم رفض المرحلة"
   },
   "milestones": {
     "review_dialog": {
@@ -348,20 +232,6 @@
       "message": "سيتم تحرير الدفعة للمقاول وإكمال هذه المرحلة"
     }
   },
-  "errors": {
-    "milestone_approval_failed": "فشل اعتماد المرحلة: {message}",
-    "milestone_rejection_failed": "فشل رفض المرحلة: {message}",
-    "client_milestone_approval_failed": "فشل الاعتماد النهائي: {message}",
-    "client_milestone_rejection_failed": "فشل رفض المرحلة: {message}"
-  },
-  "common": {
-    "cancel": "إلغاء",
-    "confirm": "تأكيد"
-  },
-  "report": {
-    "content": "المحتوى",
-    "images": "الصور"
-  },
   "approval_queue": {
     "title": "قائمة الاعتمادات",
     "supervisor_approved": "موافق من قبل {name} في {date}",
@@ -369,18 +239,5 @@
       "title": "لا توجد موافقات معلقة",
       "description": "تمت معالجة جميع المراحل. أنت محدث!"
     }
-  },
-  "actions": {
-    "view_details": "عرض التفاصيل",
-    "approve": "اعتماد"
-  },
-  "milestone": {
-    "project_unknown": "مشروع"
-  },
-  "errors": {
-    "approval_queue_load_failed": "فشل تحميل قائمة الاعتمادات"
-  },
-  "success": {
-    "milestone_approved": "تم اعتماد المرحلة بنجاح"
   }
 }

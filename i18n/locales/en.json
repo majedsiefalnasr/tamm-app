@@ -17,19 +17,14 @@
     "forgotPassword": "Forgot password?"
   },
   "errors": {
-    "forbidden": "Forbidden",
-    "access_denied": "You do not have permission to access this page",
-    "milestone_add_failed": "Failed to add milestone",
-    "milestone_edit_failed": "Failed to edit milestone",
-    "milestone_delete_failed": "Failed to delete milestone",
-    "failed_to_load": "Failed to load data",
-    "unknown_error": "An unknown error occurred",
-    "invalidTransition": "Invalid transition",
-    "transitionFailed": "Transition failed",
-    "milestonesNotDefined": "No milestones defined yet",
-    "engineersNotAssigned": "Engineers not assigned yet",
-    "requirementsNotMet": "Requirements not met",
-    "featureNotReady": "Feature is not available yet"
+    "approval_queue_load_failed": "Failed to load approval queue",
+    "milestone_approval_failed": "Failed to approve milestone",
+    "milestone_rejection_failed": "Failed to reject milestone",
+    "client_milestone_approval_failed": "Failed to give final approval",
+    "client_milestone_rejection_failed": "Failed to reject milestone",
+    "projectStatusUpdateFailed": "Failed to update project status",
+    "report_submission_failed": "Failed to submit report",
+    "invalid_transition": "Invalid status transition"
   },
   "buttons": {
     "cancel": "Cancel",
@@ -51,14 +46,8 @@
     }
   },
   "validation": {
-    "milestone": {
-      "title_required": "Milestone title is required",
-      "title_min": "Milestone title must be at least 3 characters",
-      "title_max": "Milestone title must not exceed 100 characters",
-      "description_max": "Description must not exceed 500 characters",
-      "amount_positive": "Amount must be greater than 0",
-      "order_positive": "Order must be a positive number"
-    }
+    "required": "Required",
+    "min_length_20": "Minimum 20 characters"
   },
   "notifications": {
     "milestone_added": "Milestone added successfully",
@@ -73,7 +62,14 @@
   "pages": {
     "projects": "Projects",
     "assignments": "Assignments",
-    "reviews": "Reviews",
+    "reviews": {
+      "title": "Reviews",
+      "pending": "Pending Reviews",
+      "empty": {
+        "title": "No pending reviews",
+        "description": "You are all caught up! All reports have been reviewed."
+      }
+    },
     "reviews.pending": "Pending Reviews",
     "reviews.empty.title": "No Pending Reviews",
     "reviews.empty.description": "You're all caught up! All milestone reports have been reviewed.",
@@ -90,111 +86,15 @@
     "super_admin": "Super Admin"
   },
   "common": {
-    "back_to_home": "Back to Home",
-    "feature_coming_soon": "Feature coming soon...",
-    "logout": "Log out",
-    "home": "Home",
-    "empty_state": "No items found",
-    "no_items": "There are no items to display",
-    "error_occurred": "Something went wrong",
-    "error_description": "An error occurred while loading the data",
-    "retry": "Try again",
-    "expand": "Expand",
-    "collapse": "Collapse",
-    "back": "Back",
-    "completed": "Completed",
-    "submitted": "Submitted",
-    "by": "by"
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "nav": {
     "home": "Home",
     "projects": "Projects"
   },
   "milestone": {
-    "header": {
-      "phase": "Phase",
-      "amount": "Amount"
-    },
-    "status": {
-      "not_started": "Not Started",
-      "in_progress": "In Progress",
-      "under_review": "Under Review",
-      "supervisor_approved": "Supervisor Approved",
-      "approved": "Approved",
-      "rejected": "Rejected"
-    },
-    "section": {
-      "tasks": "Tasks",
-      "latestReport": "Latest Report",
-      "paymentStatus": "Payment Status"
-    },
-    "actions": {
-      "submitReport": "Submit Report",
-      "viewReport": "View Report",
-      "approveMilestone": "Approve Milestone",
-      "rejectMilestone": "Reject Milestone",
-      "payMilestone": "Pay Milestone"
-    },
-    "emptyState": {
-      "noTasks": "No tasks defined",
-      "noReports": "No reports submitted yet"
-    },
-    "notifications": {
-      "approved": "Milestone approved successfully",
-      "rejected": "Milestone rejected",
-      "reportSubmitted": "Report submitted successfully"
-    },
-    "errors": {
-      "notFound": "Milestone not found",
-      "invalidTransition": "Invalid status transition",
-      "approveFailed": "Failed to approve milestone",
-      "rejectFailed": "Failed to reject milestone",
-      "reportFailed": "Failed to submit report",
-      "loadFailed": "Failed to load milestone details"
-    },
-    "detail": {
-      "title": "Milestone Details",
-      "details": "Milestone Details",
-      "phase": "Phase",
-      "phaseNumber": "Phase {number}",
-      "budget": "Budget",
-      "status": "Status",
-      "createdAt": "Created At",
-      "updatedAt": "Updated At",
-      "paymentStatus": "Payment Status",
-      "tasks": "Tasks",
-      "noTasks": "No tasks defined for this milestone",
-      "assignedTo": "Assigned to: {name}",
-      "noReport": "No report submitted yet"
-    },
-    "report": {
-      "title": "Report",
-      "content": "Content",
-      "submittedAt": "Submitted At",
-      "submittedBy": "Submitted By",
-      "status": {
-        "draft": "Draft",
-        "submitted": "Submitted",
-        "approved": "Approved",
-        "rejected": "Rejected"
-      },
-      "images": "Images"
-    },
-    "history": {
-      "title": "Report History",
-      "empty": "No report history"
-    },
-    "timeline": {
-      "title": "Approval Timeline",
-      "empty": "No timeline activity yet",
-      "created": "Milestone created",
-      "inProgress": "Work started",
-      "underReview": "Report submitted for review",
-      "supervisorApproved": "Approved by supervisor",
-      "clientApproved": "Approved by client",
-      "rejected": "Rejected",
-      "rejectionReason": "Rejection Reason"
-    }
+    "project_unknown": "Project"
   },
   "payment": {
     "status": {
@@ -281,9 +181,8 @@
     "nA": "N/A"
   },
   "report": {
-    "submit_title": "Submit Report",
-    "draft_saved": "Draft saved locally",
-    "submission_failed": "Failed to submit report"
+    "content": "Content",
+    "images": "Images"
   },
   "fields": {
     "content": "Content",
@@ -294,30 +193,15 @@
     "characters": "characters"
   },
   "actions": {
-    "select_files": "Select Files",
-    "save_draft": "Save as Draft",
-    "submit_report": "Submit Report",
-    "remove_image": "Remove Image",
     "view_details": "View Details",
     "approve": "Approve"
   },
-  "validation": {
-    "required": "Required",
-    "min_length_20": "Minimum 20 characters"
-  },
-  "errors": {
-    "max_images": "Maximum 10 images allowed",
-    "file_too_large": "{filename} exceeds 5MB",
-    "unsupported_format": "{filename} is not a supported format",
-    "submission_failed": "Failed to submit report: {message}"
-  },
   "success": {
-    "report_submitted": "Report submitted successfully",
-    "draft_saved": "Draft saved locally",
     "milestone_approved": "Milestone approved successfully",
-    "milestone_rejected": "Milestone rejected, contractor returned to work",
-    "client_milestone_approved": "Final approval confirmed — payment will be released to the contractor",
-    "client_milestone_rejected": "Milestone rejected, contractor returned to work"
+    "report_submitted": "Report submitted successfully",
+    "milestone_rejected": "Milestone rejected",
+    "client_milestone_approved": "Final approval confirmed",
+    "client_milestone_rejected": "Milestone rejected"
   },
   "milestones": {
     "review_dialog": {
@@ -348,20 +232,6 @@
       "message": "This will release payment to the contractor and complete this milestone"
     }
   },
-  "errors": {
-    "milestone_approval_failed": "Failed to approve milestone: {message}",
-    "milestone_rejection_failed": "Failed to reject milestone: {message}",
-    "client_milestone_approval_failed": "Failed to give final approval: {message}",
-    "client_milestone_rejection_failed": "Failed to reject milestone: {message}"
-  },
-  "common": {
-    "cancel": "Cancel",
-    "confirm": "Confirm"
-  },
-  "report": {
-    "content": "Content",
-    "images": "Images"
-  },
   "approval_queue": {
     "title": "Pending Approvals",
     "supervisor_approved": "Approved by {name} on {date}",
@@ -369,18 +239,5 @@
       "title": "No Pending Approvals",
       "description": "All milestones have been processed. You're all caught up!"
     }
-  },
-  "actions": {
-    "view_details": "View Details",
-    "approve": "Approve"
-  },
-  "milestone": {
-    "project_unknown": "Project"
-  },
-  "errors": {
-    "approval_queue_load_failed": "Failed to load approval queue"
-  },
-  "success": {
-    "milestone_approved": "Milestone approved successfully"
   }
 }
