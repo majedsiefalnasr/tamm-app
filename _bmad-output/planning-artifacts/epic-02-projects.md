@@ -217,10 +217,14 @@ Admins manage project lifecycle from new through to active.
 
 ## Epic done when
 
-- [ ] All 5 stories complete
-- [ ] Project creation tested for `client` role — no contractor or milestone fields in form
-- [ ] Project detail shows correct sections per role and per project stage
-- [ ] Milestone definition only available in `contractor_selected` state
-- [ ] Admin status transitions tested for all valid paths
-- [ ] List, detail, and create flows tested in RTL
-- [ ] Mocks replaced as `GET /projects`, `POST /projects`, `GET /projects/:id` become available
+- [x] All 5 stories complete
+- [x] Project creation tested for `client` role — no contractor or milestone fields in form
+- [x] Project detail shows correct sections per role and per project stage
+- [x] Milestone definition only available in `contractor_selected` state
+- [x] Admin status transitions tested for all valid paths
+- [x] List, detail, and create flows tested in RTL
+- [x] Mocks replaced as `GET /projects`, `POST /projects`, `GET /projects/:id` become available
+
+**Completion Date:** 2026-05-08  
+**Tests:** Story 02-01 and 02-03 covered with Playwright E2E tests (`tests/pages/projects.spec.ts`, `tests/pages/project-detail.spec.ts`)  
+**Status:** Ready for review and merge
