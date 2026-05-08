@@ -5,6 +5,7 @@ import type { MilestoneInput } from '~/composables/useMilestones'
 import { formatCurrency } from '~/utils/formatters'
 import MilestoneCard from '~/components/milestone/MilestoneCard.vue'
 import ProjectFinancialSummary from '~/components/project/ProjectFinancialSummary.vue'
+import AssignEngineersDialog from '~/components/admin/AssignEngineersDialog.vue'
 
 definePageMeta({
   layout: 'default',
@@ -33,6 +34,9 @@ const id = computed(() => {
 })
 
 const dialogOpen = ref(false)
+
+const showAssignDialog = ref(false)
+const enginesAssigned = ref(false)
 const isSubmitting = ref(false)
 
 const {
@@ -149,6 +153,12 @@ const handleAddMilestone = async (data: MilestoneInput) => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+const handleEngineersAssigned = () => {
+  showAssignDialog.value = false
+  refresh()
+  enginesAssigned.value = true
 }
 
 const handleProjectStatusTransition = async (newStatus: string) => {

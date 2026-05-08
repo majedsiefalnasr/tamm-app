@@ -1108,6 +1108,64 @@ file: File (required)
 
 ---
 
+### `POST /admin/projects/{id}/assign-engineers`
+
+**Status:** ✅ Available  
+**Purpose:** Assign supervisor engineer and field engineer to project
+
+**Auth Required:** Yes (admin/super_admin)
+
+**Request:**
+
+```json
+{
+  "supervisor_engineer_id": "string (required, uuid)",
+  "field_engineer_id": "string (required, uuid)"
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "string",
+    "supervisor_engineer_id": "string",
+    "field_engineer_id": "string",
+    "supervisor_engineer": {
+      "id": "string",
+      "name": "string",
+      "email": "string"
+    },
+    "field_engineer": {
+      "id": "string",
+      "name": "string",
+      "email": "string"
+    },
+    "message": "Engineers assigned successfully"
+  }
+}
+```
+
+**Error (422 — Validation):**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Cannot assign same engineer to both roles",
+    "errors": {
+      "assignment": ["Cannot assign the same engineer to both roles"]
+    }
+  }
+}
+```
+
+**Frontend Use:** Admin assign engineers UI (Story 06-03)  
+**Implemented:** ✅ Ready to build
+
 ## Roles & Permissions Endpoints
 
 All require authentication (admin level).

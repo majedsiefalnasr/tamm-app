@@ -159,6 +159,21 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     fetchUsers(newRole)
   })
 
+  const fetchEngineersByRole = async (
+    role: Role
+  ): Promise<Array<{ id: string; name: string }>> => {
+    try {
+      const filtered = users.value.filter(u => u.role === role)
+      return filtered.map(u => ({
+        id: u.id,
+        name: u.name,
+      }))
+    } catch (error) {
+      console.error(`Failed to fetch ${role} engineers:`, error)
+      return []
+    }
+  }
+
   return {
     users: readonly(users),
     loading: readonly(loading),
@@ -170,5 +185,6 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     toggleUserStatus,
     createUser,
     refetch: () => fetchUsers(),
+    fetchEngineersByRole,
   }
 }

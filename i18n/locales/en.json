@@ -32,7 +32,13 @@
     "email_exists": "Email is already in use",
     "role_required": "Role is required",
     "user_created": "User created successfully. Credentials sent via email.",
-    "user_creation_failed": "Failed to create user. Please try again."
+    "user_creation_failed": "Failed to create user. Please try again.",
+    "supervisor_required": "Supervisor Engineer is required",
+    "field_required": "Field Engineer is required",
+    "same_engineer": "Cannot assign the same engineer to both roles",
+    "engineers_assigned": "Engineers assigned successfully",
+    "engineers_assignment_failed": "Failed to assign engineers. Please try again.",
+    "failed_to_load_engineers": "Failed to load engineers list"
   },
   "buttons": {
     "cancel": "Cancel",
@@ -445,6 +451,18 @@
         "phone": "Phone Number (optional)",
         "phone_placeholder": "Phone number",
         "submit": "Create User",
+        "cancel": "Cancel"
+      }
+    },
+    "projects": {
+      "assign_engineers": {
+        "button": "Assign Engineers",
+        "title": "Assign Engineers",
+        "supervisor_label": "Supervisor Engineer",
+        "supervisor_placeholder": "Select supervisor engineer",
+        "field_label": "Field Engineer",
+        "field_placeholder": "Select field engineer",
+        "submit": "Save Assignment",
         "cancel": "Cancel"
       }
     }

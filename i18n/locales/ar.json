@@ -32,7 +32,13 @@
     "email_exists": "البريد الإلكتروني مستخدم بالفعل",
     "role_required": "الدور مطلوب",
     "user_created": "تم إنشاء المستخدم. تم إرسال بيانات الدخول عبر البريد الإلكتروني.",
-    "user_creation_failed": "فشل إنشاء المستخدم. يرجى المحاولة لاحقاً."
+    "user_creation_failed": "فشل إنشاء المستخدم. يرجى المحاولة لاحقاً.",
+    "supervisor_required": "مهندس المراقبة مطلوب",
+    "field_required": "مهندس الموقع مطلوب",
+    "same_engineer": "لا يمكن تعيين نفس المهندس لدورين مختلفين",
+    "engineers_assigned": "تم تعيين المهندسين بنجاح",
+    "engineers_assignment_failed": "فشل تعيين المهندسين. يرجى المحاولة لاحقاً.",
+    "failed_to_load_engineers": "فشل تحميل قائمة المهندسين"
   },
   "buttons": {
     "cancel": "إلغاء",
@@ -445,6 +451,18 @@
         "phone": "رقم الهاتف (اختياري)",
         "phone_placeholder": "966501234567",
         "submit": "إنشاء المستخدم",
+        "cancel": "إلغاء"
+      }
+    },
+    "projects": {
+      "assign_engineers": {
+        "button": "تعيين المهندسين",
+        "title": "تعيين المهندسين",
+        "supervisor_label": "مهندس المراقبة",
+        "supervisor_placeholder": "اختر مهندس المراقبة",
+        "field_label": "مهندس الموقع",
+        "field_placeholder": "اختر مهندس الموقع",
+        "submit": "حفظ التعيين",
         "cancel": "إلغاء"
       }
     }
