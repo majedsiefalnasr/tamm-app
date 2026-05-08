@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Milestone } from '~/shared/types/project'
 import { useI18n } from 'vue-i18n'
+import { CheckIcon } from '@heroicons/vue/20/solid'
 import { Button } from '~/components/ui/button'
 
 interface Props {
@@ -13,38 +14,39 @@ interface Emits {
   (e: 'view-details'): void
 }
 
-defineProps<Props>()
+const { milestone } = defineProps<Props>()
 defineEmits<Emits>()
 
-const { t, d } = useI18n()
-const approving = ref(false)
+const { t, d, locale } = useI18n()
 
 const supervisorInfo = computed(() => {
   if (milestone.supervisor && milestone.supervisor_approved_at) {
     const date = new Date(milestone.supervisor_approved_at)
+    const dateStr = date.toLocaleDateString(
+      locale.value === 'ar' ? 'ar-EG' : 'en-US',
+      {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: locale.value === 'ar',
+      }
+    )
     return t('approval_queue.supervisor_approved', {
       name: milestone.supervisor.name,
-      date: d(date, 'short'),
+      date: dateStr,
     })
   }
   return ''
 })
 
 const formattedAmount = computed(() => {
-  return new Intl.NumberFormat('ar-EG', {
+  const localeMap: Record<string, string> = { ar: 'ar-EG', en: 'en-US' }
+  return new Intl.NumberFormat(localeMap[locale.value] || 'ar-EG', {
     style: 'currency',
     currency: 'EGP',
   }).format(milestone.amount)
 })
-
-const handleApprove = async () => {
-  approving.value = true
-  try {
-    await new Promise(resolve => setTimeout(resolve, 100))
-  } finally {
-    approving.value = false
-  }
-}
 </script>
 
 <template>
@@ -53,29 +55,39 @@ const handleApprove = async () => {
   >
     <!-- Left side: project + milestone info -->
     <div class="min-w-0 flex-1">
-      <p class="text-muted-foreground text-xs font-bold">
-        {{ milestone.project?.name || 'Project' }}
-      </p>
-      <p class="text-ink truncate text-sm font-bold">{{ milestone.name }}</p>
-      <p class="text-muted-foreground mt-1 text-xs">✓ {{ supervisorInfo }}</p>
+      <NuxtLink
+        :to="`/projects/${milestone.project_id}`"
+        class="text-muted-foreground hover:text-foreground text-xs font-bold transition-colors"
+      >
+        {{ milestone.project?.name || $t('milestone.project_unknown') }}
+      </NuxtLink>
+      <NuxtLink
+        :to="`/projects/${milestone.project_id}/milestones/${milestone.id}`"
+        class="text-ink hover:text-primary block truncate text-sm font-bold transition-colors"
+      >
+        {{ milestone.name }}
+      </NuxtLink>
+      <div class="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+        <CheckIcon class="h-4 w-4 shrink-0" />
+        <span>{{ supervisorInfo }}</span>
+      </div>
     </div>
 
     <!-- Right side: amount + buttons -->
     <div class="flex flex-col items-start gap-2 sm:shrink-0 sm:items-end">
       <p class="text-primary text-lg font-extrabold">{{ formattedAmount }}</p>
-      <div class="flex w-full gap-2 sm:w-auto">
+      <div class="flex w-full gap-2 sm:min-h-10 sm:w-auto">
         <Button
           variant="outline"
           size="sm"
-          class="flex-1 sm:flex-none"
+          class="flex-1 sm:h-10 sm:flex-none"
           @click="$emit('view-details')"
         >
           {{ $t('actions.view_details') }}
         </Button>
         <Button
           size="sm"
-          :loading="approving"
-          class="flex-1 sm:flex-none"
+          class="flex-1 sm:h-10 sm:flex-none"
           @click="$emit('approve')"
         >
           {{ $t('actions.approve') }}

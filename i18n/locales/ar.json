@@ -364,10 +364,23 @@
   },
   "approval_queue": {
     "title": "قائمة الاعتمادات",
-    "supervisor_approved": "✓ موافق من قبل {name} في {date}",
+    "supervisor_approved": "موافق من قبل {name} في {date}",
     "empty": {
       "title": "لا توجد موافقات معلقة",
       "description": "تمت معالجة جميع المراحل. أنت محدث!"
     }
+  },
+  "actions": {
+    "view_details": "عرض التفاصيل",
+    "approve": "اعتماد"
+  },
+  "milestone": {
+    "project_unknown": "مشروع"
+  },
+  "errors": {
+    "approval_queue_load_failed": "فشل تحميل قائمة الاعتمادات"
+  },
+  "success": {
+    "milestone_approved": "تم اعتماد المرحلة بنجاح"
   }
 }

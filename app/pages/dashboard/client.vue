@@ -5,8 +5,6 @@ definePageMeta({
   roles: ['client'],
   pageTitle: 'pages.client_dashboard',
 })
-
-const { t } = useI18n()
 </script>
 
 <template>

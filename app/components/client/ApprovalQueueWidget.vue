@@ -6,7 +6,7 @@ import ApprovalQueueList from './ApprovalQueueList.vue'
 
 const { getPendingApprovals, pendingApprovals, loading, error } =
   useMilestones()
-const { t } = useI18n()
+const { t: $t } = useI18n()
 
 const localError = ref<string | null>(null)
 

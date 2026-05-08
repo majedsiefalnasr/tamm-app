@@ -4,7 +4,6 @@ import type { Milestone } from '~/shared/types/project'
 import { useI18n } from 'vue-i18n'
 import { useMilestones } from '~/composables/useMilestones'
 import { useNotifications } from '~/composables/useNotifications'
-import { canTransition } from '~/utils/statusMachine'
 import ApprovalQueueItem from './ApprovalQueueItem.vue'
 import ClientApprovalFlow from '~/components/milestone/ClientApprovalFlow.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
@@ -22,8 +21,8 @@ interface Emits {
   (e: 'action-complete'): void
 }
 
-defineProps<Props>()
-defineEmits<Emits>()
+const { items, loading, error } = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
 const { removePendingApproval } = useMilestones()
@@ -32,7 +31,7 @@ const { notify } = useNotifications()
 const selectedMilestone = ref<Milestone | null>(null)
 const showApprovalDialog = ref(false)
 
-const hasItems = computed(() => Array.isArray(items) && items.length > 0)
+const hasItems = computed(() => items.length > 0)
 
 const handleApproveClick = (milestone: Milestone) => {
   selectedMilestone.value = milestone
@@ -50,7 +49,7 @@ const handleApprovalSuccess = () => {
   }
   showApprovalDialog.value = false
   selectedMilestone.value = null
-  $emit('action-complete')
+  emit('action-complete')
 }
 
 const handleApprovalError = () => {
@@ -85,8 +84,8 @@ const handleApprovalError = () => {
         v-for="milestone in items"
         :key="milestone.id"
         :milestone="milestone"
-        @approve="handleApproveClick(milestone)"
-        @view-details="handleViewDetails(milestone)"
+        @approve="() => handleApproveClick(milestone)"
+        @view-details="() => handleViewDetails(milestone)"
       />
     </div>
 

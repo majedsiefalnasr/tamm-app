@@ -364,10 +364,23 @@
   },
   "approval_queue": {
     "title": "Pending Approvals",
-    "supervisor_approved": "✓ Approved by {name} on {date}",
+    "supervisor_approved": "Approved by {name} on {date}",
     "empty": {
       "title": "No Pending Approvals",
       "description": "All milestones have been processed. You're all caught up!"
     }
+  },
+  "actions": {
+    "view_details": "View Details",
+    "approve": "Approve"
+  },
+  "milestone": {
+    "project_unknown": "Project"
+  },
+  "errors": {
+    "approval_queue_load_failed": "Failed to load approval queue"
+  },
+  "success": {
+    "milestone_approved": "Milestone approved successfully"
   }
 }

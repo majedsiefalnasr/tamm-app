@@ -547,8 +547,7 @@ export const useMilestones = () => {
       pendingApprovals.value = sorted
       return sorted
     } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : 'Failed to load pending approvals'
+      error.value = 'errors.approval_queue_load_failed'
       pendingApprovals.value = []
       throw err
     } finally {
