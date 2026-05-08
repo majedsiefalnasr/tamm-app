@@ -21,6 +21,7 @@ export const usePermission = () => {
         'view_proposals',
         'manage_proposal_status',
         'view_payment_status',
+        'release_payment',
       ],
       admin: [
         'view_projects',
@@ -32,6 +33,7 @@ export const usePermission = () => {
         'view_proposals',
         'manage_proposal_status',
         'view_payment_status',
+        'release_payment',
       ],
       client: [
         'view_projects',

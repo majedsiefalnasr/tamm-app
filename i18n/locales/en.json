@@ -24,7 +24,8 @@
     "client_milestone_rejection_failed": "Failed to reject milestone",
     "projectStatusUpdateFailed": "Failed to update project status",
     "report_submission_failed": "Failed to submit report",
-    "invalid_transition": "Invalid status transition"
+    "invalid_transition": "Invalid status transition",
+    "release_failed": "Failed to release payment"
   },
   "buttons": {
     "cancel": "Cancel",
@@ -114,15 +115,26 @@
       "ready_for_payout": "Ready for Payout",
       "paid_out": "Paid Out"
     },
+    "action": {
+      "release_payment": "Release payment",
+      "release_amount": "Release {amount}"
+    },
     "dialog": {
       "title": "Pay for Milestone",
+      "release_title": "Release payment",
       "escrow_explanation": "Funds will be held securely in escrow until this milestone is approved.",
+      "cannot_undo": "This action cannot be undone",
       "bank_name": "Bank Name",
       "transaction_reference": "Transaction Reference",
       "receipt_image": "Receipt Image",
       "notes": "Notes (optional)",
       "cancel": "Cancel",
       "confirm": "Confirm Payment"
+    },
+    "contractor": "Contractor",
+    "amount": "Amount",
+    "message": {
+      "released": "Payment released — {amount}"
     },
     "success": {
       "message": "Payment received. Work can now begin."

@@ -24,7 +24,8 @@
     "client_milestone_rejection_failed": "فشل رفض المرحلة",
     "projectStatusUpdateFailed": "فشل تحديث حالة المشروع",
     "report_submission_failed": "فشل رفع التقرير",
-    "invalid_transition": "انتقال غير صحيح"
+    "invalid_transition": "انتقال غير صحيح",
+    "release_failed": "فشل تحرير الدفع"
   },
   "buttons": {
     "cancel": "إلغاء",
@@ -114,15 +115,26 @@
       "ready_for_payout": "جاهز للصرف",
       "paid_out": "تم الصرف"
     },
+    "action": {
+      "release_payment": "تحرير الدفع",
+      "release_amount": "تحرير {amount}"
+    },
     "dialog": {
       "title": "دفع المرحلة",
+      "release_title": "تحرير الدفع",
       "escrow_explanation": "سيتم الاحتفاظ بالأموال بشكل آمن في ضمان حتى تتم الموافقة على هذه المرحلة.",
+      "cannot_undo": "هذا الإجراء لا يمكن التراجع عنه",
       "bank_name": "اسم البنك",
       "transaction_reference": "رقم العملية",
       "receipt_image": "صورة الإيصال",
       "notes": "ملاحظات (اختياري)",
       "cancel": "إلغاء",
       "confirm": "تأكيد الدفع"
+    },
+    "contractor": "المقاول",
+    "amount": "المبلغ",
+    "message": {
+      "released": "تم تحرير الدفع — {amount}"
     },
     "success": {
       "message": "تم استلام الدفع. يمكن بدء العمل الآن."

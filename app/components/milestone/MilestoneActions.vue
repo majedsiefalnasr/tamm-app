@@ -9,6 +9,8 @@ import { Button } from '~/components/ui/button'
 import ApprovalFlow from './ApprovalFlow.vue'
 import ClientApprovalFlow from './ClientApprovalFlow.vue'
 import PaymentConfirmDialog from '~/components/payment/PaymentConfirmDialog.vue'
+import PaymentReleaseDialog from '~/components/payment/PaymentReleaseDialog.vue'
+import { derivePaymentStatus } from '~/utils/statusMachine'
 
 interface Props {
   milestone: Milestone
@@ -27,13 +29,20 @@ const emits = defineEmits<{
 
 const { t } = useI18n()
 const { can } = usePermission()
-const { approveMilestone, rejectMilestone, payForMilestone } = useMilestones()
+const {
+  approveMilestone,
+  rejectMilestone,
+  payForMilestone,
+  releaseMilestonePayment,
+} = useMilestones()
 const { notify } = useNotifications()
 
 const approvalFlowOpen = ref(false)
 const clientApprovalFlowOpen = ref(false)
 const paymentDialogOpen = ref(false)
+const releasePaymentDialogOpen = ref(false)
 const isPaymentSubmitting = ref(false)
+const isReleasePaymentSubmitting = ref(false)
 
 const visibleActions = computed(() => {
   const actions = []
@@ -99,6 +108,20 @@ const visibleActions = computed(() => {
     })
   }
 
+  // Release Payment (admin, approved status only)
+  const paymentStatus = derivePaymentStatus(milestone.status)
+  if (
+    milestone.status === 'approved' &&
+    paymentStatus === 'ready_for_payout' &&
+    can('release_payment')
+  ) {
+    actions.push({
+      type: 'release_payment',
+      label: t('payment.action.release_payment'),
+      variant: 'default',
+    })
+  }
+
   return actions
 })
 
@@ -119,6 +142,9 @@ const handleAction = async (actionType: string) => {
         break
       case 'pay_milestone':
         paymentDialogOpen.value = true
+        break
+      case 'release_payment':
+        releasePaymentDialogOpen.value = true
         break
     }
   } catch (error) {
@@ -159,6 +185,27 @@ const handleClientApprovalFlowApproved = () => {
 const handleClientApprovalFlowRejected = () => {
   clientApprovalFlowOpen.value = false
   emits('actionComplete')
+}
+
+const handleReleasePaymentConfirm = async () => {
+  isReleasePaymentSubmitting.value = true
+  try {
+    await releaseMilestonePayment(props.milestone.id)
+    releasePaymentDialogOpen.value = false
+    notify.success(
+      t('payment.message.released', {
+        amount: (props.milestone.amount || 0).toString(),
+      })
+    )
+    emits('actionComplete')
+  } catch (error) {
+    console.error('Release payment error:', error)
+    notify.error(
+      error instanceof Error ? error.message : t('errors.release_failed')
+    )
+  } finally {
+    isReleasePaymentSubmitting.value = false
+  }
 }
 </script>
 
@@ -204,6 +251,15 @@ const handleClientApprovalFlowRejected = () => {
       :open="paymentDialogOpen"
       @close="paymentDialogOpen = false"
       @submit="handlePaymentSubmit"
+    />
+
+    <!-- Release Payment Dialog -->
+    <PaymentReleaseDialog
+      :open="releasePaymentDialogOpen"
+      :milestone="milestone"
+      :is-loading="isReleasePaymentSubmitting"
+      @update:open="releasePaymentDialogOpen = $event"
+      @confirm="handleReleasePaymentConfirm"
     />
   </div>
 </template>

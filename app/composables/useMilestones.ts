@@ -629,6 +629,58 @@ export const useMilestones = () => {
     }
   }
 
+  // Release payment to contractor (admin only)
+  const releaseMilestonePayment = async (
+    milestoneId: string
+  ): Promise<Milestone> => {
+    // Find milestone in any project
+    let milestone: Milestone | undefined
+    let projectId: string | undefined
+    let milestoneIndex: number = -1
+
+    for (const [pId, milestones] of Object.entries(milestonesMap.value)) {
+      const idx = milestones.findIndex(m => m.id === milestoneId)
+      if (idx !== -1) {
+        projectId = pId
+        milestone = milestones[idx]
+        milestoneIndex = idx
+        break
+      }
+    }
+
+    if (!milestone || !projectId) {
+      throw new Error('Milestone not found')
+    }
+
+    // Validate transition from ready_for_payout to paid_out
+    if (!canTransition('payment', 'ready_for_payout', 'paid_out')) {
+      throw new Error('Invalid payment transition')
+    }
+
+    const prevMilestone = { ...milestone }
+
+    // Optimistic update: payment -> paid_out
+    const updatedMilestone: Milestone = {
+      ...milestone,
+      payment_status: 'paid_out',
+      updated_at: new Date().toISOString(),
+    }
+
+    milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
+
+    try {
+      // TODO: replace mock — POST /payments/:id/release endpoint
+      await new Promise(resolve => setTimeout(resolve, 500))
+      return updatedMilestone
+    } catch (err) {
+      // Rollback on error
+      milestonesMap.value[projectId][milestoneIndex] = prevMilestone
+      error.value =
+        err instanceof Error ? err.message : 'Failed to release payment'
+      throw err
+    }
+  }
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -652,5 +704,6 @@ export const useMilestones = () => {
     pendingApprovals: computed(() => pendingApprovals.value),
     pendingApprovalsCount,
     payForMilestone,
+    releaseMilestonePayment,
   }
 }
