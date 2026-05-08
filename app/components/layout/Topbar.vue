@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import { BellIcon } from '@heroicons/vue/24/outline'
+import NotificationBell from './NotificationBell.vue'
 import { getDisplayNameForRole } from '~/utils/roleRoutes'
 
 const auth = useAuthStore()
@@ -43,10 +43,6 @@ const handleLogout = async () => {
   await auth.logout()
   // Auth store redirects to /login
 }
-
-const emit = defineEmits<{
-  'notification-click': []
-}>()
 </script>
 
 <template>
@@ -74,15 +70,8 @@ const emit = defineEmits<{
 
       <!-- Right side: Notification bell + Avatar menu -->
       <div class="ms-auto flex items-center gap-4">
-        <!-- Notification Bell (placeholder for future story) -->
-        <Button
-          variant="ghost"
-          size="icon"
-          class="rounded-full"
-          @click="$emit('notification-click')"
-        >
-          <BellIcon class="h-5 w-5" />
-        </Button>
+        <!-- Notification Bell -->
+        <NotificationBell />
 
         <!-- Avatar Dropdown Menu -->
         <DropdownMenu>

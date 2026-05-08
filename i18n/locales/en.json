@@ -96,7 +96,9 @@
     "milestone": "Milestone",
     "amount": "Amount",
     "date": "Date",
-    "payment_plural": "payments"
+    "payment_plural": "payments",
+    "notifications": "Notifications",
+    "logout": "Logout"
   },
   "nav": {
     "home": "Home",

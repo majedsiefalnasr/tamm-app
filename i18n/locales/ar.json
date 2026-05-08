@@ -96,7 +96,9 @@
     "milestone": "مرحلة",
     "amount": "المبلغ",
     "date": "التاريخ",
-    "payment_plural": "مدفوعات"
+    "payment_plural": "مدفوعات",
+    "notifications": "الإشعارات",
+    "logout": "تسجيل الخروج"
   },
   "nav": {
     "home": "الرئيسية",
