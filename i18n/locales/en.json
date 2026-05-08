@@ -95,7 +95,13 @@
     "error_description": "An error occurred while loading the data",
     "retry": "Try again",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "back": "Back",
+    "completed": "Completed"
+  },
+  "nav": {
+    "home": "Home",
+    "projects": "Projects"
   },
   "milestone": {
     "header": {
@@ -103,10 +109,10 @@
       "amount": "Amount"
     },
     "status": {
-      "notStarted": "Not Started",
-      "inProgress": "In Progress",
-      "underReview": "Under Review",
-      "supervisorApproved": "Supervisor Approved",
+      "not_started": "Not Started",
+      "in_progress": "In Progress",
+      "under_review": "Under Review",
+      "supervisor_approved": "Supervisor Approved",
       "approved": "Approved",
       "rejected": "Rejected"
     },
@@ -136,7 +142,51 @@
       "invalidTransition": "Invalid status transition",
       "approveFailed": "Failed to approve milestone",
       "rejectFailed": "Failed to reject milestone",
-      "reportFailed": "Failed to submit report"
+      "reportFailed": "Failed to submit report",
+      "loadFailed": "Failed to load milestone details"
+    },
+    "detail": {
+      "title": "Milestone Details",
+      "details": "Milestone Details",
+      "phase": "Phase",
+      "phaseNumber": "Phase {number}",
+      "budget": "Budget",
+      "status": "Status",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "paymentStatus": "Payment Status",
+      "tasks": "Tasks",
+      "noTasks": "No tasks defined for this milestone",
+      "assignedTo": "Assigned to: {name}",
+      "noReport": "No report submitted yet"
+    },
+    "report": {
+      "title": "Report",
+      "content": "Content",
+      "submittedAt": "Submitted At",
+      "submittedBy": "Submitted By",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "images": "Images"
+    },
+    "history": {
+      "title": "Report History",
+      "empty": "No report history"
+    },
+    "timeline": {
+      "title": "Approval Timeline",
+      "empty": "No timeline activity yet",
+      "created": "Milestone created",
+      "inProgress": "Work started",
+      "underReview": "Report submitted for review",
+      "supervisorApproved": "Approved by supervisor",
+      "clientApproved": "Approved by client",
+      "rejected": "Rejected",
+      "rejectionReason": "Rejection Reason"
     }
   },
   "payment": {

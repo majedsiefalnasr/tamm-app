@@ -95,7 +95,13 @@
     "error_description": "حدث خطأ أثناء تحميل البيانات",
     "retry": "حاول مرة أخرى",
     "expand": "توسيع",
-    "collapse": "طي"
+    "collapse": "طي",
+    "back": "العودة",
+    "completed": "مكتمل"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "projects": "المشاريع"
   },
   "milestone": {
     "header": {
@@ -103,10 +109,10 @@
       "amount": "المبلغ"
     },
     "status": {
-      "notStarted": "لم تبدأ",
-      "inProgress": "قيد التنفيذ",
-      "underReview": "قيد المراجعة",
-      "supervisorApproved": "موافق عليه من المشرف",
+      "not_started": "لم تبدأ",
+      "in_progress": "قيد التنفيذ",
+      "under_review": "قيد المراجعة",
+      "supervisor_approved": "موافق عليه من المشرف",
       "approved": "موافق عليه",
       "rejected": "مرفوض"
     },
@@ -136,7 +142,51 @@
       "invalidTransition": "انتقال حالة غير صحيح",
       "approveFailed": "فشل اعتماد المرحلة",
       "rejectFailed": "فشل رفض المرحلة",
-      "reportFailed": "فشل رفع التقرير"
+      "reportFailed": "فشل رفع التقرير",
+      "loadFailed": "فشل تحميل تفاصيل المرحلة"
+    },
+    "detail": {
+      "title": "تفاصيل المرحلة",
+      "details": "تفاصيل المرحلة",
+      "phase": "المرحلة",
+      "phaseNumber": "المرحلة {number}",
+      "budget": "الميزانية",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "آخر تحديث",
+      "paymentStatus": "حالة الدفع",
+      "tasks": "المهام",
+      "noTasks": "لا توجد مهام معرفة لهذه المرحلة",
+      "assignedTo": "مسندة إلى: {name}",
+      "noReport": "لم يتم رفع أي تقرير بعد"
+    },
+    "report": {
+      "title": "التقرير",
+      "content": "المحتوى",
+      "submittedAt": "تاريخ الرفع",
+      "submittedBy": "رفع بواسطة",
+      "status": {
+        "draft": "مسودة",
+        "submitted": "مرفوع",
+        "approved": "موافق عليه",
+        "rejected": "مرفوض"
+      },
+      "images": "الصور"
+    },
+    "history": {
+      "title": "سجل التقارير",
+      "empty": "لا توجد تقارير سابقة"
+    },
+    "timeline": {
+      "title": "خط زمني الاعتمادات",
+      "empty": "لا توجد إجراءات بعد",
+      "created": "تم إنشاء المرحلة",
+      "inProgress": "بدء العمل",
+      "underReview": "تم رفع التقرير للمراجعة",
+      "supervisorApproved": "تم الموافقة من قبل المشرف",
+      "clientApproved": "تم الموافقة من قبل العميل",
+      "rejected": "تم الرفض",
+      "rejectionReason": "سبب الرفض"
     }
   },
   "payment": {
