@@ -272,5 +272,38 @@
       "rejected": "مرفوض"
     },
     "nA": "غير متاح"
+  },
+  "report": {
+    "submit_title": "تقديم تقرير",
+    "draft_saved": "تم حفظ المسودة محلياً",
+    "submission_failed": "فشل رفع التقرير"
+  },
+  "fields": {
+    "content": "المحتوى",
+    "content_placeholder": "اكتب ملاحظاتك حول المرحلة...",
+    "images": "الصور",
+    "drag_drop_hint": "اسحب الصور هنا أو",
+    "image_limits": "حد أقصى 10 صور، بحد أقصى 5 ميجابايت لكل صورة",
+    "characters": "أحرف"
+  },
+  "actions": {
+    "select_files": "اختر الملفات",
+    "save_draft": "حفظ كمسودة",
+    "submit_report": "رفع التقرير",
+    "remove_image": "إزالة الصورة"
+  },
+  "validation": {
+    "required": "مطلوب",
+    "min_length_20": "الحد الأدنى 20 حرف"
+  },
+  "errors": {
+    "max_images": "الحد الأقصى 10 صور",
+    "file_too_large": "{filename} يتجاوز 5 ميجابايت",
+    "unsupported_format": "{filename} ليس صيغة مدعومة",
+    "submission_failed": "فشل رفع التقرير: {message}"
+  },
+  "success": {
+    "report_submitted": "تم رفع التقرير بنجاح",
+    "draft_saved": "تم حفظ المسودة محلياً"
   }
 }

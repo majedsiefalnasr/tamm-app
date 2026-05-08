@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emits = defineEmits<{
   actionComplete: []
+  submitReport: []
 }>()
 
 const { t } = useI18n()
@@ -124,15 +125,16 @@ const handleAction = async (actionType: string) => {
           props.milestone.id,
           actionType.includes('supervisor') ? 'supervisor_engineer' : 'client'
         )
+        emits('actionComplete')
         break
       case 'reject_supervisor':
       case 'reject_client':
         // For now, use empty reason; Story 03-04/03-05 will add dialogs
         await rejectMilestone(props.milestone.id, 'Rejected by user')
+        emits('actionComplete')
         break
       case 'submit_report':
-        // Story 03-03 will implement report dialog
-        console.log('Submit report action - to be implemented in Story 03-03')
+        emits('submitReport')
         break
       case 'view_report':
         // Story 03-02 will implement detail page
@@ -143,7 +145,6 @@ const handleAction = async (actionType: string) => {
         console.log('Pay milestone action - to be implemented in Story 04-01')
         break
     }
-    emits('actionComplete')
   } catch (error) {
     console.error(`Error executing action ${actionType}:`, error)
   }

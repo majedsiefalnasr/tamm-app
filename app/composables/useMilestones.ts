@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import type { Milestone, MilestoneStatus } from '~/shared/types/project'
+import type { Milestone, MilestoneStatus, Report } from '~/shared/types/project'
 import { canTransition } from '~/utils/statusMachine'
 import { useNotifications } from '~/composables/useNotifications'
 import { useI18n } from 'vue-i18n'
@@ -9,6 +9,11 @@ export interface MilestoneInput {
   description?: string
   amount: number
   order?: number
+}
+
+export interface ReportInput {
+  content: string
+  images: File[]
 }
 
 export interface MilestoneWithProject extends Milestone {
@@ -363,6 +368,73 @@ export const useMilestones = () => {
     }
   }
 
+  // Submit report for a milestone
+  const submitReport = async (
+    projectId: string,
+    milestoneId: string,
+    reportData: ReportInput
+  ): Promise<Report> => {
+    const { notify } = useNotifications()
+    const { t } = useI18n()
+
+    // Find milestone
+    const milestones = milestonesMap.value[projectId] || []
+    const index = milestones.findIndex(m => m.id === milestoneId)
+
+    if (index === -1) {
+      throw new Error('Milestone not found')
+    }
+
+    const milestone = milestones[index]
+
+    // Validate transition
+    if (!canTransition('milestone', milestone.status, 'under_review')) {
+      throw new Error('Invalid status transition')
+    }
+
+    const prevStatus = milestone.status
+    const prevMilestone = { ...milestone }
+
+    // Optimistic update
+    milestonesMap.value[projectId][index] = {
+      ...milestone,
+      status: 'under_review' as MilestoneStatus,
+      updated_at: new Date().toISOString(),
+    }
+
+    try {
+      // TODO: replace mock — POST /milestones/:id/reports endpoint
+      const mockReport: Report = {
+        id: `report-${Date.now()}`,
+        milestone_id: milestoneId,
+        content: reportData.content,
+        images: [], // Mock: no actual image upload
+        submitted_by: {
+          id: 'fe-001',
+          name: 'Field Engineer',
+        },
+        submitted_at: new Date().toISOString(),
+        status: 'submitted',
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // Update milestone with latest report
+      milestonesMap.value[projectId][index] = {
+        ...milestonesMap.value[projectId][index],
+        latest_report: mockReport,
+      }
+
+      return mockReport
+    } catch (err) {
+      // Rollback on error
+      milestonesMap.value[projectId][index] = prevMilestone
+      error.value =
+        err instanceof Error ? err.message : 'Failed to submit report'
+      throw err
+    }
+  }
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -374,5 +446,6 @@ export const useMilestones = () => {
     getProjectTotals,
     approveMilestone,
     rejectMilestone,
+    submitReport,
   }
 }

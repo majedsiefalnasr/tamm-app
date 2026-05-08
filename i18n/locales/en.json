@@ -272,5 +272,38 @@
       "rejected": "Rejected"
     },
     "nA": "N/A"
+  },
+  "report": {
+    "submit_title": "Submit Report",
+    "draft_saved": "Draft saved locally",
+    "submission_failed": "Failed to submit report"
+  },
+  "fields": {
+    "content": "Content",
+    "content_placeholder": "Write your notes about this milestone...",
+    "images": "Images",
+    "drag_drop_hint": "Drag images here or",
+    "image_limits": "Maximum 10 images, 5MB per image",
+    "characters": "characters"
+  },
+  "actions": {
+    "select_files": "Select Files",
+    "save_draft": "Save as Draft",
+    "submit_report": "Submit Report",
+    "remove_image": "Remove Image"
+  },
+  "validation": {
+    "required": "Required",
+    "min_length_20": "Minimum 20 characters"
+  },
+  "errors": {
+    "max_images": "Maximum 10 images allowed",
+    "file_too_large": "{filename} exceeds 5MB",
+    "unsupported_format": "{filename} is not a supported format",
+    "submission_failed": "Failed to submit report: {message}"
+  },
+  "success": {
+    "report_submitted": "Report submitted successfully",
+    "draft_saved": "Draft saved locally"
   }
 }

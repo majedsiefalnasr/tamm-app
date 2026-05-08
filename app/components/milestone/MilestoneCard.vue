@@ -9,6 +9,7 @@ import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 import StatusTag from '~/components/common/StatusTag.vue'
 import { Button } from '~/components/ui/button'
 import MilestoneActions from './MilestoneActions.vue'
+import ReportForm from './ReportForm.vue'
 
 interface Props {
   milestone: Milestone
@@ -26,6 +27,7 @@ const { can } = usePermission()
 
 const isExpanded = ref(false)
 const isLoading = ref(false)
+const isReportFormOpen = ref(false)
 
 const statusTones = {
   not_started: 'muted',
@@ -75,6 +77,15 @@ const handleRefresh = async () => {
       isLoading.value = false
     }
   }
+}
+
+const handleSubmitReport = () => {
+  isReportFormOpen.value = true
+}
+
+const handleReportSubmit = async () => {
+  isReportFormOpen.value = false
+  await handleRefresh()
 }
 
 const cardClasses = computed(() => {
@@ -194,6 +205,7 @@ const cardClasses = computed(() => {
         :project="project"
         :is-loading="isLoading"
         @action-complete="handleRefresh"
+        @submit-report="handleSubmitReport"
       />
 
       <!-- Payment Status Badge (Conditional) -->
@@ -210,4 +222,14 @@ const cardClasses = computed(() => {
       </div>
     </div>
   </div>
+
+  <!-- Report Form Dialog -->
+  <ReportForm
+    :is-open="isReportFormOpen"
+    :milestone-id="milestone.id"
+    :project-id="project.id"
+    :milestone-name="milestone.name"
+    @update:is-open="isReportFormOpen = $event"
+    @submit="handleReportSubmit"
+  />
 </template>
