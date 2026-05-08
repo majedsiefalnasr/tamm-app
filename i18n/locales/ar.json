@@ -93,7 +93,60 @@
     "no_items": "لا توجد عناصر لعرضها",
     "error_occurred": "حدث خطأ",
     "error_description": "حدث خطأ أثناء تحميل البيانات",
-    "retry": "حاول مرة أخرى"
+    "retry": "حاول مرة أخرى",
+    "expand": "توسيع",
+    "collapse": "طي"
+  },
+  "milestone": {
+    "header": {
+      "phase": "المرحلة",
+      "amount": "المبلغ"
+    },
+    "status": {
+      "notStarted": "لم تبدأ",
+      "inProgress": "قيد التنفيذ",
+      "underReview": "قيد المراجعة",
+      "supervisorApproved": "موافق عليه من المشرف",
+      "approved": "موافق عليه",
+      "rejected": "مرفوض"
+    },
+    "section": {
+      "tasks": "المهام",
+      "latestReport": "آخر تقرير",
+      "paymentStatus": "حالة الدفع"
+    },
+    "actions": {
+      "submitReport": "رفع التقرير",
+      "viewReport": "عرض التقرير",
+      "approveMilestone": "اعتماد المرحلة",
+      "rejectMilestone": "رفض المرحلة",
+      "payMilestone": "دفع المرحلة"
+    },
+    "emptyState": {
+      "noTasks": "لا توجد مهام معرفة",
+      "noReports": "لم يتم رفع أي تقارير بعد"
+    },
+    "notifications": {
+      "approved": "تم اعتماد المرحلة بنجاح",
+      "rejected": "تم رفض المرحلة",
+      "reportSubmitted": "تم رفع التقرير بنجاح"
+    },
+    "errors": {
+      "notFound": "لم يتم العثور على المرحلة",
+      "invalidTransition": "انتقال حالة غير صحيح",
+      "approveFailed": "فشل اعتماد المرحلة",
+      "rejectFailed": "فشل رفض المرحلة",
+      "reportFailed": "فشل رفع التقرير"
+    }
+  },
+  "payment": {
+    "status": {
+      "pending_payment": "في انتظار الدفع",
+      "paid": "مدفوع",
+      "awaiting_approval": "في انتظار الموافقة",
+      "ready_for_payout": "جاهز للصرف",
+      "paid_out": "تم الصرف"
+    }
   },
   "project": {
     "actions": {

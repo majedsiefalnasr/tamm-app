@@ -1,5 +1,8 @@
 import { ref, computed } from 'vue'
 import type { Milestone, MilestoneStatus } from '~/shared/types/project'
+import { canTransition } from '~/utils/statusMachine'
+import { useNotifications } from '~/composables/useNotifications'
+import { useI18n } from 'vue-i18n'
 
 export interface MilestoneInput {
   title: string
@@ -233,6 +236,133 @@ export const useMilestones = () => {
     }
   }
 
+  // Approve milestone (supervisor or client)
+  const approveMilestone = async (
+    milestoneId: string,
+    role: 'supervisor_engineer' | 'client'
+  ): Promise<void> => {
+    const { notify } = useNotifications()
+    const { t } = useI18n()
+
+    // Find milestone in any project
+    let milestone: Milestone | undefined
+    let projectId: string | undefined
+    let milestoneIndex: number = -1
+
+    for (const [pId, milestones] of Object.entries(milestonesMap.value)) {
+      const idx = milestones.findIndex(m => m.id === milestoneId)
+      if (idx !== -1) {
+        projectId = pId
+        milestone = milestones[idx]
+        milestoneIndex = idx
+        break
+      }
+    }
+
+    if (!milestone || !projectId) {
+      notify.error(t('milestone.errors.notFound'))
+      throw new Error('Milestone not found')
+    }
+
+    // Validate transition
+    const targetStatus =
+      role === 'supervisor_engineer' ? 'supervisor_approved' : 'approved'
+    if (!canTransition('milestone', milestone.status, targetStatus)) {
+      notify.error(t('milestone.errors.invalidTransition'))
+      throw new Error('Invalid transition')
+    }
+
+    const prevStatus = milestone.status
+    const prevMilestone = { ...milestone }
+
+    // Optimistic update
+    milestonesMap.value[projectId][milestoneIndex] = {
+      ...milestone,
+      status: targetStatus as MilestoneStatus,
+      updated_at: new Date().toISOString(),
+    }
+
+    try {
+      // TODO: replace mock — POST /milestones/:id/approve endpoint
+      await new Promise(resolve => setTimeout(resolve, 300))
+      notify.success(t('milestone.notifications.approved'))
+    } catch (err) {
+      // Rollback on error
+      milestonesMap.value[projectId][milestoneIndex] = prevMilestone
+      error.value =
+        err instanceof Error ? err.message : 'Failed to approve milestone'
+      notify.error(t('milestone.errors.approveFailed'))
+      throw err
+    }
+  }
+
+  // Reject milestone
+  const rejectMilestone = async (
+    milestoneId: string,
+    reason: string
+  ): Promise<void> => {
+    const { notify } = useNotifications()
+    const { t } = useI18n()
+
+    // Find milestone in any project
+    let milestone: Milestone | undefined
+    let projectId: string | undefined
+    let milestoneIndex: number = -1
+
+    for (const [pId, milestones] of Object.entries(milestonesMap.value)) {
+      const idx = milestones.findIndex(m => m.id === milestoneId)
+      if (idx !== -1) {
+        projectId = pId
+        milestone = milestones[idx]
+        milestoneIndex = idx
+        break
+      }
+    }
+
+    if (!milestone || !projectId) {
+      notify.error(t('milestone.errors.notFound'))
+      throw new Error('Milestone not found')
+    }
+
+    // Validate transition to rejected
+    if (!canTransition('milestone', milestone.status, 'rejected')) {
+      notify.error(t('milestone.errors.invalidTransition'))
+      throw new Error('Invalid transition')
+    }
+
+    const prevStatus = milestone.status
+    const prevMilestone = { ...milestone }
+
+    // Optimistic update: show rejected briefly, then transition to in_progress
+    milestonesMap.value[projectId][milestoneIndex] = {
+      ...milestone,
+      status: 'rejected' as MilestoneStatus,
+      updated_at: new Date().toISOString(),
+    }
+
+    try {
+      // TODO: replace mock — POST /milestones/:id/reject endpoint
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // Transition to in_progress after brief delay
+      await new Promise(resolve => setTimeout(resolve, 500))
+      milestonesMap.value[projectId][milestoneIndex] = {
+        ...prevMilestone,
+        status: 'in_progress' as MilestoneStatus,
+        updated_at: new Date().toISOString(),
+      }
+
+      notify.success(t('milestone.notifications.rejected'))
+    } catch (err) {
+      // Rollback on error
+      milestonesMap.value[projectId][milestoneIndex] = prevMilestone
+      error.value =
+        err instanceof Error ? err.message : 'Failed to reject milestone'
+      notify.error(t('milestone.errors.rejectFailed'))
+      throw err
+    }
+  }
+
   return {
     loading: computed(() => loading.value),
     error: computed(() => error.value),
@@ -242,5 +372,7 @@ export const useMilestones = () => {
     editMilestone,
     deleteMilestone,
     getProjectTotals,
+    approveMilestone,
+    rejectMilestone,
   }
 }

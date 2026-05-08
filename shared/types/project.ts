@@ -31,6 +31,37 @@ export interface Project {
   total_milestones: number
 }
 
+export type PaymentStatus =
+  | 'pending_payment'
+  | 'paid'
+  | 'awaiting_approval'
+  | 'ready_for_payout'
+  | 'paid_out'
+
+export interface Task {
+  id: string
+  milestone_id: string
+  title: string
+  contractor?: {
+    id: string
+    name: string
+  }
+  completed?: boolean
+}
+
+export interface Report {
+  id: string
+  milestone_id: string
+  content: string
+  images: string[]
+  submitted_by?: {
+    id: string
+    name: string
+  }
+  submitted_at?: string
+  status: 'draft' | 'submitted' | 'approved' | 'rejected'
+}
+
 export interface Milestone {
   id: string
   name: string
@@ -38,7 +69,12 @@ export interface Milestone {
   amount: number
   order: number
   status: MilestoneStatus
+  tasks: Task[]
+  latest_report?: Report
+  payment_status: PaymentStatus
+  allowed_actions: string[]
   created_at: string
+  updated_at?: string
 }
 
 export interface ProjectDetail {

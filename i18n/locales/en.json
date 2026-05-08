@@ -93,7 +93,60 @@
     "no_items": "There are no items to display",
     "error_occurred": "Something went wrong",
     "error_description": "An error occurred while loading the data",
-    "retry": "Try again"
+    "retry": "Try again",
+    "expand": "Expand",
+    "collapse": "Collapse"
+  },
+  "milestone": {
+    "header": {
+      "phase": "Phase",
+      "amount": "Amount"
+    },
+    "status": {
+      "notStarted": "Not Started",
+      "inProgress": "In Progress",
+      "underReview": "Under Review",
+      "supervisorApproved": "Supervisor Approved",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "section": {
+      "tasks": "Tasks",
+      "latestReport": "Latest Report",
+      "paymentStatus": "Payment Status"
+    },
+    "actions": {
+      "submitReport": "Submit Report",
+      "viewReport": "View Report",
+      "approveMilestone": "Approve Milestone",
+      "rejectMilestone": "Reject Milestone",
+      "payMilestone": "Pay Milestone"
+    },
+    "emptyState": {
+      "noTasks": "No tasks defined",
+      "noReports": "No reports submitted yet"
+    },
+    "notifications": {
+      "approved": "Milestone approved successfully",
+      "rejected": "Milestone rejected",
+      "reportSubmitted": "Report submitted successfully"
+    },
+    "errors": {
+      "notFound": "Milestone not found",
+      "invalidTransition": "Invalid status transition",
+      "approveFailed": "Failed to approve milestone",
+      "rejectFailed": "Failed to reject milestone",
+      "reportFailed": "Failed to submit report"
+    }
+  },
+  "payment": {
+    "status": {
+      "pending_payment": "Pending Payment",
+      "paid": "Paid",
+      "awaiting_approval": "Awaiting Approval",
+      "ready_for_payout": "Ready for Payout",
+      "paid_out": "Paid Out"
+    }
   },
   "project": {
     "actions": {

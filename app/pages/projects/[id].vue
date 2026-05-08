@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type { ProjectDetail, ProjectStatus } from '~/shared/types/project'
 import type { MilestoneInput } from '~/composables/useMilestones'
 import { formatCurrency } from '~/utils/formatters'
+import MilestoneCard from '~/components/milestone/MilestoneCard.vue'
 
 definePageMeta({
   layout: 'default',
@@ -386,22 +387,13 @@ const handleProjectStatusTransition = async (newStatus: string) => {
       </div>
 
       <div v-else class="space-y-3">
-        <div
+        <MilestoneCard
           v-for="milestone in project.milestones"
           :key="milestone.id"
-          class="border-border flex items-center justify-between rounded-lg border p-3"
-        >
-          <div class="flex-1">
-            <h3 class="text-ink text-sm font-semibold">{{ milestone.name }}</h3>
-            <p class="text-muted-foreground mt-1 text-xs">
-              {{ formatCurrency(milestone.amount) }}
-            </p>
-          </div>
-          <Pill
-            :tone="getMilestoneStatusTone(milestone.status)"
-            :label="t(`project.milestone.${milestone.status}`)"
-          />
-        </div>
+          :milestone="milestone"
+          :project="project"
+          :on-refresh="refresh"
+        />
       </div>
     </div>
 

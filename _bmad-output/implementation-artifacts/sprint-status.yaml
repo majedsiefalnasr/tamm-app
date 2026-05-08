@@ -61,8 +61,8 @@ development_status:
   epic-02-retrospective: optional
 
   # Epic 03 — Milestones, Reports & Approval Flow
-  epic-03: backlog
-  03-01-milestone-card: backlog
+  epic-03: in-progress
+  03-01-milestone-card: review
   03-02-milestone-detail-page: backlog
   03-03-field-engineer-submits-report: backlog
   03-04-supervisor-reviews-and-approves-milestone: backlog
