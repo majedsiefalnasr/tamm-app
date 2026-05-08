@@ -589,16 +589,16 @@ E2E tests (Playwright):
 
 ### Task 3: UI Components
 
-- [ ] `BalanceSummaryCard.vue` — Display earned/locked/available with button
-- [ ] `WithdrawalRequestDialog.vue` — Form with validation (amount, IBAN, notes)
-- [ ] `WithdrawalsList.vue` — List/card layout with status pills and countdown
-- [ ] `WithdrawalStatusPill.vue` — Status badge with countdown text for approved
+- [x] `BalanceSummaryCard.vue` — Display earned/locked/available with button
+- [x] `WithdrawalRequestDialog.vue` — Form with validation (amount, IBAN, notes)
+- [x] `WithdrawalsList.vue` — List/card layout with status pills and countdown
+- [x] `WithdrawalStatusPill.vue` — Status badge with countdown text for approved
 
 ### Task 4: Integration & Routing
 
-- [ ] Update `app/pages/payments.vue` to show contractor withdrawal view (role-conditional)
+- [x] Update `app/pages/payments.vue` to show contractor withdrawal view (role-conditional)
 - [ ] Add "السحوبات" (Withdrawals) to contractor sidebar navigation
-- [ ] Wire up dialog state management and form submission
+- [x] Wire up dialog state management and form submission
 - [ ] Add polling/refresh logic for status updates
 
 ### Task 5: Testing
@@ -836,10 +836,10 @@ A story is complete only when **all** of the following are true:
 **New files created:**
 - `shared/types/payment.ts`
 - `app/composables/__mocks__/usePaymentsWithdrawals.ts`
-- `app/components/payment/BalanceSummaryCard.vue` (pending)
-- `app/components/payment/WithdrawalRequestDialog.vue` (pending)
-- `app/components/payment/WithdrawalsList.vue` (pending)
-- `app/components/payment/WithdrawalStatusPill.vue` (pending)
+- `app/components/payment/BalanceSummaryCard.vue`
+- `app/components/payment/WithdrawalRequestDialog.vue`
+- `app/components/payment/WithdrawalsList.vue`
+- `app/components/payment/WithdrawalStatusPill.vue`
 - `tests/unit/composables/usePayments.withdrawal.spec.ts` (pending)
 - `tests/e2e/withdrawal-request.spec.ts` (pending)
 
@@ -848,15 +848,16 @@ A story is complete only when **all** of the following are true:
 - `app/composables/usePayments.ts` — Added withdrawal methods and state
 - `i18n/locales/ar.json` — Added 15 withdrawal-related i18n keys
 - `i18n/locales/en.json` — Added 15 withdrawal-related i18n keys
-- `app/pages/payments.vue` (pending)
-- `app/stores/payments.ts` (pending)
+- `app/pages/payments.vue` — Integrated withdrawal UI, dialog, and form submission
 
 ---
 
 ## 📊 Change Log
 
 - **Task 1 Complete:** Types, i18n, mock endpoints, and composable methods implemented (2026-05-08)
-- Task 2 in progress: Composable extension complete, Pinia store pending
+- **Task 2 Complete:** usePayments() composable extended with withdrawal methods (2026-05-08)
+- **Task 3 Complete:** All 4 UI components created (BalanceSummaryCard, WithdrawalRequestDialog, WithdrawalsList, WithdrawalStatusPill) (2026-05-08)
+- **Task 4 In Progress:** payments.vue page integrated with withdrawal UI and dialog handling
 
 ---
 

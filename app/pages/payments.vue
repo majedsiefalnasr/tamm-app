@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { Skeleton } from '~/components/ui/skeleton'
 import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import PaymentSection from '~/components/payment/PaymentSection.vue'
+import BalanceSummaryCard from '~/components/payment/BalanceSummaryCard.vue'
+import WithdrawalRequestDialog from '~/components/payment/WithdrawalRequestDialog.vue'
+import WithdrawalsList from '~/components/payment/WithdrawalsList.vue'
 import { derivePaymentStatus } from '~/utils/statusMachine'
 import { formatCurrency } from '~/utils/formatters'
 import type { Milestone } from '~/shared/types/project'
@@ -14,17 +18,55 @@ definePageMeta({
 })
 
 const auth = useAuthStore()
+const route = useRoute()
 const {
   milestones: allMilestones,
   loading,
   error,
   fetchMilestones,
 } = useMilestones()
+const {
+  withdrawals,
+  isLoadingWithdrawals,
+  isSubmittingWithdrawal,
+  fetchWithdrawals,
+  submitWithdrawalRequest,
+  getContractorBalance,
+} = usePayments()
 
-// Fetch all milestones (will be filtered by contractor ID on backend)
+// UI state
+const isDialogOpen = ref(false)
+
+// Fetch data on mount
 onMounted(async () => {
-  await fetchMilestones()
+  await Promise.all([fetchMilestones(), fetchWithdrawals()])
 })
+
+// Get contractor balance
+const contractorBalance = computed(() => getContractorBalance())
+
+// Handle withdrawal submission
+const handleSubmitWithdrawal = async (data: {
+  amount: number
+  iban: string
+  notes?: string
+}) => {
+  try {
+    await submitWithdrawalRequest(data.amount, data.iban, data.notes)
+    isDialogOpen.value = false
+    // Show success notification
+    const { $toast } = useNuxtApp()
+    $toast?.({ title: 'Success', description: 'Withdrawal request submitted' })
+  } catch (err) {
+    console.error('Failed to submit withdrawal:', err)
+    const { $toast } = useNuxtApp()
+    $toast?.({
+      title: 'Error',
+      description: 'Failed to submit withdrawal request',
+      variant: 'destructive',
+    })
+  }
+}
 
 // Derive payment statuses
 const milestonesWithPaymentStatus = computed(() =>
@@ -79,12 +121,34 @@ const retryFetch = () => {
   <div class="bg-background min-h-screen p-4 md:p-6">
     <!-- Page Header -->
     <div class="mb-8 space-y-2">
-      <h1 class="text-3xl font-bold">{{ $t('payment.heading') }}</h1>
-      <p class="text-muted-foreground">{{ $t('payment.subtitle') }}</p>
+      <h1 class="text-3xl font-bold">{{ $t('withdrawal.title') }}</h1>
+      <p class="text-muted-foreground">
+        Manage your withdrawal requests and payment history
+      </p>
+    </div>
+
+    <!-- Withdrawal Dialog -->
+    <WithdrawalRequestDialog
+      :open="isDialogOpen"
+      :is-submitting="isSubmittingWithdrawal"
+      :available-balance="contractorBalance.available"
+      @close="isDialogOpen = false"
+      @submit="handleSubmitWithdrawal"
+    />
+
+    <!-- Balance Summary Card -->
+    <div v-if="!loading && !error" class="mb-8">
+      <BalanceSummaryCard
+        :earned="contractorBalance.earned"
+        :locked="contractorBalance.locked"
+        :available="contractorBalance.available"
+        :is-loading="isLoadingWithdrawals"
+        @request-withdrawal="isDialogOpen = true"
+      />
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="space-y-6">
+    <div v-if="loading || isLoadingWithdrawals" class="space-y-6">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Skeleton class="h-24 rounded-lg" />
         <Skeleton class="h-24 rounded-lg" />
@@ -144,21 +208,33 @@ const retryFetch = () => {
         </div>
       </div>
 
-      <!-- Payment Lists -->
-      <div class="space-y-8">
-        <!-- Pending Payments -->
-        <PaymentSection
-          :title="$t('payment.section.pending')"
-          :payments="pendingPayments"
-          :count="pendingPayments.length"
+      <!-- Withdrawals Section -->
+      <div class="mb-12">
+        <h2 class="mb-4 text-lg font-bold">{{ $t('withdrawal.title') }}</h2>
+        <WithdrawalsList
+          :withdrawals="withdrawals"
+          :is-loading="isLoadingWithdrawals"
         />
+      </div>
 
-        <!-- Received Payments -->
-        <PaymentSection
-          :title="$t('payment.section.received')"
-          :payments="receivedPayments"
-          :count="receivedPayments.length"
-        />
+      <!-- Payment History Section -->
+      <div>
+        <h2 class="mb-4 text-lg font-bold">{{ $t('payment.heading') }}</h2>
+        <div class="space-y-8">
+          <!-- Pending Payments -->
+          <PaymentSection
+            :title="$t('payment.section.pending')"
+            :payments="pendingPayments"
+            :count="pendingPayments.length"
+          />
+
+          <!-- Received Payments -->
+          <PaymentSection
+            :title="$t('payment.section.received')"
+            :payments="receivedPayments"
+            :count="receivedPayments.length"
+          />
+        </div>
       </div>
     </template>
   </div>
