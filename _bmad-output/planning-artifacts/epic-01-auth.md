@@ -57,17 +57,17 @@ and be automatically redirected when their session expires.
 
 #### Acceptance criteria
 
-- [ ] Login page renders at `/login` with email + password fields
-- [ ] Page uses `auth` layout (no sidebar, centered card)
-- [ ] Form validates: email format required, password required
-- [ ] On submit: calls `POST /auth/login` via `useApi`
-- [ ] On success: token stored in auth store, user redirected to `/dashboard`
-- [ ] On 401 error: field-level error "Invalid email or password" — not a toast
-- [ ] On network error: toast "Connection error — please try again"
-- [ ] Submit button shows loading state during request, disabled to prevent double-submit
-- [ ] All strings use i18n keys (`auth.email`, `auth.password`, `auth.login`, etc.)
-- [ ] Layout renders correctly in RTL (Arabic) and LTR (English)
-- [ ] Password field has show/hide toggle
+- [x] Login page renders at `/login` with email + password fields
+- [x] Page uses `auth` layout (no sidebar, centered card)
+- [x] Form validates: email format required, password required
+- [x] On submit: calls `POST /auth/login` via `useApi`
+- [x] On success: token stored in auth store, user redirected to `/dashboard`
+- [x] On 401 error: field-level error "Invalid email or password" — not a toast
+- [x] On network error: toast "Connection error — please try again"
+- [x] Submit button shows loading state during request, disabled to prevent double-submit
+- [x] All strings use i18n keys (`auth.email`, `auth.password`, `auth.login`, etc.)
+- [x] Layout renders correctly in RTL (Arabic) and LTR (English)
+- [x] Password field has show/hide toggle
 
 #### Technical notes
 - Use `useAuthStore().login(email, password)` — not direct API call
@@ -88,13 +88,13 @@ and be automatically redirected when their session expires.
 
 #### Acceptance criteria
 
-- [ ] On app load: `GET /auth/me` called to validate existing token
-- [ ] If valid: user state hydrated, stays on current page
-- [ ] If 401: token cleared, redirected to `/login`
-- [ ] Auth middleware runs on every protected route navigation
-- [ ] `/login` redirects to `/dashboard` if already authenticated
-- [ ] When API returns 401 on any request: auto-logout + redirect to `/login`
-- [ ] Logout button in topbar calls `POST /auth/logout`, clears store, redirects to `/login`
+- [x] On app load: `GET /auth/me` called to validate existing token
+- [x] If valid: user state hydrated, stays on current page
+- [x] If 401: token cleared, redirected to `/login`
+- [x] Auth middleware runs on every protected route navigation
+- [x] `/login` redirects to `/dashboard` if already authenticated
+- [x] When API returns 401 on any request: auto-logout + redirect to `/login`
+- [x] Logout button in topbar calls `POST /auth/logout`, clears store, redirects to `/login`
 
 #### Technical notes
 - `useApi` wrapper already handles 401 → logout (see `utils/api.ts`)
@@ -111,16 +111,16 @@ and be automatically redirected when their session expires.
 
 #### Acceptance criteria
 
-- [ ] After successful login, redirect based on role:
-  - `client` → `/projects`
-  - `contractor` → `/projects`
-  - `field_engineer` → `/assignments`
-  - `supervisor_engineer` → `/reviews`
-  - `admin` / `super_admin` → `/admin/dashboard`
-- [ ] If user navigates to a page their role cannot access → redirect to `/403`
-- [ ] `/403` page shows clear message + link back to their home page
-- [ ] Role middleware `app/middleware/role.ts` enforces access per route
-- [ ] Page meta defines required roles: `definePageMeta({ roles: ['admin'] })`
+- [x] After successful login, redirect based on role:
+  - [x] `client` → `/projects`
+  - [x] `contractor` → `/projects`
+  - [x] `field_engineer` → `/assignments`
+  - [x] `supervisor_engineer` → `/reviews`
+  - [x] `admin` / `super_admin` → `/admin/dashboard`
+- [x] If user navigates to a page their role cannot access → redirect to `/403`
+- [x] `/403` page shows clear message + link back to their home page
+- [x] Role middleware `app/middleware/role.ts` enforces access per route
+- [x] Page meta defines required roles: `definePageMeta({ roles: ['admin'] })`
 
 #### Technical notes
 
@@ -146,18 +146,21 @@ export default defineNuxtRouteMiddleware((to) => {
 
 #### Acceptance criteria
 
-- [ ] Topbar shows: app logo (start side), page title (center or start), notification bell + avatar (end side)
-- [ ] Avatar dropdown shows: user name, role label, divider, logout option
-- [ ] Role label uses i18n key (`roles.client`, `roles.contractor`, etc.)
-- [ ] Logout clears session and redirects to `/login`
-- [ ] Avatar shows user initials if no photo — never broken image
-- [ ] All elements align correctly in RTL
+- [x] Topbar shows: app logo (start side), page title (center or start), notification bell + avatar (end side)
+- [x] Avatar dropdown shows: user name, role label, divider, logout option
+- [x] Role label uses i18n key (`roles.client`, `roles.contractor`, etc.)
+- [x] Logout clears session and redirects to `/login`
+- [x] Avatar shows user initials if no photo — never broken image
+- [x] All elements align correctly in RTL
 
 ---
 
 ## Epic done when
 
-- [ ] All 4 stories complete and passing acceptance criteria
-- [ ] Auth flow tested for all 6 roles
-- [ ] RTL verified for all auth screens
-- [ ] Mocks replaced once `POST /auth/login` and `GET /auth/me` are available
+- [x] All 4 stories complete and passing acceptance criteria
+- [x] Auth flow tested for all 6 roles
+- [x] RTL verified for all auth screens
+- [x] Mocks replaced once `POST /auth/login` and `GET /auth/me` are available
+
+**Completion Date:** 2026-05-08  
+**Status:** Complete and production-ready

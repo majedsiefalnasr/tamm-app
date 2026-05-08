@@ -90,20 +90,20 @@ Admins manage project lifecycle from new through to active.
 
 #### Acceptance criteria
 
-- [ ] Route: `/projects`
-- [ ] Page title: i18n key `nav.projects`
-- [ ] Fetches projects via `GET /projects` (filtered server-side by role)
-- [ ] Renders `ProjectCard` for each project
-- [ ] Shows skeleton (3 cards) while loading
-- [ ] Shows `EmptyState` when no projects exist
-- [ ] Shows `ErrorState` with retry when fetch fails
-- [ ] Client sees "Create project" button — other roles do not
-- [ ] Cards link to `/projects/:id`
-- [ ] Status badge on each card reflects current project status
-- [ ] Progress bar shows milestone completion ratio (hidden when no milestones yet)
-- [ ] Currency amounts formatted with `formatCurrency()` (hidden when no milestones yet)
-- [ ] Page is responsive: 1 column mobile, 2 columns desktop
-- [ ] RTL layout verified
+- [x] Route: `/projects`
+- [x] Page title: i18n key `nav.projects`
+- [x] Fetches projects via `GET /projects` (filtered server-side by role)
+- [x] Renders `ProjectCard` for each project
+- [x] Shows skeleton (3 cards) while loading
+- [x] Shows `EmptyState` when no projects exist
+- [x] Shows `ErrorState` with retry when fetch fails
+- [x] Client sees "Create project" button — other roles do not
+- [x] Cards link to `/projects/:id`
+- [x] Status badge on each card reflects current project status
+- [x] Progress bar shows milestone completion ratio (hidden when no milestones yet)
+- [x] Currency amounts formatted with `formatCurrency()` (hidden when no milestones yet)
+- [x] Page is responsive: 1 column mobile, 2 columns desktop
+- [x] RTL layout verified
 
 #### Role-specific behaviour
 - `client` → sees only their own projects
@@ -121,17 +121,17 @@ Admins manage project lifecycle from new through to active.
 
 #### Acceptance criteria
 
-- [ ] "Create project" button opens a dialog (not a new page)
-- [ ] Form fields: title (required), description (optional), address (required)
-- [ ] No contractor field — contractor is selected later via proposals
-- [ ] No milestone fields — milestones are defined after contractor selection
-- [ ] Form validates with Zod schema before submit
-- [ ] On submit: calls `POST /projects`
-- [ ] On success: dialog closes, new project card appears in list, success toast
-- [ ] On validation error from API: field errors shown inline
-- [ ] Submit button disabled during request
-- [ ] Form resets on successful close
-- [ ] New project always starts with status `new`
+- [x] "Create project" button opens a dialog (not a new page)
+- [x] Form fields: title (required), description (optional), address (required)
+- [x] No contractor field — contractor is selected later via proposals
+- [x] No milestone fields — milestones are defined after contractor selection
+- [x] Form validates with Zod schema before submit
+- [x] On submit: calls `POST /projects`
+- [x] On success: dialog closes, new project card appears in list, success toast
+- [x] On validation error from API: field errors shown inline
+- [x] Submit button disabled during request
+- [x] Form resets on successful close
+- [x] New project always starts with status `new`
 
 #### Technical notes
 - Dialog uses shadcn `Dialog` component
@@ -147,19 +147,19 @@ Admins manage project lifecycle from new through to active.
 
 #### Acceptance criteria
 
-- [ ] Route: `/projects/:id`
-- [ ] Fetches `GET /projects/:id`
-- [ ] Shows skeleton while loading, `ErrorState` on fetch failure
-- [ ] Header: project title, status badge, client name, address
-- [ ] Contractor section: shows selected contractor name (or "Awaiting contractor selection" badge when `new` / `open_for_bids` / `under_review`)
-- [ ] Engineers section: shows assigned supervisor + field engineer (or "Not yet assigned" when pre-`active`)
-- [ ] Milestone list section: renders `MilestoneCard` for each milestone (Story 03-01) — shows `EmptyState` when no milestones yet
-- [ ] Progress section: shown only when milestones exist — milestone count, completion %, visual progress bar
-- [ ] Financial summary: shown only when milestones exist — total amount, paid amount, remaining
-- [ ] Admin sees stage-appropriate action buttons (see Story 02-05)
-- [ ] All amounts formatted with `formatCurrency()`
-- [ ] All dates formatted with `formatDate()`
-- [ ] RTL verified
+- [x] Route: `/projects/:id`
+- [x] Fetches `GET /projects/:id`
+- [x] Shows skeleton while loading, `ErrorState` on fetch failure
+- [x] Header: project title, status badge, client name, address
+- [x] Contractor section: shows selected contractor name (or "Awaiting contractor selection" badge when `new` / `open_for_bids` / `under_review`)
+- [x] Engineers section: shows assigned supervisor + field engineer (or "Not yet assigned" when pre-`active`)
+- [x] Milestone list section: renders `MilestoneCard` for each milestone (Story 03-01) — shows `EmptyState` when no milestones yet
+- [x] Progress section: shown only when milestones exist — milestone count, completion %, visual progress bar
+- [x] Financial summary: shown only when milestones exist — total amount, paid amount, remaining
+- [x] Admin sees stage-appropriate action buttons (see Story 02-05)
+- [x] All amounts formatted with `formatCurrency()`
+- [x] All dates formatted with `formatDate()`
+- [x] RTL verified
 
 #### Role-specific sections visible
 | Section | Client | Contractor | Field Eng | Supervisor | Admin |
@@ -180,15 +180,15 @@ Admins manage project lifecycle from new through to active.
 
 #### Acceptance criteria
 
-- [ ] "Add milestone" button visible to `admin`, `super_admin`, and the selected `contractor` only
-- [ ] Only available when project status is `contractor_selected`
-- [ ] Opens a dialog with fields: title (required), description (optional), amount (required, positive number), order (auto-increments, user can override)
-- [ ] On submit: calls `POST /projects/:id/milestones`
-- [ ] New milestone appears in list with status `not_started`
-- [ ] Total project amount shown and updates as milestones are added
-- [ ] Admin can also edit or remove milestones that haven't started yet
-- [ ] Form validates with Zod — amount must be a positive number
-- [ ] Milestone definition is locked once project transitions to `active`
+- [x] "Add milestone" button visible to `admin`, `super_admin`, and the selected `contractor` only
+- [x] Only available when project status is `contractor_selected`
+- [x] Opens a dialog with fields: title (required), description (optional), amount (required, positive number), order (auto-increments, user can override)
+- [x] On submit: calls `POST /projects/:id/milestones`
+- [x] New milestone appears in list with status `not_started`
+- [x] Total project amount shown and updates as milestones are added
+- [x] Admin can also edit or remove milestones that haven't started yet
+- [x] Form validates with Zod — amount must be a positive number
+- [x] Milestone definition is locked once project transitions to `active`
 
 ---
 
@@ -200,18 +200,18 @@ Admins manage project lifecycle from new through to active.
 
 #### Acceptance criteria
 
-- [ ] Admin sees stage-appropriate action button in project detail header
-- [ ] `new` → `open_for_bids`: "Open for bids" button (covered in Epic 07 — Story 07-01)
-- [ ] `under_review` → (client selects contractor — covered in Epic 07)
-- [ ] `contractor_selected` → `active`: "Activate project" button — only enabled when: at least one milestone defined AND engineers assigned
-- [ ] `active` → `on_hold`: "Pause project" button
-- [ ] `on_hold` → `active`: "Resume project" button
-- [ ] `active` → `completed`: automatic when all milestones are `approved` — no manual button
-- [ ] Each transition shows confirmation dialog before execution
-- [ ] `canTransition('project', from, to)` validated before API call
-- [ ] Status badge updates optimistically
-- [ ] Rollback on API error
-- [ ] Other roles: status badge is read-only, no action buttons
+- [x] Admin sees stage-appropriate action button in project detail header
+- [x] `new` → `open_for_bids`: "Open for bids" button (covered in Epic 07 — Story 07-01)
+- [x] `under_review` → (client selects contractor — covered in Epic 07)
+- [x] `contractor_selected` → `active`: "Activate project" button — only enabled when: at least one milestone defined AND engineers assigned
+- [x] `active` → `on_hold`: "Pause project" button
+- [x] `on_hold` → `active`: "Resume project" button
+- [x] `active` → `completed`: automatic when all milestones are `approved` — no manual button
+- [x] Each transition shows confirmation dialog before execution
+- [x] `canTransition('project', from, to)` validated before API call
+- [x] Status badge updates optimistically
+- [x] Rollback on API error
+- [x] Other roles: status badge is read-only, no action buttons
 
 ---
 

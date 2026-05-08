@@ -101,13 +101,13 @@ Clients give final approval. The full cycle is transparent to all parties.
 
 #### Acceptance criteria
 
-- [ ] `MilestoneCard` renders inside project detail page
-- [ ] Shows: order number, title, amount, status badge, latest report summary
-- [ ] Status badge uses `StatusTag` component — never raw text
-- [ ] Action buttons are role-aware AND status-aware (see matrix below)
-- [ ] Payment badge shown on milestone — reflects current payment status
-- [ ] Clicking card or "View details" navigates to `/projects/:id/milestones/:mid`
-- [ ] RTL verified
+- [x] `MilestoneCard` renders inside project detail page
+- [x] Shows: order number, title, amount, status badge, latest report summary
+- [x] Status badge uses `StatusTag` component — never raw text
+- [x] Action buttons are role-aware AND status-aware (see matrix below)
+- [x] Payment badge shown on milestone — reflects current payment status
+- [x] Clicking card or "View details" navigates to `/projects/:id/milestones/:mid`
+- [x] RTL verified
 
 #### Action button visibility matrix
 
@@ -133,15 +133,15 @@ All buttons hidden unless `usePermission().can(action, milestone.allowedActions)
 
 #### Acceptance criteria
 
-- [ ] Route: `/projects/:id/milestones/:mid`
-- [ ] Fetches milestone + latest report
-- [ ] Shows: title, status, amount, order, description
-- [ ] Shows complete report (content + all images) if one exists
-- [ ] Shows report history — list of all past reports (archived rejected ones)
-- [ ] Shows approval timeline: who approved/rejected at each stage, with timestamps
-- [ ] All action buttons from Story 03-01 available here too
-- [ ] Back navigation to project detail
-- [ ] Breadcrumb: Home > Projects > [Project name] > [Milestone name]
+- [x] Route: `/projects/:id/milestones/:mid`
+- [x] Fetches milestone + latest report
+- [x] Shows: title, status, amount, order, description
+- [x] Shows complete report (content + all images) if one exists
+- [x] Shows report history — list of all past reports (archived rejected ones)
+- [x] Shows approval timeline: who approved/rejected at each stage, with timestamps
+- [x] All action buttons from Story 03-01 available here too
+- [x] Back navigation to project detail
+- [x] Breadcrumb: Home > Projects > [Project name] > [Milestone name]
 
 ---
 
@@ -153,20 +153,20 @@ All buttons hidden unless `usePermission().can(action, milestone.allowedActions)
 
 #### Acceptance criteria
 
-- [ ] "Submit report" button visible only to `field_engineer` when milestone is `in_progress`
-- [ ] Opens a full-screen dialog or navigates to report form page
-- [ ] Form fields:
-  - Content / notes: textarea (required, min 20 chars)
-  - Images: file upload, multiple, max 10 files, max 5MB each, jpg/png/webp only
-- [ ] Images show preview thumbnails after selection
-- [ ] Images can be removed before submission
-- [ ] "Save draft" saves without submitting — status stays `draft`
-- [ ] "Submit" sends the report — changes milestone to `under_review`
-- [ ] Once submitted, report is locked — no edits allowed
-- [ ] Submit calls `POST /milestones/:id/reports` then `POST /reports/:id/submit`
-- [ ] On success: milestone status updates optimistically to `under_review`
-- [ ] Supervisor notified via in-app notification (backend concern — verify trigger)
-- [ ] Form validates before submission
+- [x] "Submit report" button visible only to `field_engineer` when milestone is `in_progress`
+- [x] Opens a full-screen dialog or navigates to report form page
+- [x] Form fields:
+  - [x] Content / notes: textarea (required, min 20 chars)
+  - [x] Images: file upload, multiple, max 10 files, max 5MB each, jpg/png/webp only
+- [x] Images show preview thumbnails after selection
+- [x] Images can be removed before submission
+- [x] "Save draft" saves without submitting — status stays `draft`
+- [x] "Submit" sends the report — changes milestone to `under_review`
+- [x] Once submitted, report is locked — no edits allowed
+- [x] Submit calls `POST /milestones/:id/reports` then `POST /reports/:id/submit`
+- [x] On success: milestone status updates optimistically to `under_review`
+- [x] Supervisor notified via in-app notification (backend concern — verify trigger)
+- [x] Form validates before submission
 
 #### Technical notes
 - File upload uses `multipart/form-data` — see `api-contracts.md`
@@ -183,25 +183,25 @@ All buttons hidden unless `usePermission().can(action, milestone.allowedActions)
 
 #### Acceptance criteria
 
-- [ ] "Review" action visible only to `supervisor_engineer` when milestone is `under_review`
-- [ ] Opens `ApprovalFlow` component (see `frontend-spec.md §6`)
-- [ ] Shows full report: content + images
-- [ ] **Approve path:**
-  - Single "Approve milestone" button
-  - Confirmation dialog: "This will notify the client for final approval"
-  - On confirm: calls `POST /milestones/:id/approve` with `{ role: 'supervisor' }`
-  - Milestone status updates to `supervisor_approved` optimistically
-  - Client receives in-app notification
-- [ ] **Reject path:**
-  - "Reject" button opens rejection reason dialog
-  - Reason field: required, min 10 chars
-  - On confirm: calls `POST /milestones/:id/reject` with `{ reason: '...' }`
-  - Milestone briefly shows `rejected`, then immediately `in_progress`
-  - Contractor notified
-  - Old report is archived, new report cycle begins
-- [ ] `canTransition('milestone', status, targetStatus)` validated before both calls
-- [ ] Rollback on API error for both paths
-- [ ] Supervisor cannot approve their own project (admin-level guard — backend enforces, frontend respects `allowedActions`)
+- [x] "Review" action visible only to `supervisor_engineer` when milestone is `under_review`
+- [x] Opens `ApprovalFlow` component (see `frontend-spec.md §6`)
+- [x] Shows full report: content + images
+- [x] **Approve path:**
+  - [x] Single "Approve milestone" button
+  - [x] Confirmation dialog: "This will notify the client for final approval"
+  - [x] On confirm: calls `POST /milestones/:id/approve` with `{ role: 'supervisor' }`
+  - [x] Milestone status updates to `supervisor_approved` optimistically
+  - [x] Client receives in-app notification
+- [x] **Reject path:**
+  - [x] "Reject" button opens rejection reason dialog
+  - [x] Reason field: required, min 10 chars
+  - [x] On confirm: calls `POST /milestones/:id/reject` with `{ reason: '...' }`
+  - [x] Milestone briefly shows `rejected`, then immediately `in_progress`
+  - [x] Contractor notified
+  - [x] Old report is archived, new report cycle begins
+- [x] `canTransition('milestone', status, targetStatus)` validated before both calls
+- [x] Rollback on API error for both paths
+- [x] Supervisor cannot approve their own project (admin-level guard — backend enforces, frontend respects `allowedActions`)
 
 ---
 
@@ -213,23 +213,23 @@ All buttons hidden unless `usePermission().can(action, milestone.allowedActions)
 
 #### Acceptance criteria
 
-- [ ] "Approve" / "Reject" actions visible only to `client` when milestone is `supervisor_approved`
-- [ ] Client sees: "✓ Approved by [Supervisor name]" confirmation
-- [ ] Client can view full report before deciding
-- [ ] **Approve path:**
-  - "Final approval" button
-  - Confirmation dialog: "This will release payment to the contractor"
-  - On confirm: calls `POST /milestones/:id/approve` with `{ role: 'client' }`
-  - Milestone status → `approved`
-  - Payment status → `ready_for_payout`
-  - Contractor notified
-- [ ] **Reject path:**
-  - "Reject" button with required reason
-  - On confirm: calls `POST /milestones/:id/reject` with `{ reason: '...' }`
-  - Milestone → `rejected` → `in_progress` (automatic)
-  - Contractor notified with reason
-- [ ] Both paths validated with `canTransition()` before API call
-- [ ] Clear visual indicator that client approval is final and triggers payment
+- [x] "Approve" / "Reject" actions visible only to `client` when milestone is `supervisor_approved`
+- [x] Client sees: "✓ Approved by [Supervisor name]" confirmation
+- [x] Client can view full report before deciding
+- [x] **Approve path:**
+  - [x] "Final approval" button
+  - [x] Confirmation dialog: "This will release payment to the contractor"
+  - [x] On confirm: calls `POST /milestones/:id/approve` with `{ role: 'client' }`
+  - [x] Milestone status → `approved`
+  - [x] Payment status → `ready_for_payout`
+  - [x] Contractor notified
+- [x] **Reject path:**
+  - [x] "Reject" button with required reason
+  - [x] On confirm: calls `POST /milestones/:id/reject` with `{ reason: '...' }`
+  - [x] Milestone → `rejected` → `in_progress` (automatic)
+  - [x] Contractor notified with reason
+- [x] Both paths validated with `canTransition()` before API call
+- [x] Clear visual indicator that client approval is final and triggers payment
 
 ---
 
@@ -241,15 +241,15 @@ All buttons hidden unless `usePermission().can(action, milestone.allowedActions)
 
 #### Acceptance criteria
 
-- [ ] Route: `/reviews`
-- [ ] Only accessible to `supervisor_engineer` role
-- [ ] Shows all milestones with status `under_review` assigned to this supervisor
-- [ ] Each item shows: project name, milestone name, submission date, field engineer name
-- [ ] Sorted by oldest first (longest waiting at top)
-- [ ] "Review" button on each item → opens `ApprovalFlow`
-- [ ] Count badge in sidebar nav reflects number of pending reviews
-- [ ] Empty state when no pending reviews
-- [ ] Refreshes after each action (approve/reject) without full page reload
+- [x] Route: `/reviews`
+- [x] Only accessible to `supervisor_engineer` role
+- [x] Shows all milestones with status `under_review` assigned to this supervisor
+- [x] Each item shows: project name, milestone name, submission date, field engineer name
+- [x] Sorted by oldest first (longest waiting at top)
+- [x] "Review" button on each item → opens `ApprovalFlow`
+- [x] Count badge in sidebar nav reflects number of pending reviews
+- [x] Empty state when no pending reviews
+- [x] Refreshes after each action (approve/reject) without full page reload
 
 ---
 
@@ -261,22 +261,25 @@ All buttons hidden unless `usePermission().can(action, milestone.allowedActions)
 
 #### Acceptance criteria
 
-- [ ] Dashboard widget or dedicated section showing `supervisor_approved` milestones
-- [ ] Each item shows: project name, milestone name, amount, supervisor approval date
-- [ ] "Approve" and "Reject" actions directly accessible from this view
-- [ ] Count shown in dashboard summary card
-- [ ] Navigates to milestone detail on item click
+- [x] Dashboard widget or dedicated section showing `supervisor_approved` milestones
+- [x] Each item shows: project name, milestone name, amount, supervisor approval date
+- [x] "Approve" and "Reject" actions directly accessible from this view
+- [x] Count shown in dashboard summary card
+- [x] Navigates to milestone detail on item click
 
 ---
 
 ## Epic done when
 
-- [ ] All 7 stories complete
-- [ ] Full milestone lifecycle tested end-to-end: `not_started` → `approved`
-- [ ] Rejection flow tested: supervisor reject + client reject both bounce to `in_progress`
-- [ ] All role/status combinations tested for button visibility
-- [ ] `canTransition()` called before every approval/rejection
-- [ ] Optimistic updates + rollbacks verified
-- [ ] Notifications triggered at correct points (coordinate with backend)
-- [ ] RTL verified for report form, approval dialog, and all cards
-- [ ] Mocks replaced as endpoints become available
+- [x] All 7 stories complete
+- [x] Full milestone lifecycle tested end-to-end: `not_started` → `approved`
+- [x] Rejection flow tested: supervisor reject + client reject both bounce to `in_progress`
+- [x] All role/status combinations tested for button visibility
+- [x] `canTransition()` called before every approval/rejection
+- [x] Optimistic updates + rollbacks verified
+- [x] Notifications triggered at correct points (coordinate with backend)
+- [x] RTL verified for report form, approval dialog, and all cards
+- [x] Mocks replaced as endpoints become available
+
+**Completion Date:** 2026-05-08  
+**Status:** Complete and production-ready
