@@ -84,7 +84,13 @@ const hoveredIdx = ref<number | null>(null)
     <!-- Chart -->
     <template v-else-if="data && data.data.length > 0">
       <div class="overflow-x-auto" data-testid="activity-chart">
-        <svg :width="chartWidth" :height="chartHeight" class="mx-auto">
+        <!-- Charts always flow LTR regardless of document direction -->
+        <svg
+          :width="chartWidth"
+          :height="chartHeight"
+          class="mx-auto"
+          style="direction: ltr"
+        >
           <!-- Grid lines -->
           <line
             :x1="padding"

@@ -6,7 +6,7 @@ interface Stat {
   title: string
   value: number
   icon: string
-  tone: 'primary' | 'default' | 'accent' | 'danger'
+  tone: 'primary' | 'default' | 'accent' | 'danger' | 'success' | 'warning'
   isCurrency?: boolean
   link?: string
 }
@@ -46,6 +46,8 @@ const toneClasses = {
   default: 'text-muted-foreground',
   accent: 'text-accent',
   danger: 'text-destructive',
+  success: 'text-green-600',
+  warning: 'text-amber-600',
 }
 
 function formatValue(value: number, isCurrency?: boolean) {

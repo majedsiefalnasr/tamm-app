@@ -1,11 +1,4 @@
 // Dashboard types
-export interface DashboardStat {
-  label: string
-  value: number
-  icon: string
-  tone: 'primary' | 'default' | 'accent' | 'danger'
-}
-
 export interface UrgentAction {
   new_projects: number
   pending_payments: number

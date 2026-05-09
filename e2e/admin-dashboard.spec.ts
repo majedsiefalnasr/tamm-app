@@ -1,11 +1,15 @@
 import { test, expect } from '@playwright/test'
 
+// Test credentials from environment or defaults
+const TEST_ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL || 'admin@test.com'
+const TEST_ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD || 'password123'
+
 test.describe('Admin Dashboard', () => {
   test.beforeEach(async ({ page }) => {
     // Login as admin before each test
     await page.goto('/login')
-    await page.fill('input[data-testid="email-input"]', 'admin@test.com')
-    await page.fill('input[data-testid="password-input"]', 'password123')
+    await page.fill('input[data-testid="email-input"]', TEST_ADMIN_EMAIL)
+    await page.fill('input[data-testid="password-input"]', TEST_ADMIN_PASSWORD)
     await page.click('button[data-testid="login-submit"]')
     await page.waitForLoadState('networkidle')
   })
