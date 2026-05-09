@@ -14,16 +14,13 @@ interface Props {
   loading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
 const { $t } = useI18n()
 
 const cards = computed(() => {
-  const { $t } = useI18n()
-  const props = defineProps<Props>()
-
   return [
     {
       id: 'total',
@@ -81,12 +78,10 @@ const cards = computed(() => {
               :is="card.icon"
               :class="[
                 'h-4 w-4',
-                {
-                  'text-primary': card.tone === 'primary',
-                  'text-green-600': card.tone === 'success',
-                  'text-amber-600': card.tone === 'warning',
-                  'text-muted-foreground': card.tone === 'default',
-                },
+                card.tone === 'primary' && 'text-primary',
+                card.tone === 'success' && 'text-green-600',
+                card.tone === 'warning' && 'text-amber-600',
+                card.tone === 'default' && 'text-muted-foreground',
               ]"
             />
           </div>

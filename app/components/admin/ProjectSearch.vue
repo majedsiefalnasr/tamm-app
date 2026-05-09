@@ -23,8 +23,6 @@ defineEmits<Emits>()
 
 const { $t } = useI18n()
 
-const localSearch = ref('')
-
 const statusTabs = computed(() => [
   { id: 'all' as const, label: $t('admin.projects.filter_all') },
   { id: 'new' as const, label: $t('admin.projects.filter_new') },
@@ -34,12 +32,11 @@ const statusTabs = computed(() => [
 ])
 
 const handleSearch = (value: string) => {
-  localSearch.value = value
-  emit('update:search', value)
+  const truncated = value.slice(0, 100)
+  emit('update:search', truncated)
 }
 
 const handleClearSearch = () => {
-  localSearch.value = ''
   emit('update:search', '')
 }
 

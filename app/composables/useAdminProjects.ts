@@ -26,52 +26,56 @@ export function useAdminProjects() {
     total_pages: 0,
   })
 
+  // Apply filters to dataset
+  const applyFilters = (dataset: AdminProjectOverviewItem[]) => {
+    let filtered = dataset
+
+    // Apply status filter
+    if (statusFilter.value !== 'all') {
+      if (statusFilter.value === 'active') {
+        filtered = filtered.filter(
+          p => p.status === 'active' || p.status === 'contractor_selected'
+        )
+      } else {
+        filtered = filtered.filter(p => p.status === statusFilter.value)
+      }
+    }
+
+    // Apply search filter
+    if (searchQuery.value.trim()) {
+      const q = searchQuery.value.toLowerCase()
+      filtered = filtered.filter(
+        p =>
+          p.name.toLowerCase().includes(q) ||
+          p.client.name.toLowerCase().includes(q)
+      )
+    }
+
+    return filtered
+  }
+
   const fetchProjects = async () => {
     loading.value = true
     error.value = null
     try {
       if (USE_MOCK) {
-        // Mock implementation with client-side filtering and pagination
-        let filtered = mockAdminProjects
-
-        // Apply status filter
-        if (statusFilter.value !== 'all') {
-          if (statusFilter.value === 'active') {
-            filtered = filtered.filter(
-              p => p.status === 'active' || p.status === 'contractor_selected'
-            )
-          } else {
-            filtered = filtered.filter(p => p.status === statusFilter.value)
-          }
-        }
-
-        // Apply search filter
-        if (searchQuery.value.trim()) {
-          const q = searchQuery.value.toLowerCase()
-          filtered = filtered.filter(
-            p =>
-              p.name.toLowerCase().includes(q) ||
-              p.client.name.toLowerCase().includes(q)
-          )
-        }
-
-        // Calculate pagination
+        // Mock: client-side filtering and pagination
+        const filtered = applyFilters(mockAdminProjects)
         const total = filtered.length
         const perPage = 20
-        const totalPages = Math.ceil(total / perPage)
+        const totalPages = total > 0 ? Math.ceil(total / perPage) : 0
         const startIdx = (currentPage.value - 1) * perPage
         const endIdx = startIdx + perPage
 
         pagination.value = {
-          current_page: currentPage.value,
+          current_page: total > 0 ? currentPage.value : 1,
           per_page: perPage,
           total,
           total_pages: totalPages,
         }
-
         projects.value = filtered.slice(startIdx, endIdx)
       } else {
-        // Real API implementation
+        // Real API: server-side filtering
         const params = new URLSearchParams()
 
         if (statusFilter.value !== 'all') {
@@ -91,14 +95,23 @@ export function useAdminProjects() {
           : API_ENDPOINT
 
         const response = await useApi(url)
+
+        if (!response || typeof response !== 'object') {
+          throw new Error('Invalid API response format')
+        }
+
         const data = response as AdminProjectsResponse
 
-        projects.value = data.data || []
-        pagination.value = data.pagination || {
-          current_page: 1,
-          per_page: 20,
-          total: 0,
-          total_pages: 0,
+        if (!Array.isArray(data.data)) {
+          throw new Error('API response missing or invalid data array')
+        }
+
+        projects.value = data.data
+        pagination.value = {
+          current_page: data.pagination?.current_page ?? 1,
+          per_page: data.pagination?.per_page ?? 20,
+          total: data.pagination?.total ?? 0,
+          total_pages: data.pagination?.total_pages ?? 0,
         }
       }
     } catch (e) {
@@ -133,19 +146,38 @@ export function useAdminProjects() {
 
   // Summary card calculations — reflect FILTERED counts, not global
   const summaryCards = computed(() => {
-    const allFiltered = projects.value
+    if (USE_MOCK) {
+      // Mock: recalculate from full dataset respecting current filter
+      let filtered = mockAdminProjects
 
-    // If showing multiple pages, we need total counts from pagination
-    const statusFilteredTotal =
-      statusFilter.value === 'all' ? pagination.value.total : allFiltered.length
+      if (statusFilter.value !== 'all') {
+        if (statusFilter.value === 'active') {
+          filtered = filtered.filter(
+            p => p.status === 'active' || p.status === 'contractor_selected'
+          )
+        } else {
+          filtered = filtered.filter(p => p.status === statusFilter.value)
+        }
+      }
 
-    return {
-      total: pagination.value.total,
-      active: allFiltered.filter(
-        p => p.status === 'active' || p.status === 'contractor_selected'
-      ).length,
-      onHold: allFiltered.filter(p => p.status === 'on_hold').length,
-      completed: allFiltered.filter(p => p.status === 'completed').length,
+      return {
+        total: mockAdminProjects.length,
+        active: filtered.filter(
+          p => p.status === 'active' || p.status === 'contractor_selected'
+        ).length,
+        onHold: filtered.filter(p => p.status === 'on_hold').length,
+        completed: filtered.filter(p => p.status === 'completed').length,
+      }
+    } else {
+      // Real API: use pagination data from last fetch
+      return {
+        total: pagination.value.total,
+        active: projects.value.filter(
+          p => p.status === 'active' || p.status === 'contractor_selected'
+        ).length,
+        onHold: projects.value.filter(p => p.status === 'on_hold').length,
+        completed: projects.value.filter(p => p.status === 'completed').length,
+      }
     }
   })
 
@@ -155,11 +187,12 @@ export function useAdminProjects() {
       return { completed: 0, total: 0, percent: 0 }
     }
 
-    const completed = project.milestones.filter(
-      m => m.status === 'approved' || m.status === 'completed'
-    ).length
+    const completed = project.milestones.filter(m => {
+      if (!m || typeof m !== 'object') return false
+      return m.status === 'approved' || m.status === 'completed'
+    }).length
     const total = project.milestones.length
-    const percent = Math.round((completed / total) * 100)
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0
 
     return { completed, total, percent }
   }

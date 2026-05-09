@@ -72,6 +72,8 @@ const statusLabel = (status: string) => {
   return $t(`status.${status}`)
 }
 
+const { locale } = useI18n()
+
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('ar-EG', {
     style: 'currency',
@@ -81,11 +83,20 @@ const formatCurrency = (value: number) => {
 }
 
 const formatDate = (date: string) => {
-  return new Intl.DateTimeFormat('ar-EG', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(date))
+  try {
+    const dateObj = new Date(date)
+    if (isNaN(dateObj.getTime())) {
+      return ''
+    }
+    const localeString = locale.value === 'ar' ? 'ar-EG' : 'en-US'
+    return new Intl.DateTimeFormat(localeString, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(dateObj)
+  } catch {
+    return ''
+  }
 }
 
 const handleNavigateToProject = (id: string) => {
@@ -170,8 +181,8 @@ const handleNextPage = () => {
         </TableHeader>
         <TableBody>
           <TableRow
-            v-for="project in projects"
-            :key="project.id"
+            v-for="(project, idx) in projects"
+            :key="`${project.id}-${idx}`"
             class="hover:bg-muted/50 cursor-pointer transition"
             @click="handleNavigateToProject(project.id)"
           >

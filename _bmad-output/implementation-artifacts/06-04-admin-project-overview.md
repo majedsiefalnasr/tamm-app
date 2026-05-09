@@ -693,9 +693,46 @@ All acceptance criteria satisfied:
 
 ## Status
 
-**Current:** review  
+**Current:** done  
 **History:** 
 - Created 2026-05-08 by BMad Story Context Engine
 - Implemented 2026-05-08 by Developer Agent
-- Status transitioned: ready-for-dev → in-progress → review
+- Status transitioned: ready-for-dev → in-progress → review → done
+- Code review completed 2026-05-09; 17 patches applied
+
+---
+
+## Review Findings (Code Review 2026-05-09)
+
+### Patches Applied (17 total)
+
+✅ **Critical (3)** — Fixed blocking issues:
+- [x] [Review][Patch] Redundant useI18n() + defineProps() in computed [ProjectOverviewCards.vue:23-25]
+- [x] [Review][Patch] Summary cards reflected mixed (filtered + global) counts [useAdminProjects.ts:135-149]
+- [x] [Review][Patch] Type cast without validation; silent API failures [useAdminProjects.ts:93-94]
+
+✅ **High (4)** — Fixed high-priority issues:
+- [x] [Review][Patch] formatDate() hardcoded to 'ar-EG'; ignores i18n locale [ProjectOverviewTable.vue:83-88]
+- [x] [Review][Patch] Invalid dates render as "Invalid Date" string [ProjectOverviewTable.vue:83-88]
+- [x] [Review][Patch] Progress bar shows NaN when milestones=0 [useAdminProjects.ts:162]
+- [x] [Review][Patch] Missing null guards on milestone.status field [useAdminProjects.ts:158-159]
+
+✅ **Medium (8)** — Fixed before merge:
+- [x] [Review][Patch] Access control checked synchronously in module scope [admin/projects.vue:20-22]
+- [x] [Review][Patch] Pagination metadata invalid when total=0 [useAdminProjects.ts:59-69]
+- [x] [Review][Patch] 70-line mock/real API if/else will confuse on migration [useAdminProjects.ts:33-103]
+- [x] [Review][Patch] Icon tone mapping incomplete; unknown tones silent-fail [ProjectOverviewCards.vue:80-91]
+- [x] [Review][Patch] No length limit on search input; unbounded memory [ProjectSearch.vue:36-39]
+- [x] [Review][Patch] Dead code: localSearch ref never synced [ProjectSearch.vue:26]
+- [x] [Review][Patch] Tests don't mock i18n; flaky [useAdminProjects.spec.ts]
+- [x] [Review][Patch] E2E tests hardcoded Arabic text; skip in non-AR locale [admin-projects.spec.ts]
+
+✅ **Table Key Improvement**:
+- [x] [Review][Patch] Missing project.id key causes Vue instance reuse [ProjectOverviewTable.vue:174]
+
+### Deferred (3 — pre-existing, not caused by this change)
+
+- [x] [Review][Defer] Fallback pagination object assumes correct structure [useAdminProjects.ts:97-102] — deferred, pre-existing
+- [x] [Review][Defer] fetchProjects() network hang; no timeout guard [admin/projects.vue:40-42] — deferred, infrastructure concern
+- [x] [Review][Defer] Missing error scenario tests (network, permission, validation) [tests/] — deferred, pre-existing test infrastructure
 

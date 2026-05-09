@@ -56,16 +56,17 @@ test.describe('Admin Projects Overview Page', () => {
   test('searches projects by name', async ({ page }) => {
     // Type in search box
     const searchInput = page.locator('input[placeholder*="Search"]').first()
-    await searchInput.fill('فيلا')
+    const searchTerm = 'villa'
+    await searchInput.fill(searchTerm)
 
     // Wait for debounce and results
     await page.waitForTimeout(400)
     await page.waitForLoadState('networkidle')
 
     // Verify search is applied
-    expect(await searchInput.inputValue()).toBe('فيلا')
+    expect(await searchInput.inputValue()).toBe(searchTerm)
 
-    // Check results contain searched term
+    // Check results exist (may be empty if no matches)
     const projectNames = page.locator('table tbody td:nth-child(2)')
     const count = await projectNames.count()
     expect(count).toBeGreaterThanOrEqual(0)
@@ -74,14 +75,15 @@ test.describe('Admin Projects Overview Page', () => {
   test('searches projects by client name', async ({ page }) => {
     // Type client name in search box
     const searchInput = page.locator('input[placeholder*="Search"]').first()
-    await searchInput.fill('أحمد')
+    const searchTerm = 'client'
+    await searchInput.fill(searchTerm)
 
     // Wait for debounce and results
     await page.waitForTimeout(400)
     await page.waitForLoadState('networkidle')
 
     // Verify search is applied
-    expect(await searchInput.inputValue()).toBe('أحمد')
+    expect(await searchInput.inputValue()).toBe(searchTerm)
   })
 
   test('clears search when clicking clear button', async ({ page }) => {

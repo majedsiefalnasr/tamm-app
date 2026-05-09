@@ -9,17 +9,19 @@ import { Alert, AlertDescription, AlertTitle } from '../../components/ui/alert'
 import { AlertTriangle } from 'lucide-vue-next'
 
 definePageMeta({
-  middleware: 'auth',
+  middleware: ['auth'],
 })
 
 const { $t } = useI18n()
 const router = useRouter()
 const { can } = usePermission()
 
-// Access control
-if (!can('view_admin_projects')) {
-  navigateTo('/403')
-}
+// Access control — check in onBeforeMount to avoid race conditions
+onBeforeMount(() => {
+  if (!can('view_admin_projects')) {
+    navigateTo('/403')
+  }
+})
 
 const {
   projects,

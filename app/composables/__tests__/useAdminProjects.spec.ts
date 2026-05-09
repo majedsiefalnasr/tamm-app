@@ -2,6 +2,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useAdminProjects } from '../useAdminProjects'
 import { mockAdminProjects } from '../__mocks__/admin-projects'
 
+vi.mock('#app', () => ({
+  useI18n: () => ({
+    t: (key: string) => key,
+    locale: { value: 'ar' },
+  }),
+}))
+
 describe('useAdminProjects', () => {
   beforeEach(() => {
     vi.clearAllMocks()
