@@ -127,7 +127,8 @@
     "days": "يوم",
     "submitted": "تم التقديم",
     "showMore": "عرض المزيد",
-    "showLess": "عرض أقل"
+    "showLess": "عرض أقل",
+    "of": "من"
   },
   "nav": {
     "home": "الرئيسية",
@@ -596,6 +597,38 @@
       "loadingMessage": "جاري فتح باب العروض...",
       "successMessage": "تم فتح باب العروض بنجاح",
       "errorMessage": "فشل فتح باب العروض. يرجى المحاولة مرة أخرى"
+    },
+    "closeBidding": {
+      "button": "إغلاق جولة العروض",
+      "dialogTitle": "إغلاق جولة العروض",
+      "dialogMessage": "هل تريد إغلاق جولة العروض؟",
+      "proposalCount": "عدد العروض المستلمة:",
+      "invitedContractors": "مقاول مدعو",
+      "info": "سيتم إخطار العميل لمراجعة العروض",
+      "confirmButton": "تأكيد الإغلاق",
+      "cancelButton": "إلغاء",
+      "successMessage": "تم إغلاق جولة العروض بنجاح",
+      "errorMessage": "فشل إغلاق جولة العروض. يرجى المحاولة مرة أخرى",
+      "noProposalsError": "لا توجد عروض مستلمة حتى الآن"
+    },
+    "submitProposal": {
+      "button": "تقديم عرض",
+      "dialogTitle": "تقديم عرض لـ",
+      "priceLabel": "السعر الإجمالي",
+      "priceError": "السعر مطلوب وعليه أن يكون موجباً",
+      "timelineLabel": "المدة التقديرية بالأيام",
+      "timelineError": "المدة مطلوبة وعليها أن تكون رقماً موجباً",
+      "notesLabel": "الملاحظات",
+      "notesPlaceholder": "أضف أي ملاحظات هنا (اختياري)",
+      "notesError": "الملاحظات لا يمكن أن تتجاوز 500 حرف",
+      "confirmButton": "تقديم العرض",
+      "cancelButton": "إلغاء",
+      "loadingMessage": "جاري...",
+      "successMessage": "تم تقديم العرض بنجاح",
+      "errorMessage": "فشل تقديم العرض. يرجى المحاولة مرة أخرى",
+      "submittedPill": "تم تقديم العرض",
+      "openForBidsPill": "مفتوح للعروض",
+      "proposalSummary": "ملخص عرضك"
     }
   }
 }

@@ -127,7 +127,8 @@
     "days": "days",
     "submitted": "Submitted",
     "showMore": "Show More",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "of": "of"
   },
   "nav": {
     "home": "Home",
@@ -596,6 +597,19 @@
       "loadingMessage": "Opening for bids...",
       "successMessage": "Bidding opened successfully",
       "errorMessage": "Failed to open for bids. Please try again."
+    },
+    "closeBidding": {
+      "button": "Close Bidding",
+      "dialogTitle": "Close Bidding",
+      "dialogMessage": "Close the bidding phase?",
+      "proposalCount": "Proposals received:",
+      "invitedContractors": "invited contractor",
+      "info": "The client will be notified to review proposals.",
+      "confirmButton": "Confirm Close",
+      "cancelButton": "Cancel",
+      "successMessage": "Bidding closed successfully.",
+      "errorMessage": "Failed to close bidding. Please try again.",
+      "noProposalsError": "No proposals received yet."
     }
   }
 }

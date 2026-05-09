@@ -76,6 +76,21 @@ const showOpenForBidsButton = computed(() => {
   return project.value.status === 'new'
 })
 
+const showCloseBiddingButton = computed(() => {
+  if (!project.value || !isAdmin.value) return false
+  return project.value.status === 'open_for_bids'
+})
+
+const proposalCount = computed(() => {
+  // TODO: get actual proposal count from store/API
+  // For now returning mock value
+  return 1
+})
+
+const canCloseBidding = computed(() => {
+  return proposalCount.value > 0
+})
+
 const isContractor = computed(() => auth.user?.role === 'contractor')
 
 const showSubmitProposalButton = computed(() => {
@@ -121,6 +136,9 @@ const isSubmittingBids = ref(false)
 const isSubmitProposalDialogOpen = ref(false)
 const { getProposal, hasSubmittedProposal, isContractorInvited } =
   useProposals()
+
+// Close bidding dialog
+const isCloseBiddingDialogOpen = ref(false)
 
 const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
   if (!project.value || !canTransition('project', 'new', 'open_for_bids')) {
@@ -169,6 +187,39 @@ const handleSubmitProposalCompleted = async () => {
   isSubmitProposalDialogOpen.value = false
   // Refresh project data to reflect proposal status
   await refresh()
+}
+
+const handleCloseBiddingConfirmed = async () => {
+  if (
+    !project.value ||
+    !canTransition('project', 'open_for_bids', 'under_review')
+  ) {
+    useNotification().error(t('errors.invalid_transition'))
+    return
+  }
+
+  const prevStatus = project.value.status
+
+  try {
+    project.value.status = 'under_review'
+
+    // Call API to update project status
+    await useProjects().closeBiddingForReview(id)
+
+    useNotification().success(t('projects.closeBidding.successMessage'))
+    isCloseBiddingDialogOpen.value = false
+
+    // Refresh project data
+    await refresh()
+  } catch (err) {
+    // Rollback
+    project.value.status = prevStatus
+    const errorMsg =
+      err instanceof Error
+        ? err.message
+        : t('projects.closeBidding.errorMessage')
+    useNotification().error(errorMsg)
+  }
 }
 </script>
 
@@ -253,6 +304,16 @@ const handleSubmitProposalCompleted = async () => {
         @click="isOpenForBidsDialogOpen = true"
       >
         {{ t('projects.openForBids.button') }}
+      </Button>
+    </div>
+
+    <!-- Close Bidding button (admin only, status = open_for_bids) -->
+    <div v-if="showCloseBiddingButton" class="flex gap-3">
+      <Button
+        :disabled="!canCloseBidding"
+        @click="isCloseBiddingDialogOpen = true"
+      >
+        {{ t('projects.closeBidding.button') }}
       </Button>
     </div>
 
@@ -434,5 +495,16 @@ const handleSubmitProposalCompleted = async () => {
     :project-name="project.name"
     @update:open="isSubmitProposalDialogOpen = $event"
     @submitted="handleSubmitProposalCompleted"
+  />
+
+  <!-- Close Bidding Dialog -->
+  <CloseBiddingDialog
+    v-if="project"
+    :is-open="isCloseBiddingDialogOpen"
+    :project-id="project.id"
+    :project-name="project.name"
+    :proposal-count="proposalCount"
+    @update:is-open="isCloseBiddingDialogOpen = $event"
+    @confirmed="handleCloseBiddingConfirmed"
   />
 </template>

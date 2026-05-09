@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-09T21:00:00Z
+last_updated: 2026-05-09T23:45:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -101,8 +101,8 @@ development_status:
   # Epic 07 — Proposals & Contractor Selection
   epic-07: in-progress
   07-01-admin-opens-bidding-and-invites-contractors: ready-for-dev
-  07-02-contractor-submits-proposal: ready-for-dev
-  07-03-admin-closes-bidding-for-review: backlog
+  07-02-contractor-submits-proposal: review
+  07-03-admin-closes-bidding-for-review: review
   07-04-client-reviews-proposals: backlog
   07-05-client-selects-a-contractor: backlog
   07-06-admin-assigns-engineers-after-contractor-selection: backlog

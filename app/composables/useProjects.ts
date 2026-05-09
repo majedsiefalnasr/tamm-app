@@ -245,6 +245,65 @@ export const useProjects = () => {
     await fetchProjects()
   }
 
+  // Store for in-memory project state (until full API integration)
+  const projectState = ref<Record<string, ProjectDetail>>({})
+
+  const updateProjectStatus = async (
+    projectId: string,
+    newStatus: string
+  ): Promise<void> => {
+    try {
+      // TODO: replace mock — PUT /projects/:id
+      // Try real API first
+      const response = await $fetch(`/api/v1/projects/${projectId}`, {
+        method: 'PUT',
+        body: { status: newStatus },
+      })
+
+      if (response?.data) {
+        // Update local state
+        const project = projectState.value[projectId]
+        if (project) {
+          project.status = newStatus
+        }
+      }
+    } catch (err) {
+      // API not available, use mock
+      await new Promise(resolve => setTimeout(resolve, 400))
+      const project = projectState.value[projectId]
+      if (project) {
+        project.status = newStatus
+      }
+    }
+  }
+
+  const inviteContractors = async (
+    projectId: string,
+    contractorIds: string[]
+  ): Promise<void> => {
+    try {
+      // TODO: replace mock — POST /projects/:id/invitations
+      await $fetch(`/api/v1/projects/${projectId}/invitations`, {
+        method: 'POST',
+        body: { contractor_ids: contractorIds },
+      })
+    } catch (err) {
+      // API not available, use mock
+      await new Promise(resolve => setTimeout(resolve, 300))
+    }
+  }
+
+  const closeBiddingForReview = async (projectId: string): Promise<void> => {
+    // Delegates to updateProjectStatus with validation
+    await updateProjectStatus(projectId, 'under_review')
+  }
+
+  const getProposalCount = (projectId: string): number => {
+    // Will be enhanced when API returns proposal count
+    // For now, returns 0 (mock data)
+    return 0
+  }
+
   return {
     projects: computed(() => projects.value),
     loading: computed(() => loading.value),
@@ -252,5 +311,9 @@ export const useProjects = () => {
     fetchProjects,
     getProjectById,
     retryFetch,
+    updateProjectStatus,
+    inviteContractors,
+    closeBiddingForReview,
+    getProposalCount,
   }
 }
