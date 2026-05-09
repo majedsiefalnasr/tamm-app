@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import type { Milestone, MilestoneStatus, Report } from '~/shared/types/project'
-import { canTransition } from '~/utils/statusMachine'
+import { canTransition, derivePaymentStatus } from '~/utils/statusMachine'
 import { useNotifications } from '~/composables/useNotifications'
 import { useI18n } from 'vue-i18n'
 
@@ -33,6 +33,7 @@ export const useMilestones = () => {
   const milestonesMap = ref<Record<string, Milestone[]>>({})
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const releasingMilestones = ref<Set<string>>(new Set())
 
   // Mock milestones (will be replaced by API)
   const mockMilestones: Record<string, Milestone[]> = {
@@ -660,6 +661,11 @@ export const useMilestones = () => {
   const releaseMilestonePayment = async (
     milestoneId: string
   ): Promise<Milestone> => {
+    // Prevent concurrent releases of same milestone
+    if (releasingMilestones.value.has(milestoneId)) {
+      throw new Error('Payment release already in progress for this milestone')
+    }
+
     // Find milestone in any project
     let milestone: Milestone | undefined
     let projectId: string | undefined
@@ -679,11 +685,17 @@ export const useMilestones = () => {
       throw new Error('Milestone not found')
     }
 
-    // Validate transition from ready_for_payout to paid_out
-    if (!canTransition('payment', 'ready_for_payout', 'paid_out')) {
-      throw new Error('Invalid payment transition')
+    // Derive actual payment status from milestone status
+    const paymentStatus = derivePaymentStatus(milestone.status)
+
+    // Validate transition from current payment status to paid_out
+    if (!canTransition('payment', paymentStatus, 'paid_out')) {
+      throw new Error(
+        'Invalid payment transition: payment is not in ready_for_payout state'
+      )
     }
 
+    releasingMilestones.value.add(milestoneId)
     const prevMilestone = { ...milestone }
 
     // Optimistic update: payment -> paid_out
@@ -697,6 +709,7 @@ export const useMilestones = () => {
 
     try {
       // TODO: replace mock — POST /payments/:id/release endpoint
+      // Expected: await useApi(`/payments/${milestoneId}/release`, { method: 'POST' })
       await new Promise(resolve => setTimeout(resolve, 500))
       return updatedMilestone
     } catch (err) {
@@ -705,6 +718,8 @@ export const useMilestones = () => {
       error.value =
         err instanceof Error ? err.message : 'Failed to release payment'
       throw err
+    } finally {
+      releasingMilestones.value.delete(milestoneId)
     }
   }
 

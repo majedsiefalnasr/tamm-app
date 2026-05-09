@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Milestone } from '~/shared/types/project'
 import {
@@ -29,19 +30,48 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
+const dialogError = ref<string | null>(null)
+
+// Clear error when dialog closes
+watch(
+  () => props.open,
+  newVal => {
+    if (!newVal) {
+      dialogError.value = null
+    }
+  }
+)
 
 const handleConfirm = () => {
+  dialogError.value = null
   emit('confirm')
 }
 
 const handleCancel = () => {
+  // Prevent closing dialog while request is in-flight
+  if (props.isLoading) {
+    return
+  }
   emit('update:open', false)
 }
+
+// Expose error setter for parent component
+const setError = (msg: string) => {
+  dialogError.value = msg
+}
+
+defineExpose({ setError })
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="emit('update:open', $event)">
-    <DialogContent class="max-w-md">
+  <Dialog
+    :open="open"
+    @update:open="newVal => !isLoading && emit('update:open', newVal)"
+  >
+    <DialogContent
+      class="max-w-md"
+      :class="{ 'pointer-events-none': isLoading }"
+    >
       <DialogHeader>
         <DialogTitle>{{ t('payment.dialog.release_title') }}</DialogTitle>
       </DialogHeader>
@@ -79,6 +109,14 @@ const handleCancel = () => {
             formatCurrency(milestone.amount)
           }}</span>
         </div>
+      </div>
+
+      <!-- Error message (if any) -->
+      <div
+        v-if="dialogError"
+        class="border-destructive/50 bg-destructive/10 text-destructive rounded-md border p-3 text-xs"
+      >
+        {{ dialogError }}
       </div>
 
       <!-- Footer -->

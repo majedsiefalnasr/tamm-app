@@ -26,6 +26,8 @@
     "report_submission_failed": "فشل رفع التقرير",
     "invalid_transition": "انتقال غير صحيح",
     "release_failed": "فشل تحرير الدفع",
+    "contractor_missing": "بيانات المقاول مفقودة. لا يمكن تحرير الدفع.",
+    "permission_denied": "ليس لديك صلاحية للقيام بهذا الإجراء",
     "name_required": "الاسم مطلوب",
     "email_required": "البريد الإلكتروني مطلوب",
     "email_invalid": "البريد الإلكتروني غير صحيح",

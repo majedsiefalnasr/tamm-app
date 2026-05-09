@@ -11,6 +11,7 @@ import ClientApprovalFlow from './ClientApprovalFlow.vue'
 import PaymentConfirmDialog from '~/components/payment/PaymentConfirmDialog.vue'
 import PaymentReleaseDialog from '~/components/payment/PaymentReleaseDialog.vue'
 import { derivePaymentStatus } from '~/utils/statusMachine'
+import { formatCurrency } from '~/utils/formatters'
 
 interface Props {
   milestone: Milestone
@@ -43,6 +44,9 @@ const paymentDialogOpen = ref(false)
 const releasePaymentDialogOpen = ref(false)
 const isPaymentSubmitting = ref(false)
 const isReleasePaymentSubmitting = ref(false)
+const releasePaymentDialogRef = ref<{ setError: (msg: string) => void } | null>(
+  null
+)
 
 const visibleActions = computed(() => {
   const actions = []
@@ -113,7 +117,7 @@ const visibleActions = computed(() => {
   if (
     milestone.status === 'approved' &&
     paymentStatus === 'ready_for_payout' &&
-    can('release_payment')
+    can('release_payment', milestone.allowed_actions)
   ) {
     actions.push({
       type: 'release_payment',
@@ -192,21 +196,34 @@ const handleClientApprovalFlowRejected = () => {
 }
 
 const handleReleasePaymentConfirm = async () => {
+  // Validate contractor exists before attempting release
+  if (!props.milestone.contractor?.name) {
+    const errorMsg = t('errors.contractor_missing')
+    releasePaymentDialogRef.value?.setError(errorMsg)
+    return
+  }
+
+  // Re-check permission at action boundary (permission may have changed mid-dialog)
+  if (!can('release_payment', props.milestone.allowed_actions)) {
+    const errorMsg = t('errors.permission_denied')
+    releasePaymentDialogRef.value?.setError(errorMsg)
+    return
+  }
+
   isReleasePaymentSubmitting.value = true
   try {
     await releaseMilestonePayment(props.milestone.id)
     releasePaymentDialogOpen.value = false
     notify.success(
       t('payment.message.released', {
-        amount: (props.milestone.amount || 0).toString(),
+        amount: formatCurrency(props.milestone.amount || 0),
       })
     )
     emits('actionComplete')
   } catch (error) {
-    console.error('Release payment error:', error)
-    notify.error(
+    const errorMsg =
       error instanceof Error ? error.message : t('errors.release_failed')
-    )
+    releasePaymentDialogRef.value?.setError(errorMsg)
   } finally {
     isReleasePaymentSubmitting.value = false
   }
@@ -259,6 +276,7 @@ const handleReleasePaymentConfirm = async () => {
 
     <!-- Release Payment Dialog -->
     <PaymentReleaseDialog
+      ref="releasePaymentDialogRef"
       :open="releasePaymentDialogOpen"
       :milestone="milestone"
       :is-loading="isReleasePaymentSubmitting"

@@ -26,6 +26,8 @@
     "report_submission_failed": "Failed to submit report",
     "invalid_transition": "Invalid status transition",
     "release_failed": "Failed to release payment",
+    "contractor_missing": "Contractor information is missing. Cannot release payment.",
+    "permission_denied": "You don't have permission to perform this action",
     "name_required": "Name is required",
     "email_required": "Email is required",
     "email_invalid": "Email must be valid",
