@@ -534,6 +534,15 @@ A task is complete only when **all** of the following are true:
 
 ---
 
+### Review Findings
+
+Review date: 2026-05-09. Diff base: `origin/lovable` (incremental delta only; primary 07-02 UI lives on that baseline).
+
+- [x] [Review][Patch resolved] Split dashboard/UI optional fields into `shared/types/project-display.ts` and compose via `extends` on `Project` / `Milestone` in `shared/types/project.ts`.
+- [x] [Review][Patch resolved] Mock `getProjectProposals`: contractors receive only proposals where `contractorId` matches the signed-in user; mock POST submit includes `contractor_id` when using the mock path; replaced `any` error handling with `unknown` + `ApiProposalRow` typing in `useProposals.ts`.
+
+---
+
 ## 📚 Reference Documentation
 
 | Document | Section | Relevance |

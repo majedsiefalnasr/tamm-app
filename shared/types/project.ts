@@ -1,3 +1,8 @@
+import type {
+  MilestoneDisplayFields,
+  ProjectDisplayFields,
+} from './project-display'
+
 export type ProjectStatus =
   | 'new'
   | 'open_for_bids'
@@ -15,12 +20,10 @@ export type MilestoneStatus =
   | 'approved'
   | 'rejected'
 
-export interface Project {
+export interface Project extends ProjectDisplayFields {
   id: string
   name: string
   description: string
-  /** Structured street address when available (else UI may fall back to `city`) */
-  address?: string
   city: string
   area_m2: number
   budget: number
@@ -64,7 +67,7 @@ export interface Report {
   status: 'draft' | 'submitted' | 'approved' | 'rejected'
 }
 
-export interface Milestone {
+export interface Milestone extends MilestoneDisplayFields {
   id: string
   name: string
   description?: string
@@ -91,11 +94,7 @@ export interface Milestone {
     id: string
     name: string
   }
-  supervisor_name?: string
   supervisor_approved_at?: string
-  /** When payout completed — preferred over updated_at for “received last 30 days” */
-  paid_out_at?: string
-  deadline?: string
 }
 
 export interface Engineer {
