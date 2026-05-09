@@ -1,7 +1,6 @@
 import { storeToRefs } from 'pinia'
-import type { NotificationResponse } from '~/shared/types/notification'
+import type { Notification } from '~/shared/types/notification'
 import { useNotificationsStore } from '~/stores/notifications'
-import { useNotify } from '~/composables/useNotify'
 
 const POLLING_INTERVAL = 30000 // 30 seconds
 let globalPollTimer: number | undefined
@@ -10,7 +9,6 @@ let pollingStartCount = 0
 
 export const useNotifications = () => {
   const store = useNotificationsStore()
-  const { error, t } = useNotify()
 
   const poll = async () => {
     if (!import.meta.client) return
@@ -18,7 +16,7 @@ export const useNotifications = () => {
     if (isHidden) return
 
     try {
-      const response = await useApi<NotificationResponse>('/notifications')
+      const response = await useApi<Notification[]>('/notifications')
       const notifs = response.data ?? []
       store.setNotifications(notifs)
     } catch (e) {
@@ -61,31 +59,24 @@ export const useNotifications = () => {
 
   const markAsRead = async (notificationId: string) => {
     const notification = store.notifications.find(n => n.id === notificationId)
-    if (!notification) {
-      error(t('notif.errors.not_found'))
-      return
-    }
+    if (!notification) return
 
-    const prevState = { ...notification }
     store.markAsRead(notificationId)
 
     try {
       await useApi(`/notifications/${notificationId}/read`, { method: 'POST' })
     } catch (e) {
-      store.restoreNotification(prevState)
-      error(t('notif.errors.mark_read_failed'))
+      console.error('Failed to mark notification as read:', e)
     }
   }
 
   const markAllAsRead = async () => {
-    const prevStates = store.notifications.map(n => ({ ...n }))
     store.markAllAsRead()
 
     try {
       await useApi('/notifications/read-all', { method: 'POST' })
     } catch (e) {
-      store.restoreNotifications(prevStates)
-      error(t('notif.errors.mark_all_read_failed'))
+      console.error('Failed to mark all notifications as read:', e)
     }
   }
 

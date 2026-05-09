@@ -24,7 +24,6 @@ const emit = defineEmits<{
 const router = useRouter()
 const { notifications, unreadCount, markAsRead, markAllAsRead } =
   useNotifications()
-const isLoading = ref(false)
 
 const showMarkAllButton = computed(() => {
   return unreadCount.value > 0
@@ -36,28 +35,16 @@ const sortedNotifications = computed(() => {
   })
 })
 
-const handleNotificationClick = async (notification: Notification) => {
-  if (isLoading.value) return
-  isLoading.value = true
-  try {
-    await markAsRead(notification.id)
-    if (notification.link) {
-      router.push(notification.link)
-    }
-    emit('update:open', false)
-  } finally {
-    isLoading.value = false
+const handleNotificationClick = (notification: Notification) => {
+  markAsRead(notification.id)
+  if (notification.link) {
+    router.push(notification.link)
   }
+  emit('update:open', false)
 }
 
-const handleMarkAllAsRead = async () => {
-  if (isLoading.value) return
-  isLoading.value = true
-  try {
-    await markAllAsRead()
-  } finally {
-    isLoading.value = false
-  }
+const handleMarkAllAsRead = () => {
+  markAllAsRead()
 }
 </script>
 
@@ -75,7 +62,6 @@ const handleMarkAllAsRead = async () => {
             variant="ghost"
             size="sm"
             class="text-sm"
-            :disabled="isLoading"
             @click="handleMarkAllAsRead"
           >
             {{ $t('notif.drawer.mark_all_read') }}
@@ -101,10 +87,6 @@ const handleMarkAllAsRead = async () => {
             :class="{
               'bg-primary-50/40': !notification.is_read,
               'bg-background': notification.is_read,
-            }"
-            :style="{
-              pointerEvents: isLoading ? 'none' : 'auto',
-              opacity: isLoading ? 0.6 : 1,
             }"
             @click="handleNotificationClick(notification)"
           >

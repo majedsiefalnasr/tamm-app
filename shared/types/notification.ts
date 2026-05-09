@@ -3,7 +3,7 @@ export type Notification = {
   user_id: string
   title: string
   body: string
-  link: string
+  link?: string
   is_read?: boolean
   created_at?: string
   read_at?: string | null
