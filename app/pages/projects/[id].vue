@@ -227,32 +227,9 @@ const handleProposalSelected = async (data: {
   }
 }
 
-const handleSaveEngineers = async (
-  supervisorId: string,
-  fieldEngineerId: string
-) => {
-  if (!project.value) return
-
-  try {
-    const projectsComposable = useProjects()
-    const result = await projectsComposable.assignEngineers(
-      project.value.id,
-      supervisorId,
-      fieldEngineerId
-    )
-
-    if (result.success) {
-      isAssignEngineersDialogOpen.value = false
-      useNotification().success(t('projects.assignEngineers.successMessage'))
-      await refresh()
-    } else {
-      useNotification().error(result.error || t('errors.assignEngineersFailed'))
-    }
-  } catch (err) {
-    const errorMsg =
-      err instanceof Error ? err.message : t('errors.assignEngineersFailed')
-    useNotification().error(errorMsg)
-  }
+const handleEngineersAssigned = async () => {
+  isAssignEngineersDialogOpen.value = false
+  await refresh()
 }
 
 // Load proposals when status changes to under_review or contractor_selected
@@ -657,11 +634,10 @@ const handleCloseBiddingConfirmed = async () => {
   <!-- Assign Engineers Dialog -->
   <AssignEngineersDialog
     v-if="project"
-    :is-open="isAssignEngineersDialogOpen"
+    :open="isAssignEngineersDialogOpen"
     :project-id="project.id"
-    :current-supervisor-id="project.supervisor_engineer_id"
-    :current-field-engineer-id="project.field_engineer_id"
-    @close="isAssignEngineersDialogOpen = false"
-    @save="handleSaveEngineers"
+    :project="project"
+    @update:open="isAssignEngineersDialogOpen = $event"
+    @success="handleEngineersAssigned"
   />
 </template>

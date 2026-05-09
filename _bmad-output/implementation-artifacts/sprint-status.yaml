@@ -93,7 +93,7 @@ development_status:
   epic-06: in-progress
   06-01-admin-user-list: review
   06-02-create-user-admin: done
-  06-03-assign-engineers-to-project: review
+  06-03-assign-engineers-to-project: done
   06-04-admin-project-overview: review
   06-05-admin-dashboard: review
   epic-06-retrospective: optional

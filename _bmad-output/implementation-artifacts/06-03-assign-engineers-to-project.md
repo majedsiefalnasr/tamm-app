@@ -396,8 +396,46 @@ All acceptance criteria satisfied:
 
 ---
 
+---
+
+## 🔍 Review Findings — RESOLVED ✅
+
+### Decision-Needed (Resolved 2026-05-09)
+
+- [x] [Review][Decision → Patch] **Composable Architecture** — RESOLVED: Consolidated all project mutations into `useProjects()`. Deleted redundant `useProjectDetail.ts` composable. Single source of truth for project operations. ✅
+
+- [x] [Review][Decision → Patch] **Project Data Flow** — RESOLVED: Dialog now receives `project` as prop instead of fetching. Eliminates duplicate network request and race conditions. Page passes project data directly. ✅
+
+### Patches Applied ✅ (All 16 Fixed)
+
+- [x] ✅ Add `AssignEngineersPayload` type to `shared/types/project.ts` (line 195)
+- [x] ✅ Add missing i18n error keys to `i18n/locales/en.json` (6 keys added)
+- [x] ✅ Add missing i18n error keys to `i18n/locales/ar.json` (6 keys added)
+- [x] ✅ Update form to use `useProjects()` composable (removed useProjectDetail import)
+- [x] ✅ Add `project` prop to dialog and pass from page
+- [x] ✅ Add click handler to Cancel button (`@click="handleCancel"`)
+- [x] ✅ Fix form label associations (added `id="supervisor"` and `id="field"`)
+- [x] ✅ Remove `as any` cast from form submission (proper typing)
+- [x] ✅ Fix form initialization (moved to onMounted after engineer fetch)
+- [x] ✅ Add permission check to form submission (`can('assign_engineers')`)
+- [x] ✅ Add empty state message for engineer lists (shows on empty)
+- [x] ✅ Update page component to delegate to dialog (removed handleSaveEngineers)
+- [x] ✅ Update test mocks to use `useProjects()` instead of `useProjectDetail()`
+- [x] ✅ Add cross-field validation test case
+- [x] ✅ Verify E2E tests use element IDs (already good)
+- [x] ✅ Add permission guard and error handling improvements
+
+### Deferred (Pre-Existing)
+
+- [x] [Defer] Verify `useApi` utility exists — pre-existing infrastructure dependency
+
+---
+
 ## Status
 
-**Current:** review  
-**History:** Created 2026-05-09 by BMad Story Context Engine
+**Current:** done  
+**History:** Created 2026-05-09 by BMad Story Context Engine  
+**Code Review:** Completed 2026-05-09 — All findings resolved ✅  
+**Implementation Time:** Single session  
+**Quality:** Ready for staging
 

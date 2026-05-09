@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import AssignEngineersForm from './AssignEngineersForm.vue'
+import type { ProjectDetail } from '~/shared/types/project'
 
 interface Props {
   projectId: string
+  project: ProjectDetail
   open: boolean
 }
 
@@ -21,6 +23,10 @@ const handleSuccess = () => {
   emit('update:open', false)
   emit('success')
 }
+
+const handleClose = () => {
+  emit('update:open', false)
+}
 </script>
 
 <template>
@@ -31,7 +37,12 @@ const handleSuccess = () => {
           $t('admin.projects.assign_engineers.title')
         }}</DialogTitle>
       </DialogHeader>
-      <AssignEngineersForm :project-id="projectId" @success="handleSuccess" />
+      <AssignEngineersForm
+        :project-id="projectId"
+        :project="project"
+        @success="handleSuccess"
+        @close="handleClose"
+      />
     </DialogContent>
   </Dialog>
 </template>

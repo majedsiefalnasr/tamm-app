@@ -191,3 +191,8 @@ export interface ProposalPayload {
   estimated_days: number
   notes?: string
 }
+
+export interface AssignEngineersPayload {
+  supervisor_engineer_id: string
+  field_engineer_id: string
+}
