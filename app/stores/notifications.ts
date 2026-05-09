@@ -30,6 +30,20 @@ export const useNotificationsStore = defineStore('notifications', () => {
     unreadCount.value = 0
   }
 
+  const restoreNotification = (prevState: Notification) => {
+    const index = notifications.value.findIndex(n => n.id === prevState.id)
+    if (index !== -1) {
+      notifications.value[index] = prevState
+      unreadCount.value = notifications.value.filter(n => !n.is_read).length
+    }
+  }
+
+  const restoreNotifications = (prevStates: Notification[]) => {
+    const idMap = new Map(prevStates.map(n => [n.id, n]))
+    notifications.value = notifications.value.map(n => idMap.get(n.id) ?? n)
+    unreadCount.value = notifications.value.filter(n => !n.is_read).length
+  }
+
   return {
     unreadCount,
     notifications,
@@ -37,5 +51,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     decrementUnreadCount,
     markAsRead,
     markAllAsRead,
+    restoreNotification,
+    restoreNotifications,
   }
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Sheet,
@@ -10,6 +10,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { useNotifications } from '~/composables/useNotifications'
 import { formatRelativeTime } from '~/utils/formatters'
+import EmptyState from '~/components/common/EmptyState.vue'
 import type { Notification } from '~/shared/types/notification'
 
 const props = defineProps<{
@@ -22,6 +23,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { notifications, markAsRead, markAllAsRead } = useNotifications()
+const isLoading = ref(false)
 
 const unreadCount = computed(() => {
   return notifications.value.filter(n => !n.is_read).length
@@ -38,15 +40,27 @@ const sortedNotifications = computed(() => {
 })
 
 const handleNotificationClick = async (notification: Notification) => {
-  await markAsRead(notification.id)
-  if (notification.link) {
-    router.push(notification.link)
+  if (isLoading.value) return
+  isLoading.value = true
+  try {
+    await markAsRead(notification.id)
+    if (notification.link) {
+      router.push(notification.link)
+    }
+    emit('update:open', false)
+  } finally {
+    isLoading.value = false
   }
-  emit('update:open', false)
 }
 
 const handleMarkAllAsRead = async () => {
-  await markAllAsRead()
+  if (isLoading.value) return
+  isLoading.value = true
+  try {
+    await markAllAsRead()
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -64,6 +78,7 @@ const handleMarkAllAsRead = async () => {
             variant="ghost"
             size="sm"
             class="text-sm"
+            :disabled="isLoading"
             @click="handleMarkAllAsRead"
           >
             {{ $t('notif.drawer.mark_all_read') }}
@@ -74,24 +89,25 @@ const handleMarkAllAsRead = async () => {
       <!-- Content -->
       <div class="mt-0 overflow-y-auto">
         <!-- Empty state -->
-        <div
+        <EmptyState
           v-if="notifications.length === 0"
           class="flex h-64 flex-col items-center justify-center"
-        >
-          <p class="text-muted-foreground text-sm">
-            {{ $t('notif.drawer.empty') }}
-          </p>
-        </div>
+          :title="$t('notif.drawer.empty')"
+        />
 
         <!-- Notification list -->
-        <div v-else class="divide-border divide-y">
+        <div v-else>
           <div
             v-for="notification in sortedNotifications"
             :key="notification.id"
-            class="border-border hover:bg-muted/50 flex cursor-pointer items-start gap-3 border-b px-4 py-3 transition"
+            class="border-border hover:bg-muted/50 flex cursor-pointer items-start gap-3 border-b px-4 py-3 transition last:border-0"
             :class="{
               'bg-primary-50/40': !notification.is_read,
               'bg-background': notification.is_read,
+            }"
+            :style="{
+              pointerEvents: isLoading ? 'none' : 'auto',
+              opacity: isLoading ? 0.6 : 1,
             }"
             @click="handleNotificationClick(notification)"
           >

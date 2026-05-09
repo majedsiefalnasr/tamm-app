@@ -1,16 +1,19 @@
 import { onBeforeUnmount } from 'vue'
+import { storeToRefs } from 'pinia'
 import type { NotificationResponse } from '~/shared/types/notification'
 import { useNotificationsStore } from '~/stores/notifications'
+import { useNotify } from '~/composables/useNotify'
 
 const POLLING_INTERVAL = 30000 // 30 seconds
+let globalPollTimer: number | undefined
+let globalVisibilityListener: (() => void) | undefined
 
 export const useNotifications = () => {
   const store = useNotificationsStore()
-  let pollTimer: number | undefined
-  let visibilityListener: (() => void) | undefined
+  const { error } = useNotify()
 
   const poll = async () => {
-    // Atomic check to prevent race condition during visibility toggle
+    if (!import.meta.client) return
     const isHidden = document.hidden
     if (isHidden) return
 
@@ -20,65 +23,77 @@ export const useNotifications = () => {
       store.setNotifications(notifs)
     } catch (e) {
       console.error('Failed to fetch notifications:', e)
-      // Reset count on persistent failure (fire-and-forget polling pattern)
-      store.setNotifications([])
     }
   }
 
   const startPolling = () => {
-    // Guard: prevent duplicate timers on remount
-    if (pollTimer) return
+    if (!import.meta.client) return
+    if (globalPollTimer) return
 
     poll()
-    pollTimer = window.setInterval(poll, POLLING_INTERVAL)
+    globalPollTimer = window.setInterval(poll, POLLING_INTERVAL)
 
-    // Cleanup old listener if it exists (defensive against remount edge case)
-    if (visibilityListener) {
-      document.removeEventListener('visibilitychange', visibilityListener)
+    if (globalVisibilityListener) {
+      document.removeEventListener('visibilitychange', globalVisibilityListener)
     }
 
-    visibilityListener = () => {
+    globalVisibilityListener = () => {
       if (!document.hidden) poll()
     }
-    document.addEventListener('visibilitychange', visibilityListener)
+    document.addEventListener('visibilitychange', globalVisibilityListener)
   }
 
   const stopPolling = () => {
-    if (pollTimer) {
-      clearInterval(pollTimer)
-      pollTimer = undefined
+    if (!import.meta.client) return
+    if (globalPollTimer) {
+      clearInterval(globalPollTimer)
+      globalPollTimer = undefined
     }
-    if (visibilityListener) {
-      document.removeEventListener('visibilitychange', visibilityListener)
-      visibilityListener = undefined
+    if (globalVisibilityListener) {
+      document.removeEventListener('visibilitychange', globalVisibilityListener)
+      globalVisibilityListener = undefined
     }
   }
 
   const markAsRead = async (notificationId: string) => {
-    // Optimistic update through store
+    const notification = store.notifications.find(n => n.id === notificationId)
+    if (!notification) {
+      error('Notification not found')
+      return
+    }
+
+    const prevState = { ...notification }
     store.markAsRead(notificationId)
 
-    // API call (fire-and-forget, polling will correct any errors)
-    useApi(`/notifications/${notificationId}/read`, { method: 'POST' }).catch(
-      () => {}
-    )
+    try {
+      await useApi(`/notifications/${notificationId}/read`, { method: 'POST' })
+    } catch (e) {
+      store.restoreNotification(prevState)
+      error('Failed to mark notification as read')
+    }
   }
 
   const markAllAsRead = async () => {
-    // Optimistic update through store
+    const prevStates = store.notifications.map(n => ({ ...n }))
     store.markAllAsRead()
 
-    // API call (fire-and-forget, polling will correct any errors)
-    useApi('/notifications/read-all', { method: 'POST' }).catch(() => {})
+    try {
+      await useApi('/notifications/read-all', { method: 'POST' })
+    } catch (e) {
+      store.restoreNotifications(prevStates)
+      error('Failed to mark all notifications as read')
+    }
   }
 
   onBeforeUnmount(() => {
     stopPolling()
   })
 
+  const { unreadCount, notifications } = storeToRefs(store)
+
   return {
-    unreadCount: store.unreadCount,
-    notifications: store.notifications,
+    unreadCount,
+    notifications,
     startPolling,
     stopPolling,
     markAsRead,
