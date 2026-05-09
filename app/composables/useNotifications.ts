@@ -1,4 +1,3 @@
-import { onBeforeUnmount } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { NotificationResponse } from '~/shared/types/notification'
 import { useNotificationsStore } from '~/stores/notifications'
@@ -7,10 +6,11 @@ import { useNotify } from '~/composables/useNotify'
 const POLLING_INTERVAL = 30000 // 30 seconds
 let globalPollTimer: number | undefined
 let globalVisibilityListener: (() => void) | undefined
+let pollingStartCount = 0
 
 export const useNotifications = () => {
   const store = useNotificationsStore()
-  const { error } = useNotify()
+  const { error, t } = useNotify()
 
   const poll = async () => {
     if (!import.meta.client) return
@@ -28,6 +28,7 @@ export const useNotifications = () => {
 
   const startPolling = () => {
     if (!import.meta.client) return
+    pollingStartCount++
     if (globalPollTimer) return
 
     poll()
@@ -45,6 +46,9 @@ export const useNotifications = () => {
 
   const stopPolling = () => {
     if (!import.meta.client) return
+    pollingStartCount = Math.max(0, pollingStartCount - 1)
+    if (pollingStartCount > 0) return
+
     if (globalPollTimer) {
       clearInterval(globalPollTimer)
       globalPollTimer = undefined
@@ -58,7 +62,7 @@ export const useNotifications = () => {
   const markAsRead = async (notificationId: string) => {
     const notification = store.notifications.find(n => n.id === notificationId)
     if (!notification) {
-      error('Notification not found')
+      error(t('notif.errors.not_found'))
       return
     }
 
@@ -69,7 +73,7 @@ export const useNotifications = () => {
       await useApi(`/notifications/${notificationId}/read`, { method: 'POST' })
     } catch (e) {
       store.restoreNotification(prevState)
-      error('Failed to mark notification as read')
+      error(t('notif.errors.mark_read_failed'))
     }
   }
 
@@ -81,13 +85,9 @@ export const useNotifications = () => {
       await useApi('/notifications/read-all', { method: 'POST' })
     } catch (e) {
       store.restoreNotifications(prevStates)
-      error('Failed to mark all notifications as read')
+      error(t('notif.errors.mark_all_read_failed'))
     }
   }
-
-  onBeforeUnmount(() => {
-    stopPolling()
-  })
 
   const { unreadCount, notifications } = storeToRefs(store)
 

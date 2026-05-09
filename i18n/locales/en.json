@@ -40,7 +40,12 @@
     "same_engineer": "Cannot assign the same engineer to both roles",
     "engineers_assigned": "Engineers assigned successfully",
     "engineers_assignment_failed": "Failed to assign engineers. Please try again.",
-    "failed_to_load_engineers": "Failed to load engineers list"
+    "failed_to_load_engineers": "Failed to load engineers list",
+    "notif": {
+      "not_found": "Notification not found",
+      "mark_read_failed": "Failed to mark notification as read",
+      "mark_all_read_failed": "Failed to mark all notifications as read"
+    }
   },
   "buttons": {
     "cancel": "Cancel",

@@ -22,12 +22,9 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { notifications, markAsRead, markAllAsRead } = useNotifications()
+const { notifications, unreadCount, markAsRead, markAllAsRead } =
+  useNotifications()
 const isLoading = ref(false)
-
-const unreadCount = computed(() => {
-  return notifications.value.filter(n => !n.is_read).length
-})
 
 const showMarkAllButton = computed(() => {
   return unreadCount.value > 0

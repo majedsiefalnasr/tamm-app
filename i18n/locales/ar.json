@@ -40,7 +40,12 @@
     "same_engineer": "لا يمكن تعيين نفس المهندس لدورين مختلفين",
     "engineers_assigned": "تم تعيين المهندسين بنجاح",
     "engineers_assignment_failed": "فشل تعيين المهندسين. يرجى المحاولة لاحقاً.",
-    "failed_to_load_engineers": "فشل تحميل قائمة المهندسين"
+    "failed_to_load_engineers": "فشل تحميل قائمة المهندسين",
+    "notif": {
+      "not_found": "الإخطار غير موجود",
+      "mark_read_failed": "فشل وضع علامة على الإخطار كمقروء",
+      "mark_all_read_failed": "فشل وضع علامة على جميع الإخطارات كمقروءة"
+    }
   },
   "buttons": {
     "cancel": "إلغاء",

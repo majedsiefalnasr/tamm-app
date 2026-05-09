@@ -39,9 +39,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   const restoreNotifications = (prevStates: Notification[]) => {
-    const idMap = new Map(prevStates.map(n => [n.id, n]))
-    notifications.value = notifications.value.map(n => idMap.get(n.id) ?? n)
-    unreadCount.value = notifications.value.filter(n => !n.is_read).length
+    notifications.value = prevStates
+    unreadCount.value = prevStates.filter(n => !n.is_read).length
   }
 
   return {
