@@ -170,11 +170,11 @@
     "heading": "Payments",
     "subtitle": "Track your payment history across all projects",
     "status": {
-      "pending_payment": "Pending Payment",
-      "paid": "Paid",
-      "awaiting_approval": "Awaiting Approval",
-      "ready_for_payout": "Ready for Payout",
-      "paid_out": "Paid Out"
+      "pending_payment": "Awaiting payment",
+      "paid": "In escrow",
+      "awaiting_approval": "Awaiting approval",
+      "ready_for_payout": "Ready for release",
+      "paid_out": "Paid out"
     },
     "action": {
       "release_payment": "Release payment",

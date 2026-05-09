@@ -2,196 +2,186 @@ import { test, expect } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
+interface TestUser {
+  email: string
+  password: string
+  role: string
+}
+
+const TEST_USERS: Record<string, TestUser> = {
+  client: {
+    email: 'client@example.com',
+    password: 'password123',
+    role: 'client',
+  },
+  contractor: {
+    email: 'contractor@example.com',
+    password: 'password123',
+    role: 'contractor',
+  },
+  admin: { email: 'admin@example.com', password: 'password123', role: 'admin' },
+  field_engineer: {
+    email: 'engineer@example.com',
+    password: 'password123',
+    role: 'field_engineer',
+  },
+  supervisor_engineer: {
+    email: 'supervisor@example.com',
+    password: 'password123',
+    role: 'supervisor_engineer',
+  },
+}
+
+async function loginAs(page: typeof test.page, role: string) {
+  const user = TEST_USERS[role]
+  if (!user) throw new Error(`Unknown role: ${role}`)
+
+  await page.goto(`${BASE_URL}/login`)
+  await page.fill('input[type="email"]', user.email)
+  await page.fill('input[type="password"]', user.password)
+  await page.click('button[type="submit"]')
+  await page.waitForURL('**/projects**')
+}
+
 test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
   test('Payment badge displays on milestone card for client', async ({
     page,
   }) => {
-    // Login as client
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'client@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
-
-    // Navigate to project
+    await loginAs(page, 'client')
     await page.goto(`${BASE_URL}/projects`)
 
-    // Check that milestone cards have both status and payment status badges
-    const milestoneCard = page.locator('[class*="rounded-2xl"]').first()
-    const badges = milestoneCard.locator('[class*="badge"]')
-
-    // Should have at least milestone status badge + payment status badge
-    const badgeCount = await badges.count()
-    expect(badgeCount).toBeGreaterThanOrEqual(1)
+    const paymentBadge = page
+      .locator('[data-testid="payment-status-badge"]')
+      .first()
+    await expect(paymentBadge).toBeVisible()
   })
 
   test('Payment badge is hidden for field engineer', async ({ page }) => {
-    // Login as field engineer
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'engineer@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
-
-    // Navigate to project
+    await loginAs(page, 'field_engineer')
     await page.goto(`${BASE_URL}/projects`)
 
-    // Milestone cards should still be visible
-    const milestoneCard = page.locator('[class*="rounded-2xl"]').first()
-    await expect(milestoneCard).toBeVisible()
+    const paymentBadges = page.locator('[data-testid="payment-status-badge"]')
+    expect(await paymentBadges.count()).toBe(0)
+  })
 
-    // But payment status text should not be visible (no "pending_payment", "paid", etc.)
-    const paymentStatuses = page.locator(
-      ':text-is("Awaiting payment"), :text-is("In escrow"), :text-is("Awaiting approval"), :text-is("Ready for release"), :text-is("Paid out")'
-    )
+  test('Payment badge is hidden for supervisor engineer', async ({ page }) => {
+    await loginAs(page, 'supervisor_engineer')
+    await page.goto(`${BASE_URL}/projects`)
 
-    // Field engineer should not see payment status
-    const count = await paymentStatuses.count()
-    expect(count).toBe(0)
+    const paymentBadges = page.locator('[data-testid="payment-status-badge"]')
+    expect(await paymentBadges.count()).toBe(0)
   })
 
   test('Payment badge displays on milestone detail page for contractor', async ({
     page,
   }) => {
-    // Login as contractor
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'contractor@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
-
-    // Navigate to project detail
+    await loginAs(page, 'contractor')
     await page.goto(`${BASE_URL}/projects/proj-001`)
 
-    // Click on a milestone to navigate to detail page
     const milestoneCard = page.locator('[class*="rounded-2xl"]').first()
     await milestoneCard.click()
-
-    // Should navigate to milestone detail
     await page.waitForURL('**/milestones/**')
 
-    // Payment status section should be visible
-    const paymentStatusSection = page.locator(
-      'text=/Payment Status|payment.detail.paymentStatus/i'
-    )
-    await expect(paymentStatusSection).toBeVisible()
+    const paymentBadge = page.locator('[data-testid="payment-status-badge"]')
+    await expect(paymentBadge).toBeVisible()
   })
 
-  test('Payment status badge colors match specification for different statuses', async ({
+  test('Payment status badge displays correct status from derived value', async ({
     page,
   }) => {
-    // Login as client
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'client@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
+    await loginAs(page, 'client')
+    await page.goto(`${BASE_URL}/projects`)
 
-    // Navigate to project
-    await page.goto(`${BASE_URL}/projects/proj-001`)
+    const paymentBadge = page
+      .locator('[data-testid="payment-status-badge"]')
+      .first()
+    const statusAttribute = await paymentBadge
+      .locator('badge')
+      .getAttribute('data-status')
 
-    // Find different milestone cards with different statuses
-    const milestoneCards = page.locator('[class*="rounded-2xl"]')
-    const count = await milestoneCards.count()
-
-    // At least one card should be visible
-    expect(count).toBeGreaterThan(0)
-
-    // Check that badges render without errors
-    for (let i = 0; i < Math.min(count, 3); i++) {
-      const card = milestoneCards.nth(i)
-      const badges = card.locator('[class*="badge"], [data-slot="badge"]')
-      const badgeCount = await badges.count()
-
-      // Each milestone should have at least milestone status badge
-      expect(badgeCount).toBeGreaterThanOrEqual(1)
-    }
+    expect([
+      'pending_payment',
+      'paid',
+      'awaiting_approval',
+      'ready_for_payout',
+      'paid_out',
+    ]).toContain(statusAttribute)
   })
 
   test('Payment badge visibility works correctly for admin role', async ({
     page,
   }) => {
-    // Login as admin
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'admin@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
-
-    // Navigate to project
+    await loginAs(page, 'admin')
     await page.goto(`${BASE_URL}/projects`)
 
-    // Admin should see payment badges
-    const milestoneCard = page.locator('[class*="rounded-2xl"]').first()
-    const badges = milestoneCard.locator(
-      '[class*="badge"], [data-slot="badge"]'
-    )
-
-    // Should render without console errors
-    const badgeCount = await badges.count()
-    expect(badgeCount).toBeGreaterThanOrEqual(1)
+    const paymentBadges = page.locator('[data-testid="payment-status-badge"]')
+    expect(await paymentBadges.count()).toBeGreaterThan(0)
   })
 
-  test('Payment badge appears alongside milestone status badge, separated by divider', async ({
+  test('Divider renders between milestone and payment status badges', async ({
     page,
   }) => {
-    // Login as client
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'client@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
+    await loginAs(page, 'client')
+    await page.goto(`${BASE_URL}/projects`)
 
-    // Navigate to project
-    await page.goto(`${BASE_URL}/projects/proj-001`)
+    const paymentBadge = page
+      .locator('[data-testid="payment-status-badge"]')
+      .first()
+    const divider = paymentBadge.locator('.h-4.w-px')
 
-    // Get milestone card
-    const milestoneCard = page.locator('[class*="rounded-2xl"]').first()
-
-    // Check for divider between badges (h-4 w-px bg-border)
-    const divider = milestoneCard.locator('.h-4.w-px')
-    const dividerCount = await divider.count()
-
-    // If payment badge is shown, there should be a divider
-    if (dividerCount > 0) {
-      await expect(divider.first()).toBeVisible()
-    }
+    await expect(divider).toBeVisible()
   })
 
-  test('Payment status translates correctly in Arabic RTL layout', async ({
+  test('Payment status renders correctly in English (LTR)', async ({
     page,
   }) => {
-    // Login as client
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'client@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
+    await loginAs(page, 'client')
 
-    // Switch to Arabic
-    const languageButton = page.locator(
-      'button:has-text("العربية") >> visible=true'
+    await page.evaluate(() => localStorage.setItem('locale', 'en'))
+    await page.goto(`${BASE_URL}/projects`)
+
+    const paymentBadge = page
+      .locator('[data-testid="payment-status-badge"]')
+      .first()
+    const badgeText = await paymentBadge.textContent()
+
+    const validEnglishLabels = [
+      'Awaiting payment',
+      'In escrow',
+      'Awaiting approval',
+      'Ready for release',
+      'Paid out',
+    ]
+    expect(validEnglishLabels.some(label => badgeText?.includes(label))).toBe(
+      true
     )
-    if (await languageButton.isVisible()) {
-      await languageButton.click()
-    }
+  })
 
-    // Navigate to project
-    await page.goto(`${BASE_URL}/projects/proj-001`)
+  test('Payment status renders correctly in Arabic (RTL)', async ({ page }) => {
+    await loginAs(page, 'client')
 
-    // Arabic status text should be visible
-    const arabicStatuses = page.locator(
-      ':text-is("بانتظار الدفع"), :text-is("محتجز في الضمان"), :text-is("بانتظار الاعتماد"), :text-is("جاهز للصرف"), :text-is("تم الصرف")'
+    await page.evaluate(() => localStorage.setItem('locale', 'ar'))
+    await page.goto(`${BASE_URL}/projects`)
+
+    const paymentBadge = page
+      .locator('[data-testid="payment-status-badge"]')
+      .first()
+    const badgeText = await paymentBadge.textContent()
+
+    const validArabicLabels = [
+      'بانتظار الدفع',
+      'محتجز في الضمان',
+      'بانتظار الاعتماد',
+      'جاهز للصرف',
+      'تم الصرف',
+    ]
+    expect(validArabicLabels.some(label => badgeText?.includes(label))).toBe(
+      true
     )
-
-    const statusCount = await arabicStatuses.count()
-    // Should have at least some Arabic payment status text
-    expect(statusCount).toBeGreaterThanOrEqual(0)
   })
 
   test('No console errors when rendering payment badge component', async ({
     page,
-    context,
   }) => {
     const errors: string[] = []
 
@@ -201,25 +191,25 @@ test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
       }
     })
 
-    // Login as client
-    await page.goto(`${BASE_URL}/login`)
-    await page.fill('input[type="email"]', 'client@example.com')
-    await page.fill('input[type="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
-
-    // Navigate to project
+    await loginAs(page, 'client')
     await page.goto(`${BASE_URL}/projects/proj-001`)
-
-    // Wait a moment for rendering
     await page.waitForLoadState('networkidle')
 
-    // Should have no critical errors
     const criticalErrors = errors.filter(
       e =>
         !e.includes('Network.getResponseBody') &&
         !e.includes('Non-Error promise rejection')
     )
     expect(criticalErrors).toHaveLength(0)
+  })
+
+  test('showIfHidden prop does not expose badge to unauthorized roles', async ({
+    page,
+  }) => {
+    await loginAs(page, 'field_engineer')
+    await page.goto(`${BASE_URL}/projects`)
+
+    const paymentBadges = page.locator('[data-testid="payment-status-badge"]')
+    expect(await paymentBadges.count()).toBe(0)
   })
 })

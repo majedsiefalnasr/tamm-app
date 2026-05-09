@@ -170,9 +170,9 @@
     "heading": "المدفوعات",
     "subtitle": "تابع سجل مدفوعاتك عبر جميع المشاريع",
     "status": {
-      "pending_payment": "في انتظار الدفع",
-      "paid": "مدفوع",
-      "awaiting_approval": "في انتظار الموافقة",
+      "pending_payment": "بانتظار الدفع",
+      "paid": "محتجز في الضمان",
+      "awaiting_approval": "بانتظار الاعتماد",
       "ready_for_payout": "جاهز للصرف",
       "paid_out": "تم الصرف"
     },
