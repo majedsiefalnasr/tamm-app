@@ -122,9 +122,10 @@ export function useProposals() {
           id: 'prop_001',
           projectId,
           contractorId: 'contractor_1',
+          contractorName: 'Elite Builders',
           price: 250000,
           estimatedDays: 90,
-          notes: 'Quality workmanship guaranteed',
+          notes: 'Quality workmanship guaranteed with premium materials',
           createdAt: new Date(
             Date.now() - 2 * 24 * 60 * 60 * 1000
           ).toISOString(),
@@ -136,9 +137,10 @@ export function useProposals() {
           id: 'prop_002',
           projectId,
           contractorId: 'contractor_2',
+          contractorName: 'BuildRight Corp',
           price: 280000,
           estimatedDays: 75,
-          notes: '',
+          notes: 'Fast-track delivery with experienced team',
           createdAt: new Date(
             Date.now() - 1 * 24 * 60 * 60 * 1000
           ).toISOString(),

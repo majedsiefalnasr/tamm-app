@@ -9,6 +9,8 @@ interface Props {
   canSelect?: boolean
 }
 
+const props = defineProps<Props>()
+
 defineEmits<{
   'select-clicked': []
 }>()
@@ -18,8 +20,6 @@ const { t } = useI18n()
 const showFullNotes = ref(false)
 const notes = computed(() => props.proposal.notes || '')
 const isNotesLong = computed(() => notes.value.length > 150)
-
-const props = defineProps<Props>()
 
 const contractorName = computed(() => {
   // Extract contractor name from proposal if available

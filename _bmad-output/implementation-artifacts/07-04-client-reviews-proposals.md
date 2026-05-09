@@ -510,5 +510,97 @@ A task is complete only when **all** of the following are true:
 ---
 
 **Created:** 2026-05-09  
-**Status:** ready-for-dev  
-**Next:** Run `/bmad-dev-story 07-04-client-reviews-proposals.md` to begin implementation
+**Status:** review  
+**Completed:** 2026-05-09
+
+---
+
+## 🎬 Dev Agent Record
+
+### Implementation Plan
+
+**Completed Components:**
+1. ✅ **ProposalCard.vue** — Fixed script setup ordering (ref/computed after defineProps)
+2. ✅ **ProposalsList.vue** — Confirmed functional with AlertDialog, sorting, confirmation flow
+3. ✅ **useProposals.ts** — Enhanced mock data with `contractorName` field for display
+4. ✅ **Project detail page** — Already wired with proper visibility guards and event handlers
+5. ✅ **i18n keys** — All Arabic/English strings already defined
+6. ✅ **Type definitions** — Added `contractorName?: string` to ProposalData interface
+7. ✅ **Tests** — Updated test file with contractor names
+
+### Completion Notes
+
+**What was actually implemented:**
+- Fixed ProposalCard component script setup order (line 1-27) to avoid ref/computed before defineProps error
+- Added `contractorName` field to ProposalData type interface for proper display
+- Enhanced mock data in useProposals to include realistic contractor names ("Elite Builders", "BuildRight Corp")
+- Enhanced test data in useProposals-07-04.spec.ts with contractor names
+- Verified all i18n keys present for both Arabic and English
+- Confirmed project detail page properly gates proposals section visibility based on:
+  - Project status is `under_review` OR `contractor_selected`
+  - User is project owner OR admin/super_admin role
+- Verified ProposalsList handles sorting (oldest first), loading state, error state, empty state
+- Verified ProposalCard displays contractor name, price, timeline, notes, date, and correct button/badge
+- Confirmed all formatters (formatCurrency, formatDate) are in place and working
+
+**Architecture & Patterns:**
+- Components follow Composition API + `<script setup>` pattern per CLAUDE.md §11
+- Props are TypeScript-typed with proper interface definitions
+- Loading state uses PageSkeleton component (3-4 placeholders)
+- Empty state shows "لا توجد عروض حتى الآن" (Arabic) / "No proposals yet" (English)
+- Error state shows retry button for user-triggered reload
+- Sorting done in composable (single source of truth), not component
+- Visibility rules checked in parent page component (not component)
+- i18n pattern follows domain.feature.element (e.g., projects.proposals.selectButtonLabel)
+- RTL compliance verified (text-start used, no left/right CSS)
+- Confirmation dialog uses shadcn AlertDialog component
+
+**Acceptance Criteria Status:**
+- ✅ Visibility & Access Control: Section only shows to client/admin when status is under_review or contractor_selected
+- ✅ Proposals List Display: All proposals in scrollable list, sorted ascending by date, no pagination
+- ✅ Individual Proposal Card: Shows contractor name, price, timeline, notes, submission date
+- ✅ State Transitions: Select button shows loading state; after selection, button hidden and badge shown
+- ✅ Currency & Date Formatting: Using formatCurrency() and formatDate() utilities
+- ✅ Responsive Design: Cards stack vertically on mobile, full width
+- ✅ General Requirements: All i18n, RTL verified, TypeScript strict mode, no console errors
+
+**Testing Coverage:**
+- 13 unit tests in useProposals-07-04.spec.ts covering:
+  - Proposal fetching and sorting
+  - Contractor name display
+  - Price/date formatting
+  - Optional notes handling
+  - Selection state tracking
+  - Mock data availability
+  - Data structure validation
+
+### File List
+
+**Modified files:**
+- `app/components/project/ProposalCard.vue` (line 1-27: reordered script setup)
+- `app/composables/useProposals.ts` (line 117-149: added contractorName to mock data)
+- `shared/types/project.ts` (line 181: added contractorName field to ProposalData)
+- `app/composables/__tests__/useProposals-07-04.spec.ts` (beforeEach: added contractorName to test data)
+
+**Existing files verified (no changes needed):**
+- `app/components/project/ProposalsList.vue` — fully functional
+- `app/pages/projects/[id].vue` — properly wired with event handlers
+- `i18n/locales/ar.json` — all keys present (lines 647-666)
+- `i18n/locales/en.json` — all keys present
+- `app/utils/formatters.ts` — formatCurrency() and formatDate() available
+- `app/stores/projects.ts` — selectContractor() method ready
+
+### Change Log
+
+**2026-05-09 — Implementation Complete**
+- ✅ Fixed ProposalCard script setup ordering issue
+- ✅ Enhanced ProposalData type with contractorName field
+- ✅ Updated mock data and test suite with contractor information
+- ✅ Verified all components, composables, and types are properly integrated
+- ✅ TypeScript compilation: No errors found
+- ✅ Build successful with no breaking errors
+- ✅ Ready for code review
+
+---
+
+**Next:** Run `/bmad-code-review` to review implementation with peer review
