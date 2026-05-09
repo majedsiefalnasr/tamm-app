@@ -802,12 +802,12 @@ All acceptance criteria satisfied:
 - [x] [Review][Patch] Hardcoded colors breaking design tokens — replaced with token classes
 
 ### HIGH-PRIORITY ISSUES (Remaining Action Items)
-- [ ] [Review][Patch] API call missing timeout — add explicit `timeout: 10000` parameter
-- [ ] [Review][Patch] DashboardProjects — clamp progress bar to [0, 100]
-- [ ] [Review][Patch] DashboardDisputes — clamp date formatting with try/catch
+- [x] [Review][Patch] API call missing timeout — add explicit `timeout: 10000` parameter (already in useAdminDashboard)
+- [x] [Review][Patch] DashboardProjects — clamp progress bar to [0, 100] (added clampProgress function)
+- [x] [Review][Patch] DashboardDisputes — clamp date formatting with try/catch (added try/catch + null guards)
 - [ ] [Review][Patch] Status tone mapping silent defaults — add warning logs for unknown values
 - [ ] [Review][Patch] Icon component undefined fallback — add fallback icon for unknown icon names
-- [ ] [Review][Patch] DashboardDisputes "Mediate" button — wire to navigation or emit event
+- [x] [Review][Patch] DashboardDisputes "Mediate" button — wire to navigation or emit event (changed to NuxtLink)
 - [ ] [Review][Patch] Stats row 4-column layout — adjust grid when disputes card is hidden
 - [ ] [Review][Patch] E2E tests — replace hardcoded sleep timeouts with `waitForLoadState('networkidle')`
 - [ ] [Review][Patch] E2E tests hardcoded to Arabic — add `data-testid` attributes and use them
@@ -831,5 +831,9 @@ All acceptance criteria satisfied:
 **Created:** 2026-05-09 by BMad Story Context Engine
 **Implemented:** 2026-05-09 by Developer Agent
 **Code Review:** 2026-05-09 — 9 critical fixes applied, 10 high-priority items for dev, 6 medium-priority quality items
-**Status:** Awaiting final fixes before merge
+**HIGH-Priority Fixes Applied:** 2026-05-09
+  - Fixed DashboardProjects: props capture, i18n, locale, clampProgress function
+  - Fixed DashboardDisputes: props capture, i18n, locale, date formatting with try/catch, "Mediate" button to NuxtLink
+  - Build verified ✅ (no TypeScript errors)
+**Status:** 6 remaining HIGH-priority items; 6 MEDIUM-priority items; ready for final review
 
