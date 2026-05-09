@@ -7,11 +7,11 @@ interface Props {
   loading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const { $t } = useI18n()
+const { t, locale } = useI18n()
 
 const statusToneMap = {
   open: 'danger',
@@ -24,12 +24,18 @@ function getStatusTone(status: string) {
 }
 
 function formatDate(dateStr: string) {
-  const date = new Date(dateStr)
-  return new Intl.DateTimeFormat('ar-EG', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(date)
+  try {
+    if (!dateStr) return 'N/A'
+    const date = new Date(dateStr)
+    if (isNaN(date.getTime())) return 'N/A'
+    return new Intl.DateTimeFormat(locale.value, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date)
+  } catch {
+    return 'N/A'
+  }
 }
 </script>
 
@@ -37,13 +43,13 @@ function formatDate(dateStr: string) {
   <div class="bg-card border-border shadow-card rounded-2xl border p-6">
     <div class="mb-4 flex items-center justify-between">
       <h3 class="text-foreground text-lg font-extrabold">
-        {{ $t('admin.dashboard.disputes.title') }}
+        {{ t('admin.dashboard.disputes.title') }}
       </h3>
       <NuxtLink
         to="/admin/disputes"
         class="text-primary hover:text-primary/80 text-sm font-medium transition"
       >
-        {{ $t('admin.dashboard.disputes.view_all') }}
+        {{ t('admin.dashboard.disputes.view_all') }}
       </NuxtLink>
     </div>
 
@@ -64,37 +70,37 @@ function formatDate(dateStr: string) {
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.dispute_number') }}
+                {{ t('admin.dashboard.disputes.columns.dispute_number') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.project') }}
+                {{ t('admin.dashboard.disputes.columns.project') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.requester') }}
+                {{ t('admin.dashboard.disputes.columns.requester') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.subject') }}
+                {{ t('admin.dashboard.disputes.columns.subject') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.status') }}
+                {{ t('admin.dashboard.disputes.columns.status') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.created_date') }}
+                {{ t('admin.dashboard.disputes.columns.created_date') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.disputes.columns.action') }}
+                {{ t('admin.dashboard.disputes.columns.action') }}
               </th>
             </tr>
           </thead>
@@ -128,18 +134,19 @@ function formatDate(dateStr: string) {
                       getStatusTone(dispute.status) === 'primary',
                   }"
                 >
-                  {{ $t(`dispute.status.${dispute.status}`) }}
+                  {{ t(`dispute.status.${dispute.status}`) }}
                 </span>
               </td>
               <td class="text-muted-foreground px-3 py-3 text-start">
                 {{ formatDate(dispute.created_at) }}
               </td>
               <td class="px-3 py-3 text-start">
-                <button
+                <NuxtLink
+                  :to="`/admin/disputes/${dispute.id}`"
                   class="text-primary hover:text-primary/80 font-medium transition"
                 >
-                  {{ $t('admin.dashboard.disputes.mediate') }}
-                </button>
+                  {{ t('admin.dashboard.disputes.mediate') }}
+                </NuxtLink>
               </td>
             </tr>
           </tbody>
@@ -150,7 +157,7 @@ function formatDate(dateStr: string) {
     <!-- Empty state -->
     <template v-else>
       <p class="text-muted-foreground py-8 text-center">
-        {{ $t('admin.dashboard.empty_states.disputes') }}
+        {{ t('admin.dashboard.empty_states.disputes') }}
       </p>
     </template>
   </div>

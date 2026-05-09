@@ -7,11 +7,11 @@ interface Props {
   loading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const { $t } = useI18n()
+const { t, locale } = useI18n()
 
 const statusToneMap = {
   new: 'primary',
@@ -29,11 +29,15 @@ function getStatusTone(status: string) {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat('ar-EG', {
+  return new Intl.NumberFormat(locale.value, {
     style: 'currency',
     currency: 'EGP',
     notation: 'compact',
   }).format(value)
+}
+
+function clampProgress(percentage: number): number {
+  return Math.max(0, Math.min(100, Math.round(percentage)))
 }
 </script>
 
@@ -41,13 +45,13 @@ function formatCurrency(value: number) {
   <div class="bg-card border-border shadow-card rounded-2xl border p-6">
     <div class="mb-4 flex items-center justify-between">
       <h3 class="text-foreground text-lg font-extrabold">
-        {{ $t('admin.dashboard.projects.title') }}
+        {{ t('admin.dashboard.projects.title') }}
       </h3>
       <NuxtLink
         to="/admin/projects"
         class="text-primary hover:text-primary/80 text-sm font-medium transition"
       >
-        {{ $t('admin.dashboard.projects.view_all') }}
+        {{ t('admin.dashboard.projects.view_all') }}
       </NuxtLink>
     </div>
 
@@ -68,37 +72,37 @@ function formatCurrency(value: number) {
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.project_number') }}
+                {{ t('admin.dashboard.projects.columns.project_number') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.name') }}
+                {{ t('admin.dashboard.projects.columns.name') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.city') }}
+                {{ t('admin.dashboard.projects.columns.city') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.owner') }}
+                {{ t('admin.dashboard.projects.columns.owner') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.progress') }}
+                {{ t('admin.dashboard.projects.columns.progress') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.status') }}
+                {{ t('admin.dashboard.projects.columns.status') }}
               </th>
               <th
                 class="text-muted-foreground px-3 py-3 text-start font-semibold"
               >
-                {{ $t('admin.dashboard.projects.columns.action') }}
+                {{ t('admin.dashboard.projects.columns.action') }}
               </th>
             </tr>
           </thead>
@@ -125,11 +129,13 @@ function formatCurrency(value: number) {
                   <div class="bg-muted h-1.5 w-16 overflow-hidden rounded-full">
                     <div
                       class="bg-primary h-full transition-all"
-                      :style="{ width: `${project.progress_percentage}%` }"
+                      :style="{
+                        width: `${clampProgress(project.progress_percentage)}%`,
+                      }"
                     />
                   </div>
                   <span class="text-muted-foreground w-8 text-xs">
-                    {{ project.progress_percentage }}%
+                    {{ clampProgress(project.progress_percentage) }}%
                   </span>
                 </div>
               </td>
@@ -147,7 +153,7 @@ function formatCurrency(value: number) {
                       getStatusTone(project.status) === 'default',
                   }"
                 >
-                  {{ $t(`status.${project.status}`) }}
+                  {{ t(`status.${project.status}`) }}
                 </span>
               </td>
               <td class="px-3 py-3 text-start">
@@ -155,7 +161,7 @@ function formatCurrency(value: number) {
                   :to="`/projects/${project.id}`"
                   class="text-primary hover:text-primary/80 font-medium transition"
                 >
-                  {{ $t('common.view') }}
+                  {{ t('common.view') }}
                 </NuxtLink>
               </td>
             </tr>
@@ -167,7 +173,7 @@ function formatCurrency(value: number) {
     <!-- Empty state -->
     <template v-else>
       <p class="text-muted-foreground py-8 text-center">
-        {{ $t('admin.dashboard.empty_states.projects') }}
+        {{ t('admin.dashboard.empty_states.projects') }}
       </p>
     </template>
   </div>
