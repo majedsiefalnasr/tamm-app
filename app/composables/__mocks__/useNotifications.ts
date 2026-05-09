@@ -1,77 +1,83 @@
 import { useI18n } from 'vue-i18n'
 import type { Notification } from '~/shared/types/notification'
 
-const { t } = useI18n()
+export function getMockNotifications(): Notification[] {
+  const { t } = useI18n()
 
-export const mockNotifications: Notification[] = [
-  {
-    id: 'notif-1',
-    user_id: 'user-123',
-    title: t('notif.events.report_submitted.title'),
-    body: 'Foundation Work — Shopping Mall Project',
-    link: '/projects/proj-001/milestones/m-001',
-    is_read: false,
-    created_at: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-    read_at: null,
-  },
-  {
-    id: 'notif-2',
-    user_id: 'user-123',
-    title: t('notif.events.supervisor_approved.title'),
-    body: 'Electrical Work — awaiting your approval',
-    link: '/projects/proj-001/milestones/m-002',
-    is_read: false,
-    created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-    read_at: null,
-  },
-  {
-    id: 'notif-3',
-    user_id: 'user-123',
-    title: t('notif.events.supervisor_rejected.title'),
-    body: 'Plumbing Work — Quality standards not met. Please resubmit.',
-    link: '/projects/proj-002/milestones/m-003',
-    is_read: false,
-    created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-    read_at: null,
-  },
-  {
-    id: 'notif-4',
-    user_id: 'user-123',
-    title: t('notif.events.client_approved.title'),
-    body: 'Structural Framework — payment pending',
-    link: '/projects/proj-001/milestones/m-004',
-    is_read: true,
-    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    read_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'notif-5',
-    user_id: 'user-123',
-    title: t('notif.events.client_rejected.title'),
-    body: 'Roof Installation — Alignment issues detected. Please review and adjust.',
-    link: '/projects/proj-003/milestones/m-005',
-    is_read: true,
-    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-    read_at: new Date(Date.now() - 11 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'notif-6',
-    user_id: 'user-123',
-    title: t('notif.events.payment_released.title'),
-    body: 'SAR 125,000 released for Concrete Pouring',
-    link: '/payments',
-    is_read: true,
-    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    read_at: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'notif-7',
-    user_id: 'user-123',
-    title: t('notif.events.project_created.title'),
-    body: 'Downtown Commercial Center',
-    link: '/projects/proj-004',
-    is_read: true,
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    read_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-]
+  const baseTime = new Date('2026-05-09T10:00:00Z').getTime()
+
+  return [
+    {
+      id: 'notif-1',
+      user_id: 'user-123',
+      title: t('notif.events.report_submitted.title'),
+      body: 'Foundation Work — Shopping Mall Project',
+      link: '/projects/proj-001/milestones/m-001',
+      is_read: false,
+      created_at: new Date(baseTime - 2 * 60 * 1000).toISOString(),
+      read_at: null,
+    },
+    {
+      id: 'notif-2',
+      user_id: 'user-123',
+      title: t('notif.events.supervisor_approved.title'),
+      body: 'Electrical Work — awaiting your approval',
+      link: '/projects/proj-001/milestones/m-002',
+      is_read: false,
+      created_at: new Date(baseTime - 1 * 60 * 60 * 1000).toISOString(),
+      read_at: null,
+    },
+    {
+      id: 'notif-3',
+      user_id: 'user-123',
+      title: t('notif.events.supervisor_rejected.title'),
+      body: 'Plumbing Work — Quality standards not met. Please resubmit.',
+      link: '/projects/proj-002/milestones/m-003',
+      is_read: false,
+      created_at: new Date(baseTime - 3 * 60 * 60 * 1000).toISOString(),
+      read_at: null,
+    },
+    {
+      id: 'notif-4',
+      user_id: 'user-123',
+      title: t('notif.events.client_approved.title'),
+      body: 'Structural Framework — payment pending',
+      link: '/projects/proj-001/milestones/m-004',
+      is_read: true,
+      created_at: new Date(baseTime - 6 * 60 * 60 * 1000).toISOString(),
+      read_at: new Date(baseTime - 5 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'notif-5',
+      user_id: 'user-123',
+      title: t('notif.events.client_rejected.title'),
+      body: 'Roof Installation — Alignment issues detected. Please review and adjust.',
+      link: '/projects/proj-003/milestones/m-005',
+      is_read: true,
+      created_at: new Date(baseTime - 12 * 60 * 60 * 1000).toISOString(),
+      read_at: new Date(baseTime - 11 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'notif-6',
+      user_id: 'user-123',
+      title: t('notif.events.payment_released.title'),
+      body: 'SAR 125,000 released for Concrete Pouring',
+      link: '/payments',
+      is_read: true,
+      created_at: new Date(baseTime - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      read_at: new Date(baseTime - 23 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'notif-7',
+      user_id: 'user-123',
+      title: t('notif.events.project_created.title'),
+      body: 'Downtown Commercial Center',
+      link: '/projects/proj-004',
+      is_read: true,
+      created_at: new Date(baseTime - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      read_at: new Date(baseTime - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ]
+}
+
+export const mockNotifications: Notification[] = []

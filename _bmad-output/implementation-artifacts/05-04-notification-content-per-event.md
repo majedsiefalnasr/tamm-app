@@ -544,6 +544,33 @@ Run this checklist:
 
 ---
 
+### Review Findings
+
+#### Decision-Needed (Requires Implementation)
+
+- [ ] [Review][Action Item] **AC#1: Component integration test needed** — Add e2e test that mounts NotificationDrawer with mock data and verifies all 7 notification types render with correct title, body, and relative time. [tests/notification-drawer.spec.ts] — USER DECISION: YES, add test
+- [ ] [Review][Action Item] **AC#6: RTL testing required** — Add test that switches locale to Arabic and verifies RTL rendering of notification drawer and items (text direction, unread dot position). [tests/notification-rtl.spec.ts] — USER DECISION: YES, add test
+- [ ] [Review][Action Item] **AC#8: Regression tests required** — Add tests confirming Stories 05-01 (polling continues working), 05-02 (drawer renders), 05-03 (read actions work) are not broken by these changes. [tests/notification-regression.spec.ts] — USER DECISION: YES, add tests
+- [ ] [Review][Action Item] **AC#7: Manual testing checklist** — Complete manual testing per spec checklist: desktop EN, mobile EN, RTL Arabic, empty state, all 7 event types, link navigation. Document in story file. [_bmad-output/implementation-artifacts/05-04-notification-content-per-event.md] — USER DECISION: Deferred (testing responsibility)
+- [x] [Review][Decision] **API contract title format** — Ambiguity left as-is: documentation assumes backend sends pre-translated strings. Clarify with backend team when API is available.  — USER DECISION: Deferred until backend available
+- [ ] [Review][Action Item] **Edge case: Missing link field** — Add mock notification without link field to test drawer's handling of undefined navigation targets. [app/composables/__mocks__/useNotifications.ts] — USER DECISION: Pending
+
+#### Patches (Fixable Issues)
+
+- [x] [Review][Patch] **Module-level i18n composable call** — Wrapped `useI18n()` in `getMockNotifications()` function to avoid module-load initialization. [app/composables/__mocks__/useNotifications.ts:4-5]
+- [x] [Review][Patch] **Non-deterministic mock timestamps** — Replaced `Date.now()` with fixed base timestamp (2026-05-09T10:00:00Z). All relative time calculations now deterministic. [app/composables/__mocks__/useNotifications.ts:11-76]
+- [x] [Review][Patch] **Hardcoded Arabic strings in test assertions** — Removed byte-matching assertions. Now verifies only that Arabic titles are non-empty (translation-agnostic). [tests/notification-content.spec.ts:70-76]
+- [x] [Review][Patch] **API contract missing empty array example** — Added example response showing `data: []` when user has no notifications. [docs/api-contracts.md]
+
+#### Deferred (Pre-Existing or Out of Scope)
+
+- [x] [Review][Defer] **All mock notifications share same user_id** — Every notification has user_id: 'user-123'. Doesn't test multi-user scenarios. Spec doesn't require it; weak test coverage but not blocking. [app/composables/__mocks__/useNotifications.ts] — deferred, pre-existing limitation
+- [x] [Review][Defer] **Test directly imports i18n locale JSON files** — Tests depend on exact JSON structure. If i18n config changes format, tests break unexpectedly. Pre-existing pattern in project; address in future i18n refactor. [tests/notification-content.spec.ts:2-3] — deferred, pre-existing pattern
+- [x] [Review][Defer] **No type validation in i18n key tests** — Tests check strings exist but don't validate against Notification TypeScript type. Types could drift without test failure. Addressed in broader type-safe testing initiative. [tests/notification-content.spec.ts] — deferred, architectural debt
+- [x] [Review][Defer] **read_at timestamp can be logically after current time** — Mock has notifications read 1 hour after creation, but no validation that read_at <= now or read_at >= created_at. UI could display 'marked as read in the future'. Backend responsibility; not in scope. [app/composables/__mocks__/useNotifications.ts] — deferred, backend validation required
+
+---
+
 ## Status
 
 **Creation:** 2026-05-09  
@@ -551,3 +578,6 @@ Run this checklist:
 **Created by:** BMad Ultimate Context Engine  
 **Status:** review  
 **Dev Agent Record:** Implementation complete — all ACs satisfied, all tests passing, no regressions
+
+**Code Review Date:** 2026-05-09  
+**Review Status:** 6 decision-needed, 4 patches, 4 deferred

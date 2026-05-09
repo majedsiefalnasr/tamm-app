@@ -1707,7 +1707,7 @@ These endpoints are **not yet in the Swagger spec**. See `BACKEND_BLOCKERS.md` f
 **Status:** ⏳ Planned  
 **Purpose:** Fetch all notifications for authenticated user
 
-**Response (200):**
+**Response (200) — With notifications:**
 
 ```json
 {
@@ -1724,6 +1724,15 @@ These endpoints are **not yet in the Swagger spec**. See `BACKEND_BLOCKERS.md` f
       "read_at": null
     }
   ]
+}
+```
+
+**Response (200) — No notifications:**
+
+```json
+{
+  "success": true,
+  "data": []
 }
 ```
 
