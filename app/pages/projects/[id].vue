@@ -86,11 +86,7 @@ const showAssignEngineersButton = computed(() => {
   return project.value.status === 'contractor_selected'
 })
 
-const proposalCount = computed(() => {
-  // TODO: get actual proposal count from store/API
-  // For now returning mock value
-  return 1
-})
+const proposalCount = computed(() => proposalsList.value.length)
 
 const canCloseBidding = computed(() => {
   return proposalCount.value > 0
@@ -198,6 +194,13 @@ const handleProposalSelected = async (data: {
 }) => {
   if (!project.value) return
 
+  // Validate contractor was invited
+  const { isContractorInvited } = useProposals()
+  if (!isContractorInvited(project.value.id, data.contractorId)) {
+    useNotification().error(t('errors.contractor_not_invited'))
+    return
+  }
+
   try {
     const projectsComposable = useProjects()
     const result = await projectsComposable.selectContractor(
@@ -217,6 +220,10 @@ const handleProposalSelected = async (data: {
       useNotification().error(
         result.error || t('projects.proposals.selectionFailed')
       )
+      // Rollback selectedProposal on error
+      selectedProposalId.value = undefined
+      const { setSelectedProposal } = useProposals()
+      setSelectedProposal(project.value.id, '')
     }
   } catch (err) {
     const errorMsg =
@@ -224,6 +231,10 @@ const handleProposalSelected = async (data: {
         ? err.message
         : t('projects.proposals.selectionFailed')
     useNotification().error(errorMsg)
+    // Rollback selectedProposal on error
+    selectedProposalId.value = undefined
+    const { setSelectedProposal } = useProposals()
+    setSelectedProposal(project.value.id, '')
   }
 }
 
@@ -238,9 +249,26 @@ watch(
   async newStatus => {
     if (showProposalsSection.value) {
       await loadProposals()
+    } else if (
+      newStatus &&
+      !['under_review', 'contractor_selected'].includes(newStatus)
+    ) {
+      // Clear stale selectedProposal when status reverts away
+      const { setSelectedProposal } = useProposals()
+      if (project.value) {
+        setSelectedProposal(project.value.id, '')
+        selectedProposalId.value = undefined
+      }
     }
   }
 )
+
+// Load proposals on initial page load if section should be visible
+onMounted(async () => {
+  if (showProposalsSection.value) {
+    await loadProposals()
+  }
+})
 
 const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
   if (!project.value || !canTransition('project', 'new', 'open_for_bids')) {

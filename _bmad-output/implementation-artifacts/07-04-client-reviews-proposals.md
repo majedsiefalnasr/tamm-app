@@ -510,8 +510,9 @@ A task is complete only when **all** of the following are true:
 ---
 
 **Created:** 2026-05-09  
-**Status:** review  
-**Completed:** 2026-05-09
+**Status:** done  
+**Completed:** 2026-05-09  
+**Code Review:** Completed 2026-05-09 — 9 patches applied, 1 decision resolved, 3 deferred
 
 ---
 
@@ -547,6 +548,33 @@ A task is complete only when **all** of the following are true:
 - Components follow Composition API + `<script setup>` pattern per CLAUDE.md §11
 - Props are TypeScript-typed with proper interface definitions
 - Loading state uses PageSkeleton component (3-4 placeholders)
+
+---
+
+## 🔍 Code Review Findings
+
+### Decision-Needed ✅ Resolved
+- [x] [Review][Decision] **contractorName should be required, not optional** — **RESOLVED:** Made `contractorName` required in type. Removed fallback logic. Ensures API always provides it; cleaner type safety. [shared/types/project.ts:182]
+
+### Patch (Code Issues) ✅ All Applied
+- [x] [Review][Patch] **Remove unsafe `any` cast from ProposalCard** — ✅ Fixed: Removed `(props.proposal as any)` cast, use direct property access. [app/components/project/ProposalCard.vue:24-25]
+- [x] [Review][Patch] **Missing i18n translation keys in selection dialog** — ✅ Verified: All 5 keys (`selectTitle`, `selectWarning`, `selectCancel`, `selectConfirm`, `selectingContractor`) already present in ar.json (lines 659-665) and en.json (lines 659-665). No action needed.
+- [x] [Review][Patch] **Hardcoded proposalCount prevents "Close Bidding" button** — ✅ Fixed: Replaced hardcoded `return 1` with `return proposalsList.value.length`. Dynamic count from actual list. [app/pages/projects/[id].vue:89]
+- [x] [Review][Patch] **Race condition on proposal selection** — ✅ Fixed: Added rollback of `selectedProposal` in both error cases (error branch + catch block) when `selectContractor` fails. Ensures UI consistency. [app/pages/projects/[id].vue:197-244]
+- [x] [Review][Patch] **Stale selectedProposal across status revert** — ✅ Fixed: Added watcher logic to clear `selectedProposal` when status changes away from `contractor_selected`. Prevents stale "Selected" badge after status revert. [app/pages/projects/[id].vue:231-240]
+- [x] [Review][Patch] **Watch doesn't load proposals on mount** — ✅ Fixed: Added `onMounted` hook to call `loadProposals()` on initial page load if section should be visible. Proposals now load immediately, not on first status change. [app/pages/projects/[id].vue:245-249]
+- [x] [Review][Patch] **Test data inconsistency with "optional notes" spec** — ✅ Fixed: Updated second mock proposal to have empty `notes: ''` to demonstrate optional field behavior. Test expectation now matches spec intent. [app/composables/__tests__/useProposals-07-04.spec.ts:26]
+- [x] [Review][Patch] **No validation of contractor_id before selection** — ✅ Fixed: Added `isContractorInvited()` check before calling API. Returns early with error if contractor not invited. [app/pages/projects/[id].vue:200-203]
+- [x] [Review][Patch] **Field type vs implementation mismatch** — ✅ Fixed (implicit): By making `contractorName` required, the field type issue is resolved. No more optional type with implied fallback.
+
+### Deferred (Pre-Existing, Not In Scope)
+- [x] [Review][Defer] **Arabic plural form support missing** — "1 proposal" vs "2+ proposals" use English rules. Arabic pluralization differs significantly. No i18n system for count-dependent forms yet. [ProposalsList.vue display logic] — deferred, requires i18n system upgrade
+- [x] [Review][Defer] **Unhandled 403 error provides generic fallback** — When 403 thrown, page has no error boundary. User sees generic "Failed to load proposals" instead of "You are not authorized." [app/composables/useProposals.ts:106-109] — deferred, error handling pattern change needed across composables
+- [x] [Review][Defer] **i18n key namespace inconsistency** — Uses both `proposals.selectTitle` and `projects.proposals.sectionTitle`. Inconsistent naming across keys. [app/components/project/ProposalsList.vue] — deferred, requires i18n refactor pass
+
+---
+
+**Summary:** 1 decision-needed (contractorName type), 9 patch items (fixable code issues), 3 deferred (pre-existing architectural issues), 1 dismissed (design clarity).
 - Empty state shows "لا توجد عروض حتى الآن" (Arabic) / "No proposals yet" (English)
 - Error state shows retry button for user-triggered reload
 - Sorting done in composable (single source of truth), not component

@@ -179,7 +179,7 @@ export interface ProposalData {
   id: string
   projectId: string
   contractorId: string
-  contractorName?: string
+  contractorName: string
   price: number
   estimatedDays: number
   notes?: string

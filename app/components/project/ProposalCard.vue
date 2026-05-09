@@ -21,10 +21,7 @@ const showFullNotes = ref(false)
 const notes = computed(() => props.proposal.notes || '')
 const isNotesLong = computed(() => notes.value.length > 150)
 
-const contractorName = computed(() => {
-  // Extract contractor name from proposal if available
-  return (props.proposal as any).contractorName || 'Contractor'
-})
+const contractorName = computed(() => props.proposal.contractorName)
 </script>
 
 <template>

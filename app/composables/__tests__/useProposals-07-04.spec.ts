@@ -24,7 +24,7 @@ describe('useProposals - Story 07-04 (Client Reviews Proposals)', () => {
         contractorName: 'BuildRight Corp',
         price: 280000,
         estimatedDays: 75,
-        notes: 'Fast-track delivery with experienced team',
+        notes: '',
         createdAt: new Date('2026-05-07').toISOString(),
         updatedAt: new Date('2026-05-07').toISOString(),
       },
