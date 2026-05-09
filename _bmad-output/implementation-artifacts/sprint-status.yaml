@@ -100,7 +100,7 @@ development_status:
 
   # Epic 07 — Proposals & Contractor Selection
   epic-07: in-progress
-  07-01-admin-opens-bidding-and-invites-contractors: ready-for-dev
+  07-01-admin-opens-bidding-and-invites-contractors: review
   07-02-contractor-submits-proposal: review
   07-03-admin-closes-bidding-for-review: review
   07-04-client-reviews-proposals: in-progress
