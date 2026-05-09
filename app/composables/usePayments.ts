@@ -1,7 +1,11 @@
 import { computed, ref, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Milestone } from '~/shared/types/project'
 import type { Withdrawal, ContractorBalance } from '~/shared/types/payment'
 import { derivePaymentStatus } from '~/utils/statusMachine'
+import { useMilestones } from '~/composables/useMilestones'
+import { useProjects } from '~/composables/useProjects'
+import { useApi } from '~/composables/useApi'
 
 // TODO: Replace with actual API calls when endpoints available
 import {
@@ -116,12 +120,12 @@ export const usePayments = () => {
     return mockGetWithdrawalCountdown(approvedAt)
   }
 
-  const startWithdrawalPolling = () => {
+  const startWithdrawalPolling = async () => {
     // Don't start multiple polling intervals
     if (pollingIntervalId !== null) return
 
-    // Initial fetch
-    fetchWithdrawals()
+    // Initial fetch — await to ensure list is populated before polling starts
+    await fetchWithdrawals()
 
     // Poll every 30 seconds
     pollingIntervalId = setInterval(() => {

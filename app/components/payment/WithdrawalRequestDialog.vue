@@ -43,13 +43,13 @@ const withdrawalSchema = toTypedSchema(
   z.object({
     amount: z
       .number()
-      .positive(t('validation.required'))
+      .positive(t('validation.amount_required'))
       .max(props.availableBalance, t('validation.amount_exceeds_available')),
     iban: z
       .string()
       .min(15, t('validation.invalid_iban'))
       .max(34, t('validation.invalid_iban'))
-      .regex(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/, t('validation.invalid_iban')),
+      .regex(/^SA[0-9]{2}[0-9]{20}$/, t('validation.invalid_iban')),
     notes: z.string().optional(),
   })
 )
@@ -142,7 +142,7 @@ watch(
           <Textarea
             id="notes"
             v-model="values.notes"
-            placeholder="Enter any additional notes (optional)"
+            :placeholder="t('withdrawal.form.notes_placeholder')"
             rows="3"
           />
         </div>

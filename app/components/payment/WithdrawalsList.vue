@@ -14,7 +14,7 @@ withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const groupedWithdrawals = computed(() => {
   const groups: Record<string, Withdrawal[]> = {
@@ -28,6 +28,9 @@ const groupedWithdrawals = computed(() => {
   props.withdrawals.forEach(w => {
     if (groups[w.status]) {
       groups[w.status].push(w)
+    } else {
+      // Fallback: unknown status warning (should not happen with valid API)
+      console.warn(`Unknown withdrawal status: ${w.status}`)
     }
   })
 
@@ -39,7 +42,7 @@ const hasAnyWithdrawals = computed(() => {
 })
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString(locale.value || 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -48,7 +51,7 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6" data-testid="withdrawals-list">
     <!-- Empty State -->
     <div
       v-if="!hasAnyWithdrawals && !isLoading"
@@ -85,6 +88,7 @@ const formatDate = (dateString: string) => {
           <div
             v-for="item in statusWithdrawals"
             :key="item.id"
+            data-testid="withdrawal-item"
             class="bg-card hover:border-primary/40 hover:shadow-elevated rounded-lg border p-4 transition hover:-translate-y-0.5"
           >
             <div class="flex items-start justify-between gap-4">

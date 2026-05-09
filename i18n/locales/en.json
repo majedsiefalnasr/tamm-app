@@ -63,6 +63,7 @@
   },
   "validation": {
     "required": "Required",
+    "amount_required": "Amount is required",
     "min_length_20": "Minimum 20 characters",
     "amount_exceeds_available": "Amount exceeds available balance",
     "invalid_iban": "Invalid IBAN number",
@@ -381,6 +382,7 @@
       "amount": "Amount *",
       "iban": "Bank Account Number *",
       "notes": "Notes (optional)",
+      "notes_placeholder": "Enter any additional notes (optional)",
       "submit": "Submit Request",
       "cancel": "Cancel"
     },

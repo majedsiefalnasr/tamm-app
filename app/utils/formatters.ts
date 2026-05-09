@@ -49,3 +49,8 @@ export const formatRelativeTime = (dateString: string): string => {
   if (days < 30) return `${days}d ago`
   return date.toLocaleDateString()
 }
+
+export const maskIban = (iban: string): string => {
+  if (!iban || iban.length < 4) return iban
+  return `****${iban.slice(-4)}`
+}

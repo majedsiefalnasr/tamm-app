@@ -63,6 +63,7 @@
   },
   "validation": {
     "required": "مطلوب",
+    "amount_required": "المبلغ مطلوب",
     "min_length_20": "الحد الأدنى 20 حرف",
     "amount_exceeds_available": "المبلغ يتجاوز الرصيد المتاح",
     "invalid_iban": "رقم حساب بنكي غير صحيح",
@@ -381,6 +382,7 @@
       "amount": "المبلغ *",
       "iban": "رقم الحساب البنكي *",
       "notes": "ملاحظات (اختياري)",
+      "notes_placeholder": "أدخل أي ملاحظات إضافية (اختياري)",
       "submit": "إرسال الطلب",
       "cancel": "إلغاء"
     },

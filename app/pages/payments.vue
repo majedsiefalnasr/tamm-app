@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Skeleton } from '~/components/ui/skeleton'
 import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import PaymentSection from '~/components/payment/PaymentSection.vue'
+import BalanceSummaryCard from '~/components/payment/BalanceSummaryCard.vue'
+import WithdrawalRequestDialog from '~/components/payment/WithdrawalRequestDialog.vue'
+import WithdrawalsList from '~/components/payment/WithdrawalsList.vue'
 import { derivePaymentStatus } from '~/utils/statusMachine'
 import { formatCurrency } from '~/utils/formatters'
+import { useAuthStore } from '~/stores/auth'
+import { useMilestones } from '~/composables/useMilestones'
+import { usePayments } from '~/composables/usePayments'
 import type { Milestone } from '~/shared/types/project'
 
 definePageMeta({
@@ -73,6 +80,54 @@ const hasAnyPayments = computed(
 const retryFetch = () => {
   fetchMilestones()
 }
+
+// Withdrawal state
+const {
+  withdrawals,
+  isLoadingWithdrawals,
+  isSubmittingWithdrawal,
+  getContractorBalance,
+  startWithdrawalPolling,
+  stopWithdrawalPolling,
+  submitWithdrawalRequest,
+  fetchWithdrawals,
+} = usePayments()
+
+const isWithdrawalDialogOpen = ref(false)
+const { t } = useI18n()
+
+const contractorBalance = computed(() => getContractorBalance())
+
+const handleRequestWithdrawal = () => {
+  isWithdrawalDialogOpen.value = true
+}
+
+const handleCloseDialog = () => {
+  isWithdrawalDialogOpen.value = false
+}
+
+const handleSubmitWithdrawal = async (data: {
+  amount: number
+  iban: string
+  notes?: string
+}) => {
+  try {
+    await submitWithdrawalRequest(data.amount, data.iban, data.notes)
+    isWithdrawalDialogOpen.value = false
+    await fetchWithdrawals()
+  } catch (error) {
+    console.error('Withdrawal submission failed:', error)
+  }
+}
+
+onMounted(async () => {
+  await fetchMilestones()
+  await startWithdrawalPolling()
+})
+
+const pageUnmounted = onUnmounted(() => {
+  stopWithdrawalPolling()
+})
 </script>
 
 <template>
@@ -81,6 +136,35 @@ const retryFetch = () => {
     <div class="mb-8 space-y-2">
       <h1 class="text-3xl font-bold">{{ $t('payment.heading') }}</h1>
       <p class="text-muted-foreground">{{ $t('payment.subtitle') }}</p>
+    </div>
+
+    <!-- Withdrawal Section (Contractor-only) -->
+    <div v-if="auth.user?.role === 'contractor'" class="mb-12 space-y-6">
+      <!-- Balance Card -->
+      <BalanceSummaryCard
+        data-testid="balance-summary-card"
+        :earned="contractorBalance.earned"
+        :locked="contractorBalance.locked"
+        :available="contractorBalance.available"
+        :is-loading="isLoadingWithdrawals"
+        @request-withdrawal="handleRequestWithdrawal"
+      />
+
+      <!-- Withdrawal Request Dialog -->
+      <WithdrawalRequestDialog
+        :open="isWithdrawalDialogOpen"
+        :is-submitting="isSubmittingWithdrawal"
+        :available-balance="contractorBalance.available"
+        @close="handleCloseDialog"
+        @submit="handleSubmitWithdrawal"
+      />
+
+      <!-- Withdrawals List -->
+      <WithdrawalsList
+        data-testid="withdrawals-list"
+        :withdrawals="withdrawals"
+        :is-loading="isLoadingWithdrawals"
+      />
     </div>
 
     <!-- Loading State -->

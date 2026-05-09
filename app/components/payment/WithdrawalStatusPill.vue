@@ -25,7 +25,7 @@ const countdownDays = computed(() => {
   const threeDaysMs = 3 * 24 * 60 * 60 * 1000
   const endTime = approvedTime + threeDaysMs
   const daysRemaining = Math.ceil((endTime - now) / (24 * 60 * 60 * 1000))
-  return Math.max(0, daysRemaining)
+  return Math.max(1, daysRemaining)
 })
 
 const toneClasses = computed(() => {
@@ -50,10 +50,7 @@ const toneClasses = computed(() => {
     </div>
 
     <!-- Countdown Text (for approved status) -->
-    <div
-      v-if="countdownDays !== null && countdownDays > 0"
-      class="text-muted-foreground text-xs"
-    >
+    <div v-if="countdownDays !== null" class="text-muted-foreground text-xs">
       {{ t('withdrawal.approved_at', { days: countdownDays }) }}
     </div>
   </div>
