@@ -5,5 +5,21 @@
       "gitUrl": "https://github.com/giancarloerra/socraticode",
       "gitRef": "main"
     }
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk gain --silent",
+            "statusMessage": "RTK: saving token metrics",
+            "if": "Bash(rtk *)",
+            "async": true
+          }
+        ]
+      }
+    ]
   }
 }

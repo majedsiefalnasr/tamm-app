@@ -1,0 +1,40 @@
+{
+  "project": "TAMM Frontend",
+  "description": "RTK configuration for consistent token optimization across all AI tools",
+  "rtk_version": ">=0.1.0",
+  "integration": {
+    "shell": {
+      "type": "zsh/bash",
+      "hook": "precmd",
+      "command": "rtk gain --silent",
+      "enabled": true,
+      "file": "~/.dotfiles/shell/.zshrc"
+    },
+    "claude_code": {
+      "type": "PostToolUse",
+      "enabled": true,
+      "file": ".claude/settings.json"
+    },
+    "cursor": {
+      "type": "PostToolUse",
+      "enabled": true,
+      "file": ".cursor/settings.json"
+    },
+    "vscode_copilot": {
+      "type": "terminal_shell_hook",
+      "enabled": true,
+      "note": "Uses system shell hook configured in ~/.zshrc"
+    },
+    "opencode": {
+      "type": "terminal_shell_hook",
+      "enabled": true,
+      "note": "Uses system shell hook configured in ~/.zshrc"
+    }
+  },
+  "commands": {
+    "rtk-summary": "rtk gain",
+    "rtk-history": "rtk gain --history",
+    "rtk-analyze": "rtk discover"
+  },
+  "setup_instructions": "See .claude/RTK_SETUP.md"
+}

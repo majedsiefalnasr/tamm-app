@@ -59,3 +59,5 @@ Test Architecture Enterprise,bmad-testarch-nfr,NFR Assessment,NR,Non-functional 
 Test Architecture Enterprise,bmad-testarch-ci,CI Setup,CI,Configure CI/CD quality pipeline.,,3-solutioning,bmad-testarch-framework,,false,test_artifacts,ci config,
 Test Architecture Enterprise,bmad-testarch-framework,Test Framework,TF,Initialize production-ready test framework.,,3-solutioning,bmad-testarch-test-design,bmad-testarch-ci,false,test_artifacts,framework scaffold,
 Test Architecture Enterprise,bmad-testarch-trace,Traceability,TR,Coverage traceability and gate.,,4-implementation,bmad-testarch-test-review,,false,test_artifacts,traceability matrix|gate decision,
+Developer Experience,_meta,,,,,,,,,false,~/.agents/skills/rtk-setup/SKILL.md,
+Developer Experience,rtk-setup,RTK Setup,RTK,Install and configure Rust Token Killer (RTK) for 60-90% token savings on CLI operations. Works with Claude Code Copilot Cursor and Opencode.,,anytime,,,false,.claude/rtk,.env.local|RTK.md
