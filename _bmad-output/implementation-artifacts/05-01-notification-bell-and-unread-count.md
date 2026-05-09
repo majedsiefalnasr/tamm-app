@@ -1,6 +1,6 @@
 # Story 05-01 — Notification Bell and Unread Count
 
-**Status:** review  
+**Status:** done  
 **Epic:** 05 — In-App Notifications  
 **Story ID:** 5.1  
 **Priority:** 🟡 MEDIUM — Enables core notification UX; blocks other stories in epic  
