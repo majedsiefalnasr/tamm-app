@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { DashboardSummary, DashboardResponse } from '~/shared/types/admin'
 import { mockDashboardData } from './__mocks__/admin-dashboard'
 
@@ -6,8 +6,10 @@ export function useAdminDashboard() {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const data = ref<DashboardSummary | null>(null)
+  let abortController: AbortController | null = null
 
-  const USE_MOCK = true // TODO: replace with real API when endpoint available
+  // TODO: replace with environment variable when API is ready
+  const USE_MOCK = import.meta.env.DEV && !import.meta.env.VITE_API_READY
 
   const bannerCounts = computed(() => ({
     newProjects: data.value?.urgent_actions?.new_projects ?? 0,
@@ -41,7 +43,11 @@ export function useAdminDashboard() {
   ])
 
   const disputesStat = computed(() => {
-    if (!data.value || data.value.summary_stats.open_disputes === 0) {
+    if (
+      !data.value?.summary_stats ||
+      !data.value.summary_stats.open_disputes ||
+      data.value.summary_stats.open_disputes === 0
+    ) {
       return null
     }
     return {
@@ -56,6 +62,7 @@ export function useAdminDashboard() {
   async function fetchDashboard() {
     loading.value = true
     error.value = null
+    abortController = new AbortController()
 
     try {
       if (USE_MOCK) {
@@ -63,22 +70,41 @@ export function useAdminDashboard() {
         await new Promise(resolve => setTimeout(resolve, 500))
         data.value = mockDashboardData
       } else {
-        const response = await $fetch<DashboardResponse>(
-          '/api/admin/dashboard',
-          {
-            method: 'GET',
-          }
-        )
+        const response = await useApi<DashboardResponse>('/admin/dashboard', {
+          method: 'GET',
+          timeout: 10000,
+          signal: abortController.signal,
+        })
 
-        if (response.success && response.data) {
-          data.value = response.data
-        } else {
-          error.value = 'Failed to load dashboard data'
+        if (!response || !response.data) {
+          throw new Error('Invalid API response: missing data')
         }
+
+        data.value = response.data
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // Request was cancelled, don't show error
+        return
+      }
+
+      const { $t } = useI18n()
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+
+      if (
+        errorMessage.includes('401') ||
+        errorMessage.includes('Unauthorized')
+      ) {
+        error.value = $t('errors.unauthorized')
+      } else if (errorMessage.includes('timeout')) {
+        error.value = $t('errors.timeout')
+      } else if (errorMessage.includes('Failed to fetch')) {
+        error.value = $t('errors.network')
+      } else {
+        error.value = $t('errors.server')
+      }
+
       console.error('Dashboard fetch error:', err)
-      error.value = 'Error loading dashboard'
     } finally {
       loading.value = false
     }
@@ -92,6 +118,13 @@ export function useAdminDashboard() {
   // Load data on composable creation
   onMounted(() => {
     fetchDashboard()
+  })
+
+  // Clean up on unmount
+  onUnmounted(() => {
+    if (abortController) {
+      abortController.abort()
+    }
   })
 
   return {

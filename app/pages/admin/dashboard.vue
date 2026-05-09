@@ -4,12 +4,13 @@ import { useAdminDashboard } from '~/composables/useAdminDashboard'
 
 definePageMeta({
   roles: ['admin', 'super_admin'],
+  middleware: ['auth', 'role'],
   pageTitle: 'admin.dashboard.page_title',
 })
 
 const { loading, error, data, bannerCounts, stats, disputesStat, retry } =
   useAdminDashboard()
-const { $t } = useI18n()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -17,12 +18,16 @@ const { $t } = useI18n()
     <!-- Page Title -->
     <div>
       <h1 class="text-foreground text-3xl font-extrabold">
-        {{ $t('admin.dashboard.page_title') }}
+        {{ t('admin.dashboard.page_title') }}
       </h1>
       <p class="text-muted-foreground mt-1">
         {{
-          $t('admin.dashboard.welcome', {
-            date: new Date().toLocaleDateString('ar-EG'),
+          t('admin.dashboard.welcome', {
+            date: new Intl.DateTimeFormat(useI18n().locale.value, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date()),
           })
         }}
       </p>
@@ -36,7 +41,7 @@ const { $t } = useI18n()
       <AlertTriangle class="text-destructive mt-0.5 h-4 w-4 flex-shrink-0" />
       <div class="flex-1">
         <p class="text-destructive font-semibold">
-          {{ $t('admin.dashboard.error') }}
+          {{ t('admin.dashboard.error') }}
         </p>
         <p class="text-muted-foreground mt-1 text-sm">
           {{ error }}
@@ -45,7 +50,7 @@ const { $t } = useI18n()
           class="text-destructive hover:text-destructive/80 mt-2 text-sm font-medium transition"
           @click="retry"
         >
-          {{ $t('admin.dashboard.retry') }}
+          {{ t('admin.dashboard.retry') }}
         </button>
       </div>
     </div>

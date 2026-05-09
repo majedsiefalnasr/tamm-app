@@ -7,11 +7,11 @@ interface Props {
   loading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const { $t } = useI18n()
+const { t } = useI18n()
 
 // Calculate chart dimensions and scale
 const chartWidth = 600
@@ -19,15 +19,16 @@ const chartHeight = 300
 const padding = 40
 
 const computedData = computed(() => {
-  if (!props.data) return { points: [], maxValue: 0 }
+  if (!props.data || props.data.data.length === 0)
+    return { points: [], maxValue: 0 }
 
   const values = props.data.data.map(d => d.milestones + d.projects)
-  const maxValue = Math.max(...values, 10)
+  const maxValue = values.length > 0 ? Math.max(...values) : 10
 
   const points = props.data.data.map((item, idx) => {
-    const x =
-      padding +
-      (idx / (props.data!.data.length - 1 || 1)) * (chartWidth - 2 * padding)
+    const xFraction =
+      props.data!.data.length === 1 ? 0.5 : idx / (props.data!.data.length - 1)
+    const x = padding + xFraction * (chartWidth - 2 * padding)
     const y =
       chartHeight -
       padding -
@@ -69,7 +70,7 @@ const hoveredIdx = ref<number | null>(null)
 <template>
   <div class="bg-card border-border shadow-card rounded-2xl border p-6">
     <h3 class="text-foreground mb-4 text-lg font-extrabold">
-      {{ $t('admin.dashboard.activity.title') }}
+      {{ t('admin.dashboard.activity.title') }}
     </h3>
 
     <!-- Loading state -->
@@ -126,13 +127,18 @@ const hoveredIdx = ref<number | null>(null)
                 :y="point.y - 35"
                 width="80"
                 height="30"
-                class="fill-foreground rounded"
+                rx="4"
+                ry="4"
+                class="fill-foreground"
               />
               <text
                 :x="point.x"
                 :y="point.y - 15"
                 text-anchor="middle"
-                class="fill-white text-xs font-bold text-white"
+                fill="white"
+                font-size="12"
+                font-weight="bold"
+                :aria-label="`${point.month}: ${point.value} items`"
               >
                 {{ point.value }}
               </text>
@@ -143,14 +149,19 @@ const hoveredIdx = ref<number | null>(null)
           <template v-for="(month, idx) in data.months" :key="`label-${idx}`">
             <text
               :x="
-                padding +
-                (idx / (data.months.length - 1)) * (chartWidth - 2 * padding)
+                data.months.length === 1
+                  ? chartWidth / 2
+                  : padding +
+                    (idx / (data.months.length - 1)) *
+                      (chartWidth - 2 * padding)
               "
               :y="chartHeight - padding + 20"
               text-anchor="middle"
-              class="fill-muted-foreground text-xs"
+              fill="currentColor"
+              font-size="12"
+              class="fill-muted-foreground"
             >
-              {{ month.substring(0, 3) }}
+              {{ month ? month.substring(0, 3) : 'N/A' }}
             </text>
           </template>
         </svg>
@@ -160,7 +171,7 @@ const hoveredIdx = ref<number | null>(null)
     <!-- Empty state -->
     <template v-else>
       <p class="text-muted-foreground py-8 text-center">
-        {{ $t('common.no_data') }}
+        {{ t('common.no_data') }}
       </p>
     </template>
   </div>

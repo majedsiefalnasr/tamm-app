@@ -787,10 +787,49 @@ All acceptance criteria satisfied:
 - [x] Tests authored (E2E)
 - [x] File list updated
 
+## 🔍 Code Review Findings (2026-05-09)
+
+### CRITICAL ISSUES FIXED ✅
+- [x] [Review][Patch] Access control middleware missing — added `middleware: ['auth', 'role']`
+- [x] [Review][Patch] `props` undefined in DashboardActivity — captured from `defineProps()`
+- [x] [Review][Patch] `useI18n()` destructuring wrong — changed `$t` to `t` throughout
+- [x] [Review][Patch] Mock data hardcoded to true — gated with environment variable
+- [x] [Review][Patch] API wrapper bypassed — replaced `$fetch` with `useApi`
+- [x] [Review][Patch] Weak API response validation — added struct validation and null checks
+- [x] [Review][Patch] Nullable summary_stats unguarded — added optional chaining checks
+- [x] [Review][Patch] SVG chart math broken (NaN/division-by-zero) — fixed all calculations
+- [x] [Review][Patch] Hardcoded locale `ar-EG` — changed to use `locale.value`
+- [x] [Review][Patch] Hardcoded colors breaking design tokens — replaced with token classes
+
+### HIGH-PRIORITY ISSUES (Remaining Action Items)
+- [ ] [Review][Patch] API call missing timeout — add explicit `timeout: 10000` parameter
+- [ ] [Review][Patch] DashboardProjects — clamp progress bar to [0, 100]
+- [ ] [Review][Patch] DashboardDisputes — clamp date formatting with try/catch
+- [ ] [Review][Patch] Status tone mapping silent defaults — add warning logs for unknown values
+- [ ] [Review][Patch] Icon component undefined fallback — add fallback icon for unknown icon names
+- [ ] [Review][Patch] DashboardDisputes "Mediate" button — wire to navigation or emit event
+- [ ] [Review][Patch] Stats row 4-column layout — adjust grid when disputes card is hidden
+- [ ] [Review][Patch] E2E tests — replace hardcoded sleep timeouts with `waitForLoadState('networkidle')`
+- [ ] [Review][Patch] E2E tests hardcoded to Arabic — add `data-testid` attributes and use them
+- [ ] [Review][Patch] Error handling too broad — categorize errors (401 vs timeout vs network)
+
+### MEDIUM-PRIORITY ISSUES (Code Quality)
+- [ ] [Review][Patch] Remove unused DashboardStat type — deduplicate with Stat interface
+- [ ] [Review][Patch] Make Stat.tone union consistent — add 'success', 'warning' or use defined set
+- [ ] [Review][Patch] SVG tooltip rect missing rx/ry attributes — use proper rounded corners
+- [ ] [Review][Patch] Month labels not RTL-aware — add proper directional handling
+- [ ] [Review][Patch] No unmount cleanup on composable — already fixed (added abort controller)
+- [ ] [Review][Patch] E2E login hardcoded — parameterize or use test data helpers
+
+### DEFERRED (Pre-existing Architectural)
+- [x] [Review][Defer] Route validation — banner/card links could be 404 (architectural concern)
+- [x] [Review][Defer] Array pagination missing — design decision, not code bug
+
 ## Status
 
-**Current:** review  
+**Current:** in-progress  
 **Created:** 2026-05-09 by BMad Story Context Engine
 **Implemented:** 2026-05-09 by Developer Agent
-**Status:** Complete — ready for code review
+**Code Review:** 2026-05-09 — 9 critical fixes applied, 10 high-priority items for dev, 6 medium-priority quality items
+**Status:** Awaiting final fixes before merge
 

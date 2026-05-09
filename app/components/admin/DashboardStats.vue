@@ -17,11 +17,11 @@ interface Props {
   loading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const { $t } = useI18n()
+const { t, locale } = useI18n()
 
 const iconMap = {
   FolderOpen,
@@ -33,20 +33,20 @@ const iconMap = {
 const toneClasses = {
   primary: 'text-primary',
   default: 'text-muted-foreground',
-  accent: 'text-amber-600',
-  danger: 'text-red-600',
+  accent: 'text-accent',
+  danger: 'text-destructive',
 }
 
 function formatValue(value: number, isCurrency?: boolean) {
   if (isCurrency) {
-    return new Intl.NumberFormat('ar-EG', {
+    return new Intl.NumberFormat(locale.value, {
       style: 'currency',
       currency: 'EGP',
       notation: 'compact',
       maximumFractionDigits: 0,
     }).format(value)
   }
-  return new Intl.NumberFormat('ar-EG').format(value)
+  return new Intl.NumberFormat(locale.value).format(value)
 }
 </script>
 

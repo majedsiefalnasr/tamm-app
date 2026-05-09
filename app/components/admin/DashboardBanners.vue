@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircle, CheckCircle, Zap } from 'lucide-vue-next'
+import { AlertCircle, AlertTriangle, Zap, Inbox } from 'lucide-vue-next'
 
 interface Props {
   newProjects: number
@@ -9,7 +9,7 @@ interface Props {
 
 defineProps<Props>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -21,14 +21,17 @@ const { $t } = useI18n()
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
-          <AlertCircle class="text-primary mt-0.5 h-4 w-4 flex-shrink-0" />
+          <Inbox
+            class="text-primary mt-0.5 h-4 w-4 flex-shrink-0"
+            aria-hidden="true"
+          />
           <div>
             <p class="text-foreground font-semibold">
-              {{ $t('admin.dashboard.banners.new_projects_title') }}
+              {{ t('admin.dashboard.banners.new_projects_title') }}
             </p>
             <p class="text-muted-foreground text-sm">
               {{
-                $t('admin.dashboard.banners.new_projects_subtitle', {
+                t('admin.dashboard.banners.new_projects_subtitle', {
                   count: newProjects,
                 })
               }}
@@ -39,7 +42,7 @@ const { $t } = useI18n()
           to="/admin/projects?status=new"
           class="text-primary hover:text-primary/80 text-sm font-medium whitespace-nowrap"
         >
-          {{ $t('admin.dashboard.banners.view') }}
+          {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
     </div>
@@ -51,14 +54,17 @@ const { $t } = useI18n()
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
-          <Zap class="text-accent mt-0.5 h-4 w-4 flex-shrink-0" />
+          <Zap
+            class="text-accent mt-0.5 h-4 w-4 flex-shrink-0"
+            aria-hidden="true"
+          />
           <div>
             <p class="text-foreground font-semibold">
-              {{ $t('admin.dashboard.banners.pending_payments_title') }}
+              {{ t('admin.dashboard.banners.pending_payments_title') }}
             </p>
             <p class="text-muted-foreground text-sm">
               {{
-                $t('admin.dashboard.banners.pending_payments_subtitle', {
+                t('admin.dashboard.banners.pending_payments_subtitle', {
                   count: pendingPayments,
                 })
               }}
@@ -69,7 +75,7 @@ const { $t } = useI18n()
           to="/admin/payments?status=awaiting_release"
           class="text-accent hover:text-accent/80 text-sm font-medium whitespace-nowrap"
         >
-          {{ $t('admin.dashboard.banners.view') }}
+          {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
     </div>
@@ -81,14 +87,17 @@ const { $t } = useI18n()
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
-          <AlertCircle class="text-destructive mt-0.5 h-4 w-4 flex-shrink-0" />
+          <AlertTriangle
+            class="text-destructive mt-0.5 h-4 w-4 flex-shrink-0"
+            aria-hidden="true"
+          />
           <div>
             <p class="text-foreground font-semibold">
-              {{ $t('admin.dashboard.banners.disputes_title') }}
+              {{ t('admin.dashboard.banners.disputes_title') }}
             </p>
             <p class="text-muted-foreground text-sm">
               {{
-                $t('admin.dashboard.banners.disputes_subtitle', {
+                t('admin.dashboard.banners.disputes_subtitle', {
                   count: disputes,
                 })
               }}
@@ -99,7 +108,7 @@ const { $t } = useI18n()
           to="/admin/disputes"
           class="text-destructive hover:text-destructive/80 text-sm font-medium whitespace-nowrap"
         >
-          {{ $t('admin.dashboard.banners.view') }}
+          {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
     </div>
