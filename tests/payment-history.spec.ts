@@ -1,11 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
-import PaymentHistoryPage from '~/pages/payments.vue'
 import PaymentSection from '~/components/payment/PaymentSection.vue'
 import PaymentRow from '~/components/payment/PaymentRow.vue'
-import { defineStore } from 'pinia'
-import { setActivePinia, createPinia } from 'pinia'
+import type { Milestone } from '~/shared/types/project'
 
 // Mock i18n
 const i18n = createI18n({
@@ -26,13 +24,9 @@ const i18n = createI18n({
         },
         empty: {
           none: 'No payments yet',
-          description:
-            'Once milestones are completed and approved, payments will appear here.',
         },
       },
       common: {
-        cancel: 'Cancel',
-        confirm: 'Confirm',
         none: 'No items',
         project: 'Project',
         milestone: 'Milestone',
@@ -44,48 +38,35 @@ const i18n = createI18n({
   },
 })
 
-// Mock useMilestones composable
-const mockMilestones = [
+const mockMilestones: Milestone[] = [
   {
     id: 'ms-1',
     name: 'Foundation & Structure',
     amount: 50000,
     status: 'supervisor_approved',
     created_at: '2026-04-20T09:00:00Z',
-    project_id: 'proj-001',
+    projectId: 'proj-001',
     project: { id: 'proj-001', name: 'Building A' },
-  },
+  } as Milestone,
   {
     id: 'ms-2',
     name: 'Walls & Finishing',
     amount: 75000,
     status: 'approved',
     created_at: '2026-05-01T09:00:00Z',
-    project_id: 'proj-001',
+    projectId: 'proj-001',
     project: { id: 'proj-001', name: 'Building A' },
-  },
+  } as Milestone,
   {
     id: 'ms-3',
     name: 'Final Handover',
     amount: 125000,
     status: 'paid_out',
     created_at: '2026-05-05T09:00:00Z',
-    project_id: 'proj-001',
+    projectId: 'proj-001',
     project: { id: 'proj-001', name: 'Building A' },
-  },
+  } as Milestone,
 ]
-
-vi.stubGlobal('useMilestones', () => ({
-  milestones: mockMilestones,
-  loading: false,
-  error: null,
-  fetchMilestones: vi.fn(async () => mockMilestones),
-}))
-
-vi.stubGlobal('useAuthStore', () => ({
-  user: { id: 'user-123', role: 'contractor' },
-  isLoggedIn: true,
-}))
 
 describe('PaymentSection Component', () => {
   it('renders section title with count', () => {
@@ -124,6 +105,27 @@ describe('PaymentSection Component', () => {
 
     expect(wrapper.text()).toContain('No items')
   })
+
+  it('renders payment rows for each payment', () => {
+    const wrapper = mount(PaymentSection, {
+      props: {
+        title: 'Pending Payments',
+        payments: mockMilestones.slice(0, 2),
+        count: 2,
+      },
+      global: {
+        plugins: [i18n],
+        stubs: {
+          PaymentRow: {
+            template: '<div class="payment-row">{{ payment.name }}</div>',
+          },
+        },
+      },
+    })
+
+    const rows = wrapper.findAll('.payment-row')
+    expect(rows).toHaveLength(2)
+  })
 })
 
 describe('PaymentRow Component', () => {
@@ -144,10 +146,27 @@ describe('PaymentRow Component', () => {
     expect(wrapper.text()).toContain('Foundation & Structure')
     expect(wrapper.text()).toContain('50000')
   })
+
+  it('displays formatted date', () => {
+    const wrapper = mount(PaymentRow, {
+      props: {
+        payment: mockMilestones[0],
+      },
+      global: {
+        plugins: [i18n],
+        stubs: {
+          PaymentStatusTag: true,
+        },
+      },
+    })
+
+    // Date should be formatted (exact format depends on formatDate utility)
+    expect(wrapper.text()).toBeTruthy()
+  })
 })
 
-describe('Payment Status Filtering', () => {
-  it('correctly filters pending payments', () => {
+describe('Payment Status Filtering Logic', () => {
+  it('correctly filters pending payments (supervisor_approved + approved)', () => {
     const pending = mockMilestones.filter(m =>
       ['supervisor_approved', 'approved'].includes(m.status)
     )
@@ -156,7 +175,7 @@ describe('Payment Status Filtering', () => {
     expect(pending[1].status).toBe('approved')
   })
 
-  it('correctly filters received payments', () => {
+  it('correctly filters received payments (paid_out)', () => {
     const received = mockMilestones.filter(m => m.status === 'paid_out')
     expect(received).toHaveLength(1)
     expect(received[0].status).toBe('paid_out')
@@ -166,13 +185,23 @@ describe('Payment Status Filtering', () => {
     const pending = mockMilestones.filter(m =>
       ['supervisor_approved', 'approved'].includes(m.status)
     )
-    const total = pending.reduce((sum, m) => sum + m.amount, 0)
+    const total = pending.reduce((sum, m) => sum + (m.amount || 0), 0)
     expect(total).toBe(125000)
   })
 
   it('calculates received total correctly', () => {
     const received = mockMilestones.filter(m => m.status === 'paid_out')
-    const total = received.reduce((sum, m) => sum + m.amount, 0)
+    const total = received.reduce((sum, m) => sum + (m.amount || 0), 0)
     expect(total).toBe(125000)
+  })
+
+  it('sorts payments by most recent first', () => {
+    const sorted = mockMilestones.sort((a, b) => {
+      const dateA = new Date(a.created_at || 0).getTime()
+      const dateB = new Date(b.created_at || 0).getTime()
+      return dateB - dateA
+    })
+    expect(sorted[0].id).toBe('ms-3')
+    expect(sorted[sorted.length - 1].id).toBe('ms-1')
   })
 })

@@ -42,7 +42,7 @@ const navigateToMilestone = () => {
 
     <!-- Middle: Status -->
     <div class="mx-4 flex-shrink-0">
-      <PaymentStatusTag :milestone="{ status: payment.status }" />
+      <PaymentStatusTag :milestone="payment" />
     </div>
 
     <!-- Right: Amount -->

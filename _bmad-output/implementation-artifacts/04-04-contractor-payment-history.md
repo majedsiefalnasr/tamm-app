@@ -778,6 +778,48 @@ Implemented payment initiation. Key learnings for 04-04:
 
 ---
 
+## 🔍 Code Review Findings (2026-05-09)
+
+### Critical Issues
+
+- [ ] [Review][Patch] **Page heading uses wrong i18n key** — `app/pages/payments.vue:132` uses `$t('withdrawal.title')` instead of `$t('payment.heading')`. Violates AC requirement for page title.
+
+- [ ] [Review][Patch] **Hardcoded English subtitle violates i18n requirement** — `app/pages/payments.vue:134` has hardcoded text `"Manage your withdrawal requests and payment history"`. Spec §9 (Internationalization) mandates ALL text use i18n keys. Should use `$t('payment.subtitle')`.
+
+- [ ] [Review][Decision] **Scope creep: Withdrawal functionality mixed into 04-04** — Implementation includes `WithdrawalRequestDialog`, `WithdrawalsList`, `BalanceSummaryCard`, and withdrawal-related imports/logic. Story 04-04 spec makes NO mention of withdrawals (this is story 04-06 scope). Requires decision: Keep withdrawal feature (mixed concerns) OR revert to pure payment history page?
+
+### High Severity
+
+- [ ] [Review][Patch] **Incorrect prop type for PaymentStatusTag** — `app/components/payment/PaymentRow.vue:45` passes `{ status: payment.status }` but PaymentStatusTag expects full `Milestone` object with `payment_status` field. Type mismatch; potential runtime error if component implementation changes.
+
+- [ ] [Review][Patch] **Missing StatCard component** — Spec §8, line 49 explicitly requires "Use shadcn-vue `StatCard` component". Implementation `app/pages/payments.vue:187-216` uses custom div-based cards. Design inconsistency; not reusing approved component.
+
+- [ ] [Review][Patch] **Tests don't match current implementation** — `tests/payment-history.spec.ts` tests old version without withdrawal features. Current `app/pages/payments.vue` is significantly different. False sense of security; actual feature untested.
+
+### Medium Severity
+
+- [ ] [Review][Patch] **onMounted violates Nuxt 4 patterns** — `app/pages/payments.vue:43-46` uses manual `onMounted` with `Promise.all()`. CLAUDE.md §3 recommends `useAsyncData` or `useFetch` instead. Not following framework best practices.
+
+- [ ] [Review][Patch] **Optional chaining on $toast creates silent failures** — `app/pages/payments.vue:66-75` uses `$toast?.()` without fallback. If notification system unavailable, user won't know if withdrawal succeeded/failed.
+
+- [ ] [Review][Patch] **No handling for null/undefined milestones** — `app/pages/payments.vue` computed properties assume `allMilestones.value` is always an array. If undefined during initial load, computed will crash.
+
+- [ ] [Review][Patch] **Withdrawal dialog can be open during loading/error states** — `app/pages/payments.vue` has no guard preventing user from submitting withdrawal form while data is loading/errored. Stale data submission risk.
+
+- [ ] [Review][Patch] **Error handling inconsistency** — `app/pages/payments.vue:69-75` catches withdrawal errors and logs to console. Rest of codebase uses notification system directly. Pattern mismatch creates debugging difficulty.
+
+### Lower Severity
+
+- [ ] [Review][Patch] **Sorting logic not documented in child components** — PaymentSection/PaymentRow don't know about sorting. Parent page sorts but components don't document behavior. Scattered logic; not reusable.
+
+- [ ] [Review][Patch] **Page structure violates spec layout** — Spec defines: totals → pending payments → received payments. Implementation interleaves withdrawal section in middle. Template structure deviation.
+
+- [ ] [Review][Patch] **Missing integration tests for withdrawal feature** — Story now includes withdrawal functionality. Zero tests for submission, error handling, or dialog state management.
+
+- [ ] [Review][Patch] **Edge case: Empty milestone state** — If contractor has zero milestones, EmptyState shows but doesn't clarify context. Should distinguish "no assignments" vs "feature broken".
+
+---
+
 **Stack:** Nuxt 4 · Vue 3 · TypeScript · Tailwind CSS · shadcn-vue · Pinia · i18n  
 **Patterns:** Composition API, derived state, role-based routing, data grouping  
 **Last updated:** 2026-05-08
