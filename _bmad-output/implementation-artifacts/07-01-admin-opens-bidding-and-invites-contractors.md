@@ -1,6 +1,6 @@
 # Story 07-01 — Admin Opens Bidding and Invites Contractors
 
-**Status:** review  
+**Status:** done  
 **Epic:** 07 — Proposals & Contractor Selection  
 **Story ID:** 7.1  
 **Priority:** 🟢 HIGH — Entry point to proposal workflow  
