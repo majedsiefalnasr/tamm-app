@@ -91,17 +91,28 @@ export function useAdminDashboard() {
       const { $t } = useI18n()
       const errorMessage = err instanceof Error ? err.message : 'Unknown error'
 
+      // Categorize error type for better debugging
       if (
         errorMessage.includes('401') ||
         errorMessage.includes('Unauthorized')
       ) {
         error.value = $t('errors.unauthorized')
-      } else if (errorMessage.includes('timeout')) {
+        console.error('[useAdminDashboard] Authentication error (401):', err)
+      } else if (
+        errorMessage.includes('timeout') ||
+        errorMessage.includes('timed out')
+      ) {
         error.value = $t('errors.timeout')
-      } else if (errorMessage.includes('Failed to fetch')) {
+        console.error('[useAdminDashboard] Request timeout:', err)
+      } else if (
+        errorMessage.includes('Failed to fetch') ||
+        errorMessage.includes('NetworkError')
+      ) {
         error.value = $t('errors.network')
+        console.error('[useAdminDashboard] Network error:', err)
       } else {
         error.value = $t('errors.server')
+        console.error('[useAdminDashboard] Server error:', err)
       }
 
       console.error('Dashboard fetch error:', err)

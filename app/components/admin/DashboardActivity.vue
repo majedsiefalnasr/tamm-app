@@ -68,7 +68,10 @@ const hoveredIdx = ref<number | null>(null)
 </script>
 
 <template>
-  <div class="bg-card border-border shadow-card rounded-2xl border p-6">
+  <div
+    class="bg-card border-border shadow-card rounded-2xl border p-6"
+    data-testid="activity-section"
+  >
     <h3 class="text-foreground mb-4 text-lg font-extrabold">
       {{ t('admin.dashboard.activity.title') }}
     </h3>
@@ -80,7 +83,7 @@ const hoveredIdx = ref<number | null>(null)
 
     <!-- Chart -->
     <template v-else-if="data && data.data.length > 0">
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto" data-testid="activity-chart">
         <svg :width="chartWidth" :height="chartHeight" class="mx-auto">
           <!-- Grid lines -->
           <line

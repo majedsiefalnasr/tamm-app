@@ -30,6 +30,17 @@ const iconMap = {
   AlertCircle,
 }
 
+function getIcon(iconName: string) {
+  const icon = iconMap[iconName as keyof typeof iconMap]
+  if (!icon) {
+    console.error(
+      `[DashboardStats] Unknown icon: "${iconName}", using AlertCircle`
+    )
+    return AlertCircle
+  }
+  return icon
+}
+
 const toneClasses = {
   primary: 'text-primary',
   default: 'text-muted-foreground',
@@ -51,11 +62,19 @@ function formatValue(value: number, isCurrency?: boolean) {
 </script>
 
 <template>
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+  <div
+    :class="[
+      'grid gap-4',
+      'grid-cols-1',
+      'md:grid-cols-2',
+      disputesStat ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+    ]"
+  >
     <NuxtLink
       v-for="stat in stats"
       :key="stat.title"
       :to="stat.link || '#'"
+      :data-testid="`stat-link-${stat.title}`"
       class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
     >
       <div class="space-y-3">
@@ -70,7 +89,7 @@ function formatValue(value: number, isCurrency?: boolean) {
               {{ $t(stat.title) }}
             </p>
             <component
-              :is="iconMap[stat.icon as keyof typeof iconMap]"
+              :is="getIcon(stat.icon)"
               :class="['h-4 w-4', toneClasses[stat.tone]]"
             />
           </div>
@@ -85,6 +104,7 @@ function formatValue(value: number, isCurrency?: boolean) {
     <NuxtLink
       v-if="disputesStat && !loading"
       :to="disputesStat.link || '#'"
+      data-testid="stat-link-disputes"
       class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
     >
       <div class="space-y-3">
@@ -93,7 +113,7 @@ function formatValue(value: number, isCurrency?: boolean) {
             {{ $t(disputesStat.title) }}
           </p>
           <component
-            :is="iconMap[disputesStat.icon as keyof typeof iconMap]"
+            :is="getIcon(disputesStat.icon)"
             :class="['h-4 w-4', toneClasses[disputesStat.tone]]"
           />
         </div>

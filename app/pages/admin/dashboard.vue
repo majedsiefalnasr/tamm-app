@@ -17,7 +17,10 @@ const { t } = useI18n()
   <div class="space-y-6">
     <!-- Page Title -->
     <div>
-      <h1 class="text-foreground text-3xl font-extrabold">
+      <h1
+        class="text-foreground text-3xl font-extrabold"
+        data-testid="dashboard-title"
+      >
         {{ t('admin.dashboard.page_title') }}
       </h1>
       <p class="text-muted-foreground mt-1">

@@ -20,7 +20,12 @@ const statusToneMap = {
 }
 
 function getStatusTone(status: string) {
-  return statusToneMap[status as keyof typeof statusToneMap] || 'default'
+  const tone = statusToneMap[status as keyof typeof statusToneMap]
+  if (!tone) {
+    console.error(`[DashboardDisputes] Unknown dispute status: "${status}"`)
+    return 'default'
+  }
+  return tone
 }
 
 function formatDate(dateStr: string) {
@@ -40,7 +45,10 @@ function formatDate(dateStr: string) {
 </script>
 
 <template>
-  <div class="bg-card border-border shadow-card rounded-2xl border p-6">
+  <div
+    class="bg-card border-border shadow-card rounded-2xl border p-6"
+    data-testid="disputes-section"
+  >
     <div class="mb-4 flex items-center justify-between">
       <h3 class="text-foreground text-lg font-extrabold">
         {{ t('admin.dashboard.disputes.title') }}
@@ -48,6 +56,7 @@ function formatDate(dateStr: string) {
       <NuxtLink
         to="/admin/disputes"
         class="text-primary hover:text-primary/80 text-sm font-medium transition"
+        data-testid="disputes-view-all"
       >
         {{ t('admin.dashboard.disputes.view_all') }}
       </NuxtLink>
@@ -63,7 +72,7 @@ function formatDate(dateStr: string) {
 
     <!-- Table -->
     <template v-else-if="disputes.length > 0">
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto" data-testid="disputes-table">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-border border-b">

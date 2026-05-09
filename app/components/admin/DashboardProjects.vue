@@ -25,7 +25,12 @@ const statusToneMap = {
 }
 
 function getStatusTone(status: string) {
-  return statusToneMap[status as keyof typeof statusToneMap] || 'default'
+  const tone = statusToneMap[status as keyof typeof statusToneMap]
+  if (!tone) {
+    console.error(`[DashboardProjects] Unknown project status: "${status}"`)
+    return 'default'
+  }
+  return tone
 }
 
 function formatCurrency(value: number) {
@@ -42,7 +47,10 @@ function clampProgress(percentage: number): number {
 </script>
 
 <template>
-  <div class="bg-card border-border shadow-card rounded-2xl border p-6">
+  <div
+    class="bg-card border-border shadow-card rounded-2xl border p-6"
+    data-testid="projects-section"
+  >
     <div class="mb-4 flex items-center justify-between">
       <h3 class="text-foreground text-lg font-extrabold">
         {{ t('admin.dashboard.projects.title') }}
@@ -50,6 +58,7 @@ function clampProgress(percentage: number): number {
       <NuxtLink
         to="/admin/projects"
         class="text-primary hover:text-primary/80 text-sm font-medium transition"
+        data-testid="projects-view-all"
       >
         {{ t('admin.dashboard.projects.view_all') }}
       </NuxtLink>
