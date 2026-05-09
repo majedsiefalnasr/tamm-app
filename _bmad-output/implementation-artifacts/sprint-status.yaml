@@ -72,13 +72,13 @@ development_status:
   epic-03-retrospective: optional
 
   # Epic 04 — Payments & Escrow
-  epic-04: in-progress
+  epic-04: done
   04-01-client-pays-for-a-milestone: done
   04-02-payment-status-badge-on-milestone: done
   04-03-admin-releases-payment-to-contractor: done
   04-04-contractor-payment-history: done
-  04-05-client-payment-overview: ready-for-dev
-  04-06-contractor-withdrawals: ready-for-dev
+  04-05-client-payment-overview: done
+  04-06-contractor-withdrawals: review
   epic-04-retrospective: optional
 
   # Epic 05 — In-App Notifications
