@@ -88,7 +88,20 @@
   "loading": "Loading...",
   "pages": {
     "projects": "Projects",
-    "assignments": "Assignments",
+    "assignments": {
+      "title": "My Assignments",
+      "subtitle": "{active} of {total} active assignments",
+      "tabAll": "All",
+      "tabActive": "Active",
+      "tabUnderReview": "Under Review",
+      "tabCompleted": "Completed",
+      "submitReport": "Submit Report",
+      "viewReport": "View Report",
+      "noAssignmentsActive": "No active assignments",
+      "noAssignmentsUnderReview": "No assignments under review",
+      "noAssignmentsCompleted": "No completed assignments",
+      "projectAddress": "{address}"
+    },
     "reviews": {
       "title": "Reviews",
       "pending": "Pending Reviews",
@@ -105,6 +118,18 @@
     "client_dashboard_subtitle": "Review and approve milestones",
     "contractor_dashboard": "Contractor Dashboard",
     "contractor_dashboard_subtitle": "Track your work and pending payments"
+  },
+  "dashboard": {
+    "fieldEngineer": {
+      "title": "Dashboard",
+      "activeAssignments": "My Active Assignments",
+      "noActiveAssignments": "No active assignments",
+      "submitReport": "Submit Report",
+      "recentReports": "Recently Submitted Reports",
+      "noRecentReports": "No reports submitted yet",
+      "reportSubmittedOn": "Submitted on: {date}",
+      "projectAddress": "{address}"
+    }
   },
   "roles": {
     "client": {

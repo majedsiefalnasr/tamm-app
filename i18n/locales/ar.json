@@ -88,7 +88,20 @@
   "loading": "جاري التحميل...",
   "pages": {
     "projects": "المشاريع",
-    "assignments": "التكليفات",
+    "assignments": {
+      "title": "مهامي",
+      "subtitle": "{active} من {total} مهمة نشطة",
+      "tabAll": "الكل",
+      "tabActive": "نشطة",
+      "tabUnderReview": "قيد المراجعة",
+      "tabCompleted": "مكتملة",
+      "submitReport": "رفع تقرير",
+      "viewReport": "عرض التقرير",
+      "noAssignmentsActive": "لا توجد مهام نشطة",
+      "noAssignmentsUnderReview": "لا توجد مهام قيد المراجعة",
+      "noAssignmentsCompleted": "لا توجد مهام مكتملة",
+      "projectAddress": "{address}"
+    },
     "reviews": {
       "title": "المراجعات",
       "pending": "مراجعات قيد الانتظار",
@@ -105,6 +118,18 @@
     "client_dashboard_subtitle": "معالجة واعتماد المراحل",
     "contractor_dashboard": "لوحة تحكم المقاول",
     "contractor_dashboard_subtitle": "تتبع أعمالك والمدفوعات المعلقة"
+  },
+  "dashboard": {
+    "fieldEngineer": {
+      "title": "لوحة التحكم",
+      "activeAssignments": "مهامي النشطة",
+      "noActiveAssignments": "لا توجد مهام نشطة",
+      "submitReport": "رفع تقرير",
+      "recentReports": "آخر التقارير المرفوعة",
+      "noRecentReports": "لم ترفع أي تقارير بعد",
+      "reportSubmittedOn": "رفع في: {date}",
+      "projectAddress": "{address}"
+    }
   },
   "roles": {
     "client": {
