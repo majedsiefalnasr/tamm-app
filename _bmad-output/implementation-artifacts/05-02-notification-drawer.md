@@ -473,6 +473,90 @@ From `docs/design-spec.md`:
 
 ---
 
+## 🔍 Review Findings (2026-05-09)
+
+### Critical Issues — Must Fix
+
+- [ ] [Review][CRITICAL] Polling failure silently wipes all notifications, causing data loss [useNotifications.ts:24] — On any transient fetch error (network timeout, 500 error), catch block calls `store.setNotifications([])`, clearing the entire list and unread count from UI. A single failed poll makes every notification disappear until next successful poll. Errors should be logged and existing state preserved.
+
+- [ ] [Review][CRITICAL] Fire-and-forget mutations with no error feedback [useNotifications.ts:63-74] — `markAsRead()` and `markAllAsRead()` apply optimistic updates then `.catch(() => {})` discards all failures. Users believe notifications are marked read when they may not be; next poll could revert them. No error message, no rollback on persistent failures.
+
+- [ ] [Review][CRITICAL] No rollback on optimistic update failure [useNotifications.ts:60-72] — If API call fails after optimistic update, store remains in false state. Next poll either fixes it (transient) or leaves corruption (permanent). Users navigate away assuming action succeeded.
+
+- [ ] [Review][CRITICAL] Race condition on component unmount/remount [useNotifications.ts:9-10, 80] — `pollTimer` and `visibilityListener` are per-composable-instance, so if multiple components call `useNotifications()`, each gets its own poller. If NotificationBell + NotificationDrawer both call it, you get duplicate intervals and duplicate visibility listeners.
+
+- [ ] [Review][CRITICAL] Missing import for `useApi` [useNotifications.ts:14, 63, 73] — `useApi` is referenced but not imported. Relies on implicit Nuxt auto-import; breaks if auto-import scope changes. Explicit import required.
+
+- [ ] [Review][CRITICAL] No SSR/window guard for client-only APIs [useNotifications.ts:13, 30, 36, 41] — `document.hidden`, `document.addEventListener`, `window.setInterval` used without `import.meta.client` check. In Nuxt 4 with SSR, calling `startPolling` during server render throws "document is not defined".
+
+- [ ] [Review][CRITICAL] Reactivity lost on returned state [useNotifications.ts:83-84] — Store refs unwrapped at call-time. While Pinia returns refs for state (so `.value` works), the `unreadCount` getter becomes non-reactive. Use `storeToRefs(store)` to preserve reactivity.
+
+- [ ] [Review][CRITICAL] Navigation happens before mark-read is confirmed [NotificationDrawer.vue:40-46] — Click handler calls `await markAsRead()` then immediately navigates, regardless of API success. If API fails (fire-and-forget), user navigates anyway; next poll shows notification as unread again, breaking UX.
+
+- [ ] [Review][CRITICAL] Duplicate bottom borders on notification list items [NotificationDrawer.vue:71, 79] — Uses both `divide-y` on parent and `border-b` on each child, producing double separators. Spec requires `last:border-0`; missing this class leaves stray border under last item. Remove one (either `divide-y` or `border-b`).
+
+- [ ] [Review][CRITICAL] Empty state uses raw `<p>` instead of `EmptyState` component [NotificationDrawer.vue:77-83] — Spec mandates shared `EmptyState` component (design-spec.md §5.6). Raw `<p>` bypasses design system and creates visual drift from other empty states in app.
+
+- [ ] [Review][CRITICAL] No loading state on buttons during API calls [NotificationDrawer.vue:40-50, 62-68] — Buttons remain clickable while fire-and-forget API is in flight. Users can click "Mark all as read" multiple times, firing multiple concurrent requests with undefined behavior (race condition). No visual feedback that action is in-flight.
+
+### High-Priority Issues — Should Fix
+
+- [ ] [Review][HIGH] Empty notification state fallback masks polling failures [useNotifications.ts:24] — Resetting to empty array on error creates false state: users see empty drawer and think they have no notifications, when service is actually down. Next poll may succeed or fail indefinitely (auth revoked, network down). Users cannot distinguish genuine "no notifications" from service failure.
+
+- [ ] [Review][HIGH] No retry mechanism or backoff on polling failures [useNotifications.ts:30] — Fixed 30-second interval regardless of failure. If API is temporarily down, polling fails every 30s indefinitely with no backoff, no jitter, no max-retry. Hammers API during outages, wastes user bandwidth, poor UX during maintenance.
+
+- [ ] [Review][HIGH] Race condition between optimistic update and next poll [useNotifications.ts:60-72] — After `markAsRead()` optimistically marks item read, next 30-second poll overwrites entire notifications array with server state. If server hasn't processed mark-read POST (fire-and-forget, possibly still in-flight or failed), notification flips back to unread, causing visible flicker to user.
+
+- [ ] [Review][HIGH] No user notification (toast/alert) on mark-as-read failure [NotificationDrawer.vue:40-50, 62-68] — When mutations fail silently, user gets zero feedback. Drawer closes, URL changes, user has no idea if marking succeeded. If API failed, notification reappears on next poll, confusing user.
+
+### Medium-Priority Issues — Nice to Fix
+
+- [ ] [Review][MEDIUM] console.error not using project logging standard [useNotifications.ts:22] — Uses `console.error()` directly instead of project's logging utilities. Error won't reach Sentry/monitoring; only visible in browser DevTools. Support team cannot identify widespread notification failures.
+
+- [ ] [Review][MEDIUM] visibilitychange listener cleanup has edge case [useNotifications.ts:35-43] — Code removes old listener before attaching new one, but only works on second `startPolling()` call. If called twice without cleanup (rapid mount/unmount), second call removes wrong listener reference, leaving first one attached. Causes listener accumulation and memory leak.
+
+- [ ] [Review][MEDIUM] No guard against invalid notificationId [useNotifications.ts:57-64] — `markAsRead()` finds notification and marks it, but if not found, action silently does nothing (no error, no warning, no log). API call still fires with invalid ID. Mismatch between store (early return) and API (proceeds anyway).
+
+- [ ] [Review][MEDIUM] Non-standard CSS color classes may not exist [NotificationDrawer.vue:85, 72] — `bg-primary-50/40` and `text-ink` are custom tokens that must be defined in `@theme`. If tokens missing, classes silently fail to apply. Verify `--color-primary-50` and `--color-ink` exist in CSS `@theme`.
+
+### Verification Required (Acceptance Auditor flagged)
+
+- [ ] Confirm `sortedNotifications` computed sorts by `created_at` descending (newest first) — template iteration visible but source not in excerpt
+- [ ] Confirm `showMarkAllButton` computed returns `unreadCount > 0` — logic visible but source not in excerpt
+- [ ] Confirm store `markAsRead()` and `markAllAsRead()` flip `is_read` synchronously for visual feedback — implementations checked in store, confirmed ✅
+- [ ] Confirm `EmptyState` component exists in `app/components/common/` before using
+
+**Review Layers:**
+- ✅ Blind Hunter: 14 findings (syntax, logic, type, performance issues)
+- ✅ Edge Case Hunter: 12 findings (silent failures, error handling, race conditions)
+- ✅ Acceptance Auditor: 9 findings (spec compliance, AC violations)
+
+**Summary:** 2 decision-needed (verification), 19 patch (fixable), 0 defer, 4 dismiss-as-noise
+
+### ✅ All Critical Issues RESOLVED (2 commits)
+
+**Commit 1:** `fix: Story 05-02 — Code review findings (11 critical issues)`
+- Fire-and-forget → try-catch-rollback pattern
+- Polling clears state → preserve state, log only
+- Per-instance timers → global singleton (with refcount)
+- Missing useApi import → added
+- No SSR guards → added import.meta.client checks
+- Lost reactivity → use storeToRefs()
+- No loading state → isLoading ref + disabled buttons
+- Duplicate borders → removed divide-y, added last:border-0
+- Empty state component → imported EmptyState
+- Error feedback → use useNotify().error()
+- Navigation timing → sequential (await then navigate)
+
+**Commit 2:** `fix: Story 05-02 — Post-review critical issues (5 additional fixes)`
+- Global polling refcount → prevent stopPolling killing global timer on first unmount
+- Rollback snapshot restoration → direct assignment, not merge-map
+- Remove duplicate unreadCount computation in drawer
+- Hardcoded English errors → use i18n keys (AR + EN)
+- Explicit useApi import (for clarity in composable)
+
+---
+
 **Created:** 2026-05-09  
-**Ready for:** Developer implementation (dev-story)  
-**Next story:** 05-03 (Mark notification as read) — depends on this being complete
+**Status:** ✅ All critical issues fixed and committed  
+**Next:** Story 05-03 (Mark notification as read) — ready to begin
