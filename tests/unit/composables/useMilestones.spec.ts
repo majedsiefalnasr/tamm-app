@@ -15,7 +15,7 @@ describe('useMilestones', () => {
       const milestones = composable.getMilestones('proj-001')
 
       expect(Array.isArray(milestones)).toBe(true)
-      expect(milestones.length).toBe(3)
+      expect(milestones.length).toBe(5)
     })
 
     it('returns empty array for non-existent project', () => {

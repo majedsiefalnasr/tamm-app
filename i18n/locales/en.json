@@ -117,19 +117,9 @@
     "client_dashboard": "Client Dashboard",
     "client_dashboard_subtitle": "Review and approve milestones",
     "contractor_dashboard": "Contractor Dashboard",
-    "contractor_dashboard_subtitle": "Track your work and pending payments"
-  },
-  "dashboard": {
-    "fieldEngineer": {
-      "title": "Dashboard",
-      "activeAssignments": "My Active Assignments",
-      "noActiveAssignments": "No active assignments",
-      "submitReport": "Submit Report",
-      "recentReports": "Recently Submitted Reports",
-      "noRecentReports": "No reports submitted yet",
-      "reportSubmittedOn": "Submitted on: {date}",
-      "projectAddress": "{address}"
-    }
+    "contractor_dashboard_subtitle": "Track your work and pending payments",
+    "supervisor_dashboard": "Supervisor Dashboard",
+    "supervisor_dashboard_subtitle": "Prioritize reviews and track decisions"
   },
   "roles": {
     "client": {
@@ -166,7 +156,8 @@
     "submitted": "Submitted",
     "showMore": "Show More",
     "showLess": "Show Less",
-    "of": "of"
+    "of": "of",
+    "retry": "Retry"
   },
   "nav": {
     "home": "Home",
@@ -260,6 +251,16 @@
     }
   },
   "dashboard": {
+    "fieldEngineer": {
+      "title": "Dashboard",
+      "activeAssignments": "My Active Assignments",
+      "noActiveAssignments": "No active assignments",
+      "submitReport": "Submit Report",
+      "recentReports": "Recently Submitted Reports",
+      "noRecentReports": "No reports submitted yet",
+      "reportSubmittedOn": "Submitted on: {date}",
+      "projectAddress": "{address}"
+    },
     "contractor": {
       "activeMilestones": "Active Milestones",
       "noActiveMilestones": "No active milestones",
@@ -279,6 +280,43 @@
       "submitProposal": "Submit Proposal",
       "viewProposal": "View Proposal",
       "engineer": "Engineer: {name}"
+    },
+    "supervisor": {
+      "submittedAt": "Submitted {date}",
+      "byEngineer": "Field engineer: {name}",
+      "statPending": "Pending reviews",
+      "statActiveProjects": "Active projects",
+      "statApprovedMonth": "Approved this month",
+      "pendingTitle": "Pending reviews",
+      "pendingSubtitle": "Oldest submissions first — same queue as Approvals",
+      "pendingEmptyTitle": "No pending reviews",
+      "pendingEmptyDescription": "When field engineers submit milestones for review, they appear here.",
+      "fullQueue": "Open approvals list",
+      "recentTitle": "Recently reviewed",
+      "recentSubtitle": "Your latest supervisor decisions",
+      "recentEmpty": "No recent decisions yet",
+      "decision": {
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "projectsTitle": "My projects",
+      "projectsSubtitle": "Projects you supervise",
+      "projectsEmpty": "No assigned projects",
+      "projectsEmptyHint": "When projects are assigned to you, they appear here.",
+      "viewProjects": "View all projects",
+      "progressLabel": "{done} / {total} milestones completed",
+      "fieldTeamTitle": "Field team",
+      "fieldTeamSubtitle": "Engineers on your projects — last report submitted",
+      "fieldTeamMockNote": ""
+    },
+    "client": {
+      "projectsSection": "My Projects",
+      "totalProjects": "Total Projects",
+      "activeProjects": "Active Projects",
+      "completedProjects": "Completed Projects",
+      "activitySection": "Recent Activity",
+      "noActivity": "No recent activity",
+      "noActivityDescription": "There has been no recent activity on your projects"
     }
   },
   "status": {
@@ -420,17 +458,6 @@
     "client_approve_confirm": {
       "title": "Confirm Final Approval",
       "message": "This will release payment to the contractor and complete this milestone"
-    }
-  },
-  "dashboard": {
-    "client": {
-      "projectsSection": "My Projects",
-      "totalProjects": "Total Projects",
-      "activeProjects": "Active Projects",
-      "completedProjects": "Completed Projects",
-      "activitySection": "Recent Activity",
-      "noActivity": "No recent activity",
-      "noActivityDescription": "There has been no recent activity on your projects"
     }
   },
   "approval_queue": {

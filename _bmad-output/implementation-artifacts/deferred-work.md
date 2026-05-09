@@ -1,5 +1,9 @@
 # Deferred Work Items
 
+## Deferred from: code review of 08-04-supervisor-engineer-dashboard.md (2026-05-09)
+
+- **`getPendingReviews` mock scope** — Implementation only loads `proj-001` via `loadMilestones`; under-review milestones in other projects are invisible until the real supervisor-queue endpoint replaces the mock (`useMilestones.ts`).
+
 ## Deferred from: Code Review of Story 06-04 (2026-05-09)
 
 ### Pre-existing Infrastructure Issues

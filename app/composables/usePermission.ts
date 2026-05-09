@@ -1,10 +1,15 @@
 export const usePermission = () => {
   const auth = useAuthStore()
 
-  const can = (action: string, _context?: any): boolean => {
+  const can = (action: string, allowedActions?: string[]): boolean => {
     const role = auth.user?.role
 
     if (!role) return false
+
+    // API-driven: milestone/report allowed_actions from backend
+    if (Array.isArray(allowedActions) && allowedActions.length > 0) {
+      return allowedActions.includes(action)
+    }
 
     // Permission matrix based on role
     const permissions: Record<string, string[]> = {
@@ -61,6 +66,8 @@ export const usePermission = () => {
       supervisor_engineer: [
         'view_projects',
         'approve_milestone',
+        'reject_milestone',
+        'review_milestone',
         'submit_report',
       ],
     }

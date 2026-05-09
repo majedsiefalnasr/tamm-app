@@ -259,7 +259,7 @@ export const getHomePageForRole = (role: string): string => {
     client: '/projects',
     contractor: '/projects',
     field_engineer: '/assignments',
-    supervisor_engineer: '/reviews',
+    supervisor_engineer: '/dashboard/supervisor',
     admin: '/admin/dashboard',
     super_admin: '/admin/dashboard',
   }

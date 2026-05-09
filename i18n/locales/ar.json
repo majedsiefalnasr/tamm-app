@@ -117,19 +117,9 @@
     "client_dashboard": "لوحة تحكم العميل",
     "client_dashboard_subtitle": "معالجة واعتماد المراحل",
     "contractor_dashboard": "لوحة تحكم المقاول",
-    "contractor_dashboard_subtitle": "تتبع أعمالك والمدفوعات المعلقة"
-  },
-  "dashboard": {
-    "fieldEngineer": {
-      "title": "لوحة التحكم",
-      "activeAssignments": "مهامي النشطة",
-      "noActiveAssignments": "لا توجد مهام نشطة",
-      "submitReport": "رفع تقرير",
-      "recentReports": "آخر التقارير المرفوعة",
-      "noRecentReports": "لم ترفع أي تقارير بعد",
-      "reportSubmittedOn": "رفع في: {date}",
-      "projectAddress": "{address}"
-    }
+    "contractor_dashboard_subtitle": "تتبع أعمالك والمدفوعات المعلقة",
+    "supervisor_dashboard": "لوحة تحكم الإشراف",
+    "supervisor_dashboard_subtitle": "رتّب المراجعات وتتبع القرارات"
   },
   "roles": {
     "client": {
@@ -166,7 +156,8 @@
     "submitted": "تم التقديم",
     "showMore": "عرض المزيد",
     "showLess": "عرض أقل",
-    "of": "من"
+    "of": "من",
+    "retry": "أعد المحاولة"
   },
   "nav": {
     "home": "الرئيسية",
@@ -260,6 +251,16 @@
     }
   },
   "dashboard": {
+    "fieldEngineer": {
+      "title": "لوحة التحكم",
+      "activeAssignments": "مهامي النشطة",
+      "noActiveAssignments": "لا توجد مهام نشطة",
+      "submitReport": "رفع تقرير",
+      "recentReports": "آخر التقارير المرفوعة",
+      "noRecentReports": "لم ترفع أي تقارير بعد",
+      "reportSubmittedOn": "رفع في: {date}",
+      "projectAddress": "{address}"
+    },
     "contractor": {
       "activeMilestones": "المراحل النشطة",
       "noActiveMilestones": "لا توجد مراحل نشطة",
@@ -279,6 +280,43 @@
       "submitProposal": "تقديم عرض",
       "viewProposal": "عرض العرض",
       "engineer": "المهندس: {name}"
+    },
+    "supervisor": {
+      "submittedAt": "تم الرفع {date}",
+      "byEngineer": "مهندس الموقع: {name}",
+      "statPending": "بانتظار المراجعة",
+      "statActiveProjects": "مشاريع نشطة",
+      "statApprovedMonth": "معتمدة هذا الشهر",
+      "pendingTitle": "بانتظار المراجعة",
+      "pendingSubtitle": "الأقدم أولاً — نفس قائمة الاعتمادات",
+      "pendingEmptyTitle": "لا توجد مراحل بانتظار المراجعة",
+      "pendingEmptyDescription": "عندما يرفع مهندسو الموقع مراحل للمراجعة ستظهر هنا.",
+      "fullQueue": "فتح قائمة الاعتمادات",
+      "recentTitle": "آخر المراجعات",
+      "recentSubtitle": "آخر قراراتك كمهندس إشراف",
+      "recentEmpty": "لا توجد قرارات حديثة",
+      "decision": {
+        "approved": "معتمد",
+        "rejected": "مرفوض"
+      },
+      "projectsTitle": "مشاريعي",
+      "projectsSubtitle": "المشاريع التي تشرف عليها",
+      "projectsEmpty": "لا توجد مشاريع معينة",
+      "projectsEmptyHint": "عند تعيين مشاريع لك ستظهر هنا.",
+      "viewProjects": "عرض كل المشاريع",
+      "progressLabel": "{done} / {total} مراحل مكتملة",
+      "fieldTeamTitle": "الفريق الميداني",
+      "fieldTeamSubtitle": "مهندسو مواقع على مشاريعك — آخر تقرير مرفوع",
+      "fieldTeamMockNote": ""
+    },
+    "client": {
+      "projectsSection": "مشاريعي",
+      "totalProjects": "إجمالي المشاريع",
+      "activeProjects": "مشاريع نشطة",
+      "completedProjects": "مشاريع مكتملة",
+      "activitySection": "النشاط الأخير",
+      "noActivity": "لا يوجد نشاط حديث",
+      "noActivityDescription": "لم يكن هناك أي نشاط حديث على مشاريعك"
     }
   },
   "status": {
@@ -420,17 +458,6 @@
     "client_approve_confirm": {
       "title": "تأكيد الاعتماد النهائي",
       "message": "سيتم تحرير الدفعة للمقاول وإكمال هذه المرحلة"
-    }
-  },
-  "dashboard": {
-    "client": {
-      "projectsSection": "مشاريعي",
-      "totalProjects": "إجمالي المشاريع",
-      "activeProjects": "مشاريع نشطة",
-      "completedProjects": "مشاريع مكتملة",
-      "activitySection": "النشاط الأخير",
-      "noActivity": "لا يوجد نشاط حديث",
-      "noActivityDescription": "لم يكن هناك أي نشاط حديث على مشاريعك"
     }
   },
   "approval_queue": {

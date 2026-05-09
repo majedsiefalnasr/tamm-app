@@ -47,7 +47,7 @@ test.describe('Role-based redirect after login', () => {
     expect(page.url()).toContain('/assignments')
   })
 
-  test('supervisor_engineer is redirected to /reviews after login', async ({
+  test('supervisor_engineer is redirected to /dashboard/supervisor after login', async ({
     page,
   }) => {
     // Navigate to login page
@@ -58,9 +58,8 @@ test.describe('Role-based redirect after login', () => {
     await page.fill('input[type="password"]', 'password123')
     await page.click('button[type="submit"]')
 
-    // Should be redirected to /reviews
-    await page.waitForURL('**/reviews**', { timeout: 5000 })
-    expect(page.url()).toContain('/reviews')
+    await page.waitForURL('**/dashboard/supervisor**', { timeout: 5000 })
+    expect(page.url()).toContain('/dashboard/supervisor')
   })
 
   test('client accessing /admin/dashboard is redirected to /403', async ({

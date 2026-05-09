@@ -28,6 +28,39 @@ export interface MilestoneWithProject extends Milestone {
   projectId?: string
 }
 
+/** Supervisor dashboard + /reviews share one pending-review queue */
+export interface SupervisorReviewDecision {
+  milestoneId: string
+  milestoneName: string
+  projectId: string
+  projectName: string
+  decision: 'approved' | 'rejected'
+  decidedAt: string
+}
+
+const pendingReviewsShared = ref<Milestone[]>([])
+const supervisorDecisionLogShared = ref<SupervisorReviewDecision[]>([])
+
+/** Seed for dashboard until GET supervisor review history exists */
+const SEED_SUPERVISOR_RECENT_DECISIONS: SupervisorReviewDecision[] = [
+  {
+    milestoneId: 'ms-seed-1',
+    milestoneName: 'Structural inspection',
+    projectId: 'proj-001',
+    projectName: 'Villa Project A',
+    decision: 'approved',
+    decidedAt: '2026-05-02T14:00:00Z',
+  },
+  {
+    milestoneId: 'ms-seed-2',
+    milestoneName: 'Concrete pour — phase A',
+    projectId: 'proj-002',
+    projectName: 'Apartment Complex B',
+    decision: 'rejected',
+    decidedAt: '2026-05-07T09:30:00Z',
+  },
+]
+
 export const useMilestones = () => {
   // Store milestones by projectId for efficient updates
   const milestonesMap = ref<Record<string, Milestone[]>>({})
@@ -64,6 +97,62 @@ export const useMilestones = () => {
         order: 3,
         status: 'not_started',
         created_at: '2026-05-05T09:00:00Z',
+      },
+      {
+        id: 'ms-90',
+        name: 'Façade inspection',
+        description: 'Safety walkthrough and photo report',
+        amount: 12000,
+        order: 4,
+        status: 'under_review',
+        tasks: [],
+        payment_status: 'pending_payment',
+        allowed_actions: [
+          'review_milestone',
+          'approve_milestone',
+          'reject_milestone',
+        ],
+        created_at: '2026-05-03T09:00:00Z',
+        updated_at: '2026-05-05T11:00:00Z',
+        project_id: 'proj-001',
+        project: { id: 'proj-001', name: 'Villa Project A' },
+        field_engineer: { id: 'user-202', name: 'Mohammed Hassan' },
+        latest_report: {
+          id: 'report-ms90',
+          milestone_id: 'ms-90',
+          content: 'Façade checklist completed.',
+          images: [],
+          submitted_at: '2026-05-05T10:00:00Z',
+          status: 'submitted',
+        },
+      },
+      {
+        id: 'ms-91',
+        name: 'Electrical rough-in review',
+        description: 'Verify conduit runs before slab pour',
+        amount: 18500,
+        order: 5,
+        status: 'under_review',
+        tasks: [],
+        payment_status: 'pending_payment',
+        allowed_actions: [
+          'review_milestone',
+          'approve_milestone',
+          'reject_milestone',
+        ],
+        created_at: '2026-05-04T09:00:00Z',
+        updated_at: '2026-05-08T12:30:00Z',
+        project_id: 'proj-001',
+        project: { id: 'proj-001', name: 'Villa Project A' },
+        field_engineer: { id: 'user-203', name: 'Youssef Ali' },
+        latest_report: {
+          id: 'report-ms91',
+          milestone_id: 'ms-91',
+          content: 'Conduit photos uploaded.',
+          images: [],
+          submitted_at: '2026-05-08T09:15:00Z',
+          status: 'submitted',
+        },
       },
     ],
     'proj-002': [],
@@ -250,6 +339,108 @@ export const useMilestones = () => {
     }
   }
 
+  const pendingReviewSubmissionTs = (m: Milestone): string =>
+    m.latest_report?.submitted_at ?? m.updated_at ?? m.created_at
+
+  const pushSupervisorDecision = (
+    milestone: Milestone,
+    projectId: string,
+    decision: 'approved' | 'rejected'
+  ): void => {
+    supervisorDecisionLogShared.value = [
+      {
+        milestoneId: milestone.id,
+        milestoneName: milestone.name,
+        projectId,
+        projectName: milestone.project?.name ?? '—',
+        decision,
+        decidedAt: new Date().toISOString(),
+      },
+      ...supervisorDecisionLogShared.value,
+    ].slice(0, 40)
+  }
+
+  const supervisorRecentDecisionsMerged = computed(() => {
+    const merged = [
+      ...supervisorDecisionLogShared.value,
+      ...SEED_SUPERVISOR_RECENT_DECISIONS,
+    ]
+    merged.sort(
+      (a, b) =>
+        new Date(b.decidedAt).getTime() - new Date(a.decidedAt).getTime()
+    )
+    return merged
+  })
+
+  const supervisorRecentDecisionsTop = computed(() =>
+    supervisorRecentDecisionsMerged.value.slice(0, 5)
+  )
+
+  const supervisorApprovedThisMonthCount = computed(() => {
+    const now = new Date()
+    return supervisorRecentDecisionsMerged.value.filter(d => {
+      if (d.decision !== 'approved') return false
+      const dt = new Date(d.decidedAt)
+      return (
+        dt.getMonth() === now.getMonth() &&
+        dt.getFullYear() === now.getFullYear()
+      )
+    }).length
+  })
+
+  const getSupervisorRecentDecisions = async (
+    limit = 5
+  ): Promise<SupervisorReviewDecision[]> => {
+    // TODO: replace mock — GET /milestones/supervisor/review-history?limit={limit}
+    await new Promise(resolve => setTimeout(resolve, 120))
+    return supervisorRecentDecisionsMerged.value.slice(0, limit)
+  }
+
+  const getPendingReviews = async (): Promise<Milestone[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      // TODO: replace mock — GET /milestones?supervisor_id={auth.id}&status=under_review endpoint
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      await loadMilestones('proj-001')
+
+      const queued: Milestone[] = []
+      for (const milestones of Object.values(milestonesMap.value)) {
+        queued.push(...milestones.filter(m => m.status === 'under_review'))
+      }
+
+      const sorted = [...queued].sort(
+        (a, b) =>
+          new Date(pendingReviewSubmissionTs(a)).getTime() -
+          new Date(pendingReviewSubmissionTs(b)).getTime()
+      )
+
+      pendingReviewsShared.value = sorted
+      return sorted
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : 'Failed to load pending reviews'
+      pendingReviewsShared.value = []
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const refreshPendingReviews = async (): Promise<void> => {
+    await getPendingReviews()
+  }
+
+  const removePendingReview = (milestoneId: string): void => {
+    pendingReviewsShared.value = pendingReviewsShared.value.filter(
+      m => m.id !== milestoneId
+    )
+  }
+
+  const pendingReviewsCount = computed(() => pendingReviewsShared.value.length)
+
   // Approve milestone (supervisor or client)
   const approveMilestone = async (
     milestoneId: string,
@@ -295,6 +486,10 @@ export const useMilestones = () => {
     try {
       // TODO: replace mock — POST /milestones/:id/approve endpoint
       await new Promise(resolve => setTimeout(resolve, 300))
+      removePendingReview(milestoneId)
+      if (role === 'supervisor_engineer') {
+        pushSupervisorDecision(prevMilestone, projectId, 'approved')
+      }
       return updatedMilestone
     } catch (err) {
       // Rollback on error
@@ -349,6 +544,10 @@ export const useMilestones = () => {
     try {
       // TODO: replace mock — POST /milestones/:id/reject endpoint
       await new Promise(resolve => setTimeout(resolve, 300))
+      removePendingReview(milestoneId)
+      if (role === 'supervisor_engineer') {
+        pushSupervisorDecision(prevMilestone, projectId, 'rejected')
+      }
       return updatedMilestone
     } catch (err) {
       // Rollback on error
@@ -425,67 +624,6 @@ export const useMilestones = () => {
       throw err
     }
   }
-
-  // Get pending reviews for the authenticated supervisor
-  const pendingReviews = ref<Milestone[]>([])
-
-  const getPendingReviews = async (): Promise<Milestone[]> => {
-    loading.value = true
-    error.value = null
-
-    try {
-      // TODO: replace mock — GET /milestones?supervisor_id={auth.id}&status=under_review endpoint
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      // Mock data: pending reviews sorted by submission date (oldest first)
-      const mockPendingReviews: Milestone[] = [
-        {
-          id: 'ms-2',
-          name: 'Walls & Finishing',
-          description: 'Walls, finishing, internal work',
-          amount: 75000,
-          order: 2,
-          status: 'under_review',
-          tasks: [],
-          payment_status: 'pending_payment',
-          allowed_actions: [
-            'review_milestone',
-            'approve_milestone',
-            'reject_milestone',
-          ],
-          created_at: '2026-05-01T09:00:00Z',
-        },
-      ]
-
-      // Sort by created_at ascending (oldest first)
-      const sorted = [...mockPendingReviews].sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      )
-
-      pendingReviews.value = sorted
-      return sorted
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : 'Failed to load pending reviews'
-      pendingReviews.value = []
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const refreshPendingReviews = async (): Promise<void> => {
-    await getPendingReviews()
-  }
-
-  const removePendingReview = (milestoneId: string): void => {
-    pendingReviews.value = pendingReviews.value.filter(
-      m => m.id !== milestoneId
-    )
-  }
-
-  const pendingReviewsCount = computed(() => pendingReviews.value.length)
 
   // Get pending approvals for the authenticated client
   const pendingApprovals = ref<Milestone[]>([])
@@ -879,8 +1017,11 @@ export const useMilestones = () => {
     getPendingReviews,
     refreshPendingReviews,
     removePendingReview,
-    pendingReviews: computed(() => pendingReviews.value),
+    pendingReviews: computed(() => pendingReviewsShared.value),
     pendingReviewsCount,
+    getSupervisorRecentDecisions,
+    supervisorRecentDecisionsTop,
+    supervisorApprovedThisMonthCount,
     getPendingApprovals,
     refreshPendingApprovals,
     removePendingApproval,

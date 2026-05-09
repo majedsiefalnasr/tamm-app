@@ -32,6 +32,21 @@ const handleActionComplete = () => {
   showApprovalDialog.value = false
   emit('action-complete')
 }
+
+const projectId = computed(
+  () => props.milestone.project_id ?? props.milestone.project?.id ?? ''
+)
+
+const projectLabel = computed(
+  () => props.milestone.project?.name ?? t('milestone.project_unknown')
+)
+
+const submittedAtSource = computed(
+  () =>
+    props.milestone.latest_report?.submitted_at ??
+    props.milestone.updated_at ??
+    props.milestone.created_at
+)
 </script>
 
 <template>
@@ -40,29 +55,42 @@ const handleActionComplete = () => {
     <div class="flex items-start justify-between gap-4">
       <!-- Left side: milestone info -->
       <div class="min-w-0 flex-1">
-        <div class="mb-1 flex items-baseline gap-2">
+        <div class="mb-1 flex flex-wrap items-baseline gap-2">
           <NuxtLink
-            :to="`/projects/${props.milestone.id}`"
+            v-if="projectId"
+            :to="`/projects/${projectId}`"
             class="text-ink text-sm font-semibold hover:underline"
           >
-            <!-- Placeholder for project name - will be filled by API -->
-            Downtown Office Tower
+            {{ projectLabel }}
           </NuxtLink>
+          <span v-else class="text-ink text-sm font-semibold">{{
+            projectLabel
+          }}</span>
           <span class="text-muted-foreground text-sm">›</span>
           <NuxtLink
-            :to="`/projects/proj-001/milestones/${props.milestone.id}`"
+            v-if="projectId"
+            :to="`/projects/${projectId}/milestones/${props.milestone.id}`"
             class="text-foreground text-sm hover:underline"
           >
             {{ props.milestone.name }}
           </NuxtLink>
+          <span v-else class="text-foreground text-sm">{{
+            props.milestone.name
+          }}</span>
         </div>
 
         <!-- Metadata row -->
-        <div class="text-muted-foreground text-xs">
-          <span>Submitted {{ formatDate(props.milestone.created_at) }}</span>
-          <span v-if="props.milestone.field_engineer">
-            by {{ props.milestone.field_engineer.name }}
-          </span>
+        <div class="text-muted-foreground flex flex-wrap gap-x-2 text-xs">
+          <span>{{
+            $t('dashboard.supervisor.submittedAt', {
+              date: formatDate(submittedAtSource),
+            })
+          }}</span>
+          <span v-if="props.milestone.field_engineer?.name">{{
+            $t('dashboard.supervisor.byEngineer', {
+              name: props.milestone.field_engineer.name,
+            })
+          }}</span>
         </div>
       </div>
 
