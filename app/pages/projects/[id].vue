@@ -98,7 +98,9 @@ const showSubmitProposalButton = computed(() => {
   if (!project.value || !isContractor.value) return false
   if (project.value.status !== 'open_for_bids') return false
   if (hasSubmittedProposal(project.value.id)) return false
-  return isContractorInvited(project.value.id, auth.user?.id || '')
+  return auth.user?.id
+    ? isContractorInvited(project.value.id, auth.user.id)
+    : false
 })
 
 const showSubmittedProposal = computed(() => {
@@ -135,8 +137,12 @@ const isSubmittingBids = ref(false)
 
 // Submit proposal dialog
 const isSubmitProposalDialogOpen = ref(false)
-const { getProposal, hasSubmittedProposal, isContractorInvited } =
-  useProposals()
+const {
+  getProposal,
+  hasSubmittedProposal,
+  isContractorInvited,
+  setInvitations,
+} = useProposals()
 
 // Close bidding dialog
 const isCloseBiddingDialogOpen = ref(false)
@@ -298,6 +304,9 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
       }
     }
 
+    // Store invitations for display on re-open
+    setInvitations(id, contractorIds)
+
     // Update project status
     await useProjects().updateProjectStatus(id, 'open_for_bids')
 
@@ -317,6 +326,12 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
   } finally {
     isSubmittingBids.value = false
   }
+}
+
+const getPrefillContractorIds = (): string[] => {
+  // Return stored invitations for re-opening the dialog
+  const { getInvitations } = useProposals()
+  return getInvitations(id)
 }
 
 const handleSubmitProposalCompleted = async () => {
@@ -640,6 +655,9 @@ const handleCloseBiddingConfirmed = async () => {
     :is-open="isOpenForBidsDialogOpen"
     :project-id="project.id"
     :project-name="project.name"
+    :prefilled-contractor-ids="
+      project.status === 'open_for_bids' ? getPrefillContractorIds() : undefined
+    "
     @update:is-open="isOpenForBidsDialogOpen = $event"
     @submitted="handleOpenForBidsSubmitted"
   />

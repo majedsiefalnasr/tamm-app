@@ -40,12 +40,15 @@ export function useProposals() {
         const proposal: ProposalData = {
           id: response.data.id,
           projectId,
-          contractorId: response.data.contractor_id || 'current-user',
+          contractorId: response.data.contractor_id ?? '',
           price: response.data.price,
           estimatedDays: response.data.estimated_days,
           notes: response.data.notes,
           createdAt: response.data.created_at || new Date().toISOString(),
           updatedAt: response.data.updated_at || new Date().toISOString(),
+        }
+        if (!proposal.contractorId) {
+          console.warn('Proposal submitted without contractor_id from API')
         }
         proposals.value.set(projectId, proposal)
         return { success: true, proposal }
@@ -71,6 +74,10 @@ export function useProposals() {
     invitations.value.set(projectId, contractorIds)
   }
 
+  function getInvitations(projectId: string): string[] {
+    return invitations.value.get(projectId) ?? []
+  }
+
   function isContractorInvited(
     projectId: string,
     contractorId: string
@@ -86,21 +93,22 @@ export function useProposals() {
       // Try to fetch from API
       try {
         const response = await $fetch(`/api/v1/projects/${projectId}/proposals`)
-        if (response?.data && Array.isArray(response.data)) {
-          const proposalsList = response.data.map((p: any) => ({
-            id: p.id,
-            projectId,
-            contractorId: p.contractor_id,
-            price: p.price,
-            estimatedDays: p.estimated_days,
-            notes: p.notes,
-            createdAt: p.created_at,
-            updatedAt: p.updated_at,
-            contractorName: p.contractor_name,
-          }))
-          projectProposals.value.set(projectId, proposalsList)
-          return proposalsList
+        if (!response?.data || !Array.isArray(response.data)) {
+          throw new Error('Invalid proposals response format')
         }
+        const proposalsList = response.data.map((p: any) => ({
+          id: p.id,
+          projectId,
+          contractorId: p.contractor_id,
+          price: p.price,
+          estimatedDays: p.estimated_days,
+          notes: p.notes,
+          createdAt: p.created_at,
+          updatedAt: p.updated_at,
+          contractorName: p.contractor_name,
+        }))
+        projectProposals.value.set(projectId, proposalsList)
+        return proposalsList
       } catch (err: any) {
         // If 403, user not authorized
         if (err.status === 403) {
@@ -170,6 +178,7 @@ export function useProposals() {
     getProposal,
     hasSubmittedProposal,
     setInvitations,
+    getInvitations,
     isContractorInvited,
     getProjectProposals,
     setSelectedProposal,

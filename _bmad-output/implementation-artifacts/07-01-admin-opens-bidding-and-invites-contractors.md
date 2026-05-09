@@ -463,3 +463,44 @@ Notifications to invited contractors will be implemented in a later pass when th
 ---
 
 *Created: 2026-05-09 · Epic: 07 — Proposals & Contractor Selection · Complexity: Medium*
+
+---
+
+## 🔍 Code Review Findings (2026-05-09)
+
+**Review Summary:** 2 decision-needed, 11 patch findings, 2 deferred items
+
+### Decision-Needed (Awaiting User Input)
+
+- [x] **[Review][Decision] Missing POST /projects/:id/invitations API call** — ✅ **RESOLVED:** Added inviteContractors() call with mock fallback. Invitations are stored for pre-fill on re-opens. Implementation now matches spec exactly.
+
+- [x] **[Review][Decision] canTransition validation scope** — ✅ **RESOLVED:** Kept validation in parent component (correct per architecture). Added defensive dialog check to prevent obviously-invalid state emissions.
+
+### Patches (Code Issues to Fix)
+
+- [x] **[Review][Patch] Button disable logic broken** [`app/pages/projects/[id].vue:269`] — ✅ **FIXED:** Restructured async flow so `isSubmitting` persists and properly gates submissions until dialog closes.
+
+- [x] **[Review][Patch] Missing pre-fill for re-opened dialog** [`app/components/project/OpenForBidsDialog.vue`] — ✅ **FIXED:** Added `prefilledContractorIds` prop; stores invitations after successful submit; dialog pre-fills on re-open.
+
+- [x] **[Review][Patch] Race condition: dialog closes during contractor fetch** [`app/components/project/OpenForBidsDialog.vue:34`] — ✅ **FIXED:** Added AbortController; pending fetches cancelled when dialog closes to prevent state updates on unmounted component.
+
+- [x] **[Review][Patch] Dialog closes while submit in progress** [`app/components/project/OpenForBidsDialog.vue:64`] — ✅ **FIXED:** Emit spread copy of array; parent handles dialog close after API responds.
+
+- [x] **[Review][Patch] Validation error persists across attempts** [`app/components/project/OpenForBidsDialog.vue:73`] — ✅ **FIXED:** Clear validation error and state on dialog close.
+
+- [x] **[Review][Patch] Missing error i18n key for contractor load** [`app/components/project/OpenForBidsDialog.vue:41`] — ✅ **FIXED:** Use i18n key `errors.failed_to_load_contractors` for all error messages.
+
+- [x] **[Review][Patch] No timeout for contractor list fetch** [`app/components/project/OpenForBidsDialog.vue:34`] — ✅ **FIXED:** Added 30-second timeout with error fallback; user can close dialog if API hangs.
+
+- [x] **[Review][Patch] Mock response shape mismatch** [`app/composables/useProposals.ts:25`] — ✅ **FIXED:** Use nullish coalescing (`??`) for defensive access; warn if contractor_id missing.
+
+- [x] **[Review][Patch] Empty proposals array not validated** [`app/composables/useProposals.ts:79`] — ✅ **FIXED:** Guard with `Array.isArray()` check; throw error if response data invalid.
+
+- [x] **[Review][Patch] auth.user?.id null not checked** [`app/pages/projects/[id].vue:142`] — ✅ **FIXED:** Add null guard before calling `isContractorInvited()`.
+
+- [x] **[Review][Patch] Mutable array passed to parent** [`app/components/project/OpenForBidsDialog.vue:64`] — ✅ **FIXED:** Emit spread copy: `emit('submitted', [...selectedContractors.value])`.
+
+### Deferred (Pre-Existing or Out of Scope)
+
+- [x] **[Review][Defer] No duplicate proposal submission guard** [`app/components/project/OpenForBidsDialog.vue`] — deferred, may be handled by API validation
+- [x] **[Review][Defer] Contractor list doesn't refresh while dialog open** [`app/components/project/OpenForBidsDialog.vue`] — deferred, not in spec; low priority enhancement

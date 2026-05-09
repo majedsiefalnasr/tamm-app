@@ -1,11 +1,30 @@
 <script setup lang="ts">
+import { onMounted, ref, computed } from 'vue'
 import ApprovalQueueWidget from '~/components/client/ApprovalQueueWidget.vue'
 import DashboardPaymentSummary from '~/components/dashboard/DashboardPaymentSummary.vue'
+import ProjectSummaryCards from '~/components/dashboard/ProjectSummaryCards.vue'
+import RecentActivitySection from '~/components/dashboard/RecentActivitySection.vue'
+import { useProjects } from '~/composables/useProjects'
+import { useActivity } from '~/composables/useActivity'
 
 definePageMeta({
   roles: ['client'],
   pageTitle: 'pages.client_dashboard',
 })
+
+const { projects, loading: projectsLoading } = useProjects()
+const {
+  recentActivity,
+  loading: activityLoading,
+  error: activityError,
+  getRecentActivity,
+} = useActivity()
+
+onMounted(async () => {
+  await getRecentActivity()
+})
+
+const projectsList = computed(() => projects.value || [])
 </script>
 
 <template>
@@ -22,13 +41,26 @@ definePageMeta({
 
     <!-- Main content -->
     <div class="grid gap-6">
+      <!-- Milestones Awaiting Approval (Highest Priority) -->
+      <div class="border-border bg-card rounded-2xl border p-6">
+        <ApprovalQueueWidget />
+      </div>
+
       <!-- Payment Summary -->
       <DashboardPaymentSummary />
 
-      <!-- Approval Queue Widget -->
-      <div class="border-border bg-card rounded-lg border p-6">
-        <ApprovalQueueWidget />
-      </div>
+      <!-- Project Summary Cards -->
+      <ProjectSummaryCards
+        :projects="projectsList"
+        :is-loading="projectsLoading"
+      />
+
+      <!-- Recent Activity Section -->
+      <RecentActivitySection
+        :activities="recentActivity"
+        :is-loading="activityLoading"
+        :has-error="!!activityError"
+      />
     </div>
   </div>
 </template>

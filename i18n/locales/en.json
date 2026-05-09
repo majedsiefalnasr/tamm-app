@@ -18,6 +18,7 @@
   },
   "errors": {
     "approval_queue_load_failed": "Failed to load approval queue",
+    "activity_load_failed": "Failed to load activity",
     "milestone_approval_failed": "Failed to approve milestone",
     "milestone_rejection_failed": "Failed to reject milestone",
     "client_milestone_approval_failed": "Failed to give final approval",
@@ -322,6 +323,12 @@
     "view_details": "View Details",
     "approve": "Approve"
   },
+  "activities": {
+    "project_created": "New project created",
+    "milestone_approved": "Milestone approved",
+    "payment_released": "Payment released",
+    "contractor_selected": "Contractor selected"
+  },
   "success": {
     "milestone_approved": "Milestone approved successfully",
     "report_submitted": "Report submitted successfully",
@@ -356,6 +363,17 @@
     "client_approve_confirm": {
       "title": "Confirm Final Approval",
       "message": "This will release payment to the contractor and complete this milestone"
+    }
+  },
+  "dashboard": {
+    "client": {
+      "projectsSection": "My Projects",
+      "totalProjects": "Total Projects",
+      "activeProjects": "Active Projects",
+      "completedProjects": "Completed Projects",
+      "activitySection": "Recent Activity",
+      "noActivity": "No recent activity",
+      "noActivityDescription": "There has been no recent activity on your projects"
     }
   },
   "approval_queue": {

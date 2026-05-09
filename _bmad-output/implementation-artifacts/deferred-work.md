@@ -13,3 +13,9 @@
 ## Deferred from: Code Review of Story 06-03 (2026-05-09)
 
 - **Verify `useApi` utility exists** — Pre-existing infrastructure. The `useApi()` function (imported in useProjectDetail.ts line 60) needs to be verified to exist and be correctly exported from `~/utils/api`. Affects multiple features beyond this story.
+
+## Deferred from: Code Review of Story 07-01 (2026-05-09)
+
+- **No duplicate proposal submission guard** — Component doesn't validate if contractor has already submitted a proposal before opening dialog. May be handled by API validation. Check with backend team whether validation should be client-side or API-side only.
+
+- **Contractor list doesn't refresh while dialog open** — New contractors added to the system while dialog is open won't appear until dialog is closed/reopened. Not in spec and low priority enhancement for MVP.

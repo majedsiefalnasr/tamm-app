@@ -18,6 +18,7 @@
   },
   "errors": {
     "approval_queue_load_failed": "فشل تحميل قائمة الاعتمادات",
+    "activity_load_failed": "فشل تحميل النشاط",
     "milestone_approval_failed": "فشل اعتماد المرحلة",
     "milestone_rejection_failed": "فشل رفض المرحلة",
     "client_milestone_approval_failed": "فشل الاعتماد النهائي",
@@ -322,6 +323,12 @@
     "view_details": "عرض التفاصيل",
     "approve": "اعتماد"
   },
+  "activities": {
+    "project_created": "تم إنشاء مشروع جديد",
+    "milestone_approved": "تمت الموافقة على المرحلة",
+    "payment_released": "تم تحرير الدفع",
+    "contractor_selected": "تم اختيار المقاول"
+  },
   "success": {
     "milestone_approved": "تم اعتماد المرحلة بنجاح",
     "report_submitted": "تم رفع التقرير بنجاح",
@@ -356,6 +363,17 @@
     "client_approve_confirm": {
       "title": "تأكيد الاعتماد النهائي",
       "message": "سيتم تحرير الدفعة للمقاول وإكمال هذه المرحلة"
+    }
+  },
+  "dashboard": {
+    "client": {
+      "projectsSection": "مشاريعي",
+      "totalProjects": "إجمالي المشاريع",
+      "activeProjects": "مشاريع نشطة",
+      "completedProjects": "مشاريع مكتملة",
+      "activitySection": "النشاط الأخير",
+      "noActivity": "لا يوجد نشاط حديث",
+      "noActivityDescription": "لم يكن هناك أي نشاط حديث على مشاريعك"
     }
   },
   "approval_queue": {

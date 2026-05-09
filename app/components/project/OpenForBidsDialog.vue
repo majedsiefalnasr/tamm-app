@@ -15,6 +15,7 @@ interface Props {
   projectId: string
   projectName: string
   isOpen: boolean
+  prefilledContractorIds?: string[]
 }
 
 const props = defineProps<Props>()
@@ -32,6 +33,8 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const validationError = ref<string | null>(null)
 const isSubmitting = ref(false)
+let abortController: AbortController | null = null
+const loadTimeout = ref<NodeJS.Timeout | null>(null)
 
 // Load contractors when dialog opens
 watch(
@@ -40,19 +43,43 @@ watch(
     if (newIsOpen) {
       loading.value = true
       error.value = null
+      abortController = new AbortController()
+
+      loadTimeout.value = setTimeout(() => {
+        if (loading.value) {
+          loading.value = false
+          error.value = t('errors.failed_to_load_contractors')
+        }
+      }, 30000)
+
       try {
         const list = await getContractorsList()
+        if (abortController?.signal.aborted) return
         contractors.value = list
+
+        // Pre-fill with existing invitations if provided
+        if (
+          props.prefilledContractorIds &&
+          props.prefilledContractorIds.length > 0
+        ) {
+          selectedContractors.value = props.prefilledContractorIds
+        }
       } catch (err) {
-        error.value = 'Failed to load contractors'
-        console.error('Failed to load contractors:', err)
+        if (!abortController?.signal.aborted) {
+          error.value = t('errors.failed_to_load_contractors')
+          console.error('Failed to load contractors:', err)
+        }
       } finally {
         loading.value = false
+        if (loadTimeout.value) clearTimeout(loadTimeout.value)
       }
     } else {
       // Reset when dialog closes
+      abortController?.abort()
+      if (loadTimeout.value) clearTimeout(loadTimeout.value)
       selectedContractors.value = []
       error.value = null
+      validationError.value = null
     }
   }
 )
@@ -64,7 +91,7 @@ const canConfirm = computed(
     !isSubmitting.value
 )
 
-const handleConfirm = () => {
+const handleConfirm = async () => {
   validationError.value = null
 
   if (selectedContractors.value.length === 0) {
@@ -75,8 +102,12 @@ const handleConfirm = () => {
   if (isSubmitting.value) return
   isSubmitting.value = true
 
-  emit('submitted', selectedContractors.value)
-  isSubmitting.value = false
+  try {
+    emit('submitted', [...selectedContractors.value])
+    // Dialog closes via parent after successful API call
+  } finally {
+    // isSubmitting will be reset by parent when dialog closes or on error
+  }
 }
 
 const handleCancel = () => {
@@ -111,7 +142,11 @@ const isSelected = (contractorId: string) => {
       </DialogHeader>
 
       <div v-if="error" class="bg-danger/10 text-danger rounded-lg p-3 text-sm">
-        {{ error }}
+        {{
+          error === t('errors.failed_to_load_contractors')
+            ? error
+            : t('errors.failed_to_load_contractors')
+        }}
       </div>
 
       <div
