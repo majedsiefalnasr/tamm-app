@@ -735,6 +735,7 @@
       "priceError": "السعر مطلوب وعليه أن يكون موجباً",
       "timelineLabel": "المدة التقديرية بالأيام",
       "timelineError": "المدة مطلوبة وعليها أن تكون رقماً موجباً",
+      "timelineMaxError": "المدة لا يمكن أن تتجاوز 3650 يوماً",
       "notesLabel": "الملاحظات",
       "notesPlaceholder": "أضف أي ملاحظات هنا (اختياري)",
       "notesError": "الملاحظات لا يمكن أن تتجاوز 500 حرف",
@@ -743,6 +744,7 @@
       "loadingMessage": "جاري...",
       "successMessage": "تم تقديم العرض بنجاح",
       "errorMessage": "فشل تقديم العرض. يرجى المحاولة مرة أخرى",
+      "statusChangedError": "تغيرت حالة المشروع. يرجى تحديث الصفحة.",
       "submittedPill": "تم تقديم العرض",
       "openForBidsPill": "مفتوح للعروض",
       "proposalSummary": "ملخص عرضك"

@@ -8,7 +8,7 @@ interface Props {
   proposal: ProposalData
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 const { t } = useI18n()
 

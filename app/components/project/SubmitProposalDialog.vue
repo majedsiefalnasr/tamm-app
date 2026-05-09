@@ -5,6 +5,8 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { toast } from 'vue-sonner'
 import * as z from 'zod'
 import { useProposals } from '~/composables/useProposals'
+import type { ProjectStatus } from '~/shared/types/project'
+import { formatCurrency } from '~/utils/formatters'
 import {
   Dialog,
   DialogContent,
@@ -20,7 +22,8 @@ import { Label } from '~/components/ui/label'
 interface Props {
   projectId: string
   projectName: string
-  isOpen: boolean
+  isOpen?: boolean
+  projectStatus: ProjectStatus
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,7 +39,7 @@ const { t } = useI18n()
 const { submitProposal } = useProposals()
 
 const isSubmitting = ref(false)
-const noteLength = ref(0)
+const priceInput = ref('')
 
 const validationSchema = toTypedSchema(
   z.object({
@@ -44,7 +47,8 @@ const validationSchema = toTypedSchema(
     estimatedDays: z
       .number()
       .int()
-      .positive(t('projects.submitProposal.timelineError')),
+      .min(1, t('projects.submitProposal.timelineError'))
+      .max(3650, t('projects.submitProposal.timelineMaxError')),
     notes: z
       .string()
       .max(500, t('projects.submitProposal.notesError'))
@@ -52,28 +56,87 @@ const validationSchema = toTypedSchema(
   })
 )
 
-const { handleSubmit, errors, values, resetForm } = useForm({
+const {
+  handleSubmit,
+  errors,
+  values,
+  resetForm,
+  meta,
+  setFieldValue,
+  setErrors,
+} = useForm({
   validationSchema,
   initialValues: {
     price: 0,
     estimatedDays: 0,
     notes: '',
   },
+  validateOnMount: true,
 })
+
+const noteLength = computed(() => values.notes?.length ?? 0)
+
+const normalizeInputValue = (value: string | number) => String(value)
+
+const parseMoneyInput = (value: string | number): number => {
+  const normalized = normalizeInputValue(value).replace(/[^\d.]/g, '')
+  const parsed = Number(normalized)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+const handlePriceInput = (value: string | number) => {
+  priceInput.value = normalizeInputValue(value)
+  setFieldValue('price', parseMoneyInput(value))
+}
+
+const formatPriceInput = () => {
+  priceInput.value = values.price > 0 ? formatCurrency(values.price) : ''
+}
+
+const focusField = (field: 'price' | 'timeline' | 'notes') => {
+  document.getElementById(field)?.focus()
+}
+
+const applyFieldErrors = (fieldErrors?: Record<string, string[]>) => {
+  if (!fieldErrors) return false
+
+  const nextErrors = {
+    price: fieldErrors.price?.[0],
+    estimatedDays: fieldErrors.estimated_days?.[0],
+    notes: fieldErrors.notes?.[0],
+  }
+
+  setErrors(nextErrors)
+
+  if (nextErrors.price) focusField('price')
+  else if (nextErrors.estimatedDays) focusField('timeline')
+  else if (nextErrors.notes) focusField('notes')
+
+  return Boolean(
+    nextErrors.price || nextErrors.estimatedDays || nextErrors.notes
+  )
+}
 
 const onOpenChange = (newOpen: boolean) => {
   if (!newOpen) {
     resetForm()
-    noteLength.value = 0
+    priceInput.value = ''
   }
   emit('update:open', newOpen)
 }
 
-const updateNoteLength = (value: string) => {
-  noteLength.value = value.length
+const onSubmitInvalid = () => {
+  if (errors.value.price) focusField('price')
+  else if (errors.value.estimatedDays) focusField('timeline')
+  else if (errors.value.notes) focusField('notes')
 }
 
 const onSubmit = handleSubmit(async formValues => {
+  if (props.projectStatus !== 'open_for_bids') {
+    toast.error(t('projects.submitProposal.statusChangedError'))
+    return
+  }
+
   isSubmitting.value = true
   try {
     const result = await submitProposal(props.projectId, {
@@ -86,19 +149,21 @@ const onSubmit = handleSubmit(async formValues => {
       toast.success(t('projects.submitProposal.successMessage'))
       onOpenChange(false)
       emit('submitted', formValues)
+    } else if (applyFieldErrors(result.fieldErrors)) {
+      toast.error(result.error || t('projects.submitProposal.errorMessage'))
     } else {
       toast.error(result.error || t('projects.submitProposal.errorMessage'))
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     const errorMsg =
-      error?.response?.data?.message ||
-      error?.message ||
-      t('projects.submitProposal.errorMessage')
+      error instanceof Error
+        ? error.message
+        : t('projects.submitProposal.errorMessage')
     toast.error(errorMsg)
   } finally {
     isSubmitting.value = false
   }
-})
+}, onSubmitInvalid)
 </script>
 
 <template>
@@ -118,11 +183,13 @@ const onSubmit = handleSubmit(async formValues => {
           }}</Label>
           <Input
             id="price"
-            v-model.number="values.price"
-            type="number"
+            :model-value="priceInput"
+            type="text"
             :placeholder="t('projects.submitProposal.priceLabel')"
-            :error="!!errors.price"
             inputmode="numeric"
+            :aria-invalid="!!errors.price"
+            @update:model-value="handlePriceInput"
+            @blur="formatPriceInput"
           />
           <p v-if="errors.price" class="text-destructive text-sm">
             {{ errors.price }}
@@ -136,11 +203,14 @@ const onSubmit = handleSubmit(async formValues => {
           }}</Label>
           <Input
             id="timeline"
-            v-model.number="values.estimatedDays"
+            :model-value="values.estimatedDays"
             type="number"
             :placeholder="t('projects.submitProposal.timelineLabel')"
-            :error="!!errors.estimatedDays"
             inputmode="numeric"
+            :aria-invalid="!!errors.estimatedDays"
+            @update:model-value="
+              value => setFieldValue('estimatedDays', Number(value))
+            "
           />
           <p v-if="errors.estimatedDays" class="text-destructive text-sm">
             {{ errors.estimatedDays }}
@@ -154,13 +224,13 @@ const onSubmit = handleSubmit(async formValues => {
           }}</Label>
           <Textarea
             id="notes"
-            v-model="values.notes"
+            :model-value="values.notes"
             :placeholder="t('projects.submitProposal.notesPlaceholder')"
             :maxlength="500"
-            :error="!!errors.notes"
-            @input="updateNoteLength"
+            :aria-invalid="!!errors.notes"
+            @update:model-value="value => setFieldValue('notes', String(value))"
           />
-          <div class="text-muted-foreground flex justify-end text-[10px]">
+          <div class="text-muted-foreground text-end text-[10px]">
             {{ noteLength }}/500
           </div>
           <p v-if="errors.notes" class="text-destructive text-sm">
@@ -178,7 +248,7 @@ const onSubmit = handleSubmit(async formValues => {
           {{ t('projects.submitProposal.cancelButton') }}
         </Button>
         <Button
-          :disabled="isSubmitting || Object.keys(errors).length > 0"
+          :disabled="isSubmitting || !meta.valid"
           class="gap-2"
           @click="onSubmit"
         >

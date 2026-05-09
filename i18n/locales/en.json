@@ -735,6 +735,7 @@
       "priceError": "Price is required and must be positive",
       "timelineLabel": "Estimated Timeline (Days)",
       "timelineError": "Timeline is required and must be a positive number",
+      "timelineMaxError": "Timeline cannot exceed 3650 days",
       "notesLabel": "Notes",
       "notesPlaceholder": "Add any notes here (optional)",
       "notesError": "Notes cannot exceed 500 characters",
@@ -743,6 +744,7 @@
       "loadingMessage": "Processing...",
       "successMessage": "Proposal submitted successfully",
       "errorMessage": "Failed to submit proposal. Please try again",
+      "statusChangedError": "Project status has changed. Please refresh.",
       "submittedPill": "Proposal Submitted",
       "openForBidsPill": "Open for Bids",
       "proposalSummary": "Your Proposal"

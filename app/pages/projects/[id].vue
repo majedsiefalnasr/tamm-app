@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { ProjectDetail } from '~/shared/types/project'
+import type { ProjectDetail, ProposalData } from '~/shared/types/project'
 import { formatCurrency } from '~/utils/formatters'
 import { canTransition } from '~/utils/statusMachine'
 
@@ -92,10 +92,10 @@ const canCloseBidding = computed(() => {
   return proposalCount.value > 0
 })
 
-const isContractor = computed(() => auth.user?.role === 'contractor')
+const canSubmitProposal = computed(() => can('submit_proposal'))
 
 const showSubmitProposalButton = computed(() => {
-  if (!project.value || !isContractor.value) return false
+  if (!project.value || !canSubmitProposal.value) return false
   if (project.value.status !== 'open_for_bids') return false
   if (hasSubmittedProposal(project.value.id)) return false
   return auth.user?.id
@@ -104,8 +104,7 @@ const showSubmitProposalButton = computed(() => {
 })
 
 const showSubmittedProposal = computed(() => {
-  if (!project.value || !isContractor.value) return false
-  if (project.value.status !== 'open_for_bids') return false
+  if (!project.value || !canSubmitProposal.value) return false
   return hasSubmittedProposal(project.value.id)
 })
 
@@ -142,6 +141,7 @@ const {
   hasSubmittedProposal,
   isContractorInvited,
   setInvitations,
+  getProjectProposals,
 } = useProposals()
 
 // Close bidding dialog
@@ -151,7 +151,7 @@ const isCloseBiddingDialogOpen = ref(false)
 const isAssignEngineersDialogOpen = ref(false)
 
 // Proposals section
-const proposalsList = ref<any[]>([])
+const proposalsList = ref<ProposalData[]>([])
 const proposalsLoading = ref(false)
 const proposalsError = ref(false)
 const selectedProposalId = ref<string | undefined>()
@@ -190,6 +190,15 @@ const loadProposals = async () => {
     proposalsError.value = true
   } finally {
     proposalsLoading.value = false
+  }
+}
+
+const loadCurrentContractorProposal = async () => {
+  if (!project.value || !canSubmitProposal.value) return
+  try {
+    await getProjectProposals(project.value.id)
+  } catch {
+    // Contractors may not be allowed to list proposals until the endpoint ships.
   }
 }
 
@@ -271,6 +280,7 @@ watch(
 
 // Load proposals on initial page load if section should be visible
 onMounted(async () => {
+  await loadCurrentContractorProposal()
   if (showProposalsSection.value) {
     await loadProposals()
   }
@@ -487,9 +497,6 @@ const handleCloseBiddingConfirmed = async () => {
       v-if="showSubmittedProposal && getProposal(project.id)"
       class="space-y-2"
     >
-      <h3 class="text-ink text-sm font-semibold">
-        {{ t('projects.submitProposal.proposalSummary') }}
-      </h3>
       <ProposalSummary :proposal="getProposal(project.id)!" />
     </div>
 
@@ -668,6 +675,7 @@ const handleCloseBiddingConfirmed = async () => {
     :is-open="isSubmitProposalDialogOpen"
     :project-id="project.id"
     :project-name="project.name"
+    :project-status="project.status"
     @update:open="isSubmitProposalDialogOpen = $event"
     @submitted="handleSubmitProposalCompleted"
   />

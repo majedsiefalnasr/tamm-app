@@ -2,12 +2,36 @@ import { ref } from 'vue'
 import type { ProposalData, ProposalPayload } from '~/shared/types/project'
 
 /** Narrow `$fetch` error shape without using `any`. */
-function fetchErrorShape(err: unknown): { status?: number; message?: string } {
+function fetchErrorShape(err: unknown): {
+  status?: number
+  message?: string
+  fieldErrors?: Record<string, string[]>
+} {
   if (!err || typeof err !== 'object') return {}
   const e = err as Record<string, unknown>
+  const response = e.response as Record<string, unknown> | undefined
+  const data = (e.data ?? response?.data) as Record<string, unknown> | undefined
+  const errors = data?.errors
+
   return {
-    status: typeof e.status === 'number' ? e.status : undefined,
-    message: typeof e.message === 'string' ? e.message : undefined,
+    status:
+      typeof e.statusCode === 'number'
+        ? e.statusCode
+        : typeof e.status === 'number'
+          ? e.status
+          : typeof response?.status === 'number'
+            ? response.status
+            : undefined,
+    message:
+      typeof data?.message === 'string'
+        ? data.message
+        : typeof e.message === 'string'
+          ? e.message
+          : undefined,
+    fieldErrors:
+      errors && typeof errors === 'object'
+        ? (errors as Record<string, string[]>)
+        : undefined,
   }
 }
 
@@ -41,13 +65,97 @@ interface ProposalListApiResponse {
   data: ApiProposalRow[]
 }
 
+interface ProposalSubmitResult {
+  success: boolean
+  proposal?: ProposalData
+  error?: string
+  fieldErrors?: Record<string, string[]>
+}
+
 const proposals = ref<Map<string, ProposalData>>(new Map())
 const projectProposals = ref<Map<string, ProposalData[]>>(new Map())
 const invitations = ref<Map<string, string[]>>(new Map())
 const selectedProposal = ref<Map<string, string>>(new Map())
 
+const proposalStorageKey = (projectId: string) => `tamm:proposal:${projectId}`
+
+function storeProposal(proposal: ProposalData) {
+  proposals.value.set(proposal.projectId, proposal)
+
+  if (import.meta.client) {
+    localStorage.setItem(
+      proposalStorageKey(proposal.projectId),
+      JSON.stringify(proposal)
+    )
+  }
+}
+
+function removeStoredProposal(projectId: string) {
+  proposals.value.delete(projectId)
+
+  if (import.meta.client) {
+    localStorage.removeItem(proposalStorageKey(projectId))
+  }
+}
+
+function loadStoredProposal(projectId: string): ProposalData | undefined {
+  const proposal = proposals.value.get(projectId)
+  if (proposal || !import.meta.client) return proposal
+
+  const rawProposal = localStorage.getItem(proposalStorageKey(projectId))
+  if (!rawProposal) return undefined
+
+  try {
+    const parsed = JSON.parse(rawProposal) as ProposalData
+    if (parsed.projectId === projectId) {
+      proposals.value.set(projectId, parsed)
+      return parsed
+    }
+  } catch {
+    localStorage.removeItem(proposalStorageKey(projectId))
+  }
+
+  return undefined
+}
+
+function toProposalData(
+  projectId: string,
+  data: ProposalSubmitResponseData
+): ProposalData {
+  return {
+    id: data.id,
+    projectId,
+    contractorId: data.contractor_id ?? '',
+    contractorName: data.contractor_name ?? '',
+    price: data.price,
+    estimatedDays: data.estimated_days,
+    notes: data.notes ?? undefined,
+    createdAt: data.created_at || new Date().toISOString(),
+    updatedAt: data.updated_at || new Date().toISOString(),
+  }
+}
+
 export function useProposals() {
-  async function submitProposal(projectId: string, payload: ProposalPayload) {
+  async function submitProposal(
+    projectId: string,
+    payload: ProposalPayload
+  ): Promise<ProposalSubmitResult> {
+    const auth = useAuthStore()
+    const previousProposal = proposals.value.get(projectId)
+    const optimisticProposal: ProposalData = {
+      id: `optimistic_${Date.now()}`,
+      projectId,
+      contractorId: auth.user?.id ?? '',
+      contractorName: auth.user?.name ?? '',
+      price: payload.price,
+      estimatedDays: payload.estimated_days,
+      notes: payload.notes,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+
+    storeProposal(optimisticProposal)
+
     try {
       // TODO: replace mock — POST /projects/:id/proposals
       let response: ProposalSubmitApiResponse
@@ -64,10 +172,14 @@ export function useProposals() {
             },
           }
         )
-      } catch {
+      } catch (err: unknown) {
+        const { status } = fetchErrorShape(err)
+        if (status !== 404 && status !== 501) {
+          throw err
+        }
+
         // API endpoint not available, use mock
         await new Promise(resolve => setTimeout(resolve, 300))
-        const auth = useAuthStore()
         response = {
           data: {
             id: `prop_${Date.now()}`,
@@ -83,40 +195,40 @@ export function useProposals() {
       }
 
       if (response?.data) {
-        const proposal: ProposalData = {
-          id: response.data.id,
-          projectId,
-          contractorId: response.data.contractor_id ?? '',
-          contractorName: response.data.contractor_name ?? '',
-          price: response.data.price,
-          estimatedDays: response.data.estimated_days,
-          notes: response.data.notes ?? undefined,
-          createdAt: response.data.created_at || new Date().toISOString(),
-          updatedAt: response.data.updated_at || new Date().toISOString(),
-        }
+        const proposal = toProposalData(projectId, response.data)
         if (!proposal.contractorId) {
           console.warn('Proposal submitted without contractor_id from API')
         }
-        proposals.value.set(projectId, proposal)
+        storeProposal(proposal)
         return { success: true, proposal }
       }
       return { success: false }
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to submit proposal'
+      if (previousProposal) {
+        storeProposal(previousProposal)
+      } else {
+        removeStoredProposal(projectId)
+      }
+
+      const { message, fieldErrors } = fetchErrorShape(error)
       return {
         success: false,
-        error: message,
+        error:
+          message ||
+          (error instanceof Error
+            ? error.message
+            : 'Failed to submit proposal'),
+        fieldErrors,
       }
     }
   }
 
   function getProposal(projectId: string): ProposalData | undefined {
-    return proposals.value.get(projectId)
+    return loadStoredProposal(projectId)
   }
 
   function hasSubmittedProposal(projectId: string): boolean {
-    return proposals.value.has(projectId)
+    return Boolean(loadStoredProposal(projectId))
   }
 
   function setInvitations(projectId: string, contractorIds: string[]) {
@@ -132,7 +244,10 @@ export function useProposals() {
     contractorId: string
   ): boolean {
     const projectInvitations = invitations.value.get(projectId)
-    return projectInvitations?.includes(contractorId) ?? false
+    if (projectInvitations) return projectInvitations.includes(contractorId)
+
+    // Mock open-bid project is already filtered into contractor project lists.
+    return projectId === 'proj-bid-open-001' && Boolean(contractorId)
   }
 
   async function getProjectProposals(
@@ -147,18 +262,26 @@ export function useProposals() {
         if (!response?.data || !Array.isArray(response.data)) {
           throw new Error('Invalid proposals response format')
         }
-        const proposalsList = response.data.map(p => ({
-          id: p.id,
-          projectId,
-          contractorId: p.contractor_id,
-          price: p.price,
-          estimatedDays: p.estimated_days,
-          notes: p.notes ?? undefined,
-          createdAt: p.created_at,
-          updatedAt: p.updated_at,
-          contractorName: p.contractor_name ?? '',
-        }))
+        const proposalsList = response.data.map(p =>
+          toProposalData(projectId, {
+            id: p.id,
+            contractor_id: p.contractor_id,
+            contractor_name: p.contractor_name,
+            price: p.price,
+            estimated_days: p.estimated_days,
+            notes: p.notes,
+            created_at: p.created_at,
+            updated_at: p.updated_at,
+          })
+        )
         projectProposals.value.set(projectId, proposalsList)
+        const auth = useAuthStore()
+        const myProposal = proposalsList.find(
+          p => p.contractorId === auth.user?.id
+        )
+        if (myProposal) {
+          storeProposal(myProposal)
+        }
         return proposalsList
       } catch (err: unknown) {
         const { status, message } = fetchErrorShape(err)
@@ -179,24 +302,9 @@ export function useProposals() {
       await new Promise(resolve => setTimeout(resolve, 300))
       const auth = useAuthStore()
       const myId = auth.user?.id?.trim() ?? ''
+      const submittedProposal = loadStoredProposal(projectId)
       const mockProposals: ProposalData[] = [
-        {
-          id: 'prop_001',
-          projectId,
-          contractorId: myId ? myId : 'contractor_1',
-          contractorName: myId
-            ? (auth.user?.name ?? 'Elite Builders')
-            : 'Elite Builders',
-          price: 250000,
-          estimatedDays: 90,
-          notes: 'Quality workmanship guaranteed with premium materials',
-          createdAt: new Date(
-            Date.now() - 2 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          updatedAt: new Date(
-            Date.now() - 2 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-        },
+        ...(submittedProposal ? [submittedProposal] : []),
         {
           id: 'prop_002',
           projectId,

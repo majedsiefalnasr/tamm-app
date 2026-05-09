@@ -1,6 +1,6 @@
 # Story 07-02 — Contractor Submits Proposal
 
-**Status:** ready-for-dev  
+**Status:** done  
 **Epic:** 07 — Proposals & Contractor Selection  
 **Story ID:** 7.2  
 **Priority:** 🟢 HIGH — Core bidding workflow  
@@ -541,6 +541,25 @@ Review date: 2026-05-09. Diff base: `origin/lovable` (incremental delta only; pr
 - [x] [Review][Patch resolved] Split dashboard/UI optional fields into `shared/types/project-display.ts` and compose via `extends` on `Project` / `Milestone` in `shared/types/project.ts`.
 - [x] [Review][Patch resolved] Mock `getProjectProposals`: contractors receive only proposals where `contractorId` matches the signed-in user; mock POST submit includes `contractor_id` when using the mock path; replaced `any` error handling with `unknown` + `ApiProposalRow` typing in `useProposals.ts`.
 
+Review date: 2026-05-09. Diff source: story commits `feda4a4` and `e867870`.
+
+- [x] [Review][Patch resolved] Bind `defineProps` result before using `props` in computed values [app/components/project/ProposalSummary.vue:11]
+- [x] [Review][Patch resolved] Do not treat every proposal POST failure as mock success; preserve 403/409/422/server failures [app/composables/useProposals.ts:67]
+- [x] [Review][Patch resolved] Include `statusCode`/response status when narrowing `$fetch` errors [app/composables/useProposals.ts:5]
+- [x] [Review][Patch resolved] Wire notes counter to the textarea value, not the DOM input event object [app/components/project/SubmitProposalDialog.vue:161]
+- [x] [Review][Patch resolved] Keep submitted proposal summary visible after project leaves `open_for_bids` [app/pages/projects/[id].vue:106]
+- [x] [Review][Patch resolved] Hydrate submitted proposal/invitation state from API or Pinia so refresh/deep links do not lose visibility state [app/composables/useProposals.ts:44]
+- [x] [Review][Patch resolved] Implement proposal card/list CTA, open-for-bids pill, submitted pill, and summary behavior from the story AC [app/components/project/ProjectCard.vue:63]
+- [x] [Review][Patch resolved] Add optimistic proposal update and rollback instead of only updating after successful response [app/composables/useProposals.ts:85]
+- [x] [Review][Patch resolved] Use text money input formatting with `formatCurrency()` instead of a raw number field [app/components/project/SubmitProposalDialog.vue:119]
+- [x] [Review][Patch resolved] Enforce timeline max of 3650 days in validation [app/components/project/SubmitProposalDialog.vue:43]
+- [x] [Review][Patch resolved] Focus the first invalid field and map 422 validation errors to field-specific messages [app/components/project/SubmitProposalDialog.vue:76]
+- [x] [Review][Patch resolved] Check project status is still `open_for_bids` before submitting the proposal [app/components/project/SubmitProposalDialog.vue:76]
+- [x] [Review][Patch resolved] Replace direct contractor role checks with permission/capability checks [app/pages/projects/[id].vue:95]
+- [x] [Review][Patch resolved] Replace `catch (error: any)` with `unknown` narrowing for dialog errors [app/components/project/SubmitProposalDialog.vue:92]
+- [x] [Review][Patch resolved] Disable submit from form validity metadata, not only current `errors` keys [app/components/project/SubmitProposalDialog.vue:181]
+- [x] [Review][Patch resolved] Remove duplicate proposal summary heading between parent and child components [app/pages/projects/[id].vue:490]
+
 ---
 
 ## 📚 Reference Documentation
@@ -561,5 +580,5 @@ Review date: 2026-05-09. Diff base: `origin/lovable` (incremental delta only; pr
 ---
 
 **Created:** 2026-05-09  
-**Status:** ready-for-dev  
+**Status:** done  
 **Next:** Run `/bmad-dev-story 07-02-contractor-submits-proposal.md` to begin implementation
