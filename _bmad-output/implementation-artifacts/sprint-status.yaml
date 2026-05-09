@@ -82,11 +82,11 @@ development_status:
   epic-04-retrospective: optional
 
   # Epic 05 — In-App Notifications
-  epic-05: in-progress
+  epic-05: done
   05-01-notification-bell-and-unread-count: done
   05-02-notification-drawer: done
   05-03-mark-notification-as-read: done
-  05-04-notification-content-per-event: review
+  05-04-notification-content-per-event: done
   epic-05-retrospective: optional
 
   # Epic 06 — Admin Panel & User Management
