@@ -102,7 +102,9 @@
     "reviews.empty.description": "أنت محدث! تمت مراجعة جميع التقارير.",
     "admin_dashboard": "لوحة التحكم",
     "client_dashboard": "لوحة تحكم العميل",
-    "client_dashboard_subtitle": "معالجة واعتماد المراحل"
+    "client_dashboard_subtitle": "معالجة واعتماد المراحل",
+    "contractor_dashboard": "لوحة تحكم المقاول",
+    "contractor_dashboard_subtitle": "تتبع أعمالك والمدفوعات المعلقة"
   },
   "roles": {
     "client": {
@@ -231,6 +233,35 @@
       "in_escrow": "المحجوز",
       "remaining": "المتبقي"
     }
+  },
+  "dashboard": {
+    "contractor": {
+      "activeMilestones": "المراحل النشطة",
+      "noActiveMilestones": "لا توجد مراحل نشطة",
+      "underReview": "المراحل قيد المراجعة",
+      "noUnderReview": "لا توجد مراحل قيد المراجعة",
+      "awaitingReview": "بانتظار مراجعة: {supervisorName}",
+      "awaitingClientApproval": "بانتظار موافقة العميل",
+      "paymentStatus": "حالة السداد",
+      "pendingAmount": "المبلغ المعلق",
+      "receivedThisMonth": "المبلغ المستلم هذا الشهر",
+      "viewAllPayments": "عرض جميع المدفوعات",
+      "openBids": "المشاريع المفتوحة للعطاءات",
+      "noOpenBids": "لا توجد مشاريع مفتوحة للعطاءات",
+      "proposalNotSubmitted": "لم يتم تقديم عرض",
+      "proposalSubmitted": "تم تقديم العرض",
+      "submitProposal": "تقديم عرض",
+      "viewProposal": "عرض العرض",
+      "engineer": "المهندس: {name}"
+    }
+  },
+  "status": {
+    "in_progress": "قيد التنفيذ",
+    "under_review": "قيد المراجعة",
+    "supervisor_approved": "موافق من الإشراف",
+    "approved": "موافق عليه",
+    "not_started": "لم تبدأ",
+    "rejected": "مرفوض"
   },
   "project": {
     "actions": {

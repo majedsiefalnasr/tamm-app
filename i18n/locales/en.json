@@ -102,7 +102,9 @@
     "reviews.empty.description": "You're all caught up! All milestone reports have been reviewed.",
     "admin_dashboard": "Admin Dashboard",
     "client_dashboard": "Client Dashboard",
-    "client_dashboard_subtitle": "Review and approve milestones"
+    "client_dashboard_subtitle": "Review and approve milestones",
+    "contractor_dashboard": "Contractor Dashboard",
+    "contractor_dashboard_subtitle": "Track your work and pending payments"
   },
   "roles": {
     "client": {
@@ -231,6 +233,35 @@
       "in_escrow": "In escrow",
       "remaining": "Remaining"
     }
+  },
+  "dashboard": {
+    "contractor": {
+      "activeMilestones": "Active Milestones",
+      "noActiveMilestones": "No active milestones",
+      "underReview": "Milestones Under Review",
+      "noUnderReview": "No milestones under review",
+      "awaitingReview": "Awaiting review from: {supervisorName}",
+      "awaitingClientApproval": "Awaiting client approval",
+      "paymentStatus": "Payment Status",
+      "pendingAmount": "Pending Amount",
+      "receivedThisMonth": "Received This Month",
+      "viewAllPayments": "View all payments",
+      "openBids": "Open Bids",
+      "noOpenBids": "No open bids",
+      "proposalNotSubmitted": "Proposal not submitted",
+      "proposalSubmitted": "Proposal submitted",
+      "submitProposal": "Submit Proposal",
+      "viewProposal": "View Proposal",
+      "engineer": "Engineer: {name}"
+    }
+  },
+  "status": {
+    "in_progress": "In Progress",
+    "under_review": "Under Review",
+    "supervisor_approved": "Supervisor Approved",
+    "approved": "Approved",
+    "not_started": "Not Started",
+    "rejected": "Rejected"
   },
   "project": {
     "actions": {
