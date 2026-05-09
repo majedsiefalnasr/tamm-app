@@ -1,6 +1,6 @@
 # Story 06-02 — Create User (Admin)
 
-**Status:** review  
+**Status:** done  
 **Epic:** 06 — Admin Panel & User Management  
 **Story ID:** 6.2  
 **Priority:** 🟢 HIGH — Unblocks user management workflow  
@@ -724,6 +724,37 @@ Task complete when ALL verified:
 2. **Story 06-04** (Admin Project Overview) — Displays created projects in admin dashboard
 3. **Story 06-05** (Admin Dashboard) — Shows new user creation metrics
 4. Edit User flow (future) — Reuse form schema, modify endpoint to `PUT /users/{id}`
+
+---
+
+## 🔍 Code Review Findings (2026-05-09)
+
+### Review Scope
+- **Reviewers:** Blind Hunter, Edge Case Hunter, Acceptance Auditor
+- **Total Findings:** 16 (13 actionable, 3 dismissed)
+- **Status:** ⚠️ Issues require resolution before merge
+
+### Decision-Needed Findings (Resolved ✅)
+- [x] [Review][Decision] i18n scope creep ✅ RESOLVED — Reverted 06-03+ keys from both en.json and ar.json; now 06-02 has only its own translations (cleaner cherry-picking, isolation per story)
+- [x] [Review][Decision] useApi timeout interaction ✅ RESOLVED — Verified useApi has no internal timeout; kept withTimeout() but made configurable: TIMEOUT_MS.fetch=10s (list), TIMEOUT_MS.mutate=5s (create/update). Faster feedback for mutations, longer patience for data fetch.
+
+### Patch Findings (Applied ✅)
+- [x] [Review][Patch] Password field violation — Backend auto-generates; frontend should NOT send password [useAdminUsers.ts:128] ✅ FIXED
+- [x] [Review][Patch] 422 error handling removed — Field-level errors can't be displayed on duplicate email [useAdminUsers.ts:123-162] ✅ FIXED
+- [x] [Review][Patch] Refetch failure swallowed — Success shown but list stays stale if fetchUsers() fails [useAdminUsers.ts:152-156] ✅ FIXED
+- [x] [Review][Patch] Type safety regression — Record<string> allows arbitrary keys; should be strict Role union [useAdminUsers.ts:166] ✅ FIXED
+- [x] [Review][Patch] Phone field always visible — Spec requires hiding when empty [CreateUserForm.vue:139-149] ✅ FIXED
+- [x] [Review][Patch] Double-submit prevention incomplete — isSubmitting and creating overlap; should consolidate [CreateUserForm.vue:165] ✅ FIXED
+- [x] [Review][Patch] Hardcoded timeout without justification — 10s universal; should be configurable or documented [useAdminUsers.ts:18] ✅ FIXED (now TIMEOUT_MS.fetch=10s, TIMEOUT_MS.mutate=5s)
+- [x] [Review][Patch] Engineer list returns empty on first render — Called before users async init completes [useAdminUsers.ts:189-202] ✅ FIXED
+- [x] [Review][Patch] Password generation may produce weak string — Math.random() slice may be < 16 chars [useAdminUsers.ts:128] ✅ FIXED (removed; backend handles)
+- [x] [Review][Patch] Error transformation inconsistent — Type checks missing before accessing .message property [useAdminUsers.ts:80,118] ✅ FIXED
+- [x] [Review][Patch] auth.user null-safety — Race condition if logout during form render; need guard [CreateUserForm.vue:53] ✅ FIXED
+
+### Dismissed Findings (Non-Issues)
+- [x] Form submission parent integration — Parent dialog correctly handles success event; not a 06-02 issue
+- [x] Spec drift: createUserError unused — Replaced by VeeValidate form-level error handling; not a code bug
+- [x] Phone i18n key missing — Pre-verified; key exists in ar.json
 
 ---
 

@@ -15,10 +15,17 @@ export interface User {
 
 const API_ENDPOINT = '/admin/users'
 const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
-const API_TIMEOUT_MS = 10000 // 10 second timeout for API calls
+// List fetch: 10s (may load many users); mutation: 5s (faster feedback for user creation)
+const TIMEOUT_MS = {
+  fetch: 10000,
+  mutate: 5000,
+}
 
-// Helper to add timeout to async operations
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+// Helper to add timeout to async operations with configurable durations
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = TIMEOUT_MS.fetch
+): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
@@ -71,13 +78,18 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
           ? `${API_ENDPOINT}?${queryString}`
           : API_ENDPOINT
 
-        const response = await withTimeout(useApi(url), API_TIMEOUT_MS)
+        const response = await withTimeout(useApi(url), TIMEOUT_MS.fetch)
         result = response.data as User[]
       }
 
       users.value = result
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to fetch users'
+      const message =
+        e instanceof Error && e.message
+          ? e.message
+          : typeof e === 'string'
+            ? e
+            : 'Failed to fetch users'
       error.value = message
       users.value = []
     } finally {
@@ -108,14 +120,18 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
             method: 'PUT',
             body: { status: newStatus },
           }),
-          API_TIMEOUT_MS
+          TIMEOUT_MS.mutate
         )
       }
     } catch (e) {
       // Rollback on error
       user.status = previousStatus
       const message =
-        e instanceof Error ? e.message : 'Failed to update user status'
+        e instanceof Error && e.message
+          ? e.message
+          : typeof e === 'string'
+            ? e
+            : 'Failed to update user status'
       error.value = message
     }
   }
@@ -124,9 +140,6 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     creating.value = true
     error.value = null
     try {
-      // Generate random password (16 chars) — backend will override with auto-generated
-      const password = Math.random().toString(36).slice(2, 18)
-
       if (USE_MOCK) {
         // Mock implementation
         const newUser: User = {
@@ -140,34 +153,54 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
         users.value.unshift(newUser)
       } else {
         // Real API implementation
+        // Backend auto-generates password and emails user — don't send password in request
         const response = await withTimeout(
           useApi('/users', {
             method: 'POST',
-            body: { ...payload, password },
+            body: payload,
           }),
-          API_TIMEOUT_MS
+          TIMEOUT_MS.mutate
         )
 
         // Refetch users list to include new user
-        await fetchUsers(
-          selectedRole.value === 'all'
-            ? undefined
-            : (selectedRole.value as Role)
-        )
+        try {
+          await fetchUsers(
+            selectedRole.value === 'all'
+              ? undefined
+              : (selectedRole.value as Role)
+          )
+        } catch (refetchError) {
+          // Log refetch failure but don't block success; user was created server-side
+          console.warn(
+            'Failed to refetch users after creation (user was created):',
+            refetchError
+          )
+        }
       }
 
       return payload
+    } catch (e: any) {
+      // Preserve error for form-level error handling (422 validation, etc.)
+      if (e?.data?.error?.errors) {
+        throw e
+      }
+      throw e
     } finally {
       creating.value = false
     }
   }
 
   const userCountByRole = computed(() => {
-    const counts: Record<string, number> = {
+    const counts: Record<Role | 'all' | 'engineer', number> = {
       all: users.value.length,
       admin: users.value.filter(u => u.role === 'admin').length,
       client: users.value.filter(u => u.role === 'client').length,
       contractor: users.value.filter(u => u.role === 'contractor').length,
+      field_engineer: users.value.filter(u => u.role === 'field_engineer')
+        .length,
+      supervisor_engineer: users.value.filter(
+        u => u.role === 'supervisor_engineer'
+      ).length,
       engineer: users.value.filter(
         u => u.role === 'field_engineer' || u.role === 'supervisor_engineer'
       ).length,
@@ -190,6 +223,10 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     role: Role
   ): Promise<Array<{ id: string; name: string }>> => {
     try {
+      // Ensure users are loaded before filtering (in case called before onMounted completes)
+      if (users.value.length === 0) {
+        await fetchUsers('all')
+      }
       const filtered = users.value.filter(u => u.role === role)
       return filtered.map(u => ({
         id: u.id,

@@ -34,18 +34,7 @@
     "email_exists": "Email is already in use",
     "role_required": "Role is required",
     "user_created": "User created successfully. Credentials sent via email.",
-    "user_creation_failed": "Failed to create user. Please try again.",
-    "supervisor_required": "Supervisor Engineer is required",
-    "field_required": "Field Engineer is required",
-    "same_engineer": "Cannot assign the same engineer to both roles",
-    "engineers_assigned": "Engineers assigned successfully",
-    "engineers_assignment_failed": "Failed to assign engineers. Please try again.",
-    "failed_to_load_engineers": "Failed to load engineers list",
-    "notif": {
-      "not_found": "Notification not found",
-      "mark_read_failed": "Failed to mark notification as read",
-      "mark_all_read_failed": "Failed to mark all notifications as read"
-    }
+    "user_creation_failed": "Failed to create user. Please try again."
   },
   "buttons": {
     "cancel": "Cancel",

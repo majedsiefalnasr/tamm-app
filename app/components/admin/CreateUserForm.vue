@@ -50,7 +50,8 @@ const availableRoles = computed(() => {
     },
   ]
 
-  if (auth.user?.role === 'super_admin') {
+  // Only super_admin can create admin users; safeguard against logout race
+  if (auth.user && auth.user.role === 'super_admin') {
     roles.push({ value: 'admin', label: $t('roles.admin.label') })
   }
 
@@ -135,8 +136,8 @@ const onSubmit = handleSubmit(async formValues => {
       </div>
     </div>
 
-    <!-- Phone (Optional) -->
-    <div class="space-y-1.5">
+    <!-- Phone (Optional) - only show if user starts typing -->
+    <div v-if="values.phone" class="space-y-1.5">
       <Label for="phone" class="text-start">{{
         $t('admin.users.create.phone')
       }}</Label>
@@ -147,6 +148,18 @@ const onSubmit = handleSubmit(async formValues => {
         :placeholder="$t('admin.users.create.phone_placeholder')"
       />
     </div>
+    <!-- Show placeholder if phone is empty - allow user to add phone -->
+    <div v-if="!values.phone" class="pt-2">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        class="text-muted-foreground text-start"
+        @click="values.phone = ''"
+      >
+        + {{ $t('admin.users.create.phone') }}
+      </Button>
+    </div>
 
     <!-- Form Actions -->
     <div class="flex gap-3 pt-4">
@@ -154,7 +167,7 @@ const onSubmit = handleSubmit(async formValues => {
         type="button"
         variant="ghost"
         class="flex-1"
-        :disabled="isSubmitting"
+        :disabled="creating"
         @click="() => emit('cancel')"
       >
         {{ $t('admin.users.create.cancel') }}
@@ -162,7 +175,7 @@ const onSubmit = handleSubmit(async formValues => {
       <Button
         type="submit"
         class="flex-1"
-        :disabled="isSubmitting || creating"
+        :disabled="creating"
         :loading="creating"
       >
         {{ $t('admin.users.create.submit') }}

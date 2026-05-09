@@ -92,7 +92,7 @@ development_status:
   # Epic 06 — Admin Panel & User Management
   epic-06: in-progress
   06-01-admin-user-list: review
-  06-02-create-user-admin: review
+  06-02-create-user-admin: done
   06-03-assign-engineers-to-project: review
   06-04-admin-project-overview: review
   06-05-admin-dashboard: review

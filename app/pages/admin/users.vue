@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useAdminUsers } from '../../composables/useAdminUsers'
 import { usePermission } from '../../composables/usePermission'
-import { useAuth } from '../../composables/useAuth'
+import { useAuthStore } from '../../stores/auth'
 import { Button } from '../../components/ui/button'
 import { Users } from 'lucide-vue-next'
 import UserTable from '../../components/admin/UserTable.vue'
@@ -15,7 +15,7 @@ definePageMeta({
 const { $t } = useI18n()
 const router = useRouter()
 const { can } = usePermission()
-const { user: authUser } = useAuth()
+const auth = useAuthStore()
 
 // Access control
 if (!can('view_admin_panel')) {
@@ -47,7 +47,7 @@ const filterTabs = computed(() => {
   ]
 
   // Super admin cannot filter by admin role — they see all
-  if (authUser.value?.role !== 'super_admin') {
+  if (auth.user?.role !== 'super_admin') {
     tabs.push({ id: 'admin', label: $t('admin.users.filter_admins') })
   }
 
