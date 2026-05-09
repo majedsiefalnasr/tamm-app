@@ -140,6 +140,74 @@ const { getProposal, hasSubmittedProposal, isContractorInvited } =
 // Close bidding dialog
 const isCloseBiddingDialogOpen = ref(false)
 
+// Proposals section
+const proposalsList = ref<any[]>([])
+const proposalsLoading = ref(false)
+const proposalsError = ref(false)
+const selectedProposalId = ref<string | undefined>()
+
+const showProposalsSection = computed(() => {
+  if (!project.value) return false
+  // Show proposals section when status is under_review or contractor_selected
+  if (!['under_review', 'contractor_selected'].includes(project.value.status)) {
+    return false
+  }
+  // Only show to client (project owner) and admin
+  const isProjectOwner = auth.user?.id === project.value.client_id
+  const isAdminRole = ['admin', 'super_admin'].includes(auth.user?.role || '')
+  return isProjectOwner || isAdminRole
+})
+
+const canSelectProposal = computed(() => {
+  if (!project.value) return false
+  // Can only select when status is under_review AND user is project owner
+  if (project.value.status !== 'under_review') return false
+  const isProjectOwner = auth.user?.id === project.value.client_id
+  return isProjectOwner
+})
+
+const loadProposals = async () => {
+  if (!project.value) return
+  proposalsLoading.value = true
+  proposalsError.value = false
+  try {
+    const { getProjectProposals, getSelectedProposal } = useProposals()
+    const proposals = await getProjectProposals(project.value.id)
+    proposalsList.value = proposals
+    selectedProposalId.value = getSelectedProposal(project.value.id)
+  } catch (error) {
+    console.error('Failed to load proposals:', error)
+    proposalsError.value = true
+  } finally {
+    proposalsLoading.value = false
+  }
+}
+
+const handleProposalSelected = async (data: {
+  proposalId: string
+  contractorId: string
+  price: number
+}) => {
+  // This will be handled by Story 07-05 (Client selects contractor)
+  // For now, we just need to track the selection
+  const { setSelectedProposal } = useProposals()
+  setSelectedProposal(project.value!.id, data.proposalId)
+  selectedProposalId.value = data.proposalId
+
+  // Refresh project data to get updated status
+  await refresh()
+}
+
+// Load proposals when status changes to under_review or contractor_selected
+watch(
+  () => project.value?.status,
+  async newStatus => {
+    if (showProposalsSection.value) {
+      await loadProposals()
+    }
+  }
+)
+
 const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
   if (!project.value || !canTransition('project', 'new', 'open_for_bids')) {
     useNotification().error(t('errors.invalid_transition'))
@@ -359,6 +427,20 @@ const handleCloseBiddingConfirmed = async () => {
           Awaiting contractor selection
         </p>
       </div>
+    </div>
+
+    <!-- Proposals section -->
+    <div v-if="showProposalsSection">
+      <ProposalsList
+        :project-id="project.id"
+        :proposals="proposalsList"
+        :is-loading="proposalsLoading"
+        :has-error="proposalsError"
+        :can-select="canSelectProposal"
+        :selected-proposal-id="selectedProposalId"
+        @proposal-selected="handleProposalSelected"
+        @retry-load="loadProposals"
+      />
     </div>
 
     <!-- Engineers section -->

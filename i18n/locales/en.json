@@ -610,6 +610,38 @@
       "successMessage": "Bidding closed successfully.",
       "errorMessage": "Failed to close bidding. Please try again.",
       "noProposalsError": "No proposals received yet."
+    },
+    "submitProposal": {
+      "button": "Submit Proposal",
+      "dialogTitle": "Submit Proposal for ",
+      "priceLabel": "Total Price",
+      "priceError": "Price is required and must be positive",
+      "timelineLabel": "Estimated Timeline (Days)",
+      "timelineError": "Timeline is required and must be a positive number",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Add any notes here (optional)",
+      "notesError": "Notes cannot exceed 500 characters",
+      "confirmButton": "Submit Proposal",
+      "cancelButton": "Cancel",
+      "loadingMessage": "Processing...",
+      "successMessage": "Proposal submitted successfully",
+      "errorMessage": "Failed to submit proposal. Please try again",
+      "submittedPill": "Proposal Submitted",
+      "openForBidsPill": "Open for Bids",
+      "proposalSummary": "Your Proposal"
+    },
+    "proposals": {
+      "sectionTitle": "Proposals",
+      "tabLabel": "Proposals",
+      "noProposals": "No proposals yet",
+      "loadingError": "Failed to load proposals",
+      "retryButton": "Retry",
+      "submitDate": "Submitted on",
+      "daysFormat": "days",
+      "selectButtonLabel": "Select this contractor",
+      "selectedBadge": "Selected",
+      "notSelectedBadge": "Not Selected",
+      "selectingMessage": "Selecting..."
     }
   }
 }

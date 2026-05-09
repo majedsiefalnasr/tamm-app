@@ -629,6 +629,19 @@
       "submittedPill": "تم تقديم العرض",
       "openForBidsPill": "مفتوح للعروض",
       "proposalSummary": "ملخص عرضك"
+    },
+    "proposals": {
+      "sectionTitle": "العروض",
+      "tabLabel": "العروض",
+      "noProposals": "لا توجد عروض حتى الآن",
+      "loadingError": "فشل تحميل العروض",
+      "retryButton": "إعادة المحاولة",
+      "submitDate": "تم التقديم في",
+      "daysFormat": "يوم",
+      "selectButtonLabel": "اختيار هذا المقاول",
+      "selectedBadge": "تم الاختيار",
+      "notSelectedBadge": "لم يتم الاختيار",
+      "selectingMessage": "جاري الاختيار..."
     }
   }
 }

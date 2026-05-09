@@ -2,7 +2,9 @@ import { ref } from 'vue'
 import type { ProposalData, ProposalPayload } from '~/shared/types/project'
 
 const proposals = ref<Map<string, ProposalData>>(new Map())
+const projectProposals = ref<Map<string, ProposalData[]>>(new Map())
 const invitations = ref<Map<string, string[]>>(new Map())
+const selectedProposal = ref<Map<string, string>>(new Map())
 
 export function useProposals() {
   async function submitProposal(projectId: string, payload: ProposalPayload) {
@@ -77,11 +79,98 @@ export function useProposals() {
     return projectInvitations?.includes(contractorId) ?? false
   }
 
+  async function getProjectProposals(
+    projectId: string
+  ): Promise<ProposalData[]> {
+    try {
+      // Try to fetch from API
+      try {
+        const response = await $fetch(`/api/v1/projects/${projectId}/proposals`)
+        if (response?.data && Array.isArray(response.data)) {
+          const proposalsList = response.data.map((p: any) => ({
+            id: p.id,
+            projectId,
+            contractorId: p.contractor_id,
+            price: p.price,
+            estimatedDays: p.estimated_days,
+            notes: p.notes,
+            createdAt: p.created_at,
+            updatedAt: p.updated_at,
+            contractorName: p.contractor_name,
+          }))
+          projectProposals.value.set(projectId, proposalsList)
+          return proposalsList
+        }
+      } catch (err: any) {
+        // If 403, user not authorized
+        if (err.status === 403) {
+          throw new Error(
+            'You are not authorized to view proposals for this project'
+          )
+        }
+        // If 404 or other, use mock data for development
+        if (!(err.status === 404 || err.message?.includes('404'))) {
+          throw err
+        }
+      }
+
+      // Mock data for development
+      // TODO: replace mock — GET /projects/:id/proposals
+      await new Promise(resolve => setTimeout(resolve, 300))
+      const mockProposals: ProposalData[] = [
+        {
+          id: 'prop_001',
+          projectId,
+          contractorId: 'contractor_1',
+          price: 250000,
+          estimatedDays: 90,
+          notes: 'Quality workmanship guaranteed',
+          createdAt: new Date(
+            Date.now() - 2 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+          updatedAt: new Date(
+            Date.now() - 2 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+        },
+        {
+          id: 'prop_002',
+          projectId,
+          contractorId: 'contractor_2',
+          price: 280000,
+          estimatedDays: 75,
+          notes: '',
+          createdAt: new Date(
+            Date.now() - 1 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+          updatedAt: new Date(
+            Date.now() - 1 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+        },
+      ]
+      projectProposals.value.set(projectId, mockProposals)
+      return mockProposals
+    } catch (error: any) {
+      console.error('Failed to fetch proposals:', error)
+      throw error
+    }
+  }
+
+  function setSelectedProposal(projectId: string, proposalId: string) {
+    selectedProposal.value.set(projectId, proposalId)
+  }
+
+  function getSelectedProposal(projectId: string): string | undefined {
+    return selectedProposal.value.get(projectId)
+  }
+
   return {
     submitProposal,
     getProposal,
     hasSubmittedProposal,
     setInvitations,
     isContractorInvited,
+    getProjectProposals,
+    setSelectedProposal,
+    getSelectedProposal,
   }
 }
