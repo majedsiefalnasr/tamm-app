@@ -123,7 +123,11 @@
     "date": "التاريخ",
     "payment_plural": "مدفوعات",
     "notifications": "الإشعارات",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "days": "يوم",
+    "submitted": "تم التقديم",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل"
   },
   "nav": {
     "home": "الرئيسية",
@@ -494,6 +498,25 @@
         "field_placeholder": "اختر مهندس الموقع",
         "submit": "حفظ التعيين",
         "cancel": "إلغاء"
+      },
+      "submitProposal": {
+        "button": "تقديم عرض",
+        "dialogTitle": "تقديم عرض لـ",
+        "priceLabel": "السعر الإجمالي",
+        "priceError": "السعر مطلوب وعليه أن يكون موجباً",
+        "timelineLabel": "المدة التقديرية بالأيام",
+        "timelineError": "المدة مطلوبة وعليها أن تكون رقماً موجباً",
+        "notesLabel": "الملاحظات",
+        "notesPlaceholder": "أضف أي ملاحظات هنا (اختياري)",
+        "notesError": "الملاحظات لا يمكن أن تتجاوز 500 حرف",
+        "confirmButton": "تقديم العرض",
+        "cancelButton": "إلغاء",
+        "loadingMessage": "جاري...",
+        "successMessage": "تم تقديم العرض بنجاح",
+        "errorMessage": "فشل تقديم العرض. يرجى المحاولة مرة أخرى",
+        "submittedPill": "تم تقديم العرض",
+        "openForBidsPill": "مفتوح للعروض",
+        "proposalSummary": "ملخص عرضك"
       }
     },
     "dashboard": {

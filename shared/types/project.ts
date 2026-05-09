@@ -166,3 +166,21 @@ export interface ProjectOverviewFilter {
   search: string
   page: number
 }
+
+// Proposal types
+export interface ProposalData {
+  id: string
+  projectId: string
+  contractorId: string
+  price: number
+  estimatedDays: number
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ProposalPayload {
+  price: number
+  estimated_days: number
+  notes?: string
+}

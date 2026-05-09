@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ProjectDetail } from '~/shared/types/project'
-import { formatCurrency } from '~/app/utils/formatters'
-import { canTransition } from '~/app/utils/statusMachine'
+import { formatCurrency } from '~/utils/formatters'
+import { canTransition } from '~/utils/statusMachine'
 
 definePageMeta({
   layout: 'default',
@@ -76,6 +76,21 @@ const showOpenForBidsButton = computed(() => {
   return project.value.status === 'new'
 })
 
+const isContractor = computed(() => auth.user?.role === 'contractor')
+
+const showSubmitProposalButton = computed(() => {
+  if (!project.value || !isContractor.value) return false
+  if (project.value.status !== 'open_for_bids') return false
+  if (hasSubmittedProposal(project.value.id)) return false
+  return isContractorInvited(project.value.id, auth.user?.id || '')
+})
+
+const showSubmittedProposal = computed(() => {
+  if (!project.value || !isContractor.value) return false
+  if (project.value.status !== 'open_for_bids') return false
+  return hasSubmittedProposal(project.value.id)
+})
+
 const getTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
     villa: 'Villa',
@@ -101,6 +116,11 @@ const getMilestoneStatusLabel = (status: string) => {
 // Open for bids dialog
 const isOpenForBidsDialogOpen = ref(false)
 const isSubmittingBids = ref(false)
+
+// Submit proposal dialog
+const isSubmitProposalDialogOpen = ref(false)
+const { getProposal, hasSubmittedProposal, isContractorInvited } =
+  useProposals()
 
 const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
   if (!project.value || !canTransition('project', 'new', 'open_for_bids')) {
@@ -143,6 +163,12 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
   } finally {
     isSubmittingBids.value = false
   }
+}
+
+const handleSubmitProposalCompleted = async () => {
+  isSubmitProposalDialogOpen.value = false
+  // Refresh project data to reflect proposal status
+  await refresh()
 }
 </script>
 
@@ -228,6 +254,24 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
       >
         {{ t('projects.openForBids.button') }}
       </Button>
+    </div>
+
+    <!-- Submit Proposal button (contractor, if invited and status = open_for_bids) -->
+    <div v-if="showSubmitProposalButton" class="flex gap-3">
+      <Button @click="isSubmitProposalDialogOpen = true">
+        {{ t('projects.submitProposal.button') }}
+      </Button>
+    </div>
+
+    <!-- Proposal Summary (after submission) -->
+    <div
+      v-if="showSubmittedProposal && getProposal(project.id)"
+      class="space-y-2"
+    >
+      <h3 class="text-ink text-sm font-semibold">
+        {{ t('projects.submitProposal.proposalSummary') }}
+      </h3>
+      <ProposalSummary :proposal="getProposal(project.id)!" />
     </div>
 
     <!-- Contractor section -->
@@ -380,5 +424,15 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
     :project-name="project.name"
     @update:is-open="isOpenForBidsDialogOpen = $event"
     @submitted="handleOpenForBidsSubmitted"
+  />
+
+  <!-- Submit Proposal Dialog -->
+  <SubmitProposalDialog
+    v-if="project"
+    :is-open="isSubmitProposalDialogOpen"
+    :project-id="project.id"
+    :project-name="project.name"
+    @update:open="isSubmitProposalDialogOpen = $event"
+    @submitted="handleSubmitProposalCompleted"
   />
 </template>

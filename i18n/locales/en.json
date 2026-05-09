@@ -123,7 +123,11 @@
     "date": "Date",
     "payment_plural": "payments",
     "notifications": "Notifications",
-    "logout": "Logout"
+    "logout": "Logout",
+    "days": "days",
+    "submitted": "Submitted",
+    "showMore": "Show More",
+    "showLess": "Show Less"
   },
   "nav": {
     "home": "Home",
@@ -494,6 +498,25 @@
         "field_placeholder": "Select field engineer",
         "submit": "Save Assignment",
         "cancel": "Cancel"
+      },
+      "submitProposal": {
+        "button": "Submit Proposal",
+        "dialogTitle": "Submit Proposal for ",
+        "priceLabel": "Total Price",
+        "priceError": "Price is required and must be positive",
+        "timelineLabel": "Estimated Timeline (Days)",
+        "timelineError": "Timeline is required and must be a positive number",
+        "notesLabel": "Notes",
+        "notesPlaceholder": "Add any notes here (optional)",
+        "notesError": "Notes cannot exceed 500 characters",
+        "confirmButton": "Submit Proposal",
+        "cancelButton": "Cancel",
+        "loadingMessage": "Processing...",
+        "successMessage": "Proposal submitted successfully",
+        "errorMessage": "Failed to submit proposal. Please try again",
+        "submittedPill": "Proposal Submitted",
+        "openForBidsPill": "Open for Bids",
+        "proposalSummary": "Your Proposal"
       }
     },
     "dashboard": {
