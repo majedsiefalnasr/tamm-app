@@ -99,8 +99,8 @@ development_status:
   epic-06-retrospective: optional
 
   # Epic 07 — Proposals & Contractor Selection
-  epic-07: backlog
-  07-01-admin-opens-bidding-and-invites-contractors: backlog
+  epic-07: in-progress
+  07-01-admin-opens-bidding-and-invites-contractors: ready-for-dev
   07-02-contractor-submits-proposal: backlog
   07-03-admin-closes-bidding-for-review: backlog
   07-04-client-reviews-proposals: backlog

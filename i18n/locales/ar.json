@@ -561,5 +561,18 @@
     "weeks_ago": "منذ {count} أسابيع",
     "months_ago": "منذ {count} أشهر",
     "years_ago": "منذ {count} سنوات"
+  },
+  "projects": {
+    "openForBids": {
+      "button": "فتح باب العروض",
+      "dialogTitle": "فتح باب العروض لـ ",
+      "selectContractors": "اختر المقاولين المدعويين للعرض",
+      "helperText": "اختر مقاول واحد على الأقل",
+      "confirmButton": "فتح العروض",
+      "cancelButton": "إلغاء",
+      "loadingMessage": "جاري فتح باب العروض...",
+      "successMessage": "تم فتح باب العروض بنجاح",
+      "errorMessage": "فشل فتح باب العروض. يرجى المحاولة مرة أخرى"
+    }
   }
 }

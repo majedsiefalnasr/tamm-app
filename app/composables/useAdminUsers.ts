@@ -174,6 +174,26 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     }
   }
 
+  const getContractorsList = async (): Promise<
+    Array<{ id: string; name: string; email: string }>
+  > => {
+    try {
+      // Ensure contractors are loaded
+      if (users.value.length === 0) {
+        await fetchUsers('all')
+      }
+      const contractors = users.value.filter(u => u.role === 'contractor')
+      return contractors.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+      }))
+    } catch (error) {
+      console.error('Failed to fetch contractors:', error)
+      return []
+    }
+  }
+
   return {
     users: readonly(users),
     loading: readonly(loading),
@@ -186,5 +206,6 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     createUser,
     refetch: () => fetchUsers(),
     fetchEngineersByRole,
+    getContractorsList,
   }
 }

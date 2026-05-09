@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { ProjectDetail, ProjectStatus } from '~/shared/types/project'
-import type { MilestoneInput } from '~/composables/useMilestones'
-import { formatCurrency } from '~/utils/formatters'
-import MilestoneCard from '~/components/milestone/MilestoneCard.vue'
-import ProjectFinancialSummary from '~/components/project/ProjectFinancialSummary.vue'
-import AssignEngineersDialog from '~/components/admin/AssignEngineersDialog.vue'
+import type { ProjectDetail } from '~/shared/types/project'
+import { formatCurrency } from '~/app/utils/formatters'
+import { canTransition } from '~/app/utils/statusMachine'
 
 definePageMeta({
   layout: 'default',
@@ -20,50 +17,33 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { t } = useI18n()
 const { can } = usePermission()
 const auth = useAuthStore()
-const milestones = useMilestones()
+const { t } = useI18n()
 
-const id = computed(() => {
-  const param = route.params.id as string
-  if (!param || param.trim() === '') {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid project ID' })
-  }
-  return param
-})
-
-const dialogOpen = ref(false)
-
-const showAssignDialog = ref(false)
-const enginesAssigned = ref(false)
-const isSubmitting = ref(false)
+const id = route.params.id as string
 
 const {
   data: project,
   pending,
   error,
   refresh,
-} = await useAsyncData(
-  () => `project-${id.value}`,
-  () => useProjects().getProjectById(id.value)
+} = await useAsyncData(`project-${id}`, () => useProjects().getProjectById(id))
+
+const isAdmin = computed(() =>
+  ['admin', 'super_admin'].includes(auth.user?.role || '')
 )
 
-const isAdmin = computed(() => {
-  const role = auth.user?.role
-  return role === 'admin' || role === 'super_admin'
-})
-
 const progressPercent = computed(() => {
-  if (!project.value?.milestones) return 0
-  const milestones = project.value.milestones
-  if (!milestones.length) return 0
-  const completed = milestones.filter(m => m.status === 'approved').length
-  return Math.round((completed / milestones.length) * 100)
+  if (!project.value?.milestones.length) return 0
+  const completed = project.value.milestones.filter(
+    m => m.status === 'approved'
+  ).length
+  return Math.round((completed / project.value.milestones.length) * 100)
 })
 
 const showFinancial = computed(
-  () => (project.value?.milestones?.length ?? 0) > 0
+  () => (project.value?.milestones.length ?? 0) > 0
 )
 
 const canAddMilestone = computed(() => {
@@ -71,11 +51,9 @@ const canAddMilestone = computed(() => {
   if (['admin', 'super_admin'].includes(auth.user?.role || '')) return true
   if (
     auth.user?.role === 'contractor' &&
-    auth.user?.id &&
-    auth.user.id === project.value?.contractor_id
-  ) {
+    auth.user?.id === project.value?.contractor_id
+  )
     return true
-  }
   return false
 })
 
@@ -93,91 +71,77 @@ const showEngineers = computed(() => {
   )
 })
 
-const showFinancialSummary = computed(() => {
-  const role = auth.user?.role
-  if (!project.value?.milestones?.length) return false
-  if (role === 'field_engineer' || role === 'supervisor_engineer') return false
-  return true
+const showOpenForBidsButton = computed(() => {
+  if (!project.value || !isAdmin.value) return false
+  return project.value.status === 'new'
 })
 
-const remainingAmount = computed(() => {
-  if (!project.value) return 0
-  return Math.max(0, project.value.total_amount - project.value.total_paid)
-})
-
-const getMilestoneStatusTone = (status: string) => {
-  const tones: Record<string, string> = {
-    not_started: 'muted',
-    in_progress: 'accent',
-    under_review: 'info',
-    supervisor_approved: 'info',
-    approved: 'primary',
-    rejected: 'danger',
+const getTypeLabel = (type: string) => {
+  const labels: Record<string, string> = {
+    villa: 'Villa',
+    apartment: 'Apartment',
+    commercial: 'Commercial',
+    other: 'Other',
   }
-  return tones[status] || 'muted'
+  return labels[type] || type
 }
 
-const isProjectLocked = computed(() => {
-  return project.value?.status === 'active'
-})
-
-const canAddMilestoneButton = computed(() => {
-  return (
-    canAddMilestone.value &&
-    !isProjectLocked.value &&
-    project.value?.status === 'contractor_selected'
-  )
-})
-
-const nextMilestoneOrder = computed(() => {
-  if (!project.value?.milestones?.length) return 1
-  return Math.max(...project.value.milestones.map(m => m.order)) + 1
-})
-
-const handleAddMilestone = async (data: MilestoneInput) => {
-  if (!project.value) return
-
-  isSubmitting.value = true
-  try {
-    await milestones.addMilestone(project.value.id, data)
-
-    // Refresh project data to get updated milestones
-    await refresh()
-
-    dialogOpen.value = false
-    // Show success notification using existing toast system
-    // This will be integrated with the notification composable
-  } catch (err) {
-    console.error('Failed to add milestone:', err)
-    // Error message will be shown via toast notification
-  } finally {
-    isSubmitting.value = false
+const getMilestoneStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    not_started: 'Not Started',
+    in_progress: 'In Progress',
+    under_review: 'Under Review',
+    supervisor_approved: 'Supervisor Approved',
+    approved: 'Approved',
+    rejected: 'Rejected',
   }
+  return labels[status] || status
 }
 
-const handleEngineersAssigned = () => {
-  showAssignDialog.value = false
-  refresh()
-  enginesAssigned.value = true
-}
+// Open for bids dialog
+const isOpenForBidsDialogOpen = ref(false)
+const isSubmittingBids = ref(false)
 
-const handleProjectStatusTransition = async (newStatus: string) => {
-  if (!project.value) return
+const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
+  if (!project.value || !canTransition('project', 'new', 'open_for_bids')) {
+    useNotification().error(t('errors.invalid_transition'))
+    return
+  }
 
-  const { transitionProject } = useProjectActions()
-  isSubmitting.value = true
+  isSubmittingBids.value = true
+
+  const prevStatus = project.value.status
+  project.value.status = 'open_for_bids'
 
   try {
-    await transitionProject(
-      project.value.id,
-      newStatus as ProjectStatus,
-      project.value
-    )
+    // Invite contractors (if endpoint available)
+    try {
+      await useProjects().inviteContractors(id, contractorIds)
+    } catch (err) {
+      // Continue even if invitations endpoint doesn't exist
+      if (!(err instanceof Error && err.message.includes('404'))) {
+        throw err
+      }
+    }
+
+    // Update project status
+    await useProjects().updateProjectStatus(id, 'open_for_bids')
+
+    useNotification().success(t('projects.openForBids.successMessage'))
+    isOpenForBidsDialogOpen.value = false
+
+    // Refresh project data
     await refresh()
   } catch (err) {
-    console.error('Failed to transition project:', err)
+    // Rollback
+    project.value.status = prevStatus
+    const errorMsg =
+      err instanceof Error
+        ? err.message
+        : t('projects.openForBids.errorMessage')
+    useNotification().error(errorMsg)
   } finally {
-    isSubmitting.value = false
+    isSubmittingBids.value = false
   }
 }
 </script>
@@ -197,10 +161,7 @@ const handleProjectStatusTransition = async (newStatus: string) => {
 
   <!-- Error state -->
   <div v-else-if="error" class="min-h-screen">
-    <ErrorState
-      :error="`${t('errors.failed_to_load')}: ${error?.message || t('errors.unknown_error')}`"
-      @retry="refresh()"
-    />
+    <ErrorState :error="error" @retry="refresh()" />
   </div>
 
   <!-- Main content -->
@@ -209,182 +170,215 @@ const handleProjectStatusTransition = async (newStatus: string) => {
     <div
       class="border-border bg-card shadow-card rounded-3xl border p-6 md:p-8"
       :style="{
-        background: `linear-gradient(to left, rgba(var(--color-primary), 0.1), var(--color-card))`,
+        background: `linear-gradient(to inline-start, rgba(var(--color-primary-rgb), 0.1), var(--color-card))`,
       }"
     >
       <div class="flex flex-col gap-4 md:gap-6">
-        <div
-          class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
-        >
-          <h1 class="text-ink text-2xl font-extrabold md:text-3xl">
-            {{ project.name }}
-          </h1>
-          <Pill
-            :tone="getMilestoneStatusTone(project.status)"
-            :label="t(`project.status.${project.status}`)"
-          />
-        </div>
+        <h1 class="text-ink text-2xl font-extrabold md:text-3xl">
+          {{ project.name }}
+        </h1>
 
-        <!-- Meta information grid -->
+        <!-- Meta information -->
         <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
           <div>
-            <p class="text-muted-foreground text-xs">
-              {{ t('project.details.clientName') }}
-            </p>
-            <p class="text-ink mt-1 text-sm font-semibold">
-              {{ project.client_name || t('project.details.nA') }}
+            <p class="text-muted-foreground text-xs">Client</p>
+            <p class="text-ink text-sm font-semibold">
+              {{ project.client_name }}
             </p>
           </div>
           <div>
-            <p class="text-muted-foreground text-xs">
-              {{ t('project.details.address') }}
-            </p>
-            <p class="text-ink mt-1 text-sm font-semibold">
-              {{ project.city || t('project.details.nA') }}
+            <p class="text-muted-foreground text-xs">Address</p>
+            <p class="text-ink text-sm font-semibold">{{ project.city }}</p>
+          </div>
+          <div>
+            <p class="text-muted-foreground text-xs">Type</p>
+            <p class="text-ink text-sm font-semibold">
+              {{ getTypeLabel(project.type) }}
             </p>
           </div>
           <div>
-            <p class="text-muted-foreground text-xs">
-              {{ t('project.details.type') }}
-            </p>
-            <p class="text-ink mt-1 text-sm font-semibold">
-              {{ t(`project.types.${project.type}`) || project.type }}
-            </p>
-          </div>
-          <div>
-            <p class="text-muted-foreground text-xs">
-              {{ t('project.details.area') }}
-            </p>
-            <p class="text-ink mt-1 text-sm font-semibold">
+            <p class="text-muted-foreground text-xs">Area</p>
+            <p class="text-ink text-sm font-semibold">
               {{ project.area_m2 }} m²
             </p>
           </div>
         </div>
 
-        <!-- Progress bar (only when milestones exist) -->
+        <!-- Progress bar -->
         <div v-if="showFinancial" class="space-y-2">
           <div class="flex items-center justify-between">
-            <p class="text-ink text-sm font-semibold">
-              {{ t('project.details.progressLabel') }}
-            </p>
+            <p class="text-ink text-sm font-semibold">Progress</p>
             <p class="text-muted-foreground text-xs">{{ progressPercent }}%</p>
           </div>
-          <div class="bg-muted h-2 w-full overflow-hidden rounded-full">
+          <div class="bg-muted-foreground/20 h-2 w-full rounded-full">
             <div
-              class="bg-gradient-to-[inline-start] from-primary h-full rounded-full to-emerald-400 transition-all duration-300"
+              class="bg-primary h-2 rounded-full transition-all duration-300"
               :style="{ width: progressPercent + '%' }"
             />
           </div>
         </div>
-
-        <!-- Project status actions (admin only) -->
-        <ProjectStatusActions
-          :project="project"
-          :is-submitting="isSubmitting"
-          @transition="handleProjectStatusTransition"
-        />
       </div>
+    </div>
+
+    <!-- Open for Bids button (admin only, status = new) -->
+    <div v-if="showOpenForBidsButton" class="flex gap-3">
+      <Button
+        :disabled="isSubmittingBids"
+        @click="isOpenForBidsDialogOpen = true"
+      >
+        {{ t('projects.openForBids.button') }}
+      </Button>
     </div>
 
     <!-- Contractor section -->
-    <div class="border-border bg-card shadow-card rounded-2xl border p-4">
-      <h2 class="text-ink mb-3 text-lg font-bold">
-        {{ t('project.details.contractor') }}
-      </h2>
-      <div v-if="showContractor">
-        <p class="text-ink text-sm font-semibold">
-          {{ project.contractor_name || t('project.details.nA') }}
+    <div
+      v-if="showContractor"
+      class="border-border bg-card shadow-card rounded-2xl border p-4"
+    >
+      <h2 class="text-ink mb-3 text-lg font-bold">Contractor</h2>
+      <p class="text-ink text-sm font-semibold">
+        {{ project.contractor_name }}
+      </p>
+    </div>
+
+    <!-- Awaiting contractor badge -->
+    <div
+      v-else
+      class="border-border bg-card shadow-card rounded-2xl border p-4"
+    >
+      <h2 class="text-ink mb-3 text-lg font-bold">Contractor</h2>
+      <div
+        class="border-primary/30 bg-primary/10 inline-flex rounded-full border px-3 py-1"
+      >
+        <p class="text-primary text-xs font-semibold">
+          Awaiting contractor selection
         </p>
-      </div>
-      <div v-else>
-        <Pill tone="accent" :label="t('project.details.awaitingContractor')" />
       </div>
     </div>
 
-    <!-- Team section -->
-    <div class="border-border bg-card shadow-card rounded-2xl border p-4">
-      <h2 class="text-ink mb-3 text-lg font-bold">
-        {{ t('project.details.team') }}
-      </h2>
-      <div v-if="showEngineers" class="space-y-3">
+    <!-- Engineers section -->
+    <div
+      v-if="showEngineers"
+      class="border-border bg-card shadow-card rounded-2xl border p-4"
+    >
+      <h2 class="text-ink mb-3 text-lg font-bold">Team</h2>
+      <div class="space-y-2">
         <div v-if="project.supervisor_name">
-          <p class="text-muted-foreground text-xs">
-            {{ t('project.details.supervisorEngineer') }}
-          </p>
-          <p class="text-ink mt-1 text-sm font-semibold">
+          <p class="text-muted-foreground text-xs">Supervisor Engineer</p>
+          <p class="text-ink text-sm font-semibold">
             {{ project.supervisor_name }}
           </p>
         </div>
         <div v-if="project.field_engineer_name">
-          <p class="text-muted-foreground text-xs">
-            {{ t('project.details.fieldEngineer') }}
-          </p>
-          <p class="text-ink mt-1 text-sm font-semibold">
+          <p class="text-muted-foreground text-xs">Field Engineer</p>
+          <p class="text-ink text-sm font-semibold">
             {{ project.field_engineer_name }}
           </p>
         </div>
-        <div v-if="!project.supervisor_name && !project.field_engineer_name">
-          <p class="text-muted-foreground text-xs font-semibold">
-            {{ t('project.details.notAssigned') }}
-          </p>
-        </div>
-      </div>
-      <div v-else>
-        <Pill tone="muted" :label="t('project.details.notAssigned')" />
       </div>
     </div>
 
-    <!-- Financial summary (only for client, contractor, admin) -->
-    <div v-if="showFinancialSummary">
-      <ProjectFinancialSummary :project-id="id" :project="project" />
+    <!-- Not yet assigned -->
+    <div
+      v-else
+      class="border-border bg-card shadow-card rounded-2xl border p-4"
+    >
+      <h2 class="text-ink mb-3 text-lg font-bold">Team</h2>
+      <div
+        class="border-muted-foreground/30 bg-muted-foreground/10 inline-flex rounded-full border px-3 py-1"
+      >
+        <p class="text-muted-foreground text-xs font-semibold">
+          Not yet assigned
+        </p>
+      </div>
+    </div>
+
+    <!-- Financial summary -->
+    <div
+      v-if="showFinancial"
+      class="border-border bg-card shadow-card rounded-2xl border p-4"
+    >
+      <h2 class="text-ink mb-4 text-lg font-bold">Financial Summary</h2>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div>
+          <p class="text-muted-foreground text-xs">Total Amount</p>
+          <p class="text-ink mt-1 text-lg font-bold">
+            {{ formatCurrency(project.total_amount) }}
+          </p>
+        </div>
+        <div>
+          <p class="text-muted-foreground text-xs">Paid Amount</p>
+          <p class="text-success mt-1 text-lg font-bold">
+            {{ formatCurrency(project.total_paid) }}
+          </p>
+        </div>
+        <div>
+          <p class="text-muted-foreground text-xs">Remaining</p>
+          <p class="text-warning mt-1 text-lg font-bold">
+            {{ formatCurrency(project.total_amount - project.total_paid) }}
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Milestones section -->
     <div class="border-border bg-card shadow-card rounded-2xl border p-4">
       <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-ink text-lg font-bold">
-          {{ t('project.details.milestones') }}
-        </h2>
-        <Button
-          v-if="canAddMilestoneButton"
-          size="sm"
-          variant="outline"
-          :aria-label="t('project.details.addMilestone')"
-          :disabled="isSubmitting"
-          @click="dialogOpen = true"
-        >
-          {{ t('project.details.addMilestone') }}
+        <h2 class="text-ink text-lg font-bold">Milestones</h2>
+        <Button v-if="canAddMilestone" size="sm" variant="outline">
+          Add Milestone
         </Button>
       </div>
 
       <div
-        v-if="!project.milestones?.length"
-        class="border-border bg-card rounded-lg border-2 border-dashed p-8 text-center"
+        v-if="!project.milestones.length"
+        class="border-border rounded-lg border-2 border-dashed p-8 text-center"
       >
-        <p class="text-muted-foreground text-sm">
-          {{ t('project.details.noMilestones') }}
-        </p>
+        <p class="text-muted-foreground text-sm">No milestones yet</p>
       </div>
 
       <div v-else class="space-y-3">
-        <MilestoneCard
+        <div
           v-for="milestone in project.milestones"
           :key="milestone.id"
-          :milestone="milestone"
-          :project="project"
-          :on-refresh="refresh"
-        />
+          class="border-border flex items-center justify-between rounded-lg border p-3"
+        >
+          <div class="flex-1">
+            <h3 class="text-ink text-sm font-semibold">{{ milestone.name }}</h3>
+            <p class="text-muted-foreground text-xs">
+              {{ formatCurrency(milestone.amount) }}
+            </p>
+          </div>
+          <div
+            class="bg-muted-foreground/10 inline-flex rounded-full px-2 py-1"
+          >
+            <span class="text-muted-foreground text-xs font-semibold">
+              {{ getMilestoneStatusLabel(milestone.status) }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Milestone Dialog -->
-    <MilestoneDialog
-      :open="dialogOpen"
-      mode="add"
-      :next-order="nextMilestoneOrder"
-      :is-submitting="isSubmitting"
-      @update:open="dialogOpen = $event"
-      @submit="handleAddMilestone"
-    />
+    <!-- Admin actions (placeholder for Story 02-05) -->
+    <div
+      v-if="isAdmin"
+      class="border-border bg-card shadow-card rounded-2xl border p-4"
+    >
+      <h2 class="text-ink mb-4 text-lg font-bold">Admin Actions</h2>
+      <p class="text-muted-foreground text-sm">
+        Admin actions will be available here (Story 02-05)
+      </p>
+    </div>
   </div>
+
+  <!-- Open for Bids Dialog -->
+  <OpenForBidsDialog
+    v-if="project"
+    :is-open="isOpenForBidsDialogOpen"
+    :project-id="project.id"
+    :project-name="project.name"
+    @update:is-open="isOpenForBidsDialogOpen = $event"
+    @submitted="handleOpenForBidsSubmitted"
+  />
 </template>

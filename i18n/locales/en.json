@@ -561,5 +561,18 @@
     "weeks_ago": "{count} weeks ago",
     "months_ago": "{count} months ago",
     "years_ago": "{count} years ago"
+  },
+  "projects": {
+    "openForBids": {
+      "button": "Open for Bids",
+      "dialogTitle": "Open for Bids — ",
+      "selectContractors": "Select contractors invited to bid",
+      "helperText": "Select at least one contractor",
+      "confirmButton": "Open for Bids",
+      "cancelButton": "Cancel",
+      "loadingMessage": "Opening for bids...",
+      "successMessage": "Bidding opened successfully",
+      "errorMessage": "Failed to open for bids. Please try again."
+    }
   }
 }
