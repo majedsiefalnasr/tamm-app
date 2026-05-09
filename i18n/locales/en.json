@@ -63,7 +63,14 @@
     "required": "Required",
     "min_length_20": "Minimum 20 characters",
     "amount_exceeds_available": "Amount exceeds available balance",
-    "invalid_iban": "Invalid IBAN number"
+    "invalid_iban": "Invalid IBAN number",
+    "amount_invalid": "Invalid amount",
+    "file": {
+      "invalid_type": "Only JPG/PNG images accepted",
+      "invalid_extension": "Only .jpg, .jpeg, or .png extensions accepted",
+      "too_large": "File size must not exceed 5MB",
+      "read_error": "Failed to read file — please try again"
+    }
   },
   "notifications": {
     "milestone_added": "Milestone added successfully",

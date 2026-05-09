@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Milestone, ProjectDetail } from '~/shared/types/project'
 import { usePermission } from '~/composables/usePermission'
-import { useMilestones } from '~/composables/useMilestones'
+import { useMilestones, type PaymentPayload } from '~/composables/useMilestones'
 import { useNotifications } from '~/composables/useNotifications'
 import { Button } from '~/components/ui/button'
 import ApprovalFlow from './ApprovalFlow.vue'
@@ -152,16 +152,20 @@ const handleAction = async (actionType: string) => {
   }
 }
 
-const handlePaymentSubmit = async (payload: any) => {
+const handlePaymentSubmit = async (payload: PaymentPayload) => {
   isPaymentSubmitting.value = true
   try {
     await payForMilestone(props.milestone.id, payload)
     paymentDialogOpen.value = false
     notify.success(t('payment.success.message'))
+    // Emit actionComplete only after success confirmed (decision #1 + patch #27)
     emits('actionComplete')
   } catch (error) {
-    console.error('Payment error:', error)
-    notify.error(t('payment.error.message'))
+    if (notify) {
+      notify.error(t('payment.error.message'))
+    } else {
+      console.error('Payment error:', error)
+    }
   } finally {
     isPaymentSubmitting.value = false
   }

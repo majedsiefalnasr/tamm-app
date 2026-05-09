@@ -29,7 +29,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const isLoading = ref(false)
 const selectedFile = ref<File | null>(null)
 const filePreviewUrl = ref<string | null>(null)
 
@@ -57,9 +56,16 @@ const handleFileSelect = (e: Event) => {
 
   if (!file) return
 
-  // Validate file type
+  // Validate file type and extension
   if (!['image/jpeg', 'image/png'].includes(file.type)) {
-    errors.value.receipt_image = 'Only JPG/PNG accepted'
+    errors.value.receipt_image = t('validation.file.invalid_type')
+    selectedFile.value = null
+    filePreviewUrl.value = null
+    return
+  }
+
+  if (!/\.(jpg|jpeg|png)$/i.test(file.name)) {
+    errors.value.receipt_image = t('validation.file.invalid_extension')
     selectedFile.value = null
     filePreviewUrl.value = null
     return
@@ -67,7 +73,7 @@ const handleFileSelect = (e: Event) => {
 
   // Validate file size (5MB)
   if (file.size > 5 * 1024 * 1024) {
-    errors.value.receipt_image = 'Max 5MB'
+    errors.value.receipt_image = t('validation.file.too_large')
     selectedFile.value = null
     filePreviewUrl.value = null
     return
@@ -80,12 +86,17 @@ const handleFileSelect = (e: Event) => {
   reader.onload = e => {
     filePreviewUrl.value = e.target?.result as string
   }
+  reader.onerror = () => {
+    errors.value.receipt_image = t('validation.file.read_error')
+    filePreviewUrl.value = null
+  }
   reader.readAsDataURL(file)
 }
 
 // Check if form is valid and ready to submit
 const isFormValid = computed(() => {
   return (
+    values &&
     values.bank_name &&
     values.transaction_reference &&
     selectedFile.value &&
@@ -93,16 +104,25 @@ const isFormValid = computed(() => {
   )
 })
 
-// Format currency
+// Format currency with locale
 const formattedAmount = computed(() => {
-  return formatCurrency(props.milestone.amount)
+  const amount = props.milestone?.amount
+  if (amount === null || amount === undefined || amount <= 0) {
+    return t('validation.amount_invalid')
+  }
+  return formatCurrency(amount, 'ar')
 })
 
 // Submit form
 const onSubmit = handleSubmit(async () => {
-  if (!selectedFile.value) return
+  // Prevent double-submit
+  if (isSubmitting.value) return
 
-  isLoading.value = true
+  // Re-validate file exists before submission
+  if (!selectedFile.value) {
+    errors.value.receipt_image = t('validation.required')
+    return
+  }
 
   try {
     const payload: PaymentPayload = {
@@ -114,11 +134,19 @@ const onSubmit = handleSubmit(async () => {
     }
 
     emit('submit', payload)
-    resetForm()
-    selectedFile.value = null
-    filePreviewUrl.value = null
-  } finally {
-    isLoading.value = false
+
+    // Reset form after success (with small delay for toast visibility per decision #1)
+    setTimeout(() => {
+      resetForm()
+      selectedFile.value = null
+      // Cleanup blob URL to prevent memory leak
+      if (filePreviewUrl.value?.startsWith('blob:')) {
+        URL.revokeObjectURL(filePreviewUrl.value)
+      }
+      filePreviewUrl.value = null
+    }, 200)
+  } catch (error) {
+    console.error('Form submission error:', error)
   }
 })
 
@@ -129,6 +157,10 @@ watch(
     if (!newVal) {
       resetForm()
       selectedFile.value = null
+      // Cleanup blob URL to prevent memory leak
+      if (filePreviewUrl.value?.startsWith('blob:')) {
+        URL.revokeObjectURL(filePreviewUrl.value)
+      }
       filePreviewUrl.value = null
     }
   }
@@ -172,7 +204,7 @@ watch(
               id="bank_name"
               v-model="values.bank_name"
               :placeholder="t('payment.dialog.bank_name')"
-              :disabled="isLoading"
+              :disabled="isSubmitting"
               :class="{ 'border-destructive': errors.bank_name }"
             />
             <p v-if="errors.bank_name" class="text-destructive text-xs">
@@ -189,7 +221,7 @@ watch(
               id="transaction_reference"
               v-model="values.transaction_reference"
               :placeholder="t('payment.dialog.transaction_reference')"
-              :disabled="isLoading"
+              :disabled="isSubmitting"
               :class="{ 'border-destructive': errors.transaction_reference }"
             />
             <p
@@ -209,7 +241,8 @@ watch(
               id="receipt_image"
               type="file"
               accept="image/jpeg,image/png"
-              :disabled="isLoading"
+              :multiple="false"
+              :disabled="isSubmitting"
               :class="{ 'border-destructive': errors.receipt_image }"
               @change="handleFileSelect"
             />
@@ -235,24 +268,28 @@ watch(
               id="notes"
               v-model="values.notes"
               :placeholder="t('optional')"
-              :disabled="isLoading"
+              :disabled="isSubmitting"
               class="resize-none"
             />
           </div>
         </form>
       </div>
 
-      <DialogFooter class="gap-2">
-        <Button variant="outline" :disabled="isLoading" @click="$emit('close')">
+      <DialogFooter class="flex flex-row-reverse gap-2">
+        <Button
+          variant="outline"
+          :disabled="isSubmitting"
+          @click="$emit('close')"
+        >
           {{ t('payment.dialog.cancel') }}
         </Button>
         <Button
-          :disabled="!isFormValid || isLoading"
-          :loading="isLoading"
+          :disabled="!isFormValid || isSubmitting"
+          :loading="isSubmitting"
           @click="onSubmit"
         >
           {{
-            isLoading ? t('buttons.confirming') : t('payment.dialog.confirm')
+            isSubmitting ? t('buttons.confirming') : t('payment.dialog.confirm')
           }}
         </Button>
       </DialogFooter>

@@ -58,7 +58,7 @@ const handlePaymentSubmit = async (payload: PaymentPayload) => {
       :disabled="isSubmitting"
       @click="dialogOpen = true"
     >
-      {{ t('milestone.action.pay') }}
+      {{ t('milestone.actions.payMilestone') }}
     </Button>
 
     <PaymentConfirmDialog

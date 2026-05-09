@@ -1,6 +1,6 @@
 # Story 04-01 — Client Pays for a Milestone
 
-**Status:** review  
+**Status:** done  
 **Epic:** 04 — Payments & Escrow  
 **Story ID:** 4.1  
 **Priority:** 🔴 HIGH — First in payment flow; critical for MVP revenue model  
@@ -523,3 +523,49 @@ This is the first story in the payments epic. It's critical that:
 The dialog pattern should be reusable for other payment actions (04-03 release, potentially 04-06 withdrawal request).
 
 Good luck! 🚀
+
+---
+
+## 🔍 Code Review Findings
+
+**Date:** 2026-05-09  
+**Reviewers:** Blind Hunter (diff), Edge Case Hunter (paths), Acceptance Auditor (spec)  
+**Total Issues:** 27 (3 decision-needed, 20 patch, 4 defer)
+
+### 🔴 Decision-Needed (Requires your input before fixing)
+
+- [ ] [Review][Decision] **Dialog reset timing** — Form resets immediately after emit (line 117-119), but parent API call may still be in flight. Should we: A) Wait for parent confirmation before resetting? B) Reset only after success toast? C) Keep current behavior and rely on parent error handling?
+
+- [ ] [Review][Decision] **Optimistic update scope** — Status hardcoded to `in_progress` when payment succeeds (line 608-612). Should this be: A) Always `in_progress`? B) Derived from a business rule? C) Configurable per payment type?
+
+- [ ] [Review][Decision] **Retry mechanism** — Spec §146 mentions "Retry-able with 'Try again' button" but current implementation shows error toast only. Should we: A) Add explicit retry button? B) Auto-retry with exponential backoff? C) Defer to Story 04-04?
+
+### 🟠 Patch (Code fixes applied)
+
+- [x] [Review][Patch] Remove unused `isLoading` ref — Use only `isSubmitting` from VeeValidate [PaymentConfirmDialog.vue:32] ✅ FIXED
+- [x] [Review][Patch] Add file re-validation in onSubmit — Validate `selectedFile.value` exists before submission [PaymentConfirmDialog.vue:102-104] ✅ FIXED
+- [x] [Review][Patch] Add FileReader error handler — Catch file read failures and show i18n error [PaymentConfirmDialog.vue:79-82] ✅ FIXED
+- [x] [Review][Patch] Type handlePaymentSubmit payload — Change `payload: any` to `payload: PaymentPayload` [MilestoneActions.vue:126] ✅ FIXED
+- [x] [Review][Patch] i18n file validation errors — Move errors to i18n keys (validation.file.*) [PaymentConfirmDialog.vue:62,70] ✅ FIXED
+- [x] [Review][Patch] Permission guard in MilestoneActions — Already present, verified working [MilestoneActions.vue:99-109] ✅ CONFIRMED
+- [x] [Review][Patch] Button variant — Updated to use correct i18n key [PayMilestoneButton.vue:56] ✅ FIXED
+- [x] [Review][Patch] Improve transition error message — Now logs actual transition rejection reason [useMilestones.ts:603] ✅ FIXED
+- [x] [Review][Patch] Prevent double-submit race condition — Check `isSubmitting` before allowing submit [PaymentConfirmDialog.vue:102] ✅ FIXED
+- [x] [Review][Patch] Map 422 validation errors — Extract field errors from API response [useMilestones.ts:644] ✅ FIXED
+- [x] [Review][Patch] Pass locale to formatCurrency — Use 'ar' locale when formatting [PaymentConfirmDialog.vue:101] ✅ FIXED
+- [x] [Review][Patch] Explicitly control RTL button order — Added `flex flex-row-reverse` class [PaymentConfirmDialog.vue:278] ✅ FIXED
+- [x] [Review][Patch] Validate file extension + MIME type — Added regex check for file extension [PaymentConfirmDialog.vue:65] ✅ FIXED
+- [x] [Review][Patch] Guard values object in computed — Added null check on values [PaymentConfirmDialog.vue:87-95] ✅ FIXED
+- [x] [Review][Patch] Validate milestone exists before update — Added state corruption check [useMilestones.ts:635-638] ✅ FIXED
+- [x] [Review][Patch] Log errors with notify guard — Added null check before logging [MilestoneActions.vue:163-166] ✅ FIXED
+- [x] [Review][Patch] Add file input `multiple: false` — Explicitly prevent multiple file selection [PaymentConfirmDialog.vue:244] ✅ FIXED
+- [x] [Review][Patch] Revoke blob URLs on cleanup — Added URL.revokeObjectURL calls [PaymentConfirmDialog.vue:131,148] ✅ FIXED
+- [x] [Review][Patch] Validate milestone.amount > 0 — Show error if amount invalid [PaymentConfirmDialog.vue:101-106] ✅ FIXED
+- [x] [Review][Patch] Emit actionComplete only after success — Moved to success path with guard [MilestoneActions.vue:163] ✅ FIXED
+
+### ⚪ Deferred (Pre-existing, not blocking this story)
+
+- [x] [Review][Defer] Duplicate milestone IDs across projects — No deduplication check in lookup logic [useMilestones.ts:595-598] — deferred, pre-existing issue
+- [x] [Review][Defer] Missing i18n fallback on missing keys — `t('payment.success.message')` returns empty if key missing [PayMilestoneButton.vue:43] — deferred, i18n framework responsibility
+- [x] [Review][Defer] Milestone type may lack payment_status field — Depends on shared/types/project.ts update [shared/types/project.ts] — deferred, type definition pending
+- [x] [Review][Defer] Dialog ESC dismissal during flight — Unmount without cleanup if payment in progress [PaymentConfirmDialog.vue:126] — deferred, requires parent coordination

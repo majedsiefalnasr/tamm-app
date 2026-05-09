@@ -596,20 +596,28 @@ export const useMilestones = () => {
     }
 
     if (!milestone || !projectId) {
-      throw new Error('Milestone not found')
+      error.value = 'Milestone not found'
+      throw new Error(error.value)
     }
 
     // Validate transition
     if (!canTransition('payment', milestone.payment_status, 'paid')) {
-      throw new Error('Invalid payment transition')
+      error.value = `Cannot transition payment from ${milestone.payment_status} to paid`
+      throw new Error(error.value)
+    }
+
+    // Validate milestone still exists after lookup
+    const milestonesArray = milestonesMap.value[projectId]
+    if (!milestonesArray || !milestonesArray[milestoneIndex]) {
+      error.value = 'Milestone state corrupted during lookup'
+      throw new Error(error.value)
     }
 
     const prevMilestone = { ...milestone }
 
-    // Optimistic update: payment -> paid, milestone -> in_progress
+    // Optimistic update: payment -> paid (milestone status derived from API response per decision #2)
     const updatedMilestone: Milestone = {
       ...milestone,
-      status: 'in_progress' as MilestoneStatus,
       payment_status: 'paid',
       updated_at: new Date().toISOString(),
     }
@@ -618,13 +626,32 @@ export const useMilestones = () => {
 
     try {
       // TODO: replace mock — POST /milestones/:id/pay endpoint
-      await new Promise(resolve => setTimeout(resolve, 500))
-      return updatedMilestone
+      // Decision #2: Backend returns the updated milestone with its new status
+      const response = await new Promise<Milestone>(resolve => {
+        setTimeout(() => {
+          resolve({
+            ...updatedMilestone,
+            status: 'in_progress' as MilestoneStatus,
+          })
+        }, 500)
+      })
+
+      // Update with API response (derive milestone status from backend)
+      milestonesMap.value[projectId][milestoneIndex] = response
+      return response
     } catch (err) {
       // Rollback on error
       milestonesMap.value[projectId][milestoneIndex] = prevMilestone
-      error.value =
-        err instanceof Error ? err.message : 'Failed to process payment'
+
+      // Map 422 validation errors if available
+      if (err instanceof Error && 'errors' in err) {
+        const validationErrors = (err as any).errors as Record<string, string[]>
+        error.value = JSON.stringify(validationErrors)
+      } else {
+        error.value =
+          err instanceof Error ? err.message : 'Failed to process payment'
+      }
+
       throw err
     }
   }

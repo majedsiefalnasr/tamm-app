@@ -63,7 +63,14 @@
     "required": "مطلوب",
     "min_length_20": "الحد الأدنى 20 حرف",
     "amount_exceeds_available": "المبلغ يتجاوز الرصيد المتاح",
-    "invalid_iban": "رقم حساب بنكي غير صحيح"
+    "invalid_iban": "رقم حساب بنكي غير صحيح",
+    "amount_invalid": "المبلغ غير صحيح",
+    "file": {
+      "invalid_type": "يقبل فقط صور بصيغة JPG/PNG",
+      "invalid_extension": "يقبل فقط امتدادات .jpg أو .jpeg أو .png",
+      "too_large": "حجم الملف لا يزيد عن 5MB",
+      "read_error": "فشل قراءة الملف — يرجى المحاولة مرة أخرى"
+    }
   },
   "notifications": {
     "milestone_added": "تمت إضافة المرحلة بنجاح",
