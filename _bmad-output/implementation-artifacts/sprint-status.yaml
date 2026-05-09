@@ -76,7 +76,7 @@ development_status:
   04-01-client-pays-for-a-milestone: done
   04-02-payment-status-badge-on-milestone: done
   04-03-admin-releases-payment-to-contractor: done
-  04-04-contractor-payment-history: review
+  04-04-contractor-payment-history: done
   04-05-client-payment-overview: ready-for-dev
   04-06-contractor-withdrawals: ready-for-dev
   epic-04-retrospective: optional
