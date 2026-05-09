@@ -40,7 +40,7 @@ withDefaults(defineProps<Props>(), {
   }),
 })
 
-defineEmits<Emits>()
+const emit = defineEmits<Emits>()
 
 const { $t } = useI18n()
 const router = useRouter()
@@ -93,14 +93,12 @@ const handleNavigateToProject = (id: string) => {
 }
 
 const handlePreviousPage = () => {
-  const emit = defineEmits<Emits>()
   if (props.pagination && props.pagination.current_page > 1) {
     emit('page-change', props.pagination.current_page - 1)
   }
 }
 
 const handleNextPage = () => {
-  const emit = defineEmits<Emits>()
   if (
     props.pagination &&
     props.pagination.current_page < props.pagination.total_pages
