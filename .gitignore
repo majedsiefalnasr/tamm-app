@@ -28,3 +28,13 @@ logs
 
 # Design references
 lovable-design/
+
+# Playwright
+.playwright/
+test-results/
+playwright-report/
+blob-report/
+
+# Coverage / TS incremental emit (repo root)
+coverage/
+*.tsbuildinfo

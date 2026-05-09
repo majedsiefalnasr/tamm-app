@@ -1,0 +1,33 @@
+# Exclude from Cursor codebase indexing (gitignore-style).
+# Git tracking is controlled by .gitignore only.
+
+# Dependencies & generated builds
+node_modules/
+.output/
+.data/
+.nuxt/
+.nitro/
+.cache/
+dist/
+
+# Logs
+logs/
+*.log
+
+# Local credentials (never index)
+.env
+.env.*
+!.env.example
+
+# Playwright / coverage artifacts
+.playwright/
+test-results/
+playwright-report/
+blob-report/
+coverage/
+
+# Heavy local tooling & references
+.gitnexus/
+lovable-design/
+
+# Lockfile kept indexable so the agent can reason about dependency versions
