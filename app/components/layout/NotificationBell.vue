@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { BellIcon } from '@heroicons/vue/24/outline'
 import { Button } from '~/components/ui/button'
 import NotificationDrawer from '~/components/notifications/NotificationDrawer.vue'
 import { useNotifications } from '~/composables/useNotifications'
 
-const { unreadCount, startPolling } = useNotifications()
+const { unreadCount, startPolling, stopPolling } = useNotifications()
 
 const UNREAD_COUNT_THRESHOLD = 99
 const drawerOpen = ref(false)
 
 const displayCount = computed(() => {
-  return unreadCount.value > UNREAD_COUNT_THRESHOLD ? '99+' : unreadCount.value
+  // Ensure type consistency: always return string
+  return String(
+    unreadCount.value > UNREAD_COUNT_THRESHOLD ? '99+' : unreadCount.value
+  )
 })
 
 const showBadge = computed(() => unreadCount.value > 0)
@@ -23,6 +26,10 @@ const handleBellClick = () => {
 onMounted(() => {
   startPolling()
 })
+
+onBeforeUnmount(() => {
+  stopPolling()
+})
 </script>
 
 <template>
@@ -30,7 +37,7 @@ onMounted(() => {
     <Button
       variant="ghost"
       size="icon"
-      class="border-border bg-background hover:border-primary hover:text-primary relative inline-flex h-10 w-10 items-center justify-center rounded-full border transition"
+      class="border-border hover:border-primary hover:text-primary"
       :aria-label="$t('common.notifications')"
       @click="handleBellClick"
     >

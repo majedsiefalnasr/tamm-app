@@ -395,3 +395,35 @@ This story is **complete** when:
 - Mock `/notifications` endpoint in composable — will be replaced when backend API is available
 - Polling can be extended with exponential backoff or request deduplication if needed in future stories (05-02, 05-03, 05-04)
 - Story 05-02 (drawer) will build on this polling infrastructure
+
+---
+
+## 🔍 Review Findings (Code Review — 2026-05-09)
+
+### Decision Resolved
+
+- [x] [Review][Decision] **Pinia state management architecture** — **Resolved with Hybrid approach (C)**: Created `stores/notifications.ts` with Pinia store holding `unreadCount` and `notifications`. Composable manages polling orchestration and calls `store.setNotifications()` to update state. This enforces Pinia pattern from spec while keeping composable focused on side effects. All state mutations go through store, satisfying spec requirement.
+
+### Patches
+
+- [x] [Review][Patch] **Polling timer duplication on component remount** [useNotifications.ts:startPolling()] — Fixed: Added guard `if (pollTimer) return;` at start of `startPolling()` to prevent duplicate timers.
+
+- [x] [Review][Patch] **Stale event listener closure after remount** [useNotifications.ts:startPolling()] — Fixed: Added cleanup before attaching new listener: `if (visibilityListener) { document.removeEventListener(...) }` and set to `undefined` after cleanup.
+
+- [x] [Review][Patch] **Silent API failures with no recovery** [useNotifications.ts:poll()] — Fixed: Implemented graceful failure handling - on catch, call `store.setNotifications([])` to reset count. Fire-and-forget pattern with polling will correct on next successful fetch.
+
+- [x] [Review][Patch] **Composable lifecycle broken on second component unmount** [useNotifications.ts + NotificationBell.vue] — Fixed: Added `onBeforeUnmount` hook to NotificationBell component that calls `stopPolling()`. Component lifecycle now properly manages polling start/stop, composable lifecycle is idempotent.
+
+- [x] [Review][Patch] **Race condition on visibility toggle** [useNotifications.ts:poll()] — Fixed: Replaced direct `document.hidden` check with atomic variable: `const isHidden = document.hidden; if (isHidden) return;`
+
+- [x] [Review][Patch] **Type coercion in displayCount** [NotificationBell.vue:displayCount] — Fixed: Changed to `String(unreadCount.value > UNREAD_COUNT_THRESHOLD ? '99+' : unreadCount.value)` to ensure type consistency (always string).
+
+- [x] [Review][Patch] **API response fields not marked optional** [shared/types/notification.ts] — Fixed: Made fields optional with `?`: `is_read?: boolean; created_at?: string; read_at?: string | null;` Safe access in poll with `n?.is_read === false`.
+
+- [x] [Review][Patch] **Button class duplication with shadcn variant** [NotificationBell.vue:Button] — Fixed: Removed duplicate sizing/bg/border classes, kept only `variant="ghost"` with custom hover states. shadcn ghost variant now provides base styles cleanly.
+
+### Deferred
+
+- [x] [Review][Defer] **Story 05-03 dependency not yet validated** [useNotifications.ts:decrementUnreadCount()] — Method exists but is called by story 05-03 (not yet reviewed). Defer validation until 05-03 is reviewed to confirm it calls this correctly. **Deferred:** awaiting story 05-03 review
+
+- [x] [Review][Defer] **RTL manual browser verification incomplete** [NotificationBell.vue] — Spec requires manual browser test for RTL layout. No evidence in commit message. **Deferred:** manual RTL testing in Arabic locale required before marking done

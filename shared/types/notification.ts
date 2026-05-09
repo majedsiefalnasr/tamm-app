@@ -4,9 +4,9 @@ export type Notification = {
   title: string
   body: string
   link: string
-  is_read: boolean
-  created_at: string
-  read_at: string | null
+  is_read?: boolean
+  created_at?: string
+  read_at?: string | null
 }
 
 export type NotificationResponse = {
