@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import {
   Table,
   TableBody,
@@ -12,6 +12,17 @@ import { Skeleton } from '../ui/skeleton'
 import { Badge } from '../ui/badge'
 import UserActionMenu from './UserActionMenu.vue'
 import type { User } from '../../composables/useAdminUsers'
+
+const { $t } = useI18n()
+
+// Calculate skeleton rows based on viewport height
+const skeletonRowCount = ref(5)
+onMounted(() => {
+  // Estimate: ~48px per table row (adjust if needed)
+  const rowHeight = 48
+  const availableHeight = Math.max(window.innerHeight - 400, 300) // Leave 400px for header/footer
+  skeletonRowCount.value = Math.max(5, Math.floor(availableHeight / rowHeight))
+})
 
 interface Props {
   users?: User[]
@@ -28,8 +39,6 @@ const emit = defineEmits<{
   'toggle-status': [userId: string]
 }>()
 
-const { $t } = useI18n()
-
 const formattedUsers = computed(() => {
   return props.users.map(user => ({
     ...user,
@@ -38,6 +47,10 @@ const formattedUsers = computed(() => {
 })
 
 function formatRelativeTime(dateString: string): string {
+  if (!dateString || isNaN(new Date(dateString).getTime())) {
+    return $t('time.unknown')
+  }
+
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -82,7 +95,7 @@ function formatRelativeTime(dateString: string): string {
       <TableBody>
         <!-- Skeleton rows while loading -->
         <template v-if="loading">
-          <TableRow v-for="i in 5" :key="`skeleton-${i}`">
+          <TableRow v-for="i in skeletonRowCount" :key="`skeleton-${i}`">
             <TableCell><Skeleton class="h-4 w-24" /></TableCell>
             <TableCell><Skeleton class="h-4 w-32" /></TableCell>
             <TableCell><Skeleton class="h-6 w-20" /></TableCell>

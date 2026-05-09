@@ -439,6 +439,39 @@ Task complete when ALL verified:
 
 ---
 
+## 🔍 Code Review Findings — 2026-05-09
+
+**Review Summary:** ✅ All decisions applied, all 9 patches fixed, all 4 deferred now fixed, 2 dismissed
+
+**Final Status:** READY FOR MERGE — All issues resolved ✅
+
+### Decisions Applied
+
+- [x] [Review][Decision] **Super admin role filter exclusion** — ✅ Applied: filterTabs now excludes admin tab for super_admin users via role-aware logic.
+- [x] [Review][Decision] **Supervisor engineer filter consolidated** — ✅ Applied: Combined into single "engineer" tab that unions both field_engineer AND supervisor_engineer (simpler UX).
+- [x] [Review][Decision] **Empty state icon added** — ✅ Applied: Added `UsersIcon` from lucide-vue-next with muted-foreground color.
+
+### Patches Applied
+
+- [x] [Review][Patch] **Remove CreateUserDialog dependency** — ✅ Removed import and wiring. Added TODO comment for Story 06-02 integration.
+- [x] [Review][Patch] **Add permission check on status toggle** — ✅ Added `can('toggle_user_status')` guard before action emit.
+- [x] [Review][Patch] **Handle invalid dates in formatRelativeTime** — ✅ Added null/invalid date validation returning `$t('time.unknown')`.
+- [x] [Review][Patch] **Silent no-op on missing user** — ✅ Added error message: `error.value = 'User not found'` when user not found.
+- [x] [Review][Patch] **Replace hardcoded mock flag with env config** — ✅ Changed to `import.meta.env.VITE_USE_MOCK !== 'false'`.
+- [x] [Review][Patch] **Remove unsafe error type assertions** — ✅ Replaced all `(e as any)?.message` with `e instanceof Error` checks.
+- [x] [Review][Patch] **Remove dead error handling code** — ✅ Removed unreachable catch-then-rethrow in createUser.
+- [x] [Review][Patch] **Remove unused Pill import** — ✅ Removed from UserTable.vue.
+- [x] [Review][Patch] **Fix page header button alignment** — ✅ Simplified flex layout (justify-between already right-aligns button).
+
+### Deferred — Now Fixed!
+
+- [x] [Review][Defer→Fixed] **RTL spacing validation** — ✅ Updated tab button padding from `px-4` to `ps-4 pe-4` for logical RTL properties. [users.vue:109]
+- [x] [Review][Defer→Fixed] **getContractorsList optimization** — ✅ Added `hasContractors` check to avoid redundant fetches when contractors already loaded. [useAdminUsers.ts:185-187]
+- [x] [Review][Defer→Fixed] **Skeleton row count dynamic** — ✅ Computed `skeletonRowCount` based on viewport height (48px per row, min 5, max viewport-aware). [UserTable.vue:17-25]
+- [x] [Review][Defer→Fixed] **Async operation timeout guards** — ✅ Added `withTimeout(promise, 10s)` utility to all API calls (fetch, toggle, create). [useAdminUsers.ts:20-31]
+
+---
+
 **Stack:** Nuxt 4.x · Vue 3.5.x · Tailwind CSS 4.x · shadcn-vue · Pinia 3.x · VeeValidate + Zod  
 **Design Reference:** Epic 06 § Design reference + `docs/design-spec.md` §6.5 (Admin sidebar nav)  
-**Last Updated:** 2026-05-09 by BMad Story Context Engine
+**Last Updated:** 2026-05-09 by BMad Story Context Engine (Code Review Complete)
