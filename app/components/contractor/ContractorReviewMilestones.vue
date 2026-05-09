@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
 import type { Milestone } from '~/shared/types/project'
@@ -82,7 +81,7 @@ const badgeClass = (status: string) => {
                 {{ milestone.name }}
               </p>
               <p class="text-muted-foreground mt-1 text-sm">
-                {{ milestone.project_name || 'Project' }}
+                {{ milestone.project_name || t('common.project') }}
               </p>
             </div>
           </div>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { formatCurrency } from '~/utils/formatters'
@@ -45,6 +44,16 @@ const handleViewAll = () => {
       </div>
     </div>
 
+    <!-- Empty State (null summary) -->
+    <div
+      v-else-if="!summary"
+      class="border-border/50 bg-card/50 rounded-2xl border p-6 text-center"
+    >
+      <p class="text-muted-foreground text-sm">
+        {{ $t('dashboard.contractor.noPaymentData') }}
+      </p>
+    </div>
+
     <!-- Payment Cards -->
     <div v-else class="grid gap-4 md:grid-cols-2">
       <!-- Pending Amount Card -->
@@ -70,7 +79,7 @@ const handleViewAll = () => {
         <p
           class="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase"
         >
-          {{ $t('dashboard.contractor.receivedThisMonth') }}
+          {{ $t('dashboard.contractor.receivedLast30Days') }}
         </p>
         <p class="text-primary text-xl font-bold">
           {{ formatCurrency(summary?.recentlyReceived || 0) }}

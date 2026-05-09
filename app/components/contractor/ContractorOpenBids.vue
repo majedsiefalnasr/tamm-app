@@ -4,11 +4,11 @@ import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
 import type { Project } from '~/shared/types/project'
-import type { Proposal } from '~/shared/types/project'
+import type { ProposalData } from '~/shared/types/project'
 
 interface Props {
   projects: Project[]
-  proposals?: Proposal[]
+  proposals?: ProposalData[]
   loading?: boolean
   hasError?: boolean
   errorMessage?: string
@@ -24,10 +24,11 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const { user } = useAuth()
 
 const getProposalStatus = (projectId: string) => {
   return (props.proposals || []).some(
-    p => p.project_id === projectId && p.contractor_id
+    p => p.project_id === projectId && p.contractor_id === user.value?.id
   )
 }
 

@@ -29,6 +29,10 @@ const sortedMilestones = computed(() => {
 })
 
 const handleMilestoneClick = (projectId: string, milestoneId: string) => {
+  if (!projectId || !milestoneId) {
+    console.warn('Cannot navigate: missing projectId or milestoneId')
+    return
+  }
   router.push(`/projects/${projectId}/milestones/${milestoneId}`)
 }
 
@@ -94,7 +98,7 @@ const handleRetry = () => {
           <div class="flex items-start justify-between gap-2">
             <div class="flex-1">
               <p class="text-ink text-sm font-semibold">
-                {{ milestone.project_name || 'Project' }}
+                {{ milestone.project?.name || $t('common.project') }}
               </p>
               <p class="text-foreground mt-1 text-sm font-medium">
                 {{ milestone.name }}
@@ -108,7 +112,7 @@ const handleRetry = () => {
               <p class="text-muted-foreground text-xs">
                 {{
                   $t('dashboard.contractor.engineer', {
-                    name: milestone.field_engineer_name || 'N/A',
+                    name: milestone.field_engineer?.name || 'N/A',
                   })
                 }}
               </p>

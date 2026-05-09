@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import ContractorActiveMilestones from '~/components/contractor/ContractorActiveMilestones.vue'
 import ContractorReviewMilestones from '~/components/contractor/ContractorReviewMilestones.vue'
 import ContractorPaymentStatus from '~/components/contractor/ContractorPaymentStatus.vue'
@@ -25,11 +25,35 @@ const { getProjectProposals } = useProposals()
 // Local state for proposals
 const proposals = ref<Map<string, any>>(new Map())
 const proposalsLoading = ref(false)
+const milestonesError = ref(false)
+const milestonesErrorMessage = ref('')
+const projectsError = ref(false)
+const projectsErrorMessage = ref('')
 
 // Fetch on mount
 onMounted(async () => {
-  await Promise.all([fetchMilestones()])
+  await Promise.all([fetchMilestones(), loadProjectProposals()])
 })
+
+// Load proposals from all open bid projects
+const loadProjectProposals = async () => {
+  proposalsLoading.value = true
+  try {
+    const projectIds = openBidProjects.value?.map(p => p.id) || []
+    if (projectIds.length === 0) return
+
+    for (const projectId of projectIds) {
+      const projectProposals = await getProjectProposals(projectId)
+      if (projectProposals?.length > 0) {
+        projectProposals.forEach(p => {
+          proposals.value.set(`${projectId}`, p)
+        })
+      }
+    }
+  } finally {
+    proposalsLoading.value = false
+  }
+}
 
 // Filter milestones by status
 const activeMilestones = computed(() =>
@@ -101,6 +125,8 @@ const openBidProjects = computed(() =>
       <ContractorActiveMilestones
         :milestones="activeMilestones"
         :loading="milestonesLoading"
+        :has-error="milestonesError"
+        :error-message="milestonesErrorMessage"
         @retry="fetchMilestones"
       />
 
@@ -121,6 +147,8 @@ const openBidProjects = computed(() =>
         :projects="openBidProjects"
         :proposals="proposals"
         :loading="projectsLoading || proposalsLoading"
+        :has-error="projectsError"
+        :error-message="projectsErrorMessage"
         @retry="fetchMilestones()"
       />
     </div>
