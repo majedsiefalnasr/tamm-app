@@ -1,5 +1,11 @@
 # Deferred Work Items
 
+## Deferred from: code review of 08-02-contractor-dashboard.md (2026-05-09)
+
+- **Page title i18n namespace** — Main dashboard heading uses `pages.contractor_dashboard` while section copy uses `dashboard.contractor.*`; consolidating under `dashboard.contractor.title` would match the story spec verbatim (cosmetic consistency).
+
+- **`Contractor dashboard` unit tests remain filter/math only** — `app/pages/dashboard/__tests__/contractor.spec.ts` does not mount components or assert middleware; same shallow pattern as prior dashboard stories; expand when shared dashboard test harness exists.
+
 ## Deferred from: code review of 08-04-supervisor-engineer-dashboard.md (2026-05-09)
 
 - **`getPendingReviews` mock scope** — Implementation only loads `proj-001` via `loadMilestones`; under-review milestones in other projects are invisible until the real supervisor-queue endpoint replaces the mock (`useMilestones.ts`).

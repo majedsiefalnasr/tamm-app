@@ -19,6 +19,8 @@ export interface Project {
   id: string
   name: string
   description: string
+  /** Structured street address when available (else UI may fall back to `city`) */
+  address?: string
   city: string
   area_m2: number
   budget: number
@@ -89,7 +91,11 @@ export interface Milestone {
     id: string
     name: string
   }
+  supervisor_name?: string
   supervisor_approved_at?: string
+  /** When payout completed — preferred over updated_at for “received last 30 days” */
+  paid_out_at?: string
+  deadline?: string
 }
 
 export interface Engineer {

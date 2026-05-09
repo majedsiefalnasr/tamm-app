@@ -84,6 +84,20 @@ export const useProjects = () => {
       completed_milestones: 2,
       total_milestones: 5,
     },
+    {
+      id: 'proj-bid-open-001',
+      name: 'Warehouse Expansion',
+      description: 'Industrial warehouse retrofit',
+      city: 'Alexandria',
+      address: 'Khorshid Industrial Zone, Plot 12',
+      area_m2: 3000,
+      budget: 900000,
+      currency: 'EGP',
+      status: 'open_for_bids',
+      created_at: '2026-05-06T08:00:00Z',
+      completed_milestones: 0,
+      total_milestones: 0,
+    },
   ]
 
   // Mock project details
@@ -187,14 +201,26 @@ export const useProjects = () => {
       case 'client':
         // Clients see only their own projects (mock: first 3)
         return allProjects.slice(0, 3)
-      case 'contractor':
-        // Contractors see only projects where they're assigned (mock: projects 1, 2, 4)
-        return allProjects.filter(
+      case 'contractor': {
+        const assigned = allProjects.filter(
           p =>
             p.contractor_id === 'cont-001' ||
             p.contractor_id === 'cont-002' ||
             p.contractor_id === 'cont-004'
         )
+        const invitedOpen = allProjects.filter(
+          p => p.status === 'open_for_bids' && p.id === 'proj-bid-open-001'
+        )
+        const seen = new Set<string>()
+        const merged: Project[] = []
+        for (const p of [...assigned, ...invitedOpen]) {
+          if (!seen.has(p.id)) {
+            seen.add(p.id)
+            merged.push(p)
+          }
+        }
+        return merged
+      }
       case 'field_engineer':
       case 'supervisor_engineer':
         // Field/supervisor engineers see assigned projects (mock: projects 1, 2)

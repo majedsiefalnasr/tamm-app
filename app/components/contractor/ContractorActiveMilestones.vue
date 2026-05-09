@@ -24,13 +24,20 @@ const emit = defineEmits<{
 
 const router = useRouter()
 
+function milestoneSortKey(m: Milestone): number {
+  if (!m.deadline) return Number.POSITIVE_INFINITY
+  const t = new Date(m.deadline).getTime()
+  return Number.isNaN(t) ? Number.POSITIVE_INFINITY : t
+}
+
 const sortedMilestones = computed(() => {
-  return [...(props.milestones || [])]
+  const list = [...(props.milestones || [])]
+  list.sort((a, b) => milestoneSortKey(a) - milestoneSortKey(b))
+  return list
 })
 
 const handleMilestoneClick = (projectId: string, milestoneId: string) => {
   if (!projectId || !milestoneId) {
-    console.warn('Cannot navigate: missing projectId or milestoneId')
     return
   }
   router.push(`/projects/${projectId}/milestones/${milestoneId}`)
@@ -91,7 +98,12 @@ const handleRetry = () => {
         v-for="milestone in sortedMilestones"
         :key="milestone.id"
         class="border-border bg-card shadow-card hover:shadow-elevated cursor-pointer rounded-2xl border p-4 transition-shadow"
-        @click="handleMilestoneClick(milestone.project_id || '', milestone.id)"
+        @click="
+          handleMilestoneClick(
+            milestone.project_id || milestone.project?.id || '',
+            milestone.id
+          )
+        "
       >
         <div class="flex flex-col gap-2">
           <!-- Header: Project & Milestone Names -->
@@ -112,7 +124,7 @@ const handleRetry = () => {
               <p class="text-muted-foreground text-xs">
                 {{
                   $t('dashboard.contractor.engineer', {
-                    name: milestone.field_engineer?.name || 'N/A',
+                    name: milestone.field_engineer?.name || $t('common.nA'),
                   })
                 }}
               </p>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
 import type { Milestone } from '~/shared/types/project'
@@ -6,20 +7,35 @@ import type { Milestone } from '~/shared/types/project'
 interface Props {
   milestones: Milestone[]
   loading?: boolean
+  hasError?: boolean
+  errorMessage?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
+  hasError: false,
 })
 
+const emit = defineEmits<{
+  retry: []
+}>()
+
 const { t } = useI18n()
+
+const handleRetry = () => {
+  emit('retry')
+}
 
 const reviewerLabel = (milestone: Milestone) => {
   if (milestone.status === 'supervisor_approved') {
     return t('dashboard.contractor.awaitingClientApproval')
   }
+  const supervisorName =
+    milestone.supervisor?.name ??
+    milestone.supervisor_name ??
+    t('dashboard.supervisorReviewerFallback')
   return t('dashboard.contractor.awaitingReview', {
-    supervisorName: milestone.supervisor_name || 'Supervisor',
+    supervisorName,
   })
 }
 
@@ -56,6 +72,19 @@ const badgeClass = (status: string) => {
       </div>
     </div>
 
+    <!-- Error State -->
+    <div
+      v-else-if="hasError"
+      class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+    >
+      <p class="text-destructive mb-3 text-sm font-medium">
+        {{ errorMessage || $t('errors.failed_to_load') }}
+      </p>
+      <Button variant="outline" size="sm" @click="handleRetry">
+        {{ $t('common.retry') }}
+      </Button>
+    </div>
+
     <!-- Empty State -->
     <div
       v-else-if="milestones.length === 0"
@@ -81,7 +110,7 @@ const badgeClass = (status: string) => {
                 {{ milestone.name }}
               </p>
               <p class="text-muted-foreground mt-1 text-sm">
-                {{ milestone.project_name || t('common.project') }}
+                {{ milestone.project?.name || t('common.project') }}
               </p>
             </div>
           </div>

@@ -3,8 +3,7 @@ import { computed } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
-import type { Project } from '~/shared/types/project'
-import type { ProposalData } from '~/shared/types/project'
+import type { Project, ProposalData } from '~/shared/types/project'
 
 interface Props {
   projects: Project[]
@@ -27,8 +26,9 @@ const router = useRouter()
 const { user } = useAuth()
 
 const getProposalStatus = (projectId: string) => {
+  const uid = user.value?.id
   return (props.proposals || []).some(
-    p => p.project_id === projectId && p.contractor_id === user.value?.id
+    p => p.projectId === projectId && (!!uid ? p.contractorId === uid : false)
   )
 }
 
@@ -101,10 +101,10 @@ const handleRetry = () => {
               {{ project.name }}
             </p>
             <p
-              v-if="project.address"
+              v-if="project.address || project.city"
               class="text-muted-foreground mt-1 text-xs"
             >
-              {{ project.address }}
+              {{ project.address || project.city }}
             </p>
           </div>
 

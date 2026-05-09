@@ -3,6 +3,10 @@ import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { formatCurrency } from '~/utils/formatters'
 
+const emit = defineEmits<{
+  retry: []
+}>()
+
 interface PaymentSummary {
   pendingTotal: number
   recentlyReceived: number
@@ -12,16 +16,23 @@ interface PaymentSummary {
 interface Props {
   summary: PaymentSummary | null
   loading?: boolean
+  hasError?: boolean
+  errorMessage?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
+  hasError: false,
 })
 
 const router = useRouter()
 
 const handleViewAll = () => {
   router.push('/payments')
+}
+
+const handleRetry = () => {
+  emit('retry')
 }
 </script>
 
@@ -42,6 +53,19 @@ const handleViewAll = () => {
         <Skeleton class="mb-3 h-4 w-32" />
         <Skeleton class="h-8 w-40" />
       </div>
+    </div>
+
+    <!-- Error State -->
+    <div
+      v-else-if="hasError"
+      class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+    >
+      <p class="text-destructive mb-3 text-sm font-medium">
+        {{ errorMessage || $t('errors.failed_to_load') }}
+      </p>
+      <Button variant="outline" size="sm" @click="handleRetry">
+        {{ $t('common.retry') }}
+      </Button>
     </div>
 
     <!-- Empty State (null summary) -->

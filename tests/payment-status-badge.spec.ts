@@ -40,7 +40,17 @@ async function loginAs(page: typeof test.page, role: string) {
   await page.fill('input[type="email"]', user.email)
   await page.fill('input[type="password"]', user.password)
   await page.click('button[type="submit"]')
-  await page.waitForURL('**/projects**')
+  if (role === 'contractor') {
+    await page.waitForURL('**/dashboard**')
+  } else if (role === 'admin') {
+    await page.waitForURL('**/admin/dashboard**')
+  } else if (role === 'field_engineer') {
+    await page.waitForURL('**/assignments**')
+  } else if (role === 'supervisor_engineer') {
+    await page.waitForURL('**/dashboard/supervisor**')
+  } else {
+    await page.waitForURL('**/projects**')
+  }
 }
 
 test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {

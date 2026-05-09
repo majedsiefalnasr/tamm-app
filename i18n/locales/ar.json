@@ -251,6 +251,7 @@
     }
   },
   "dashboard": {
+    "supervisorReviewerFallback": "مهندس الإشراف",
     "fieldEngineer": {
       "title": "لوحة التحكم",
       "activeAssignments": "مهامي النشطة",

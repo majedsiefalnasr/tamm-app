@@ -112,7 +112,7 @@ describe('Contractor Dashboard Page', () => {
       )
       .reduce((sum, m) => sum + (m.amount || 0), 0)
 
-    expect(pending).toBe(10500) // 5000 + 3000 + 2500
+    expect(pending).toBe(7500) // awaiting_approval + ready_for_payout only
     expect(recent).toBe(1500) // paid_out within 30 days
   })
 

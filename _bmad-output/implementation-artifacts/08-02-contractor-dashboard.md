@@ -1,6 +1,6 @@
 # Story 08-02 — Contractor Dashboard
 
-**Status:** completed  
+**Status:** done  
 **Epic:** 08 — Role-Based Dashboards  
 **Story ID:** 8.2  
 **Priority:** 🟢 HIGH — Core contractor-facing feature  
@@ -730,6 +730,17 @@ import { canTransition } from '~/utils/statusMachine'
 
 ---
 
+### Review Findings (code-review workflow 2026-05-09)
+
+- [x] [Review][Patch] Engineer fallback used hardcoded `'N/A'` instead of i18n — fixed (`ContractorActiveMilestones.vue`, `common.nA`).
+- [x] [Review][Patch] `loadProjectProposals` errors were swallowed — fixed; failures set `projectsError` / `projectsErrorMessage`.
+- [x] [Review][Patch] `/dashboard` hub gated only on role string — fixed; primary gate uses `can('view_contractor_dashboard')`, contractor without permission → `/403` (`dashboard-hub.ts`).
+- [x] [Review][Patch] Milestone fetch errors only surfaced in Active section — fixed; Review + Payment sections receive `has-error`, message, and retry (`ContractorReviewMilestones.vue`, `ContractorPaymentStatus.vue`, `ContractorDashboardPage.vue`).
+- [x] [Review][Patch] Duplicate type imports in `ContractorOpenBids.vue` — merged single import line.
+- [x] [Review][Patch] Milestone card navigation passed only `project_id` — now falls back to `project?.id` (`ContractorActiveMilestones.vue`).
+
+**Dismissed as noise:** `ContractorPaymentStatus` null-summary branch rarely exercised because parent always passes a computed object (harmless).
+
 ## 🔍 Code Review Findings
 
 **Review Date:** 2026-05-09  
@@ -746,12 +757,53 @@ import { canTransition } from '~/utils/statusMachine'
 - [x] [Review][Patch] F3 — Type mismatch: Proposal type not exported; Milestone field names don't match usage [ContractorOpenBids.vue:7, ContractorActiveMilestones.vue:97,111] CRITICAL **FIXED** — Changed import from `Proposal` to `ProposalData`, fixed field paths from `project_name`→`project?.name` and `field_engineer_name`→`field_engineer?.name`
 - [x] [Review][Patch] F11 — Error states defined in components but never wired from parent — error UI unreachable [contractor.vue:104,124] HIGH **FIXED** — Added error state tracking to contractor.vue (milestonesError, projectsError) and passed hasError/errorMessage props to child components
 - [x] [Review][Patch] F5 — Milestone click navigation uses empty string fallback, creates invalid routes [ContractorActiveMilestones.vue:32,90-91] HIGH **FIXED** — Added validation guard to handleMilestoneClick: returns early if projectId or milestoneId is missing
-- [x] [Review][Patch] F7 — Proposal status check doesn't validate contractor ownership [ContractorOpenBids.vue:151-154] MEDIUM **FIXED** — Updated getProposalStatus to validate proposal.contractor_id === user.value?.id (injected useAuth composable)
+- [x] [Review][Patch] F7 — Proposal status check doesn't validate contractor ownership [ContractorOpenBids.vue:151-154] MEDIUM **FIXED** — Updated getProposalStatus to validate proposal.contractorId === user.value?.id (injected useAuth composable)
 - [x] [Review][Patch] F6 — Hardcoded fallback text instead of i18n keys violates spec [ContractorActiveMilestones.vue:115, ContractorReviewMilestones.vue:356] MEDIUM **FIXED** — Replaced hardcoded 'Project' fallback with `t('common.project')` i18n key in both components
 - [x] [Review][Patch] F4 — Unused component imports should be removed [ContractorActiveMilestones.vue:4, ContractorPaymentStatus.vue, ContractorReviewMilestones.vue] LOW **FIXED** — Removed unused `computed` imports from ContractorPaymentStatus.vue and ContractorReviewMilestones.vue
 
 ### Defer (pre-existing patterns, next iteration)
 - [x] [Review][Defer] F8 — Tests only validate filter logic, not component rendering or integration. Pre-existing pattern in codebase, can improve in next iteration.
+
+---
+
+## Dev Agent Record
+
+### Completion Notes
+
+- Contractor overview is canonical at `/dashboard` via `app/middleware/dashboard-hub.ts` (other authenticated roles are redirected to their dashboard URLs).
+- UI and data orchestration live in `ContractorDashboardPage.vue`; `/dashboard/contractor` redirects to `/dashboard` with `replace`.
+- Contractor post-login home and sidebar overview link use `/dashboard` (`getHomePageForRole`, `getNavigationForRole`).
+- `fetchMilestones` now stamps `project_id` / `project` when flattening mocks; dashboard milestones are scoped to the contractor’s visible projects; payment “last 30 days” prefers `paid_out_at` when present.
+- Open bids: load projects before proposals; proposals collected as `ProposalData[]`; retry refreshes projects + proposals; proposal matching uses camelCase `projectId` / `contractorId`; mock GET proposals sets the first proposal’s `contractorId` from the logged-in user id when available.
+- Mock project `proj-bid-open-001` (`open_for_bids`) merged into contractor project list; added `dashboard.supervisorReviewerFallback` (en/ar).
+- `view_contractor_dashboard` permission added for the contractor role.
+
+### File List
+
+- `app/middleware/dashboard-hub.ts`
+- `app/pages/dashboard/index.vue`
+- `app/pages/dashboard/contractor.vue`
+- `app/components/contractor/ContractorDashboardPage.vue`
+- `app/components/contractor/ContractorOpenBids.vue`
+- `app/components/contractor/ContractorReviewMilestones.vue`
+- `app/components/contractor/ContractorActiveMilestones.vue`
+- `app/composables/useMilestones.ts`
+- `app/composables/useProjects.ts`
+- `app/composables/useProposals.ts`
+- `app/composables/usePermission.ts`
+- `app/utils/roleRoutes.ts`
+- `shared/types/project.ts`
+- `i18n/locales/en.json`
+- `i18n/locales/ar.json`
+- `tests/role-based-redirect.spec.ts`
+- `tests/payment-flow.spec.ts`
+- `tests/payment-status-badge.spec.ts`
+- `tests/unit/utils/roleRoutes.spec.ts`
+- `app/pages/dashboard/__tests__/contractor.spec.ts`
+
+### Change Log
+
+- **2026-05-09:** Story 08-02 — `/dashboard` contractor hub, data-loading fixes, proposal typing/ownership, navigation and test alignment.
 
 ---
 
@@ -771,4 +823,4 @@ import { canTransition } from '~/utils/statusMachine'
 
 **Created by:** BMad Ultimate Context Engine  
 **Last Updated:** 2026-05-09  
-**Ready for:** Dev implementation via `/bmad:dev-story` skill
+**Ready for:** Code review (`code-review` workflow)

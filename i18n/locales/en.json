@@ -251,6 +251,7 @@
     }
   },
   "dashboard": {
+    "supervisorReviewerFallback": "Supervisor",
     "fieldEngineer": {
       "title": "Dashboard",
       "activeAssignments": "My Active Assignments",

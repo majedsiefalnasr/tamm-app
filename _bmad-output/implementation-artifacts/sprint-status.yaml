@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-09T23:59:00Z
+last_updated: 2026-05-09T23:59:59Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -111,7 +111,7 @@ development_status:
   # Epic 08 — Role-Based Dashboards
   epic-08: in-progress
   08-01-client-dashboard: review
-  08-02-contractor-dashboard: ready-for-dev
+  08-02-contractor-dashboard: done
   08-03-field-engineer-dashboard-and-assignments-page: review
   08-04-supervisor-engineer-dashboard: done
   08-05-admin-dashboard: backlog

@@ -125,12 +125,14 @@ export function useProposals() {
       // Mock data for development
       // TODO: replace mock — GET /projects/:id/proposals
       await new Promise(resolve => setTimeout(resolve, 300))
+      const auth = useAuthStore()
+      const myId = auth.user?.id ?? ''
       const mockProposals: ProposalData[] = [
         {
           id: 'prop_001',
           projectId,
-          contractorId: 'contractor_1',
-          contractorName: 'Elite Builders',
+          contractorId: myId || 'contractor_1',
+          contractorName: auth.user?.name || 'Elite Builders',
           price: 250000,
           estimatedDays: 90,
           notes: 'Quality workmanship guaranteed with premium materials',

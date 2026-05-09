@@ -127,16 +127,16 @@ test.describe('Role-based redirect after login', () => {
     expect(page.url()).toContain('/403')
   })
 
-  test('authenticated contractor can access /projects', async ({ page }) => {
-    // Setup: Login as contractor
+  test('authenticated contractor is redirected to /dashboard after login', async ({
+    page,
+  }) => {
     await page.goto('/login')
     await page.fill('input[type="email"]', 'contractor@example.com')
     await page.fill('input[type="password"]', 'password123')
     await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**', { timeout: 5000 })
+    await page.waitForURL('**/dashboard**', { timeout: 5000 })
 
-    // Should be able to access /projects
-    expect(page.url()).toContain('/projects')
+    expect(page.url()).toContain('/dashboard')
     const heading = page.locator('h1')
     await expect(heading).toBeVisible()
   })

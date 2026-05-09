@@ -116,6 +116,7 @@ export const useMilestones = () => {
         updated_at: '2026-05-05T11:00:00Z',
         project_id: 'proj-001',
         project: { id: 'proj-001', name: 'Villa Project A' },
+        supervisor: { id: 'user-201', name: 'Khaled Ibrahim' },
         field_engineer: { id: 'user-202', name: 'Mohammed Hassan' },
         latest_report: {
           id: 'report-ms90',
@@ -144,6 +145,7 @@ export const useMilestones = () => {
         updated_at: '2026-05-08T12:30:00Z',
         project_id: 'proj-001',
         project: { id: 'proj-001', name: 'Villa Project A' },
+        supervisor: { id: 'user-201', name: 'Khaled Ibrahim' },
         field_engineer: { id: 'user-203', name: 'Youssef Ali' },
         latest_report: {
           id: 'report-ms91',
@@ -868,10 +870,21 @@ export const useMilestones = () => {
     loading.value = true
     error.value = null
     try {
-      // Flatten all milestones from all projects
+      // Flatten all milestones from all projects (ensure project_id for dashboard filters)
       const flattened: Milestone[] = []
-      for (const projectMilestones of Object.values(mockMilestones)) {
-        flattened.push(...projectMilestones)
+      for (const [projectId, projectMilestones] of Object.entries(
+        mockMilestones
+      )) {
+        for (const m of projectMilestones) {
+          flattened.push({
+            ...m,
+            project_id: m.project_id ?? projectId,
+            project: m.project ?? {
+              id: projectId,
+              name: m.project?.name ?? '',
+            },
+          })
+        }
       }
       allMilestones.value = flattened
       // TODO: replace mock — GET /milestones?contractor_id={id} endpoint

@@ -53,7 +53,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'overview',
         label: 'nav.overview',
         icon: 'LayoutDashboard',
-        href: '/dashboard/contractor',
+        href: '/dashboard',
       },
       {
         key: 'projects',
@@ -257,7 +257,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
 export const getHomePageForRole = (role: string): string => {
   const roleHomeMap: Record<string, string> = {
     client: '/projects',
-    contractor: '/projects',
+    contractor: '/dashboard',
     field_engineer: '/assignments',
     supervisor_engineer: '/dashboard/supervisor',
     admin: '/admin/dashboard',

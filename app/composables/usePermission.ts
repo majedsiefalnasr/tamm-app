@@ -57,6 +57,7 @@ export const usePermission = () => {
       ],
       contractor: [
         'view_projects',
+        'view_contractor_dashboard',
         'create_milestone',
         'submit_proposal',
         'submit_report',

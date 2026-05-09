@@ -206,7 +206,7 @@ test.describe('Story 04-01 — Client Pays for a Milestone', () => {
     await page.fill('input[type="email"]', 'contractor@example.com')
     await page.fill('input[type="password"]', 'password123')
     await page.click('button[type="submit"]')
-    await page.waitForURL('**/projects**')
+    await page.waitForURL('**/dashboard**')
 
     await page.goto(`${BASE_URL}/projects/proj-001`)
 

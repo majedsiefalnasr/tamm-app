@@ -11,16 +11,18 @@ describe('roleRoutes utilities', () => {
       expect(getHomePageForRole('client')).toBe('/projects')
     })
 
-    it('returns /projects for contractor', () => {
-      expect(getHomePageForRole('contractor')).toBe('/projects')
+    it('returns /dashboard for contractor', () => {
+      expect(getHomePageForRole('contractor')).toBe('/dashboard')
     })
 
     it('returns /assignments for field_engineer', () => {
       expect(getHomePageForRole('field_engineer')).toBe('/assignments')
     })
 
-    it('returns /reviews for supervisor_engineer', () => {
-      expect(getHomePageForRole('supervisor_engineer')).toBe('/reviews')
+    it('returns /dashboard/supervisor for supervisor_engineer', () => {
+      expect(getHomePageForRole('supervisor_engineer')).toBe(
+        '/dashboard/supervisor'
+      )
     })
 
     it('returns /admin/dashboard for admin', () => {
