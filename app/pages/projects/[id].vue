@@ -81,6 +81,11 @@ const showCloseBiddingButton = computed(() => {
   return project.value.status === 'open_for_bids'
 })
 
+const showAssignEngineersButton = computed(() => {
+  if (!project.value || !isAdmin.value) return false
+  return project.value.status === 'contractor_selected'
+})
+
 const proposalCount = computed(() => {
   // TODO: get actual proposal count from store/API
   // For now returning mock value
@@ -139,6 +144,9 @@ const { getProposal, hasSubmittedProposal, isContractorInvited } =
 
 // Close bidding dialog
 const isCloseBiddingDialogOpen = ref(false)
+
+// Assign engineers dialog
+const isAssignEngineersDialogOpen = ref(false)
 
 // Proposals section
 const proposalsList = ref<any[]>([])
@@ -215,6 +223,34 @@ const handleProposalSelected = async (data: {
       err instanceof Error
         ? err.message
         : t('projects.proposals.selectionFailed')
+    useNotification().error(errorMsg)
+  }
+}
+
+const handleSaveEngineers = async (
+  supervisorId: string,
+  fieldEngineerId: string
+) => {
+  if (!project.value) return
+
+  try {
+    const projectsComposable = useProjects()
+    const result = await projectsComposable.assignEngineers(
+      project.value.id,
+      supervisorId,
+      fieldEngineerId
+    )
+
+    if (result.success) {
+      isAssignEngineersDialogOpen.value = false
+      useNotification().success(t('projects.assignEngineers.successMessage'))
+      await refresh()
+    } else {
+      useNotification().error(result.error || t('errors.assignEngineersFailed'))
+    }
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error ? err.message : t('errors.assignEngineersFailed')
     useNotification().error(errorMsg)
   }
 }
@@ -403,6 +439,13 @@ const handleCloseBiddingConfirmed = async () => {
         @click="isCloseBiddingDialogOpen = true"
       >
         {{ t('projects.closeBidding.button') }}
+      </Button>
+    </div>
+
+    <!-- Assign Engineers button (admin only, status = contractor_selected) -->
+    <div v-if="showAssignEngineersButton" class="flex gap-3">
+      <Button @click="isAssignEngineersDialogOpen = true">
+        {{ t('projects.assignEngineers.button') }}
       </Button>
     </div>
 
@@ -609,5 +652,16 @@ const handleCloseBiddingConfirmed = async () => {
     :proposal-count="proposalCount"
     @update:is-open="isCloseBiddingDialogOpen = $event"
     @confirmed="handleCloseBiddingConfirmed"
+  />
+
+  <!-- Assign Engineers Dialog -->
+  <AssignEngineersDialog
+    v-if="project"
+    :is-open="isAssignEngineersDialogOpen"
+    :project-id="project.id"
+    :current-supervisor-id="project.supervisor_engineer_id"
+    :current-field-engineer-id="project.field_engineer_id"
+    @close="isAssignEngineersDialogOpen = false"
+    @save="handleSaveEngineers"
   />
 </template>

@@ -358,6 +358,56 @@ export const useProjects = () => {
     }
   }
 
+  const assignEngineers = async (
+    projectId: string,
+    supervisorId: string,
+    fieldEngineerId: string
+  ) => {
+    const projectDetail = mockProjectDetails[projectId]
+    if (!projectDetail) {
+      return { success: false, error: 'Project not found' }
+    }
+
+    if (projectDetail.status !== 'contractor_selected') {
+      return {
+        success: false,
+        error: 'Project must be in contractor_selected status',
+      }
+    }
+
+    const prevSupervisor = projectDetail.supervisor_engineer_id
+    const prevField = projectDetail.field_engineer_id
+
+    try {
+      projectDetail.supervisor_engineer_id = supervisorId
+      projectDetail.field_engineer_id = fieldEngineerId
+
+      const mockEngineers: Record<string, { id: string; name: string }> = {
+        'eng-001': { id: 'eng-001', name: 'Khaled Ibrahim' },
+        'eng-002': { id: 'eng-002', name: 'Mohammed Hassan' },
+        'eng-003': { id: 'eng-003', name: 'Fatima Ahmed' },
+        'eng-004': { id: 'eng-004', name: 'Ali Mohammed' },
+      }
+
+      projectDetail.supervisor_engineer = mockEngineers[supervisorId] || {
+        id: supervisorId,
+        name: 'Engineer',
+      }
+      projectDetail.field_engineer = mockEngineers[fieldEngineerId] || {
+        id: fieldEngineerId,
+        name: 'Engineer',
+      }
+
+      return { success: true }
+    } catch (err) {
+      projectDetail.supervisor_engineer_id = prevSupervisor
+      projectDetail.field_engineer_id = prevField
+      const errorMsg =
+        err instanceof Error ? err.message : 'Failed to assign engineers'
+      return { success: false, error: errorMsg }
+    }
+  }
+
   return {
     projects: computed(() => projects.value),
     loading: computed(() => loading.value),
@@ -370,5 +420,6 @@ export const useProjects = () => {
     closeBiddingForReview,
     getProposalCount,
     selectContractor,
+    assignEngineers,
   }
 }

@@ -649,6 +649,20 @@
       "selectingContractor": "Selecting contractor...",
       "selectionSuccess": "Contractor selected successfully",
       "selectionFailed": "Failed to select contractor. Please try again."
+    },
+    "assignEngineers": {
+      "button": "Assign Engineers",
+      "updateButton": "Update Engineers",
+      "dialogTitle": "Assign Engineers",
+      "description": "Select the supervisor engineer and field engineer for the project",
+      "supervisorLabel": "Supervisor Engineer",
+      "fieldLabel": "Field Engineer",
+      "selectPlaceholder": "Select engineer",
+      "saveButton": "Save Assignment",
+      "assigningMessage": "Assigning engineers...",
+      "successMessage": "Engineers assigned successfully",
+      "loadingError": "Failed to load engineers list",
+      "selectBothError": "Both engineers must be selected"
     }
   }
 }

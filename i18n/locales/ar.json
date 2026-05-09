@@ -649,6 +649,20 @@
       "selectingContractor": "جاري اختيار المقاول...",
       "selectionSuccess": "تم اختيار المقاول بنجاح",
       "selectionFailed": "فشل اختيار المقاول. يرجى المحاولة مرة أخرى"
+    },
+    "assignEngineers": {
+      "button": "تعيين المهندسين",
+      "updateButton": "تحديث المهندسين",
+      "dialogTitle": "تعيين المهندسين",
+      "description": "اختر المهندس المشرف والمهندس الميداني للمشروع",
+      "supervisorLabel": "المهندس المشرف",
+      "fieldLabel": "المهندس الميداني",
+      "selectPlaceholder": "اختر مهندساً",
+      "saveButton": "حفظ التعيين",
+      "assigningMessage": "جاري تعيين المهندسين...",
+      "successMessage": "تم تعيين المهندسين بنجاح",
+      "loadingError": "فشل تحميل قائمة المهندسين",
+      "selectBothError": "يجب اختيار كلا المهندسين"
     }
   }
 }

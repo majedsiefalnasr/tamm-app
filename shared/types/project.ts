@@ -92,6 +92,11 @@ export interface Milestone {
   supervisor_approved_at?: string
 }
 
+export interface Engineer {
+  id: string
+  name: string
+}
+
 export interface ProjectDetail {
   id: string
   name: string
@@ -107,8 +112,10 @@ export interface ProjectDetail {
   contractor_id?: string
   contractor_name?: string
   supervisor_engineer_id?: string
+  supervisor_engineer?: Engineer
   supervisor_name?: string
   field_engineer_id?: string
+  field_engineer?: Engineer
   field_engineer_name?: string
   total_amount: number
   total_paid: number
