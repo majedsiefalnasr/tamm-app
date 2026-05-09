@@ -248,7 +248,10 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
     return
   }
 
+  if (isSubmittingBids.value) return
+
   isSubmittingBids.value = true
+  useNotification().info(t('projects.openForBids.loadingMessage'))
 
   const prevStatus = project.value.status
   project.value.status = 'open_for_bids'
@@ -258,8 +261,11 @@ const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
     try {
       await useProjects().inviteContractors(id, contractorIds)
     } catch (err) {
-      // Continue even if invitations endpoint doesn't exist
-      if (!(err instanceof Error && err.message.includes('404'))) {
+      const is404 =
+        (err instanceof Error && err.message.includes('404')) ||
+        err?.response?.status === 404
+
+      if (!is404) {
         throw err
       }
     }

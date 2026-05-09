@@ -9,6 +9,7 @@ import {
   DialogFooter,
 } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
+import { Checkbox } from '~/components/ui/checkbox'
 
 interface Props {
   projectId: string
@@ -29,6 +30,8 @@ const contractors = ref<Array<{ id: string; name: string; email: string }>>([])
 const selectedContractors = ref<string[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
+const validationError = ref<string | null>(null)
+const isSubmitting = ref(false)
 
 // Load contractors when dialog opens
 watch(
@@ -55,12 +58,25 @@ watch(
 )
 
 const canConfirm = computed(
-  () => selectedContractors.value.length > 0 && !loading.value
+  () =>
+    selectedContractors.value.length > 0 &&
+    !loading.value &&
+    !isSubmitting.value
 )
 
 const handleConfirm = () => {
-  if (!canConfirm.value) return
+  validationError.value = null
+
+  if (selectedContractors.value.length === 0) {
+    validationError.value = t('projects.openForBids.validationError')
+    return
+  }
+
+  if (isSubmitting.value) return
+  isSubmitting.value = true
+
   emit('submitted', selectedContractors.value)
+  isSubmitting.value = false
 }
 
 const handleCancel = () => {
@@ -68,6 +84,7 @@ const handleCancel = () => {
 }
 
 const toggleContractor = (contractorId: string) => {
+  validationError.value = null
   const index = selectedContractors.value.indexOf(contractorId)
   if (index > -1) {
     selectedContractors.value.splice(index, 1)
@@ -88,10 +105,20 @@ const isSelected = (contractorId: string) => {
         <DialogTitle>
           {{ t('projects.openForBids.dialogTitle') }}{{ projectName }}
         </DialogTitle>
+        <p class="text-muted-foreground mt-2 text-sm">
+          {{ t('projects.openForBids.selectContractorsSubtitle') }}
+        </p>
       </DialogHeader>
 
       <div v-if="error" class="bg-danger/10 text-danger rounded-lg p-3 text-sm">
         {{ error }}
+      </div>
+
+      <div
+        v-if="validationError"
+        class="bg-warning/10 text-warning rounded-lg p-3 text-sm"
+      >
+        {{ validationError }}
       </div>
 
       <div class="space-y-4">
@@ -115,19 +142,17 @@ const isSelected = (contractorId: string) => {
             v-if="contractors.length === 0"
             class="text-muted-foreground text-center text-sm"
           >
-            No contractors available
+            {{ t('projects.openForBids.noContractorsAvailable') }}
           </div>
           <div
             v-for="contractor in contractors"
             :key="contractor.id"
             class="hover:bg-muted flex items-center gap-3 rounded-lg p-2"
           >
-            <input
+            <Checkbox
               :id="`contractor-${contractor.id}`"
-              type="checkbox"
               :checked="isSelected(contractor.id)"
-              class="border-border h-4 w-4 rounded"
-              @change="toggleContractor(contractor.id)"
+              @update:checked="toggleContractor(contractor.id)"
             />
             <label
               :for="`contractor-${contractor.id}`"
@@ -142,12 +167,11 @@ const isSelected = (contractorId: string) => {
         </div>
 
         <!-- Helper text -->
-        <p
-          v-if="!loading && contractors.length > 0"
-          class="text-muted-foreground text-end text-xs"
-        >
-          {{ selectedContractors.length }}/{{ contractors.length }}
+        <p class="text-muted-foreground text-xs">
           {{ t('projects.openForBids.helperText') }}
+          <span v-if="contractors.length > 0" class="ms-2">
+            ({{ selectedContractors.length }}/{{ contractors.length }})
+          </span>
         </p>
       </div>
 
@@ -155,7 +179,11 @@ const isSelected = (contractorId: string) => {
         <Button variant="outline" @click="handleCancel">
           {{ t('projects.openForBids.cancelButton') }}
         </Button>
-        <Button :disabled="!canConfirm" @click="handleConfirm">
+        <Button
+          :disabled="!canConfirm"
+          :loading="isSubmitting"
+          @click="handleConfirm"
+        >
           {{ t('projects.openForBids.confirmButton') }}
         </Button>
       </DialogFooter>
