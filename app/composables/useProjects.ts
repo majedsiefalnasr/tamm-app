@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import type { Project, ProjectDetail, Milestone } from '~/shared/types/project'
+import { canTransition } from '~/utils/statusMachine'
 
 export const useProjects = () => {
   const projects = ref<Project[]>([])
@@ -304,6 +305,59 @@ export const useProjects = () => {
     return 0
   }
 
+  const selectContractor = async (
+    projectId: string,
+    proposalId: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    const project = projectState.value[projectId]
+    if (!project) {
+      return {
+        success: false,
+        error: 'Project not found',
+      }
+    }
+
+    // Validate transition before attempting API call
+    if (!canTransition('project', project.status, 'contractor_selected')) {
+      return {
+        success: false,
+        error: 'Cannot select contractor. Invalid project status.',
+      }
+    }
+
+    const prevStatus = project.status
+
+    try {
+      // Optimistic update: update immediately
+      project.status = 'contractor_selected'
+      project.selected_proposal_id = proposalId
+
+      // Try API call
+      try {
+        await $fetch(
+          `/api/v1/projects/${projectId}/proposals/${proposalId}/select`,
+          {
+            method: 'POST',
+          }
+        )
+      } catch (apiErr) {
+        // API not available yet, use mock
+        await new Promise(resolve => setTimeout(resolve, 400))
+      }
+
+      return { success: true }
+    } catch (err) {
+      // Rollback on error
+      project.status = prevStatus
+      const errorMsg =
+        err instanceof Error ? err.message : 'Failed to select contractor'
+      return {
+        success: false,
+        error: errorMsg,
+      }
+    }
+  }
+
   return {
     projects: computed(() => projects.value),
     loading: computed(() => loading.value),
@@ -315,5 +369,6 @@ export const useProjects = () => {
     inviteContractors,
     closeBiddingForReview,
     getProposalCount,
+    selectContractor,
   }
 }

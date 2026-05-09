@@ -641,7 +641,14 @@
       "selectButtonLabel": "Select this contractor",
       "selectedBadge": "Selected",
       "notSelectedBadge": "Not Selected",
-      "selectingMessage": "Selecting..."
+      "selectingMessage": "Selecting...",
+      "selectTitle": "Select contractor",
+      "selectConfirm": "Confirm selection",
+      "selectCancel": "Cancel",
+      "selectWarning": "All other proposals will be declined.",
+      "selectingContractor": "Selecting contractor...",
+      "selectionSuccess": "Contractor selected successfully",
+      "selectionFailed": "Failed to select contractor. Please try again."
     }
   }
 }

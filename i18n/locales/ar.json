@@ -641,7 +641,14 @@
       "selectButtonLabel": "اختيار هذا المقاول",
       "selectedBadge": "تم الاختيار",
       "notSelectedBadge": "لم يتم الاختيار",
-      "selectingMessage": "جاري الاختيار..."
+      "selectingMessage": "جاري الاختيار...",
+      "selectTitle": "اختيار المقاول",
+      "selectConfirm": "تأكيد الاختيار",
+      "selectCancel": "إلغاء",
+      "selectWarning": "ستُرفض جميع العروض الأخرى تلقائياً",
+      "selectingContractor": "جاري اختيار المقاول...",
+      "selectionSuccess": "تم اختيار المقاول بنجاح",
+      "selectionFailed": "فشل اختيار المقاول. يرجى المحاولة مرة أخرى"
     }
   }
 }

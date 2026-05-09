@@ -188,14 +188,35 @@ const handleProposalSelected = async (data: {
   contractorId: string
   price: number
 }) => {
-  // This will be handled by Story 07-05 (Client selects contractor)
-  // For now, we just need to track the selection
-  const { setSelectedProposal } = useProposals()
-  setSelectedProposal(project.value!.id, data.proposalId)
-  selectedProposalId.value = data.proposalId
+  if (!project.value) return
 
-  // Refresh project data to get updated status
-  await refresh()
+  try {
+    const projectsComposable = useProjects()
+    const result = await projectsComposable.selectContractor(
+      project.value.id,
+      data.proposalId
+    )
+
+    if (result.success) {
+      const { setSelectedProposal } = useProposals()
+      setSelectedProposal(project.value.id, data.proposalId)
+      selectedProposalId.value = data.proposalId
+      useNotification().success(t('projects.proposals.selectionSuccess'))
+
+      // Refresh project data to get updated status
+      await refresh()
+    } else {
+      useNotification().error(
+        result.error || t('projects.proposals.selectionFailed')
+      )
+    }
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error
+        ? err.message
+        : t('projects.proposals.selectionFailed')
+    useNotification().error(errorMsg)
+  }
 }
 
 // Load proposals when status changes to under_review or contractor_selected
