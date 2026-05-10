@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test'
+import { setPreferredLocale } from './helpers/locale-cookie'
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
 test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    await setPreferredLocale(context, 'ar', BASE_URL)
     // Navigate to app and login
     await page.goto('/')
     await page.fill('input[type="email"]', 'test@example.com')
@@ -13,33 +17,6 @@ test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
   test('AC#6: Switch to Arabic locale and verify RTL text direction', async ({
     page,
   }) => {
-    // Look for language switcher (typically in header/settings)
-    const languageSwitcher = page.locator(
-      'button[aria-label*="Language"], button:has-text("EN"), [class*="language"]'
-    )
-
-    if (await languageSwitcher.isVisible()) {
-      await languageSwitcher.click()
-      await page.waitForTimeout(300)
-
-      // Look for Arabic option
-      const arabicOption = page.locator(
-        'button:has-text("AR"), [aria-label*="Arabic"]'
-      )
-      if (await arabicOption.isVisible()) {
-        await arabicOption.click()
-        await page.waitForTimeout(500)
-      }
-    }
-
-    // Alternatively, set locale via localStorage or URL param if available
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
-    await page.reload()
-    await page.waitForNavigation().catch(() => null)
-
-    // Verify document has RTL direction
     const htmlElement = page.locator('html')
     const dir = await htmlElement.getAttribute('dir')
     expect(dir).toBe('rtl')
@@ -48,12 +25,6 @@ test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
   test('AC#6: Arabic notification titles render correctly in RTL', async ({
     page,
   }) => {
-    // Set locale to Arabic
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
-    await page.reload()
-
     // Open notification drawer
     const bellButton = page.locator(
       'button[aria-label*="Notifications"], button:has-text("🔔")'
@@ -82,12 +53,6 @@ test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
   test('AC#6: Unread dot position correct in RTL (right side)', async ({
     page,
   }) => {
-    // Set locale to Arabic
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
-    await page.reload()
-
     // Open drawer
     const bellButton = page.locator(
       'button[aria-label*="Notifications"], button:has-text("🔔")'
@@ -118,12 +83,6 @@ test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
   test('AC#6: Notification drawer sheet respects RTL layout', async ({
     page,
   }) => {
-    // Set locale to Arabic
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
-    await page.reload()
-
     // Open drawer
     const bellButton = page.locator(
       'button[aria-label*="Notifications"], button:has-text("🔔")'
@@ -147,12 +106,6 @@ test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
   })
 
   test('AC#6: Arabic locale reflected in all UI text', async ({ page }) => {
-    // Set locale to Arabic
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
-    await page.reload()
-
     // Open drawer
     const bellButton = page.locator(
       'button[aria-label*="Notifications"], button:has-text("🔔")'
@@ -176,12 +129,6 @@ test.describe('Story 05-04: Notification RTL Layout (Arabic)', () => {
   })
 
   test('AC#6: Notification body text flows RTL correctly', async ({ page }) => {
-    // Set locale to Arabic
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
-    await page.reload()
-
     // Open drawer
     const bellButton = page.locator(
       'button[aria-label*="Notifications"], button:has-text("🔔")'

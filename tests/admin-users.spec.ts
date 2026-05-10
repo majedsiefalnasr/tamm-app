@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { setPreferredLocale } from './helpers/locale-cookie'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
@@ -18,10 +19,10 @@ test.describe('Admin User List', () => {
 
     // Check page header exists
     const header = page.locator('h1')
-    await expect(header).toContainText('المستخدمون') // Arabic: "Users"
+    await expect(header).toContainText('Users')
 
     // Check "Add User" button exists
-    const addButton = page.locator('button', { hasText: /إضافة|add/i })
+    const addButton = page.locator('button', { hasText: /Add User/i })
     await expect(addButton).toBeVisible()
   })
 
@@ -29,8 +30,8 @@ test.describe('Admin User List', () => {
     await page.goto(`${BASE_URL}/admin/users`)
 
     // Check that filter tabs exist
-    const allTab = page.locator('button', { hasText: 'الكل' })
-    const contractorsTab = page.locator('button', { hasText: 'المقاولون' })
+    const allTab = page.locator('button', { hasText: 'All' })
+    const contractorsTab = page.locator('button', { hasText: 'Contractors' })
 
     await expect(allTab).toBeVisible()
     await expect(contractorsTab).toBeVisible()
@@ -47,7 +48,7 @@ test.describe('Admin User List', () => {
     const initialCount = await allRows.count()
 
     // Click contractors filter
-    const contractorsTab = page.locator('button', { hasText: 'المقاولون' })
+    const contractorsTab = page.locator('button', { hasText: 'Contractors' })
     await contractorsTab.click()
 
     // Wait for table to update
@@ -65,10 +66,10 @@ test.describe('Admin User List', () => {
     await page.goto(`${BASE_URL}/admin/users`)
 
     // Check table headers
-    expect(page.locator('th', { hasText: /الاسم|name/i })).toBeTruthy()
-    expect(page.locator('th', { hasText: /البريد|email/i })).toBeTruthy()
-    expect(page.locator('th', { hasText: /الدور|role/i })).toBeTruthy()
-    expect(page.locator('th', { hasText: /الحالة|status/i })).toBeTruthy()
+    expect(page.locator('th', { hasText: /^Name$/i })).toBeTruthy()
+    expect(page.locator('th', { hasText: /^Email$/i })).toBeTruthy()
+    expect(page.locator('th', { hasText: /^Role$/i })).toBeTruthy()
+    expect(page.locator('th', { hasText: /^Status$/i })).toBeTruthy()
 
     // Check for table rows with data
     const rows = page.locator('table tbody tr')
@@ -137,7 +138,7 @@ test.describe('Admin User List', () => {
       await page.waitForLoadState('networkidle')
 
       // Check for empty state
-      const emptyText = page.locator('text=/لا توجد|no users/i')
+      const emptyText = page.locator('text=/no users found/i')
       // Empty state may or may not appear depending on data
       expect(await emptyText.isVisible()).toBeTruthy()
     }
@@ -160,11 +161,8 @@ test.describe('Admin User List', () => {
     expect(isNotFound || isLogin).toBeTruthy()
   })
 
-  test('should support RTL layout (Arabic)', async ({ page }) => {
-    // Set language to Arabic if not already
-    await page.evaluate(() => {
-      localStorage.setItem('i18n_locale', 'ar')
-    })
+  test('should support RTL layout (Arabic)', async ({ page, context }) => {
+    await setPreferredLocale(context, 'ar', BASE_URL)
 
     await page.goto(`${BASE_URL}/admin/users`)
 

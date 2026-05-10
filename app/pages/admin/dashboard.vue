@@ -33,9 +33,18 @@ const {
   retry,
 } = useAdminDashboard()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const showSuperAdminSection = computed(() => auth.user?.role === 'super_admin')
+
+const welcomeDateFormatted = computed(() => {
+  const loc = locale.value === 'ar' ? 'ar-EG' : 'en-US'
+  return new Intl.DateTimeFormat(loc, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date())
+})
 </script>
 
 <template>
@@ -49,15 +58,7 @@ const showSuperAdminSection = computed(() => auth.user?.role === 'super_admin')
         {{ t('admin.dashboard.page_title') }}
       </h1>
       <p class="text-muted-foreground mt-1">
-        {{
-          t('admin.dashboard.welcome', {
-            date: new Intl.DateTimeFormat(useI18n().locale.value, {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            }).format(new Date()),
-          })
-        }}
+        {{ t('admin.dashboard.welcome', { date: welcomeDateFormatted }) }}
       </p>
     </div>
 

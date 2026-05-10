@@ -111,7 +111,7 @@ test.describe('Admin Dashboard', () => {
     const html = page.locator('html')
     const dir = await html.getAttribute('dir')
 
-    expect(['rtl', undefined]).toContain(dir)
+    expect(dir).toBe('ltr')
   })
 
   test('stats cards should be clickable links', async ({ page }) => {

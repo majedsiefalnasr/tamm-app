@@ -1,18 +1,20 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page, BrowserContext } from '@playwright/test'
+import { setPreferredLocale } from '../helpers/locale-cookie'
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
 test.describe('Withdrawal Page RTL Test (Arabic Locale)', () => {
   let page: Page
+  let context: BrowserContext
 
   test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage()
-    // Set Arabic locale
-    await page.addInitScript(() => {
-      localStorage.setItem('locale', 'ar')
-    })
+    context = await browser.newContext()
+    await setPreferredLocale(context, 'ar', BASE_URL)
+    page = await context.newPage()
   })
 
   test('should display balance card with correct RTL layout', async () => {
-    await page.goto('http://localhost:3000/payments')
+    await page.goto(`${BASE_URL}/payments`)
 
     // Wait for balance card to load
     const balanceCard = page.locator('[data-testid="balance-summary-card"]')
@@ -29,7 +31,7 @@ test.describe('Withdrawal Page RTL Test (Arabic Locale)', () => {
   })
 
   test('should display withdrawal dialog with RTL form layout', async () => {
-    await page.goto('http://localhost:3000/payments')
+    await page.goto(`${BASE_URL}/payments`)
 
     // Click "Request Withdrawal" button
     const requestBtn = page.locator('button:has-text("طلب السحب")')
@@ -48,7 +50,7 @@ test.describe('Withdrawal Page RTL Test (Arabic Locale)', () => {
   })
 
   test('should have correct spacing with logical properties', async () => {
-    await page.goto('http://localhost:3000/payments')
+    await page.goto(`${BASE_URL}/payments`)
 
     const balanceCard = page.locator('[data-testid="balance-summary-card"]')
 
@@ -63,7 +65,7 @@ test.describe('Withdrawal Page RTL Test (Arabic Locale)', () => {
   })
 
   test('should display withdrawal list in RTL with right-aligned amounts', async () => {
-    await page.goto('http://localhost:3000/payments')
+    await page.goto(`${BASE_URL}/payments`)
 
     // Wait for withdrawals to load
     const withdrawalsList = page.locator('[data-testid="withdrawals-list"]')
@@ -77,7 +79,7 @@ test.describe('Withdrawal Page RTL Test (Arabic Locale)', () => {
   })
 
   test('should not have hardcoded direction classes (ml-, mr-, left-, right-)', async () => {
-    await page.goto('http://localhost:3000/payments')
+    await page.goto(`${BASE_URL}/payments`)
 
     const balanceCard = page.locator('[data-testid="balance-summary-card"]')
 
@@ -94,6 +96,6 @@ test.describe('Withdrawal Page RTL Test (Arabic Locale)', () => {
   })
 
   test.afterAll(async () => {
-    await page.close()
+    await context.close()
   })
 })

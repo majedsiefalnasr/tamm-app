@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { setPreferredLocale } from './helpers/locale-cookie'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
@@ -239,11 +240,11 @@ test.describe('Story 04-03 — Admin Releases Payment to Contractor', () => {
     }
   })
 
-  test('should handle RTL layout correctly in Arabic', async ({ page }) => {
-    // Set language to Arabic
-    await page.evaluate(() => {
-      localStorage.setItem('locale', 'ar')
-    })
+  test('should handle RTL layout correctly in Arabic', async ({
+    page,
+    context,
+  }) => {
+    await setPreferredLocale(context, 'ar', BASE_URL)
 
     await page.goto(`${BASE_URL}/projects/proj-001`)
 

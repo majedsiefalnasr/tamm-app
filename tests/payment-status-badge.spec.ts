@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { setPreferredLocale } from './helpers/locale-cookie'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
@@ -144,10 +145,11 @@ test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
 
   test('Payment status renders correctly in English (LTR)', async ({
     page,
+    context,
   }) => {
+    await setPreferredLocale(context, 'en', BASE_URL)
     await loginAs(page, 'client')
 
-    await page.evaluate(() => localStorage.setItem('locale', 'en'))
     await page.goto(`${BASE_URL}/projects`)
 
     const paymentBadge = page
@@ -167,10 +169,13 @@ test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
     )
   })
 
-  test('Payment status renders correctly in Arabic (RTL)', async ({ page }) => {
+  test('Payment status renders correctly in Arabic (RTL)', async ({
+    page,
+    context,
+  }) => {
+    await setPreferredLocale(context, 'ar', BASE_URL)
     await loginAs(page, 'client')
 
-    await page.evaluate(() => localStorage.setItem('locale', 'ar'))
     await page.goto(`${BASE_URL}/projects`)
 
     const paymentBadge = page
