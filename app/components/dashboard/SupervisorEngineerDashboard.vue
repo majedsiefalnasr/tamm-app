@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import type { Project } from '~/shared/types/project'
+import RoleDashboardPrimaryChart from '~/components/dashboard/RoleDashboardPrimaryChart.vue'
+import type { ChartConfig } from '~/components/ui/chart'
 import { useMilestones } from '~/composables/useMilestones'
 import { useProjects } from '~/composables/useProjects'
 import ReviewListItem from '~/components/review/ReviewListItem.vue'
@@ -18,9 +20,19 @@ const {
   pendingReviewsCount,
   supervisorRecentDecisionsTop,
   supervisorApprovedThisMonthCount,
+  supervisorDashboardChartDefinition,
   loading,
   error,
 } = useMilestones()
+
+const { t } = useI18n()
+
+const supervisorChartConfig = computed<ChartConfig>(() => ({
+  decisions: {
+    label: t('dashboard.chart.series.decisions'),
+    color: 'var(--color-chart-1)',
+  },
+}))
 
 const { projects, loading: projectsLoading, fetchProjects } = useProjects()
 
@@ -139,6 +151,18 @@ const handleReviewActionComplete = async () => {
         </Card>
       </template>
     </div>
+
+    <RoleDashboardPrimaryChart
+      :loading="supervisorBootstrap"
+      :definition="supervisorDashboardChartDefinition"
+      :chart-config="supervisorChartConfig"
+      title-key="dashboard.chart.supervisor.title"
+      description-key="dashboard.chart.supervisor.description"
+      empty-title-key="dashboard.chart.supervisor.emptyTitle"
+      empty-description-key="dashboard.chart.supervisor.emptyDescription"
+      empty-action-href="/reviews"
+      empty-action-label-key="dashboard.chart.supervisor.emptyAction"
+    />
 
     <!-- Pending reviews -->
     <section>

@@ -4,10 +4,13 @@ import ContractorActiveMilestones from '~/components/contractor/ContractorActive
 import ContractorReviewMilestones from '~/components/contractor/ContractorReviewMilestones.vue'
 import ContractorPaymentStatus from '~/components/contractor/ContractorPaymentStatus.vue'
 import ContractorOpenBids from '~/components/contractor/ContractorOpenBids.vue'
+import RoleDashboardPrimaryChart from '~/components/dashboard/RoleDashboardPrimaryChart.vue'
+import type { ChartConfig } from '~/components/ui/chart'
 import { useMilestones } from '~/composables/useMilestones'
 import { useProjects } from '~/composables/useProjects'
 import { useProposals } from '~/composables/useProposals'
 import type { ProposalData } from '~/shared/types/project'
+import { buildContractorMonthlyPaidOutChart } from '~/utils/roleDashboardCharts'
 
 const {
   milestones,
@@ -142,6 +145,19 @@ onMounted(async () => {
     initialDashboardLoad.value = false
   }
 })
+
+const { t } = useI18n()
+
+const payoutChartDefinition = computed(() =>
+  buildContractorMonthlyPaidOutChart(milestonesForContractor.value)
+)
+
+const payoutChartConfig = computed<ChartConfig>(() => ({
+  payouts: {
+    label: t('dashboard.chart.series.payouts'),
+    color: 'var(--color-chart-1)',
+  },
+}))
 </script>
 
 <template>
@@ -158,6 +174,18 @@ onMounted(async () => {
     </div>
 
     <div class="grid gap-6">
+      <RoleDashboardPrimaryChart
+        :loading="milestonesLoading || initialDashboardLoad"
+        :definition="payoutChartDefinition"
+        :chart-config="payoutChartConfig"
+        title-key="dashboard.chart.contractor.title"
+        description-key="dashboard.chart.contractor.description"
+        empty-title-key="dashboard.chart.contractor.emptyTitle"
+        empty-description-key="dashboard.chart.contractor.emptyDescription"
+        empty-action-href="/projects"
+        empty-action-label-key="dashboard.chart.contractor.emptyAction"
+      />
+
       <ContractorActiveMilestones
         :milestones="activeMilestones"
         :loading="milestonesLoading || initialDashboardLoad"

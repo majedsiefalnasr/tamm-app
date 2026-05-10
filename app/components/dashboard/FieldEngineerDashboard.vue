@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { watch, computed } from 'vue'
+import RoleDashboardPrimaryChart from '~/components/dashboard/RoleDashboardPrimaryChart.vue'
+import type { ChartConfig } from '~/components/ui/chart'
 import { useMilestones } from '~/composables/useMilestones'
 import { useReports } from '~/composables/useReports'
 import { useAuthStore } from '~/stores/auth'
+import { buildFieldEngineerMonthlyReportsChart } from '~/utils/roleDashboardCharts'
 
 const auth = useAuthStore()
 
@@ -28,6 +31,23 @@ const reportsLoading = computed(() => reportsApi.loading.value)
 const handleRetryMilestones = () => {
   // TODO: wire refresh when field-engineer milestones endpoint exists
 }
+
+const { t } = useI18n()
+
+const reportsChartDefinition = computed(() =>
+  buildFieldEngineerMonthlyReportsChart(recentReports.value)
+)
+
+const reportsChartConfig = computed<ChartConfig>(() => ({
+  reports: {
+    label: t('dashboard.chart.series.reports'),
+    color: 'var(--color-chart-1)',
+  },
+}))
+
+const chartLoading = computed(
+  () => activeMilestonesLoading.value || reportsLoading.value
+)
 </script>
 
 <template>
@@ -38,6 +58,18 @@ const handleRetryMilestones = () => {
         {{ $t('dashboard.fieldEngineer.title') }}
       </h1>
     </div>
+
+    <RoleDashboardPrimaryChart
+      :loading="chartLoading"
+      :definition="reportsChartDefinition"
+      :chart-config="reportsChartConfig"
+      title-key="dashboard.chart.fieldEngineer.title"
+      description-key="dashboard.chart.fieldEngineer.description"
+      empty-title-key="dashboard.chart.fieldEngineer.emptyTitle"
+      empty-description-key="dashboard.chart.fieldEngineer.emptyDescription"
+      empty-action-href="/dashboard"
+      empty-action-label-key="dashboard.chart.fieldEngineer.emptyAction"
+    />
 
     <!-- Active Milestones Section -->
     <FieldEngineerActiveMilestones

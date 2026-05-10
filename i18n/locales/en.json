@@ -344,6 +344,49 @@
   },
   "dashboard": {
     "supervisorReviewerFallback": "Supervisor",
+    "chart": {
+      "series": {
+        "milestones": "Milestones completed",
+        "projects": "New projects",
+        "progress": "Completion %",
+        "payouts": "Paid milestones",
+        "reports": "Reports submitted",
+        "decisions": "Supervisor decisions"
+      },
+      "admin": {
+        "emptyTitle": "Activity trends unavailable",
+        "emptyDescription": "Once the dashboard receives milestone and project activity series from the server, a chart appears here.",
+        "emptyAction": "Browse projects"
+      },
+      "client": {
+        "title": "Project completion overview",
+        "description": "Share of milestones completed across projects that already define totals.",
+        "emptyTitle": "No completion chart yet",
+        "emptyDescription": "Charts appear once projects include milestone totals.",
+        "emptyAction": "View projects"
+      },
+      "contractor": {
+        "title": "Paid milestones by month",
+        "description": "Counts milestones marked paid out, grouped by payout month.",
+        "emptyTitle": "No payout history yet",
+        "emptyDescription": "After payouts complete with dates recorded, monthly totals appear here.",
+        "emptyAction": "View projects"
+      },
+      "fieldEngineer": {
+        "title": "Report submissions by month",
+        "description": "Submitted field reports grouped by calendar month.",
+        "emptyTitle": "Trend chart unavailable",
+        "emptyDescription": "Submit reports across multiple months to see a submission trend.",
+        "emptyAction": "Open assignments"
+      },
+      "supervisor": {
+        "title": "Review decisions by month",
+        "description": "Approved or rejected milestones aggregated per calendar month.",
+        "emptyTitle": "Decision trends unavailable",
+        "emptyDescription": "Review milestones spanning multiple months to reveal pacing.",
+        "emptyAction": "Open approvals queue"
+      }
+    },
     "fieldEngineer": {
       "title": "Dashboard",
       "activeAssignments": "My Active Assignments",

@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import type { Milestone, MilestoneStatus, Report } from '~/shared/types/project'
 import { canTransition, derivePaymentStatus } from '~/utils/statusMachine'
+import { buildSupervisorMonthlyDecisionChart } from '~/utils/roleDashboardCharts'
 import { useNotifications } from '~/composables/useNotifications'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '~/stores/auth'
@@ -58,7 +59,7 @@ const SEED_SUPERVISOR_RECENT_DECISIONS: SupervisorReviewDecision[] = [
     projectId: 'proj-002',
     projectName: 'Apartment Complex B',
     decision: 'rejected',
-    decidedAt: '2026-05-07T09:30:00Z',
+    decidedAt: '2026-04-28T09:30:00Z',
   },
 ]
 
@@ -391,6 +392,10 @@ export const useMilestones = () => {
 
   const supervisorRecentDecisionsTop = computed(() =>
     supervisorRecentDecisionsMerged.value.slice(0, 5)
+  )
+
+  const supervisorDashboardChartDefinition = computed(() =>
+    buildSupervisorMonthlyDecisionChart(supervisorRecentDecisionsMerged.value)
   )
 
   const supervisorApprovedThisMonthCount = computed(() => {
@@ -1079,6 +1084,7 @@ export const useMilestones = () => {
     pendingReviewsCount,
     getSupervisorRecentDecisions,
     supervisorRecentDecisionsTop,
+    supervisorDashboardChartDefinition,
     supervisorApprovedThisMonthCount,
     getPendingApprovals,
     refreshPendingApprovals,
