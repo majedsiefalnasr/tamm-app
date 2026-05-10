@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import type { ReportData } from '~/composables/useReports'
@@ -38,8 +37,6 @@ const getStatusLabel = (status: string) => {
 const handleReportClick = (projectId: string, milestoneId: string) => {
   router.push(`/projects/${projectId}/milestones/${milestoneId}`)
 }
-
-const skeletonItems = computed(() => Array(2).fill(null))
 </script>
 
 <template>
@@ -52,8 +49,8 @@ const skeletonItems = computed(() => Array(2).fill(null))
     <!-- Loading State -->
     <div v-if="loading" class="space-y-3">
       <Skeleton
-        v-for="i in skeletonItems"
-        :key="i"
+        v-for="n in 2"
+        :key="'fe-rep-sk-' + n"
         class="h-24 w-full rounded-2xl"
       />
     </div>

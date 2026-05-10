@@ -1,6 +1,6 @@
 # Story 08-03 — Field Engineer Dashboard + Assignments Page
 
-**Status:** ready-for-dev  
+**Status:** done  
 **Epic:** 08 — Role-Based Dashboards  
 **Story ID:** 8.3  
 **Priority:** 🟢 HIGH — Core field engineer-facing feature  
@@ -815,6 +815,24 @@ import { canTransition } from '~/utils/statusMachine'
 
 ---
 
+### Review Findings
+
+- [x] [Review][Patch] Field engineer overview URL mismatch — `dashboard-hub` and `roleRoutes` pointed to `/dashboard/field` while the page lived at `field_engineer.vue` (404). Renamed to `app/pages/dashboard/field.vue` and removed dead wrapper code. [`app/pages/dashboard/field.vue`]
+
+- [x] [Review][Patch] Conflicting `/assignments` routes — `assignments.vue` and `assignments/index.vue` both mapped to `/assignments`; the index “coming soon” page shadowed the real assignments UI. Removed `app/pages/assignments/index.vue`.
+
+- [x] [Review][Patch] Mock milestones missing `project_id` — “Submit report” navigated with `undefined` project id. Added `project_id` on mock rows. [`useMilestones.ts`]
+
+- [x] [Review][Patch] Mock engineer scoping — milestones and reports used hardcoded `eng-1` while auth user id differs; dashboard showed empty data. Scoped mock rows to `useAuthStore().user?.id` (fallback `eng-1`) for milestones; reports remap template rows to the signed-in id (empty for sentinel `unknown-engineer` used in tests). [`useMilestones.ts`, `useReports.ts`]
+
+- [x] [Review][Patch] Recent reports not reactive to auth user — `getReportsByFieldEngineer` was called once with `engineerId.value`. Added `watch` on `auth.user?.id` and bridged nested refs with computed props for the child. [`FieldEngineerDashboard.vue`]
+
+- [x] [Review][Patch] Skeleton `v-for` keys were `null` (duplicate key warnings). Replaced with numeric keys in field engineer and assignment skeletons.
+
+- [x] [Review][Patch] `getReportsByFieldEngineer` returned `loading: () => false` so loading never reflected composable state. Return now tracks `loading` ref. [`useReports.ts`]
+
+- [x] [Review][Defer] Milestone section retry is a no-op until the milestones API replaces the mock — deferred, pre-existing placeholder. [`FieldEngineerDashboard.vue`]
+
 ## 📚 Reference Documentation
 
 | Document | Section | Why relevant |
@@ -830,5 +848,5 @@ import { canTransition } from '~/utils/statusMachine'
 ---
 
 **Created by:** BMad Ultimate Context Engine  
-**Last Updated:** 2026-05-09  
+**Last Updated:** 2026-05-10  
 **Ready for:** Dev implementation via `/bmad:dev-story` skill

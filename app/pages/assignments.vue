@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useMilestones } from '~/composables/useMilestones'
-import { useAuth } from '~/composables/useAuth'
 
 definePageMeta({
   roles: ['field_engineer'],
   middleware: ['auth', 'role'],
 })
 
-const { user } = useAuth()
-const { t } = useI18n()
-
-const engineerId = computed(() => user.value?.id)
 const currentTab = ref('active')
 
 // Fetch all milestones assigned to this field engineer

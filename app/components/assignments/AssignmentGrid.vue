@@ -72,8 +72,6 @@ const handleCardClick = (
 
 const isActive = (status: string) => status === 'in_progress'
 
-const skeletonItems = computed(() => Array(3).fill(null))
-
 const emptyStateKey = computed(() => {
   // Determine which empty state message to show based on current filter
   // This will be determined by parent component tracking
@@ -86,8 +84,8 @@ const emptyStateKey = computed(() => {
     <!-- Loading State -->
     <div v-if="loading" class="grid grid-cols-1 gap-4 md:grid-cols-2">
       <Skeleton
-        v-for="i in skeletonItems"
-        :key="i"
+        v-for="n in 3"
+        :key="'asg-sk-' + n"
         class="h-40 w-full rounded-2xl"
       />
     </div>

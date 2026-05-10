@@ -1,5 +1,9 @@
 # Deferred Work Items
 
+## Deferred from: code review of 08-03-field-engineer-dashboard-and-assignments-page.md (2026-05-10)
+
+- **Field engineer milestone retry** — `handleRetryMilestones` remains a placeholder until `getMilestonesByFieldEngineer` is backed by a real fetch/refresh API (`useMilestones.ts` / `FieldEngineerDashboard.vue`).
+
 ## Deferred from: code review of 08-01-client-dashboard.md (2026-05-10)
 
 - **StatCard primitive vs bespoke dashboard cards** — Story AC references `StatCard` from design-spec; repo has no shared `StatCard` component yet. `ProjectSummaryCards` and `DashboardPaymentSummary` use inline card markup until the primitive is added.

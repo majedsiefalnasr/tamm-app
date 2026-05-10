@@ -3,6 +3,7 @@ import type { Milestone, MilestoneStatus, Report } from '~/shared/types/project'
 import { canTransition, derivePaymentStatus } from '~/utils/statusMachine'
 import { useNotifications } from '~/composables/useNotifications'
 import { useI18n } from 'vue-i18n'
+import { useAuthStore } from '~/stores/auth'
 
 export interface MilestoneInput {
   title: string
@@ -910,12 +911,13 @@ export const useMilestones = () => {
   const fieldEngineerMilestones = ref<FieldEngineerMilestoneData[]>([])
 
   const getMilestonesByFieldEngineer = (status?: string | null) => {
-    const engineerId = 'eng-1' // TODO: get from useAuth().user.id
+    const auth = useAuthStore()
+    const engineerId = auth.user?.id ?? 'eng-1'
     loading.value = true
     error.value = null
 
     try {
-      // Mock data for field engineer assignments
+      // Mock data for field engineer assignments (attribute to signed-in user for demo)
       const mockFieldEngineerData: FieldEngineerMilestoneData[] = [
         {
           id: 'ms-1',
@@ -924,9 +926,10 @@ export const useMilestones = () => {
           amount: 50000,
           order: 1,
           status: 'in_progress',
+          project_id: 'proj-1',
           project_name: 'مشروع البناء الأساسي',
           project_address: 'شارع النيل، القاهرة',
-          field_engineer_id: 'eng-1',
+          field_engineer_id: engineerId,
           deadline: '2026-05-20T23:59:59Z',
           order_number: 1,
           created_at: '2026-05-01T09:00:00Z',
@@ -938,9 +941,10 @@ export const useMilestones = () => {
           amount: 75000,
           order: 2,
           status: 'in_progress',
+          project_id: 'proj-1',
           project_name: 'مشروع البناء الأساسي',
           project_address: 'شارع النيل، القاهرة',
-          field_engineer_id: 'eng-1',
+          field_engineer_id: engineerId,
           deadline: '2026-05-25T23:59:59Z',
           order_number: 2,
           created_at: '2026-05-02T09:00:00Z',
@@ -952,9 +956,10 @@ export const useMilestones = () => {
           amount: 125000,
           order: 3,
           status: 'under_review',
+          project_id: 'proj-2',
           project_name: 'مشروع الترميم',
           project_address: 'حي المعادي، القاهرة',
-          field_engineer_id: 'eng-1',
+          field_engineer_id: engineerId,
           deadline: '2026-06-01T23:59:59Z',
           order_number: 3,
           created_at: '2026-05-03T09:00:00Z',
@@ -966,9 +971,10 @@ export const useMilestones = () => {
           amount: 100000,
           order: 4,
           status: 'supervisor_approved',
+          project_id: 'proj-2',
           project_name: 'مشروع الترميم',
           project_address: 'حي المعادي، القاهرة',
-          field_engineer_id: 'eng-1',
+          field_engineer_id: engineerId,
           deadline: '2026-06-05T23:59:59Z',
           order_number: 4,
           created_at: '2026-05-04T09:00:00Z',

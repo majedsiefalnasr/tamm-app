@@ -66,22 +66,29 @@ export const useReports = () => {
   ) => {
     loading.value = true
     error.value = null
+    const id = engineerId ?? 'eng-1'
 
     try {
       // TODO: replace mock — GET /api/v1/reports?field_engineer_id={engineerId}&limit=5&sort=submitted_at:desc
-      const engineerReports = mockReports
-        .filter(r => r.field_engineer_id === engineerId)
-        .sort(
-          (a, b) =>
-            new Date(b.submitted_at).getTime() -
-            new Date(a.submitted_at).getTime()
-        )
-        .slice(0, limit)
+      const fromTemplate = mockReports.filter(
+        r => r.field_engineer_id === 'eng-1'
+      )
+      const engineerReports =
+        id === 'unknown-engineer'
+          ? []
+          : fromTemplate
+              .map(r => ({ ...r, field_engineer_id: id }))
+              .sort(
+                (a, b) =>
+                  new Date(b.submitted_at).getTime() -
+                  new Date(a.submitted_at).getTime()
+              )
+              .slice(0, limit)
 
       reports.value = engineerReports
       return {
         data: computed(() => reports.value),
-        loading: computed(() => false),
+        loading: computed(() => loading.value),
         error: computed(() => null),
       }
     } catch (err) {
@@ -90,7 +97,7 @@ export const useReports = () => {
       reports.value = []
       return {
         data: computed(() => []),
-        loading: computed(() => false),
+        loading: computed(() => loading.value),
         error: computed(() => error.value),
       }
     } finally {

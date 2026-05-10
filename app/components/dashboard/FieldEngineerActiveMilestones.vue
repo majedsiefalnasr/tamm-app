@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -34,8 +33,6 @@ const handleSubmitReport = (
   if (!projectId) return
   router.push(`/projects/${projectId}/milestones/${milestoneId}/report/new`)
 }
-
-const skeletonItems = computed(() => Array(3).fill(null))
 </script>
 
 <template>
@@ -72,8 +69,8 @@ const skeletonItems = computed(() => Array(3).fill(null))
     <!-- Loading State -->
     <div v-else-if="loading" class="space-y-3">
       <Skeleton
-        v-for="i in skeletonItems"
-        :key="i"
+        v-for="n in 3"
+        :key="'fe-active-sk-' + n"
         class="h-32 w-full rounded-2xl"
       />
     </div>
