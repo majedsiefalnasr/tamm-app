@@ -11,6 +11,7 @@ import { Button } from '~/components/ui/button'
 import MilestoneActions from './MilestoneActions.vue'
 import ReportForm from './ReportForm.vue'
 import PaymentStatusTag from '~/components/payment/PaymentStatusTag.vue'
+import FieldContextHint from '~/components/common/FieldContextHint.vue'
 
 interface Props {
   milestone: Milestone
@@ -124,6 +125,10 @@ const cardClasses = computed(() => {
         <StatusTag :status="milestone.status" :tone="statusTone" />
         <!-- Payment Status -->
         <PaymentStatusTag :milestone="milestone" />
+        <FieldContextHint
+          hint-key="contextHelpers.milestone.statusVsPayment"
+          aria-label-key="common.field_help_status_payment"
+        />
       </div>
 
       <!-- Expand Chevron -->

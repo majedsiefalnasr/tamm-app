@@ -6,6 +6,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { Loader2 } from 'lucide-vue-next'
 import type { Milestone } from '~/shared/types/project'
 import type { MilestoneInput } from '~/composables/useMilestones'
+import FieldContextHint from '~/components/common/FieldContextHint.vue'
 
 interface Props {
   open: boolean
@@ -141,7 +142,10 @@ const dialogTitle = computed(() => {
         <!-- Amount field -->
         <FormField v-slot="{ componentField }" name="amount">
           <FormItem>
-            <FormLabel>{{ t('forms.milestone.amount') }}</FormLabel>
+            <div class="flex items-center gap-2">
+              <FormLabel>{{ t('forms.milestone.amount') }}</FormLabel>
+              <FieldContextHint hint-key="contextHelpers.milestone.amount" />
+            </div>
             <FormControl>
               <Input
                 type="number"
@@ -158,7 +162,10 @@ const dialogTitle = computed(() => {
         <!-- Order field -->
         <FormField v-slot="{ componentField }" name="order">
           <FormItem>
-            <FormLabel>{{ t('forms.milestone.order') }}</FormLabel>
+            <div class="flex items-center gap-2">
+              <FormLabel>{{ t('forms.milestone.order') }}</FormLabel>
+              <FieldContextHint hint-key="contextHelpers.milestone.order" />
+            </div>
             <FormControl>
               <Input type="number" min="1" step="1" v-bind="componentField" />
             </FormControl>

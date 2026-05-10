@@ -17,6 +17,7 @@ import { Textarea } from '~/components/ui/textarea'
 import { Field, FieldError, FieldLabel } from '~/components/ui/field'
 import { formatCurrency } from '~/utils/formatters'
 import type { Milestone, PaymentPayload } from '~/composables/useMilestones'
+import FieldContextHint from '~/components/common/FieldContextHint.vue'
 
 const props = defineProps<{
   milestone: Milestone
@@ -209,9 +210,12 @@ watch(
         <form class="space-y-4" @submit="onSubmit">
           <!-- Bank name -->
           <Field class="gap-2 space-y-2">
-            <FieldLabel for="bank_name">
-              {{ t('payment.dialog.bank_name') }}
-            </FieldLabel>
+            <div class="flex items-center gap-2">
+              <FieldLabel class="mb-0" for="bank_name">
+                {{ t('payment.dialog.bank_name') }}
+              </FieldLabel>
+              <FieldContextHint hint-key="contextHelpers.payment.bank_name" />
+            </div>
             <Input
               id="bank_name"
               v-model="values.bank_name"
@@ -224,9 +228,14 @@ watch(
 
           <!-- Transaction reference -->
           <Field class="gap-2 space-y-2">
-            <FieldLabel for="transaction_reference">
-              {{ t('payment.dialog.transaction_reference') }}
-            </FieldLabel>
+            <div class="flex items-center gap-2">
+              <FieldLabel class="mb-0" for="transaction_reference">
+                {{ t('payment.dialog.transaction_reference') }}
+              </FieldLabel>
+              <FieldContextHint
+                hint-key="contextHelpers.payment.transaction_reference"
+              />
+            </div>
             <Input
               id="transaction_reference"
               v-model="values.transaction_reference"
@@ -242,9 +251,14 @@ watch(
 
           <!-- Receipt image -->
           <Field class="gap-2 space-y-2">
-            <FieldLabel for="receipt_image">
-              {{ t('payment.dialog.receipt_image') }}
-            </FieldLabel>
+            <div class="flex items-center gap-2">
+              <FieldLabel class="mb-0" for="receipt_image">
+                {{ t('payment.dialog.receipt_image') }}
+              </FieldLabel>
+              <FieldContextHint
+                hint-key="contextHelpers.payment.receipt_image"
+              />
+            </div>
             <Input
               id="receipt_image"
               type="file"
@@ -267,9 +281,12 @@ watch(
 
           <!-- Notes -->
           <Field class="gap-2 space-y-2">
-            <FieldLabel for="notes">
-              {{ t('payment.dialog.notes') }}
-            </FieldLabel>
+            <div class="flex items-center gap-2">
+              <FieldLabel class="mb-0" for="notes">
+                {{ t('payment.dialog.notes') }}
+              </FieldLabel>
+              <FieldContextHint hint-key="contextHelpers.payment.notes" />
+            </div>
             <Textarea
               id="notes"
               v-model="values.notes"

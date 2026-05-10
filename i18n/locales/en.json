@@ -196,7 +196,22 @@
     "redirecting": "Redirecting…",
     "no_data": "No data",
     "error_occurred": "Something went wrong",
-    "error_description": "Please try again or contact support if the problem persists."
+    "error_description": "Please try again or contact support if the problem persists.",
+    "field_help": "Explain this field",
+    "field_help_status_payment": "Explain work status versus payment status"
+  },
+  "contextHelpers": {
+    "milestone": {
+      "amount": "The agreed monetary value for this phase in the contract. It is what the client pays into escrow for this milestone and what informs payout once approvals complete.",
+      "order": "The sequence number of this phase in the project. Lower numbers are usually worked earlier; it keeps phases ordered for planning and billing.",
+      "statusVsPayment": "Work status reflects approvals and execution (for example in progress or approved). Payment status reflects escrow funding steps derived from that workflow—for example pending payment after supervisor approval—not a separate manual switch."
+    },
+    "payment": {
+      "bank_name": "Enter the bank name as shown on your transfer receipt so operations can match your payment.",
+      "transaction_reference": "Enter the unique reference, confirmation number, or transaction ID from your transfer so we can reconcile the deposit.",
+      "receipt_image": "Upload a clear JPEG or PNG (maximum 5 MB) of your transfer confirmation.",
+      "notes": "Optional notes for finance—for example when you sent the transfer or which account it came from."
+    }
   },
   "nav": {
     "sections": {

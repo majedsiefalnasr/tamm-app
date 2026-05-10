@@ -3,6 +3,7 @@ import type { Milestone } from '~/shared/types/project'
 import { useI18n } from 'vue-i18n'
 import { formatCurrency } from '~/utils/formatters'
 import PaymentStatusTag from '~/components/payment/PaymentStatusTag.vue'
+import FieldContextHint from '~/components/common/FieldContextHint.vue'
 
 interface Props {
   milestone: Milestone
@@ -30,9 +31,15 @@ const { t } = useI18n()
 
       <!-- Status -->
       <div>
-        <p class="text-muted-foreground mb-2 text-xs font-semibold uppercase">
-          {{ t('milestone.detail.status') }}
-        </p>
+        <div class="mb-2 flex items-center gap-2">
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ t('milestone.detail.status') }}
+          </p>
+          <FieldContextHint
+            hint-key="contextHelpers.milestone.statusVsPayment"
+            aria-label-key="common.field_help_status_payment"
+          />
+        </div>
         <p class="text-ink text-lg font-bold capitalize">
           {{ t(`milestone.status.${milestone.status}`) }}
         </p>
@@ -50,9 +57,15 @@ const { t } = useI18n()
 
       <!-- Payment Status -->
       <div>
-        <p class="text-muted-foreground mb-2 text-xs font-semibold uppercase">
-          {{ t('milestone.detail.paymentStatus') }}
-        </p>
+        <div class="mb-2 flex items-center gap-2">
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ t('milestone.detail.paymentStatus') }}
+          </p>
+          <FieldContextHint
+            hint-key="contextHelpers.milestone.statusVsPayment"
+            aria-label-key="common.field_help_status_payment"
+          />
+        </div>
         <PaymentStatusTag :milestone="milestone" />
       </div>
     </div>
