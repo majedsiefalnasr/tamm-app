@@ -1,6 +1,6 @@
 # Story 9.6: Overlays standardization
 
-Status: review
+Status: done
 
 ## Story
 

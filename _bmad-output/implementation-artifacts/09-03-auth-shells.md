@@ -1,6 +1,6 @@
 # Story 9.3: Auth shells
 
-Status: review
+Status: done
 
 ## Story
 

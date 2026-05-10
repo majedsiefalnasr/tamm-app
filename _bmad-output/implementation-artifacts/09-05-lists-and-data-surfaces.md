@@ -1,6 +1,6 @@
 # Story 9.5: Lists and data surfaces
 
-Status: review
+Status: done
 
 ## Story
 
