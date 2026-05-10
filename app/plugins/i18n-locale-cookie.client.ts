@@ -3,6 +3,9 @@
  * Server reads the same cookie via `i18n/localeDetector.ts`.
  */
 
+import { nextTick, watch } from 'vue'
+import type { Composer } from 'vue-i18n'
+
 const LOCALE_COOKIE = 'i18n_locale'
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
 
@@ -42,21 +45,27 @@ export default defineNuxtPlugin({
       return
     }
 
-    const i18n = nuxtApp.$i18n
-    const cookieLocale = readRawLocaleCookie()
+    const i18n = nuxtApp.$i18n as Composer
 
-    if (cookieLocale && i18n.locale.value !== cookieLocale) {
-      void i18n.setLocale(cookieLocale)
-    }
+    /** Defer past hydration: microtasks (`nextTick`) alone can still overlap SSR→client handoff; macrotask avoids `renderSlot` / `currentRenderingInstance.ce` crashes. */
+    void nextTick(() => {
+      setTimeout(() => {
+        const cookieLocale = readRawLocaleCookie()
 
-    watch(
-      () => i18n.locale.value,
-      locale => {
-        if (isSupportedLocale(locale)) {
-          writeLocaleCookie(locale)
+        if (cookieLocale && i18n.locale.value !== cookieLocale) {
+          void i18n.setLocale(cookieLocale)
         }
-      },
-      { immediate: true }
-    )
+
+        watch(
+          () => i18n.locale.value,
+          locale => {
+            if (isSupportedLocale(locale)) {
+              writeLocaleCookie(locale)
+            }
+          },
+          { immediate: true }
+        )
+      }, 0)
+    })
   },
 })

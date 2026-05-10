@@ -47,6 +47,9 @@ export default defineNuxtConfig({
   ],
 
   vite: {
+    resolve: {
+      dedupe: ['vue'],
+    },
     optimizeDeps: {
       include: [
         '@vueuse/core',
