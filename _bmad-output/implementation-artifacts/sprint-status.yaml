@@ -99,7 +99,7 @@ development_status:
   epic-06-retrospective: optional
 
   # Epic 07 — Proposals & Contractor Selection
-  epic-07: in-progress
+  epic-07: done
   07-01-admin-opens-bidding-and-invites-contractors: done
   07-02-contractor-submits-proposal: done
   07-03-admin-closes-bidding-for-review: done
