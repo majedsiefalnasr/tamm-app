@@ -4,7 +4,7 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import { Button } from '../ui/button'
-import { Label } from '../ui/label'
+import { Field, FieldError, FieldLabel } from '../ui/field'
 import {
   Select,
   SelectContent,
@@ -29,6 +29,7 @@ interface Props {
 
 type Emits = {
   success: []
+  close: []
 }
 
 const props = defineProps<Props>()
@@ -135,10 +136,10 @@ const handleCancel = () => {
 <template>
   <form class="space-y-4" @submit="onSubmit">
     <!-- Supervisor Engineer Select -->
-    <div class="space-y-1.5">
-      <Label for="supervisor" class="text-start">{{
+    <Field class="gap-1.5 space-y-1.5">
+      <FieldLabel for="supervisor" class="text-start">{{
         t('admin.projects.assign_engineers.supervisor_label')
-      }}</Label>
+      }}</FieldLabel>
       <div v-if="loadingEngineers" class="space-y-2">
         <Skeleton class="h-10 w-full" />
       </div>
@@ -169,20 +170,17 @@ const handleCancel = () => {
           </SelectItem>
         </SelectContent>
       </Select>
-      <div
-        v-if="errors.supervisor_engineer_id"
-        class="text-destructive text-start text-xs"
-        :aria-describedby="`supervisor-error`"
-      >
-        {{ errors.supervisor_engineer_id }}
-      </div>
-    </div>
+      <FieldError
+        :errors="[errors.supervisor_engineer_id]"
+        class="text-start text-xs"
+      />
+    </Field>
 
     <!-- Field Engineer Select -->
-    <div class="space-y-1.5">
-      <Label for="field" class="text-start">{{
+    <Field class="gap-1.5 space-y-1.5">
+      <FieldLabel for="field" class="text-start">{{
         t('admin.projects.assign_engineers.field_label')
-      }}</Label>
+      }}</FieldLabel>
       <div v-if="loadingEngineers" class="space-y-2">
         <Skeleton class="h-10 w-full" />
       </div>
@@ -213,14 +211,11 @@ const handleCancel = () => {
           </SelectItem>
         </SelectContent>
       </Select>
-      <div
-        v-if="errors.field_engineer_id"
-        class="text-destructive text-start text-xs"
-        :aria-describedby="`field-error`"
-      >
-        {{ errors.field_engineer_id }}
-      </div>
-    </div>
+      <FieldError
+        :errors="[errors.field_engineer_id]"
+        class="text-start text-xs"
+      />
+    </Field>
 
     <!-- Form Actions -->
     <div class="flex gap-3 pt-4">

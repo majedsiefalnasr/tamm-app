@@ -14,7 +14,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
-import Label from '~/components/ui/label/Label.vue'
+import { Field, FieldError, FieldLabel } from '~/components/ui/field'
 
 interface Props {
   open: boolean
@@ -97,8 +97,10 @@ watch(
 
       <form class="space-y-4" @submit="onSubmit">
         <!-- Amount Field -->
-        <div class="space-y-2">
-          <Label for="amount">{{ t('withdrawal.form.amount') }}</Label>
+        <Field class="gap-2 space-y-2">
+          <FieldLabel for="amount">{{
+            t('withdrawal.form.amount')
+          }}</FieldLabel>
           <div class="flex items-center gap-2">
             <Input
               id="amount"
@@ -116,14 +118,12 @@ watch(
               SAR
             </span>
           </div>
-          <p v-if="errors.amount" class="text-destructive text-xs">
-            {{ errors.amount }}
-          </p>
-        </div>
+          <FieldError :errors="[errors.amount]" class="text-xs" />
+        </Field>
 
         <!-- IBAN Field -->
-        <div class="space-y-2">
-          <Label for="iban">{{ t('withdrawal.form.iban') }}</Label>
+        <Field class="gap-2 space-y-2">
+          <FieldLabel for="iban">{{ t('withdrawal.form.iban') }}</FieldLabel>
           <Input
             id="iban"
             v-model="values.iban"
@@ -131,21 +131,19 @@ watch(
             placeholder="SA..."
             :aria-invalid="!!errors.iban"
           />
-          <p v-if="errors.iban" class="text-destructive text-xs">
-            {{ errors.iban }}
-          </p>
-        </div>
+          <FieldError :errors="[errors.iban]" class="text-xs" />
+        </Field>
 
         <!-- Notes Field -->
-        <div class="space-y-2">
-          <Label for="notes">{{ t('withdrawal.form.notes') }}</Label>
+        <Field class="gap-2 space-y-2">
+          <FieldLabel for="notes">{{ t('withdrawal.form.notes') }}</FieldLabel>
           <Textarea
             id="notes"
             v-model="values.notes"
             :placeholder="t('withdrawal.form.notes_placeholder')"
             rows="3"
           />
-        </div>
+        </Field>
 
         <!-- Footer -->
         <DialogFooter class="gap-2 sm:gap-0">

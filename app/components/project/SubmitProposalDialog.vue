@@ -15,9 +15,9 @@ import {
   DialogFooter,
 } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
+import { Field, FieldError, FieldLabel } from '~/components/ui/field'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
-import { Label } from '~/components/ui/label'
 
 interface Props {
   projectId: string
@@ -177,10 +177,10 @@ const onSubmit = handleSubmit(async formValues => {
 
       <form class="space-y-4" @submit.prevent="onSubmit">
         <!-- Price Field -->
-        <div class="space-y-2">
-          <Label for="price">{{
+        <Field class="gap-2 space-y-2">
+          <FieldLabel for="price">{{
             t('projects.submitProposal.priceLabel')
-          }}</Label>
+          }}</FieldLabel>
           <Input
             id="price"
             :model-value="priceInput"
@@ -191,16 +191,14 @@ const onSubmit = handleSubmit(async formValues => {
             @update:model-value="handlePriceInput"
             @blur="formatPriceInput"
           />
-          <p v-if="errors.price" class="text-destructive text-sm">
-            {{ errors.price }}
-          </p>
-        </div>
+          <FieldError :errors="[errors.price]" />
+        </Field>
 
         <!-- Timeline Field -->
-        <div class="space-y-2">
-          <Label for="timeline">{{
+        <Field class="gap-2 space-y-2">
+          <FieldLabel for="timeline">{{
             t('projects.submitProposal.timelineLabel')
-          }}</Label>
+          }}</FieldLabel>
           <Input
             id="timeline"
             :model-value="values.estimatedDays"
@@ -212,16 +210,14 @@ const onSubmit = handleSubmit(async formValues => {
               value => setFieldValue('estimatedDays', Number(value))
             "
           />
-          <p v-if="errors.estimatedDays" class="text-destructive text-sm">
-            {{ errors.estimatedDays }}
-          </p>
-        </div>
+          <FieldError :errors="[errors.estimatedDays]" />
+        </Field>
 
         <!-- Notes Field -->
-        <div class="space-y-2">
-          <Label for="notes">{{
+        <Field class="gap-2 space-y-2">
+          <FieldLabel for="notes">{{
             t('projects.submitProposal.notesLabel')
-          }}</Label>
+          }}</FieldLabel>
           <Textarea
             id="notes"
             :model-value="values.notes"
@@ -233,10 +229,8 @@ const onSubmit = handleSubmit(async formValues => {
           <div class="text-muted-foreground text-end text-[10px]">
             {{ noteLength }}/500
           </div>
-          <p v-if="errors.notes" class="text-destructive text-sm">
-            {{ errors.notes }}
-          </p>
-        </div>
+          <FieldError :errors="[errors.notes]" />
+        </Field>
       </form>
 
       <DialogFooter class="gap-2">

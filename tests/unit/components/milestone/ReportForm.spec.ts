@@ -83,6 +83,12 @@ describe('ReportForm.vue', () => {
     ).toBeTruthy()
   })
 
+  it('uses normalized field primitives for labels and errors', async () => {
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-slot="field-label"]').exists()).toBe(true)
+    expect(wrapper.find('[data-slot="field-error"]').exists()).toBe(true)
+  })
+
   it('has disabled submit button when content is empty', async () => {
     await wrapper.vm.$nextTick()
     const submitButton = wrapper

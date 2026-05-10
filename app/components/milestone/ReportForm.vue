@@ -12,6 +12,7 @@ import {
 } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
+import { Field, FieldError, FieldLabel } from '~/components/ui/field'
 
 interface Props {
   milestoneId: string
@@ -190,31 +191,29 @@ const handleDrop = (e: DragEvent) => {
 
       <div class="space-y-6 py-4">
         <!-- Content Field -->
-        <div class="space-y-2">
-          <label class="text-sm font-semibold">
+        <Field class="gap-2 space-y-2">
+          <FieldLabel class="text-sm font-semibold">
             {{ t('fields.content') }}
             <span class="text-destructive">*</span>
-          </label>
+          </FieldLabel>
           <Textarea
             v-model="content"
             :placeholder="t('fields.content_placeholder')"
             class="min-h-32"
           />
           <div class="flex items-center justify-between">
-            <p v-if="contentError" class="text-destructive text-xs">
-              {{ contentError }}
-            </p>
+            <FieldError :errors="[contentError]" class="text-xs" />
             <p class="text-muted-foreground text-xs">
               {{ content.length }} / 20 {{ t('fields.characters') }}
             </p>
           </div>
-        </div>
+        </Field>
 
         <!-- Image Upload Zone -->
-        <div class="space-y-2">
-          <label class="text-sm font-semibold">
+        <Field class="gap-2 space-y-2">
+          <FieldLabel class="text-sm font-semibold">
             {{ t('fields.images') }}
-          </label>
+          </FieldLabel>
 
           <!-- Upload Zone -->
           <div
@@ -263,7 +262,7 @@ const handleDrop = (e: DragEvent) => {
               />
               <button
                 type="button"
-                class="bg-card/80 text-destructive hover:bg-destructive hover:text-destructive-foreground absolute end-1 top-1 flex h-5 w-5 items-center justify-center rounded-full transition"
+                class="bg-card/80 text-destructive hover:bg-destructive hover:text-destructive-foreground absolute inset-e-1 top-1 flex h-5 w-5 items-center justify-center rounded-full transition"
                 :aria-label="t('actions.remove_image')"
                 @click="removeImage(idx)"
               >
@@ -273,16 +272,19 @@ const handleDrop = (e: DragEvent) => {
           </div>
 
           <!-- Image Errors -->
-          <div v-if="Object.keys(imageErrors).length > 0" class="space-y-1">
-            <p
-              v-for="(error, idx) in imageErrors"
+          <ul
+            v-if="Object.keys(imageErrors).length > 0"
+            class="text-destructive ms-4 flex list-disc flex-col gap-1 text-xs"
+            role="alert"
+          >
+            <li
+              v-for="(imageError, idx) in Object.values(imageErrors)"
               :key="idx"
-              class="text-destructive text-xs"
             >
-              {{ error }}
-            </p>
-          </div>
-        </div>
+              {{ imageError }}
+            </li>
+          </ul>
+        </Field>
       </div>
 
       <DialogFooter class="flex gap-2">

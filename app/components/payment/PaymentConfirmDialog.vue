@@ -14,7 +14,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
-import Label from '~/components/ui/label/Label.vue'
+import { Field, FieldError, FieldLabel } from '~/components/ui/field'
 import { formatCurrency } from '~/utils/formatters'
 import type { Milestone, PaymentPayload } from '~/composables/useMilestones'
 
@@ -196,10 +196,10 @@ watch(
         <!-- Form -->
         <form class="space-y-4" @submit="onSubmit">
           <!-- Bank name -->
-          <div class="space-y-2">
-            <Label for="bank_name">
+          <Field class="gap-2 space-y-2">
+            <FieldLabel for="bank_name">
               {{ t('payment.dialog.bank_name') }}
-            </Label>
+            </FieldLabel>
             <Input
               id="bank_name"
               v-model="values.bank_name"
@@ -207,16 +207,14 @@ watch(
               :disabled="isSubmitting"
               :class="{ 'border-destructive': errors.bank_name }"
             />
-            <p v-if="errors.bank_name" class="text-destructive text-xs">
-              {{ errors.bank_name }}
-            </p>
-          </div>
+            <FieldError :errors="[errors.bank_name]" class="text-xs" />
+          </Field>
 
           <!-- Transaction reference -->
-          <div class="space-y-2">
-            <Label for="transaction_reference">
+          <Field class="gap-2 space-y-2">
+            <FieldLabel for="transaction_reference">
               {{ t('payment.dialog.transaction_reference') }}
-            </Label>
+            </FieldLabel>
             <Input
               id="transaction_reference"
               v-model="values.transaction_reference"
@@ -224,19 +222,17 @@ watch(
               :disabled="isSubmitting"
               :class="{ 'border-destructive': errors.transaction_reference }"
             />
-            <p
-              v-if="errors.transaction_reference"
-              class="text-destructive text-xs"
-            >
-              {{ errors.transaction_reference }}
-            </p>
-          </div>
+            <FieldError
+              :errors="[errors.transaction_reference]"
+              class="text-xs"
+            />
+          </Field>
 
           <!-- Receipt image -->
-          <div class="space-y-2">
-            <Label for="receipt_image">
+          <Field class="gap-2 space-y-2">
+            <FieldLabel for="receipt_image">
               {{ t('payment.dialog.receipt_image') }}
-            </Label>
+            </FieldLabel>
             <Input
               id="receipt_image"
               type="file"
@@ -246,9 +242,7 @@ watch(
               :class="{ 'border-destructive': errors.receipt_image }"
               @change="handleFileSelect"
             />
-            <p v-if="errors.receipt_image" class="text-destructive text-xs">
-              {{ errors.receipt_image }}
-            </p>
+            <FieldError :errors="[errors.receipt_image]" class="text-xs" />
 
             <!-- File preview -->
             <img
@@ -257,13 +251,13 @@ watch(
               alt="Receipt preview"
               class="aspect-video w-full rounded-xl object-cover"
             />
-          </div>
+          </Field>
 
           <!-- Notes -->
-          <div class="space-y-2">
-            <Label for="notes">
+          <Field class="gap-2 space-y-2">
+            <FieldLabel for="notes">
               {{ t('payment.dialog.notes') }}
-            </Label>
+            </FieldLabel>
             <Textarea
               id="notes"
               v-model="values.notes"
@@ -271,7 +265,7 @@ watch(
               :disabled="isSubmitting"
               class="resize-none"
             />
-          </div>
+          </Field>
         </form>
       </div>
 

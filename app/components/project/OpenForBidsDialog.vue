@@ -10,6 +10,7 @@ import {
 } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Checkbox } from '~/components/ui/checkbox'
+import { FieldLegend, FieldSet } from '~/components/ui/field'
 
 interface Props {
   projectId: string
@@ -141,7 +142,11 @@ const isSelected = (contractorId: string) => {
         </p>
       </DialogHeader>
 
-      <div v-if="error" class="bg-danger/10 text-danger rounded-lg p-3 text-sm">
+      <div
+        v-if="error"
+        class="bg-danger/10 text-danger rounded-lg p-3 text-sm"
+        role="alert"
+      >
         {{
           error === t('errors.failed_to_load_contractors')
             ? error
@@ -152,14 +157,18 @@ const isSelected = (contractorId: string) => {
       <div
         v-if="validationError"
         class="bg-warning/10 text-warning rounded-lg p-3 text-sm"
+        role="status"
       >
         {{ validationError }}
       </div>
 
-      <div class="space-y-4">
+      <FieldSet class="space-y-4">
         <div>
-          <p class="text-muted-foreground text-sm">
+          <FieldLegend class="text-sm font-medium">
             {{ t('projects.openForBids.selectContractors') }}
+          </FieldLegend>
+          <p class="text-muted-foreground text-sm">
+            {{ t('projects.openForBids.selectContractorsSubtitle') }}
           </p>
         </div>
 
@@ -208,7 +217,7 @@ const isSelected = (contractorId: string) => {
             ({{ selectedContractors.length }}/{{ contractors.length }})
           </span>
         </p>
-      </div>
+      </FieldSet>
 
       <DialogFooter>
         <Button variant="outline" @click="handleCancel">

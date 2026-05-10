@@ -7,8 +7,8 @@ import { createUserSchema, type CreateUserPayload } from '#shared/types/user'
 import { useAdminUsers } from '../../composables/useAdminUsers'
 import { useAuthStore } from '../../stores/auth'
 import { Button } from '../ui/button'
+import { Field, FieldError, FieldLabel } from '../ui/field'
 import { Input } from '../ui/input'
-import { Label } from '../ui/label'
 import {
   Select,
   SelectContent,
@@ -78,26 +78,24 @@ const onSubmit = handleSubmit(async formValues => {
 <template>
   <form class="space-y-4" @submit="onSubmit">
     <!-- Full Name -->
-    <div class="space-y-1.5">
-      <Label for="name" class="text-start">{{
+    <Field class="gap-1.5 space-y-1.5">
+      <FieldLabel for="name" class="text-start">{{
         t('admin.users.create.full_name')
-      }}</Label>
+      }}</FieldLabel>
       <Input
         id="name"
         v-model="values.name"
         :placeholder="t('admin.users.create.full_name_placeholder')"
         :class="{ 'border-destructive': errors.name }"
       />
-      <div v-if="errors.name" class="text-destructive text-xs">
-        {{ errors.name }}
-      </div>
-    </div>
+      <FieldError :errors="[errors.name]" class="text-xs" />
+    </Field>
 
     <!-- Email -->
-    <div class="space-y-1.5">
-      <Label for="email" class="text-start">{{
+    <Field class="gap-1.5 space-y-1.5">
+      <FieldLabel for="email" class="text-start">{{
         t('admin.users.create.email')
-      }}</Label>
+      }}</FieldLabel>
       <Input
         id="email"
         v-model="values.email"
@@ -105,16 +103,14 @@ const onSubmit = handleSubmit(async formValues => {
         :placeholder="t('admin.users.create.email_placeholder')"
         :class="{ 'border-destructive': errors.email }"
       />
-      <div v-if="errors.email" class="text-destructive text-xs">
-        {{ errors.email }}
-      </div>
-    </div>
+      <FieldError :errors="[errors.email]" class="text-xs" />
+    </Field>
 
     <!-- Role -->
-    <div class="space-y-1.5">
-      <Label for="role" class="text-start">{{
+    <Field class="gap-1.5 space-y-1.5">
+      <FieldLabel for="role" class="text-start">{{
         t('admin.users.create.role')
-      }}</Label>
+      }}</FieldLabel>
       <Select v-model="values.role">
         <SelectTrigger :class="{ 'border-destructive': errors.role }">
           <SelectValue
@@ -131,23 +127,21 @@ const onSubmit = handleSubmit(async formValues => {
           </SelectItem>
         </SelectContent>
       </Select>
-      <div v-if="errors.role" class="text-destructive text-xs">
-        {{ errors.role }}
-      </div>
-    </div>
+      <FieldError :errors="[errors.role]" class="text-xs" />
+    </Field>
 
     <!-- Phone (Optional) - only show if user starts typing -->
-    <div v-if="values.phone" class="space-y-1.5">
-      <Label for="phone" class="text-start">{{
+    <Field v-if="values.phone" class="gap-1.5 space-y-1.5">
+      <FieldLabel for="phone" class="text-start">{{
         t('admin.users.create.phone')
-      }}</Label>
+      }}</FieldLabel>
       <Input
         id="phone"
         v-model="values.phone"
         type="tel"
         :placeholder="t('admin.users.create.phone_placeholder')"
       />
-    </div>
+    </Field>
     <!-- Show placeholder if phone is empty - allow user to add phone -->
     <div v-if="!values.phone" class="pt-2">
       <Button
