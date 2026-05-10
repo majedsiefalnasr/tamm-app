@@ -22,7 +22,6 @@ import SidebarUserMenu from '~/components/layout/SidebarUserMenu.vue'
 
 const auth = useAuthStore()
 const route = useRoute()
-const { locale } = useI18n()
 const { getNavigationForRole } = useRoleRoutes()
 const { setOpenMobile } = useSidebar()
 
@@ -33,10 +32,12 @@ watch(
   }
 )
 
-/** Match `nuxt.config` locales: Arabic → dock sidebar on viewport right; English → left. */
-const sidebarSide = computed((): 'left' | 'right' =>
-  locale.value === 'ar' ? 'right' : 'left'
-)
+/**
+ * `Sidebar.vue` maps `side="left"` to `start-0` (inline-start): dock left in LTR,
+ * dock right in RTL (Arabic). Locale-specific flipping was for the old physical
+ * `left-*` / `right-*` positioning and inverted after logical properties.
+ */
+const SIDEBAR_DOCK: 'left' | 'right' = 'left'
 
 const navItems = computed((): NavItem[] => {
   const role = auth.user?.role ?? ''
@@ -67,9 +68,9 @@ function isItemActive(href: string): boolean {
 </script>
 
 <template>
-  <Sidebar :side="sidebarSide" variant="inset" collapsible="icon">
+  <Sidebar :side="SIDEBAR_DOCK" variant="inset" collapsible="offcanvas">
     <SidebarHeader
-      class="border-border flex h-20 shrink-0 flex-col justify-center border-b px-3 py-2"
+      class="border-border flex shrink-0 flex-col justify-center border-b px-3 py-2"
     >
       <SidebarMenu>
         <SidebarMenuItem>

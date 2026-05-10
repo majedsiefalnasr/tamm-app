@@ -37,7 +37,10 @@ watch(
 
 <template>
   <ContractorDashboardPage v-if="role === 'contractor'" />
-  <div v-else class="px-4 pt-6 pb-16 md:px-8 md:pt-8 md:pb-20">
+  <div
+    v-else
+    class="flex flex-col gap-4 px-4 py-4 pb-16 md:gap-6 md:py-6 md:pb-20 lg:px-6"
+  >
     <ClientDashboardSection v-if="role === 'client'" />
     <FieldEngineerDashboard v-else-if="role === 'field_engineer'" />
     <SupervisorEngineerDashboard v-else-if="role === 'supervisor_engineer'" />
