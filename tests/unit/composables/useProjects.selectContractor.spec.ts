@@ -1,26 +1,39 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useProjects } from '~/app/composables/useProjects'
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest'
+import type { ApiError } from '~/composables/useApi'
+import { useApi } from '~/composables/useApi'
 
-// Mock auth store
-vi.mock('~/stores/auth', () => ({
-  useAuthStore: vi.fn(() => ({
-    user: {
-      id: 'user-123',
-      name: 'Test User',
-      email: 'test@example.com',
-      role: 'client',
-    },
-  })),
-}))
+vi.mock('~/composables/useApi')
+
+const mockedUseApi = vi.mocked(useApi)
+
+let useProjects: typeof import('~/composables/useProjects').useProjects
+
+beforeAll(async () => {
+  vi.stubGlobal(
+    'useAuthStore',
+    vi.fn(() => ({
+      user: {
+        id: 'user-123',
+        name: 'Test User',
+        email: 'test@example.com',
+        role: 'client',
+      },
+      token: null as string | null,
+    }))
+  )
+  ;({ useProjects } = await import('~/composables/useProjects'))
+})
 
 describe('useProjects.selectContractor', () => {
   let composable: ReturnType<typeof useProjects>
 
   beforeEach(async () => {
+    vi.clearAllMocks()
+    mockedUseApi.mockResolvedValue({ success: true, data: {} })
     composable = useProjects()
-    // Initialize a project with under_review status for testing
     const project = await composable.getProjectById('proj-003')
     project.status = 'under_review'
+    delete project.selected_proposal_id
   })
 
   describe('selectContractor', () => {
@@ -31,7 +44,10 @@ describe('useProjects.selectContractor', () => {
       )
 
       expect(result.success).toBe(true)
-      expect(result.error).toBeUndefined()
+      expect(mockedUseApi).toHaveBeenCalledWith(
+        '/projects/proj-003/proposals/proposal-001/select',
+        { method: 'POST' }
+      )
     })
 
     it('updates project status to contractor_selected on success', async () => {
@@ -59,82 +75,103 @@ describe('useProjects.selectContractor', () => {
       )
 
       expect(result.success).toBe(false)
-      expect(result.error).toBeDefined()
-      expect(result.error).toContain('Invalid project status')
+      if (!result.success) {
+        expect(result.failure).toBe('invalid_status')
+      }
+      expect(mockedUseApi).not.toHaveBeenCalled()
     })
 
-    it('returns error for non-existent project', async () => {
+    it('returns failure for non-existent project', async () => {
       const result = await composable.selectContractor(
         'invalid-project',
         'proposal-001'
       )
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain('not found')
+      if (!result.success) {
+        expect(result.failure).toBe('project_not_found')
+      }
+      expect(mockedUseApi).not.toHaveBeenCalled()
     })
 
     it('validates transition before making API call', async () => {
-      // Try to select on a project that's not under_review
       const result = await composable.selectContractor(
         'proj-002',
         'proposal-001'
       )
 
       expect(result.success).toBe(false)
-      expect(result.error).toBeDefined()
+      expect(mockedUseApi).not.toHaveBeenCalled()
     })
 
-    it('handles optimistic updates correctly', async () => {
-      const prevProject = await composable.getProjectById('proj-003')
-      const prevStatus = prevProject.status
+    it('rolls back status and proposal id when API returns server error', async () => {
+      const projectBefore = await composable.getProjectById('proj-003')
+      projectBefore.selected_proposal_id = 'prev-prop'
+
+      const apiErr = new Error('Server error') as ApiError
+      apiErr.statusCode = 500
+      mockedUseApi.mockRejectedValueOnce(apiErr)
 
       const result = await composable.selectContractor(
         'proj-003',
         'proposal-001'
       )
 
-      if (result.success) {
-        const updated = await composable.getProjectById('proj-003')
-        expect(updated.status).not.toBe(prevStatus)
-        expect(updated.status).toBe('contractor_selected')
-      }
-    })
-
-    it('returns success with appropriate message format', async () => {
-      const result = await composable.selectContractor(
-        'proj-003',
-        'proposal-001'
-      )
-
-      expect(result).toHaveProperty('success')
-      expect(typeof result.success).toBe('boolean')
-    })
-
-    it('includes error message in failure response', async () => {
-      const result = await composable.selectContractor(
-        'proj-001',
-        'proposal-001'
-      )
-
+      expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error).toBeDefined()
-        expect(typeof result.error).toBe('string')
+        expect(result.failure).toBe('server_error')
       }
+
+      const updated = await composable.getProjectById('proj-003')
+      expect(updated.status).toBe('under_review')
+      expect(updated.selected_proposal_id).toBe('prev-prop')
     })
 
-    it('can select multiple times if status is reset', async () => {
-      // First selection
+    it('returns success when API is unavailable (mock fallback)', async () => {
+      const apiErr = new Error('Not Found') as ApiError
+      apiErr.statusCode = 404
+      mockedUseApi.mockRejectedValueOnce(apiErr)
+
+      const result = await composable.selectContractor(
+        'proj-003',
+        'proposal-001'
+      )
+
+      expect(result.success).toBe(true)
+      const updated = await composable.getProjectById('proj-003')
+      expect(updated.status).toBe('contractor_selected')
+    })
+
+    it('returns validation failure when API response reports failure', async () => {
+      mockedUseApi.mockResolvedValueOnce({
+        success: false,
+        data: {},
+        message: 'Rejected',
+      })
+
+      const result = await composable.selectContractor(
+        'proj-003',
+        'proposal-001'
+      )
+
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.failure).toBe('validation')
+      }
+      const updated = await composable.getProjectById('proj-003')
+      expect(updated.status).toBe('under_review')
+    })
+
+    it('can select again after status reset', async () => {
       const result1 = await composable.selectContractor(
         'proj-003',
         'proposal-001'
       )
       expect(result1.success).toBe(true)
 
-      // Reset status back to under_review (simulating a state change)
       const project = await composable.getProjectById('proj-003')
       project.status = 'under_review'
 
-      // Second selection with different proposal
       const result2 = await composable.selectContractor(
         'proj-003',
         'proposal-002'

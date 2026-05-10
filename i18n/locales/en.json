@@ -41,7 +41,8 @@
     "same_engineer": "Cannot assign the same engineer to both roles",
     "engineers_assigned": "Engineers assigned successfully",
     "engineers_assignment_failed": "Failed to assign engineers. Please try again.",
-    "failed_to_load_engineers": "Failed to load engineers list"
+    "failed_to_load_engineers": "Failed to load engineers list",
+    "contractor_not_invited": "This contractor is not invited to bid on this project."
   },
   "buttons": {
     "cancel": "Cancel",
@@ -533,6 +534,14 @@
       "bidding_closed": {
         "title": "Proposals ready for review",
         "body": "Proposals for \"{project}\" are ready for your review."
+      },
+      "contractor_selected_contractor": {
+        "title": "You were selected",
+        "body": "You were selected as contractor for \"{project}\"."
+      },
+      "contractor_selected_admin": {
+        "title": "Contractor selected",
+        "body": "Contractor \"{contractor}\" was selected for \"{project}\"."
       }
     }
   },
@@ -771,7 +780,16 @@
       "selectWarning": "All other proposals will be declined.",
       "selectingContractor": "Selecting contractor...",
       "selectionSuccess": "Contractor selected successfully",
-      "selectionFailed": "Failed to select contractor. Please try again."
+      "selectionFailed": "Failed to select contractor. Please try again.",
+      "selectRetry": "Try again",
+      "selectErrors": {
+        "projectNotFound": "Project could not be loaded.",
+        "invalidStatus": "Cannot select a contractor. The project may have moved to a different state.",
+        "network": "Connection failed. Please try again.",
+        "server": "Something went wrong. Please try again later.",
+        "validation": "Cannot select this contractor. Please refresh and try again.",
+        "unknown": "Could not complete selection. Please try again."
+      }
     },
     "assignEngineers": {
       "button": "Assign Engineers",

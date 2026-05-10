@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ProjectDetail, ProposalData } from '~/shared/types/project'
+import { mockAdminUsers } from '~/composables/__mocks__/admin-users'
+import type { SelectContractorFailure } from '~/composables/useProjects'
 import { formatCurrency } from '~/utils/formatters'
 import { canTransition } from '~/utils/statusMachine'
 
@@ -228,18 +230,36 @@ const loadCurrentContractorProposal = async () => {
   }
 }
 
-const handleProposalSelected = async (data: {
+const selectFailureMessage = (failure: SelectContractorFailure) => {
+  const keys: Record<SelectContractorFailure, string> = {
+    project_not_found: 'projects.proposals.selectErrors.projectNotFound',
+    invalid_status: 'projects.proposals.selectErrors.invalidStatus',
+    network: 'projects.proposals.selectErrors.network',
+    server_error: 'projects.proposals.selectErrors.server',
+    validation: 'projects.proposals.selectErrors.validation',
+    unknown: 'projects.proposals.selectErrors.unknown',
+  }
+  return t(keys[failure])
+}
+
+const confirmContractorSelection = async (data: {
   proposalId: string
   contractorId: string
   price: number
 }) => {
-  if (!project.value) return
+  if (!project.value) {
+    return {
+      success: false,
+      errorMessage: t('projects.proposals.selectErrors.projectNotFound'),
+    }
+  }
 
-  // Validate contractor was invited
   const { isContractorInvited } = useProposals()
   if (!isContractorInvited(project.value.id, data.contractorId)) {
-    useNotification().error(t('errors.contractor_not_invited'))
-    return
+    return {
+      success: false,
+      errorMessage: t('errors.contractor_not_invited'),
+    }
   }
 
   try {
@@ -249,33 +269,64 @@ const handleProposalSelected = async (data: {
       data.proposalId
     )
 
-    if (result.success) {
-      const { setSelectedProposal } = useProposals()
-      setSelectedProposal(project.value.id, data.proposalId)
-      selectedProposalId.value = data.proposalId
-      useNotification().success(t('projects.proposals.selectionSuccess'))
-
-      // Refresh project data to get updated status
-      await refresh()
-    } else {
-      useNotification().error(
-        result.error || t('projects.proposals.selectionFailed')
-      )
-      // Rollback selectedProposal on error
-      selectedProposalId.value = undefined
-      const { setSelectedProposal } = useProposals()
-      setSelectedProposal(project.value.id, '')
+    if (!result.success) {
+      return {
+        success: false,
+        errorMessage: selectFailureMessage(result.failure),
+      }
     }
-  } catch (err) {
-    const errorMsg =
-      err instanceof Error
-        ? err.message
-        : t('projects.proposals.selectionFailed')
-    useNotification().error(errorMsg)
-    // Rollback selectedProposal on error
-    selectedProposalId.value = undefined
+
     const { setSelectedProposal } = useProposals()
-    setSelectedProposal(project.value.id, '')
+    setSelectedProposal(project.value.id, data.proposalId)
+    selectedProposalId.value = data.proposalId
+    useNotification().success(t('projects.proposals.selectionSuccess'))
+
+    const proposalMeta = proposalsList.value.find(p => p.id === data.proposalId)
+    const contractorDisplayName = proposalMeta?.contractorName ?? ''
+
+    const { pushLocalNotification } = useNotifications()
+
+    pushLocalNotification({
+      id: `local-${crypto.randomUUID()}`,
+      user_id: data.contractorId,
+      title: t('notif.events.contractor_selected_contractor.title'),
+      body: t('notif.events.contractor_selected_contractor.body', {
+        project: project.value.name,
+      }),
+      link: `/projects/${project.value.id}`,
+      is_read: false,
+      created_at: new Date().toISOString(),
+      read_at: null,
+    })
+
+    const admins = mockAdminUsers.filter(
+      u =>
+        (u.role === 'admin' || u.role === 'super_admin') &&
+        u.status === 'active'
+    )
+    for (const admin of admins) {
+      pushLocalNotification({
+        id: `local-${crypto.randomUUID()}`,
+        user_id: admin.id,
+        title: t('notif.events.contractor_selected_admin.title'),
+        body: t('notif.events.contractor_selected_admin.body', {
+          contractor: contractorDisplayName,
+          project: project.value.name,
+        }),
+        link: `/projects/${project.value.id}`,
+        is_read: false,
+        created_at: new Date().toISOString(),
+        read_at: null,
+      })
+    }
+
+    await refresh()
+    return { success: true }
+  } catch {
+    return {
+      success: false,
+      errorMessage: t('projects.proposals.selectErrors.network'),
+    }
   }
 }
 
@@ -580,7 +631,7 @@ const handleCloseBiddingConfirmed = async () => {
         :has-error="proposalsError"
         :can-select="canSelectProposal"
         :selected-proposal-id="selectedProposalId"
-        @proposal-selected="handleProposalSelected"
+        :confirm-contractor-selection="confirmContractorSelection"
         @retry-load="loadProposals"
       />
     </div>

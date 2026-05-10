@@ -6,7 +6,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
@@ -19,15 +18,25 @@ interface Props {
   hasError?: boolean
   canSelect?: boolean
   selectedProposalId?: string
+  confirmContractorSelection: (data: {
+    proposalId: string
+    contractorId: string
+    price: number
+  }) => Promise<{ success: boolean; errorMessage?: string }>
 }
 
 const props = defineProps<Props>()
 const { t } = useI18n()
 
+const emit = defineEmits<{
+  'retry-load': []
+}>()
+
 const isSelecting = ref<string | null>(null)
 const showConfirmDialog = ref(false)
 const pendingProposal = ref<ProposalData | null>(null)
 const isConfirming = ref(false)
+const selectionDialogError = ref<string | null>(null)
 
 const sortedProposals = computed(() => {
   // Sort by submission date ascending (oldest first)
@@ -36,15 +45,19 @@ const sortedProposals = computed(() => {
   )
 })
 
-const emit = defineEmits<{
-  'proposal-selected': [
-    { proposalId: string; contractorId: string; price: number },
-  ]
-  'retry-load': []
-}>()
+const onSelectionDialogOpenChange = (open: boolean) => {
+  showConfirmDialog.value = open
+  if (!open) {
+    pendingProposal.value = null
+    selectionDialogError.value = null
+    isConfirming.value = false
+    isSelecting.value = null
+  }
+}
 
 const handleSelectClick = (proposal: ProposalData) => {
   pendingProposal.value = proposal
+  selectionDialogError.value = null
   showConfirmDialog.value = true
 }
 
@@ -52,24 +65,31 @@ const handleConfirmSelection = async () => {
   if (!pendingProposal.value) return
 
   isConfirming.value = true
+  selectionDialogError.value = null
   isSelecting.value = pendingProposal.value.id
 
   try {
-    emit('proposal-selected', {
+    const result = await props.confirmContractorSelection({
       proposalId: pendingProposal.value.id,
       contractorId: pendingProposal.value.contractorId,
       price: pendingProposal.value.price,
     })
+
+    if (result.success) {
+      showConfirmDialog.value = false
+      pendingProposal.value = null
+      isSelecting.value = null
+    } else {
+      selectionDialogError.value =
+        result.errorMessage ?? t('projects.proposals.selectionFailed')
+      isSelecting.value = null
+    }
+  } catch {
+    selectionDialogError.value = t('projects.proposals.selectErrors.network')
+    isSelecting.value = null
   } finally {
     isConfirming.value = false
-    showConfirmDialog.value = false
-    // isSelecting will be cleared by parent
   }
-}
-
-const handleDialogCancel = () => {
-  showConfirmDialog.value = false
-  pendingProposal.value = null
 }
 </script>
 
@@ -102,7 +122,7 @@ const handleDialogCancel = () => {
       <p class="text-foreground/80 mb-4 text-sm">
         {{ t('projects.proposals.loadingError') }}
       </p>
-      <Button variant="outline" @click="$emit('retry-load')">
+      <Button variant="outline" @click="emit('retry-load')">
         {{ t('projects.proposals.retryButton') }}
       </Button>
     </div>
@@ -131,11 +151,14 @@ const handleDialogCancel = () => {
     </div>
 
     <!-- Confirmation dialog for contractor selection -->
-    <AlertDialog :open="showConfirmDialog" @update:open="handleDialogCancel">
+    <AlertDialog
+      :open="showConfirmDialog"
+      @update:open="onSelectionDialogOpenChange"
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {{ t('proposals.selectTitle') }}
+            {{ t('projects.proposals.selectTitle') }}
           </AlertDialogTitle>
         </AlertDialogHeader>
 
@@ -159,28 +182,40 @@ const handleDialogCancel = () => {
           </div>
           <div class="bg-alert/10 rounded-lg p-3">
             <p class="text-foreground text-start text-sm">
-              {{ t('proposals.selectWarning') }}
+              {{ t('projects.proposals.selectWarning') }}
             </p>
           </div>
+          <p
+            v-if="selectionDialogError"
+            class="text-destructive text-start text-sm font-medium"
+            role="alert"
+          >
+            {{ selectionDialogError }}
+          </p>
         </div>
 
-        <AlertDialogCancel
-          :disabled="isConfirming"
-          class="border-border text-foreground rounded-lg border px-4 py-2 text-sm font-medium"
-        >
-          {{ t('proposals.selectCancel') }}
-        </AlertDialogCancel>
-        <AlertDialogAction
-          :disabled="isConfirming"
-          class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
-          @click="handleConfirmSelection"
-        >
-          <span v-if="isConfirming" class="inline-flex items-center gap-2">
-            <span class="i-heroicons-arrow-path h-4 w-4 animate-spin" />
-            {{ t('proposals.selectingContractor') }}
-          </span>
-          <span v-else>{{ t('proposals.selectConfirm') }}</span>
-        </AlertDialogAction>
+        <div class="flex w-full flex-wrap items-center justify-between gap-2">
+          <AlertDialogCancel
+            :disabled="isConfirming"
+            class="border-border text-foreground rounded-lg border px-4 py-2 text-sm font-medium"
+          >
+            {{ t('projects.proposals.selectCancel') }}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            :disabled="isConfirming"
+            class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+            @click.prevent="handleConfirmSelection"
+          >
+            <span v-if="isConfirming" class="inline-flex items-center gap-2">
+              <span class="i-heroicons-arrow-path h-4 w-4 animate-spin" />
+              {{ t('projects.proposals.selectingContractor') }}
+            </span>
+            <span v-else-if="selectionDialogError">{{
+              t('projects.proposals.selectRetry')
+            }}</span>
+            <span v-else>{{ t('projects.proposals.selectConfirm') }}</span>
+          </AlertDialogAction>
+        </div>
       </AlertDialogContent>
     </AlertDialog>
   </section>

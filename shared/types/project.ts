@@ -112,6 +112,8 @@ export interface ProjectDetail {
   budget: number
   currency: string
   status: ProjectStatus
+  /** Set when client selects a winning proposal (mock + API-backed detail). */
+  selected_proposal_id?: string
   client_id: string
   client_name: string
   contractor_id?: string

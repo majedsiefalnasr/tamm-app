@@ -41,7 +41,8 @@
     "same_engineer": "لا يمكن تعيين نفس المهندس لدورين مختلفين",
     "engineers_assigned": "تم تعيين المهندسين بنجاح",
     "engineers_assignment_failed": "فشل تعيين المهندسين. يرجى المحاولة لاحقاً.",
-    "failed_to_load_engineers": "فشل تحميل قائمة المهندسين"
+    "failed_to_load_engineers": "فشل تحميل قائمة المهندسين",
+    "contractor_not_invited": "هذا المقاول غير مدعو لتقديم عرض على هذا المشروع."
   },
   "buttons": {
     "cancel": "إلغاء",
@@ -533,6 +534,14 @@
       "bidding_closed": {
         "title": "العروض جاهزة لمراجعتك",
         "body": "عروض مشروع \"{project}\" جاهزة لمراجعتك."
+      },
+      "contractor_selected_contractor": {
+        "title": "تم اختيارك مقاولاً",
+        "body": "تم اختيارك مقاولاً لمشروع \"{project}\"."
+      },
+      "contractor_selected_admin": {
+        "title": "تم اختيار المقاول",
+        "body": "تم اختيار المقاول \"{contractor}\" للمشروع \"{project}\"."
       }
     }
   },
@@ -771,7 +780,16 @@
       "selectWarning": "ستُرفض جميع العروض الأخرى تلقائياً",
       "selectingContractor": "جاري اختيار المقاول...",
       "selectionSuccess": "تم اختيار المقاول بنجاح",
-      "selectionFailed": "فشل اختيار المقاول. يرجى المحاولة مرة أخرى"
+      "selectionFailed": "فشل اختيار المقاول. يرجى المحاولة مرة أخرى",
+      "selectRetry": "إعادة المحاولة",
+      "selectErrors": {
+        "projectNotFound": "تعذّر تحميل المشروع.",
+        "invalidStatus": "لا يمكن اختيار المقاول. قد تكون قد انتقلت إلى حالة مختلفة",
+        "network": "فشل الاتصال. يرجى المحاولة مرة أخرى",
+        "server": "حدث خطأ. يرجى المحاولة لاحقاً",
+        "validation": "لا يمكن اختيار المقاول. قد تكون قد انتقلت إلى حالة مختلفة",
+        "unknown": "تعذّر إتمام الاختيار. يرجى المحاولة مرة أخرى."
+      }
     },
     "assignEngineers": {
       "button": "تعيين المهندسين",

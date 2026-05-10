@@ -5,8 +5,20 @@ import type {
   Milestone,
   ProjectStatus,
 } from '~/shared/types/project'
-import type { ApiError } from '~/composables/useApi'
+import { useApi, type ApiError } from '~/composables/useApi'
 import { canTransition } from '~/utils/statusMachine'
+
+export type SelectContractorFailure =
+  | 'project_not_found'
+  | 'invalid_status'
+  | 'network'
+  | 'server_error'
+  | 'validation'
+  | 'unknown'
+
+export type SelectContractorResult =
+  | { success: true }
+  | { success: false; failure: SelectContractorFailure }
 
 export const useProjects = () => {
   const projects = ref<Project[]>([])
@@ -294,6 +306,29 @@ export const useProjects = () => {
     )
   }
 
+  function classifySelectContractorFailure(
+    err: unknown
+  ): SelectContractorFailure {
+    if (!err || typeof err !== 'object') return 'unknown'
+    const e = err as ApiError
+    const code = e.statusCode ?? e.status
+    if (code === undefined) {
+      const msg = (e.message ?? '').toLowerCase()
+      if (
+        msg.includes('fetch failed') ||
+        msg.includes('failed to fetch') ||
+        msg.includes('network')
+      ) {
+        return 'network'
+      }
+      return 'unknown'
+    }
+    if (code === 408 || code >= 502) return 'network'
+    if (code >= 500) return 'server_error'
+    if (code === 422 || code === 400 || code === 409) return 'validation'
+    return 'unknown'
+  }
+
   const syncMockDetailStatus = (
     projectId: string,
     newStatus: ProjectStatus
@@ -374,54 +409,54 @@ export const useProjects = () => {
   const selectContractor = async (
     projectId: string,
     proposalId: string
-  ): Promise<{ success: boolean; error?: string }> => {
-    const project = projectState.value[projectId]
+  ): Promise<SelectContractorResult> => {
+    const project = mockProjectDetails[projectId]
     if (!project) {
-      return {
-        success: false,
-        error: 'Project not found',
-      }
+      return { success: false, failure: 'project_not_found' }
     }
 
-    // Validate transition before attempting API call
     if (!canTransition('project', project.status, 'contractor_selected')) {
-      return {
-        success: false,
-        error: 'Cannot select contractor. Invalid project status.',
-      }
+      return { success: false, failure: 'invalid_status' }
     }
 
     const prevStatus = project.status
+    const prevSelectedProposalId = project.selected_proposal_id
+
+    project.status = 'contractor_selected'
+    project.selected_proposal_id = proposalId
 
     try {
-      // Optimistic update: update immediately
-      project.status = 'contractor_selected'
-      project.selected_proposal_id = proposalId
+      const response = await useApi<unknown>(
+        `/projects/${projectId}/proposals/${proposalId}/select`,
+        {
+          method: 'POST',
+        }
+      )
 
-      // Try API call
-      try {
-        await $fetch(
-          `/api/v1/projects/${projectId}/proposals/${proposalId}/select`,
-          {
-            method: 'POST',
-          }
-        )
-      } catch (apiErr) {
-        // API not available yet, use mock
-        await new Promise(resolve => setTimeout(resolve, 400))
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'success' in response &&
+        (response as { success?: boolean }).success === false
+      ) {
+        project.status = prevStatus
+        project.selected_proposal_id = prevSelectedProposalId
+        return { success: false, failure: 'validation' }
       }
-
-      return { success: true }
-    } catch (err) {
-      // Rollback on error
+    } catch (apiErr) {
+      if (isUnavailableProjectApiError(apiErr)) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        return { success: true }
+      }
       project.status = prevStatus
-      const errorMsg =
-        err instanceof Error ? err.message : 'Failed to select contractor'
+      project.selected_proposal_id = prevSelectedProposalId
       return {
         success: false,
-        error: errorMsg,
+        failure: classifySelectContractorFailure(apiErr),
       }
     }
+
+    return { success: true }
   }
 
   const assignEngineers = async (

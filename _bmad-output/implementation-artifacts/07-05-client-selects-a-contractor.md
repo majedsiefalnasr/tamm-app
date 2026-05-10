@@ -1,6 +1,6 @@
 # Story 07-05 — Client Selects a Contractor
 
-**Status:** ready-for-dev  
+**Status:** done  
 **Epic:** 07 — Proposals & Contractor Selection  
 **Story ID:** 7.5  
 **Priority:** 🟢 HIGH — Core bidding workflow  
@@ -349,6 +349,20 @@ feat: Story 07-05 — Client Selects a Contractor
 - [x] Test error scenarios
 - [x] Manual test full flow end-to-end
 - [x] RTL layout verification
+
+### Review Findings
+
+**Resolved (2026-05-10)** — Chosen MVP UX: keep `AlertDialog` open until `confirmContractorSelection` finishes; show inline error + **Try again** + cancel on failure; close on success with client success toast. Domain failures map from typed `SelectContractorFailure` codes to i18n (`projects.proposals.selectErrors.*`). `selectContractor` uses `useApi`, restores both status and `selected_proposal_id` on failure, and treats unavailable endpoints as mock success (same pattern as project status updates). Contractor + active admin/super_admin users receive `pushLocalNotification` entries with AC-aligned copy.
+
+- [x] [Review][Decision] In-dialog error + retry vs toast-only — Inline dialog errors + retry for failures; success toast for client only.
+- [x] [Review][Patch] Dialog lifecycle tied to async confirmation [`ProposalsList.vue` + `:confirm-contractor-selection` prop].
+- [x] [Review][Patch] API failures roll back optimistic state [`useProjects.ts` `selectContractor`].
+- [x] [Review][Patch] Contractor + admin local notifications [`projects/[id].vue` success path + `notif.events.*` keys].
+- [x] [Review][Patch] Controlled `@update:open` resets only when closing.
+- [x] [Review][Patch] i18n error mapping via failure codes + keys.
+- [x] [Review][Patch] Rollback restores `selected_proposal_id`.
+- [x] [Review][Patch] Unused dialog import removed.
+- [x] [Review][Patch] `useApi` for POST select.
 
 ---
 
