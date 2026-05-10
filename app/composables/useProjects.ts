@@ -1,5 +1,11 @@
 import { ref, computed } from 'vue'
-import type { Project, ProjectDetail, Milestone } from '~/shared/types/project'
+import type {
+  Project,
+  ProjectDetail,
+  Milestone,
+  ProjectStatus,
+} from '~/shared/types/project'
+import type { ApiError } from '~/composables/useApi'
 import { canTransition } from '~/utils/statusMachine'
 
 export const useProjects = () => {
@@ -275,32 +281,73 @@ export const useProjects = () => {
   // Store for in-memory project state (until full API integration)
   const projectState = ref<Record<string, ProjectDetail>>({})
 
+  function isUnavailableProjectApiError(err: unknown): boolean {
+    if (!err || typeof err !== 'object') return false
+    const e = err as ApiError
+    const code = e.statusCode ?? e.status
+    if (code === 404 || code === 501 || code === 503) return true
+    const msg = e.message ?? ''
+    return (
+      msg.includes('404') ||
+      msg.includes('fetch failed') ||
+      msg.includes('Failed to fetch')
+    )
+  }
+
+  const syncMockDetailStatus = (
+    projectId: string,
+    newStatus: ProjectStatus
+  ): void => {
+    const detail = mockProjectDetails[projectId]
+    if (detail) {
+      detail.status = newStatus
+    }
+    const st = projectState.value[projectId]
+    if (st) {
+      st.status = newStatus
+    }
+  }
+
   const updateProjectStatus = async (
     projectId: string,
-    newStatus: string
+    newStatus: ProjectStatus
   ): Promise<void> => {
-    try {
-      // TODO: replace mock — PUT /projects/:id
-      // Try real API first
-      const response = await $fetch(`/api/v1/projects/${projectId}`, {
-        method: 'PUT',
-        body: { status: newStatus },
-      })
-
-      if (response?.data) {
-        // Update local state
-        const project = projectState.value[projectId]
-        if (project) {
-          project.status = newStatus
-        }
-      }
-    } catch (err) {
-      // API not available, use mock
+    const mockFallback = async () => {
       await new Promise(resolve => setTimeout(resolve, 400))
-      const project = projectState.value[projectId]
-      if (project) {
-        project.status = newStatus
+      syncMockDetailStatus(projectId, newStatus)
+    }
+
+    try {
+      const response = await useApi<{ status?: ProjectStatus }>(
+        `/projects/${projectId}`,
+        {
+          method: 'PUT',
+          body: { status: newStatus },
+        }
+      )
+
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'success' in response &&
+        response.success === false
+      ) {
+        throw new Error(
+          response.message ||
+            response.error?.message ||
+            'Failed to update project status'
+        )
       }
+
+      syncMockDetailStatus(projectId, newStatus)
+    } catch (err) {
+      if (isUnavailableProjectApiError(err)) {
+        await mockFallback()
+        return
+      }
+      throw err instanceof Error
+        ? err
+        : new Error('Failed to update project status')
     }
   }
 
@@ -321,14 +368,7 @@ export const useProjects = () => {
   }
 
   const closeBiddingForReview = async (projectId: string): Promise<void> => {
-    // Delegates to updateProjectStatus with validation
     await updateProjectStatus(projectId, 'under_review')
-  }
-
-  const getProposalCount = (projectId: string): number => {
-    // Will be enhanced when API returns proposal count
-    // For now, returns 0 (mock data)
-    return 0
   }
 
   const selectContractor = async (
@@ -444,7 +484,6 @@ export const useProjects = () => {
     updateProjectStatus,
     inviteContractors,
     closeBiddingForReview,
-    getProposalCount,
     selectContractor,
     assignEngineers,
   }

@@ -1,6 +1,6 @@
 # Story 07-03 — Admin Closes Bidding for Review
 
-**Status:** review  
+**Status:** done  
 **Epic:** 07 — Proposals & Contractor Selection  
 **Story ID:** 7.3  
 **Priority:** 🟢 HIGH — Core bidding workflow  
@@ -326,6 +326,32 @@
 
 ---
 
+### Review Findings
+
+_Code review follow-up (2026-05-10): fixes applied on branch._
+
+#### resolved
+
+- [x] **Permission model** — Added `manage_project` for `admin` / `super_admin`; Open for bids, Close bidding, and Assign engineers visibility uses `can('manage_project')`.
+
+- [x] **`updateProjectStatus` errors** — Uses `useApi`; real failures rethrow so optimistic rollback runs; mock fallback only when the endpoint is unavailable (404 / 501 / 503 / fetch failures).
+
+- [x] **Proposal counts** — Admins load proposals while status is `open_for_bids` (`loadProposalsForBiddingAdmin`); count refreshes after contractor submission.
+
+- [x] **Client in-app notification** — `pushLocalNotification` targets `client_id`; drawer filters by viewer so admins do not see the client’s unread item.
+
+- [x] **Dialog loading** — Parent drives `confirmPending` during async close.
+
+- [x] **Tests** — `CloseBiddingDialog.spec.ts` aligned with `confirmPending` and a stable dialog stub.
+
+#### defer (unchanged)
+
+- [x] [Review][Defer] Optional admin invitation metrics — deferred; optional AC (`invitedCount` shown when invitations exist).
+
+- [x] [Review][Defer] `projectState` vs `getProjectById` — deferred pending unified API-backed store.
+
+---
+
 ## 📚 Reference
 
 | Document | Section | Use for |
@@ -338,6 +364,5 @@
 
 ---
 
-**Status:** ready-for-dev  
 **Story complexity:** Medium (straightforward status update with optimistic UX)  
-**Developer readiness:** Complete context provided — ready to implement
+**Developer readiness:** Implemented and reviewed — post-review fixes merged into codebase.

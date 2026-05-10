@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Sheet,
@@ -22,6 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const auth = useAuthStore()
 const { notifications, unreadCount, markAsRead, markAllAsRead } =
   useNotifications()
 
@@ -29,8 +30,13 @@ const showMarkAllButton = computed(() => {
   return unreadCount.value > 0
 })
 
+const visibleNotifications = computed(() => {
+  const uid = auth.user?.id
+  return notifications.value.filter(n => !n.user_id || n.user_id === uid)
+})
+
 const sortedNotifications = computed(() => {
-  return [...notifications.value].sort((a, b) => {
+  return [...visibleNotifications.value].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   })
 })
@@ -73,7 +79,7 @@ const handleMarkAllAsRead = () => {
       <div class="mt-0 overflow-y-auto">
         <!-- Empty state -->
         <EmptyState
-          v-if="notifications.length === 0"
+          v-if="visibleNotifications.length === 0"
           class="flex h-64 flex-col items-center justify-center"
           :title="$t('notif.drawer.empty')"
         />

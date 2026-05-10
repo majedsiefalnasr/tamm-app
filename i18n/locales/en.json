@@ -529,6 +529,10 @@
       },
       "project_created": {
         "title": "New Project Created"
+      },
+      "bidding_closed": {
+        "title": "Proposals ready for review",
+        "body": "Proposals for \"{project}\" are ready for your review."
       }
     }
   },

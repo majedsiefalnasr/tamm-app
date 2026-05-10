@@ -1,5 +1,11 @@
 # Deferred Work Items
 
+## Deferred from: code review of 07-03-admin-closes-bidding-for-review.md (2026-05-10)
+
+- **Optional admin invitation metrics** — Story AC lists optional visibility for invitation vs proposal counts (“3 of 5 invited…”); not implemented in project detail for this story (explicitly optional).
+
+- **`projectState` vs `getProjectById` split** — `updateProjectStatus` mutates `projectState[projectId]`, but loaded project detail may not live in that map; unify when backend-backed store lands (`useProjects.ts`).
+
 ## Deferred from: code review of 08-02-contractor-dashboard.md (2026-05-09)
 
 - **Page title i18n namespace** — Main dashboard heading uses `pages.contractor_dashboard` while section copy uses `dashboard.contractor.*`; consolidating under `dashboard.contractor.title` would match the story spec verbatim (cosmetic consistency).

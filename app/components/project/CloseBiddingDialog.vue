@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import {
   Dialog,
   DialogContent,
@@ -15,24 +14,22 @@ interface Props {
   proposalCount: number
   invitedCount?: number
   isOpen: boolean
+  /** Parent-controlled: covers async close + API call */
+  confirmPending?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  confirmPending: false,
+})
 const emit = defineEmits<{
   'update:isOpen': [value: boolean]
   confirmed: []
 }>()
 
 const { t } = useI18n()
-const isLoading = ref(false)
 
-const handleConfirm = async () => {
-  isLoading.value = true
-  try {
-    emit('confirmed')
-  } finally {
-    isLoading.value = false
-  }
+const handleConfirm = () => {
+  emit('confirmed')
 }
 
 const handleCancel = () => {
@@ -76,11 +73,15 @@ const handleCancel = () => {
       </div>
 
       <DialogFooter>
-        <Button variant="outline" :disabled="isLoading" @click="handleCancel">
+        <Button
+          variant="outline"
+          :disabled="confirmPending"
+          @click="handleCancel"
+        >
           {{ t('projects.closeBidding.cancelButton') }}
         </Button>
-        <Button :disabled="isLoading" @click="handleConfirm">
-          <span v-if="isLoading" class="me-2 inline-block">
+        <Button :disabled="confirmPending" @click="handleConfirm">
+          <span v-if="confirmPending" class="me-2 inline-block">
             <svg
               class="inline-block h-4 w-4 animate-spin"
               viewBox="0 0 24 24"

@@ -18,6 +18,7 @@ export const usePermission = () => {
         'create_project',
         'edit_project',
         'delete_project',
+        'manage_project',
         'create_milestone',
         'edit_milestone',
         'delete_milestone',
@@ -33,6 +34,7 @@ export const usePermission = () => {
       ],
       admin: [
         'view_projects',
+        'manage_project',
         'create_milestone',
         'edit_milestone',
         'delete_milestone',

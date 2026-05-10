@@ -72,17 +72,17 @@ const showEngineers = computed(() => {
 })
 
 const showOpenForBidsButton = computed(() => {
-  if (!project.value || !isAdmin.value) return false
+  if (!project.value || !can('manage_project')) return false
   return project.value.status === 'new'
 })
 
 const showCloseBiddingButton = computed(() => {
-  if (!project.value || !isAdmin.value) return false
+  if (!project.value || !can('manage_project')) return false
   return project.value.status === 'open_for_bids'
 })
 
 const showAssignEngineersButton = computed(() => {
-  if (!project.value || !isAdmin.value) return false
+  if (!project.value || !can('manage_project')) return false
   return project.value.status === 'contractor_selected'
 })
 
@@ -142,10 +142,17 @@ const {
   isContractorInvited,
   setInvitations,
   getProjectProposals,
+  getInvitations,
 } = useProposals()
 
 // Close bidding dialog
 const isCloseBiddingDialogOpen = ref(false)
+const isClosingBidding = ref(false)
+
+const invitedContractorCount = computed(() => {
+  if (!project.value) return 0
+  return getInvitations(project.value.id).length
+})
 
 // Assign engineers dialog
 const isAssignEngineersDialogOpen = ref(false)
@@ -181,13 +188,32 @@ const loadProposals = async () => {
   proposalsLoading.value = true
   proposalsError.value = false
   try {
-    const { getProjectProposals, getSelectedProposal } = useProposals()
+    const { getSelectedProposal } = useProposals()
     const proposals = await getProjectProposals(project.value.id)
     proposalsList.value = proposals
     selectedProposalId.value = getSelectedProposal(project.value.id)
   } catch (error) {
     console.error('Failed to load proposals:', error)
     proposalsError.value = true
+  } finally {
+    proposalsLoading.value = false
+  }
+}
+
+/** Proposal counts for "Close bidding" — section hidden while still open_for_bids */
+const loadProposalsForBiddingAdmin = async () => {
+  if (!project.value) return
+  if (project.value.status !== 'open_for_bids') return
+  if (!can('manage_project')) return
+  proposalsLoading.value = true
+  proposalsError.value = false
+  try {
+    const list = await getProjectProposals(project.value.id)
+    proposalsList.value = list
+  } catch (error) {
+    console.error('Failed to load proposals for bidding:', error)
+    proposalsError.value = true
+    proposalsList.value = []
   } finally {
     proposalsLoading.value = false
   }
@@ -264,6 +290,8 @@ watch(
   async newStatus => {
     if (showProposalsSection.value) {
       await loadProposals()
+    } else if (newStatus === 'open_for_bids') {
+      await loadProposalsForBiddingAdmin()
     } else if (
       newStatus &&
       !['under_review', 'contractor_selected'].includes(newStatus)
@@ -284,6 +312,7 @@ onMounted(async () => {
   if (showProposalsSection.value) {
     await loadProposals()
   }
+  await loadProposalsForBiddingAdmin()
 })
 
 const handleOpenForBidsSubmitted = async (contractorIds: string[]) => {
@@ -346,8 +375,10 @@ const getPrefillContractorIds = (): string[] => {
 
 const handleSubmitProposalCompleted = async () => {
   isSubmitProposalDialogOpen.value = false
-  // Refresh project data to reflect proposal status
   await refresh()
+  if (project.value?.status === 'open_for_bids' && can('manage_project')) {
+    await loadProposalsForBiddingAdmin()
+  }
 }
 
 const handleCloseBiddingConfirmed = async () => {
@@ -360,26 +391,40 @@ const handleCloseBiddingConfirmed = async () => {
   }
 
   const prevStatus = project.value.status
+  const { pushLocalNotification } = useNotifications()
 
+  isClosingBidding.value = true
   try {
     project.value.status = 'under_review'
 
-    // Call API to update project status
     await useProjects().closeBiddingForReview(id)
+
+    pushLocalNotification({
+      id: `local-${crypto.randomUUID()}`,
+      user_id: project.value.client_id,
+      title: t('notif.events.bidding_closed.title'),
+      body: t('notif.events.bidding_closed.body', {
+        project: project.value.name,
+      }),
+      link: `/projects/${id}`,
+      is_read: false,
+      created_at: new Date().toISOString(),
+      read_at: null,
+    })
 
     useNotification().success(t('projects.closeBidding.successMessage'))
     isCloseBiddingDialogOpen.value = false
 
-    // Refresh project data
     await refresh()
   } catch (err) {
-    // Rollback
     project.value.status = prevStatus
     const errorMsg =
       err instanceof Error
         ? err.message
         : t('projects.closeBidding.errorMessage')
     useNotification().error(errorMsg)
+  } finally {
+    isClosingBidding.value = false
   }
 }
 </script>
@@ -687,6 +732,8 @@ const handleCloseBiddingConfirmed = async () => {
     :project-id="project.id"
     :project-name="project.name"
     :proposal-count="proposalCount"
+    :invited-count="invitedContractorCount || undefined"
+    :confirm-pending="isClosingBidding"
     @update:is-open="isCloseBiddingDialogOpen = $event"
     @confirmed="handleCloseBiddingConfirmed"
   />

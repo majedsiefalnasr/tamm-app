@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [vue()],
   test: {
     globals: true,
-    environment: 'node',
+    /** DOM needed for @vue/test-utils `mount()`; pure-node suites can use `// @vitest-environment node`. */
+    environment: 'happy-dom',
   },
   resolve: {
     alias: {

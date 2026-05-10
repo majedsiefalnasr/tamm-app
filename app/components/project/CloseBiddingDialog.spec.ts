@@ -1,8 +1,22 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CloseBiddingDialog from './CloseBiddingDialog.vue'
 
+const dialogStub = {
+  template: '<div data-testid="close-bidding-dialog"><slot /></div>',
+}
+
 describe('CloseBiddingDialog', () => {
+  beforeEach(() => {
+    vi.stubGlobal('useI18n', () => ({
+      t: (key: string) => key,
+    }))
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it('renders when isOpen is true', () => {
     const wrapper = mount(CloseBiddingDialog, {
       props: {
@@ -13,17 +27,19 @@ describe('CloseBiddingDialog', () => {
       },
       global: {
         stubs: {
-          Dialog: true,
-          DialogContent: true,
-          DialogHeader: true,
-          DialogTitle: true,
-          DialogFooter: true,
-          Button: true,
+          Dialog: dialogStub,
+          DialogContent: { template: '<div><slot /></div>' },
+          DialogHeader: { template: '<div><slot /></div>' },
+          DialogTitle: { template: '<div><slot /></div>' },
+          DialogFooter: { template: '<div><slot /></div>' },
+          Button: { template: '<button><slot /></button>' },
         },
       },
     })
 
-    expect(wrapper.find('[data-testid="dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="close-bidding-dialog"]').exists()).toBe(
+      true
+    )
   })
 
   it('emits update:isOpen when cancel button is clicked', async () => {
@@ -36,27 +52,14 @@ describe('CloseBiddingDialog', () => {
       },
       global: {
         stubs: {
-          Dialog: {
-            template: '<div data-testid="dialog"><slot /></div>',
-          },
-          DialogContent: {
-            template: '<div><slot /></div>',
-          },
-          DialogHeader: {
-            template: '<div><slot /></div>',
-          },
-          DialogTitle: {
-            template: '<div><slot /></div>',
-          },
-          DialogFooter: {
-            template: '<div><slot /></div>',
-          },
+          Dialog: dialogStub,
+          DialogContent: { template: '<div><slot /></div>' },
+          DialogHeader: { template: '<div><slot /></div>' },
+          DialogTitle: { template: '<div><slot /></div>' },
+          DialogFooter: { template: '<div><slot /></div>' },
           Button: {
             template: '<button @click="$emit(\'click\')"><slot /></button>',
           },
-        },
-        mocks: {
-          t: (key: string) => key,
         },
       },
     })
@@ -78,27 +81,12 @@ describe('CloseBiddingDialog', () => {
       },
       global: {
         stubs: {
-          Dialog: {
-            template: '<div><slot /></div>',
-          },
-          DialogContent: {
-            template: '<div><slot /></div>',
-          },
-          DialogHeader: {
-            template: '<div><slot /></div>',
-          },
-          DialogTitle: {
-            template: '<div><slot /></div>',
-          },
-          DialogFooter: {
-            template: '<div><slot /></div>',
-          },
-          Button: {
-            template: '<button><slot /></button>',
-          },
-        },
-        mocks: {
-          t: (key: string) => key,
+          Dialog: dialogStub,
+          DialogContent: { template: '<div><slot /></div>' },
+          DialogHeader: { template: '<div><slot /></div>' },
+          DialogTitle: { template: '<div><slot /></div>' },
+          DialogFooter: { template: '<div><slot /></div>' },
+          Button: { template: '<button><slot /></button>' },
         },
       },
     })
@@ -116,27 +104,14 @@ describe('CloseBiddingDialog', () => {
       },
       global: {
         stubs: {
-          Dialog: {
-            template: '<div><slot /></div>',
-          },
-          DialogContent: {
-            template: '<div><slot /></div>',
-          },
-          DialogHeader: {
-            template: '<div><slot /></div>',
-          },
-          DialogTitle: {
-            template: '<div><slot /></div>',
-          },
-          DialogFooter: {
-            template: '<div><slot /></div>',
-          },
+          Dialog: { template: '<div><slot /></div>' },
+          DialogContent: { template: '<div><slot /></div>' },
+          DialogHeader: { template: '<div><slot /></div>' },
+          DialogTitle: { template: '<div><slot /></div>' },
+          DialogFooter: { template: '<div><slot /></div>' },
           Button: {
             template: '<button @click="$emit(\'click\')"><slot /></button>',
           },
-        },
-        mocks: {
-          t: (key: string) => key,
         },
       },
     })
@@ -147,49 +122,36 @@ describe('CloseBiddingDialog', () => {
     expect(wrapper.emitted('confirmed')).toBeTruthy()
   })
 
-  it('disables buttons when loading', async () => {
+  it('disables buttons and shows spinner when confirmPending is true', () => {
     const wrapper = mount(CloseBiddingDialog, {
       props: {
         projectId: 'proj-001',
         projectName: 'Test Project',
         proposalCount: 3,
         isOpen: true,
+        confirmPending: true,
       },
       global: {
         stubs: {
-          Dialog: {
-            template: '<div><slot /></div>',
-          },
-          DialogContent: {
-            template: '<div><slot /></div>',
-          },
-          DialogHeader: {
-            template: '<div><slot /></div>',
-          },
-          DialogTitle: {
-            template: '<div><slot /></div>',
-          },
-          DialogFooter: {
-            template: '<div><slot /></div>',
-          },
+          Dialog: { template: '<div><slot /></div>' },
+          DialogContent: { template: '<div><slot /></div>' },
+          DialogHeader: { template: '<div><slot /></div>' },
+          DialogTitle: { template: '<div><slot /></div>' },
+          DialogFooter: { template: '<div><slot /></div>' },
           Button: {
-            template: '<button :disabled="disabled"><slot /></button>',
+            template:
+              '<button :disabled="disabled" data-role="btn"><slot /></button>',
             props: ['disabled'],
           },
-        },
-        mocks: {
-          t: (key: string) => key,
         },
       },
     })
 
-    const confirmButton = wrapper.findAll('button')[1] as any
-    await confirmButton.trigger('click')
-
-    await wrapper.vm.$nextTick()
-
-    // Button should show loading spinner
-    expect(wrapper.find('svg').exists()).toBe(false) ||
-      expect(confirmButton.attributes('disabled')).toBeDefined()
+    const buttons = wrapper.findAll('[data-role="btn"]')
+    expect(buttons.length).toBeGreaterThanOrEqual(2)
+    expect(buttons.every(b => b.attributes('disabled') !== undefined)).toBe(
+      true
+    )
+    expect(wrapper.find('svg').exists()).toBe(true)
   })
 })

@@ -1,4 +1,5 @@
 import { storeToRefs } from 'pinia'
+import { toast } from 'vue-sonner'
 import type { Notification } from '~/shared/types/notification'
 import { useNotificationsStore } from '~/stores/notifications'
 
@@ -80,14 +81,48 @@ export const useNotifications = () => {
     }
   }
 
+  const showNotification = (payload: {
+    type: 'success' | 'error' | 'info'
+    message: string
+    duration?: number
+  }) => {
+    const opts = payload.duration != null ? { duration: payload.duration } : {}
+    if (payload.type === 'success') {
+      toast.success(payload.message, opts)
+    } else if (payload.type === 'error') {
+      toast.error(payload.message, opts)
+    } else {
+      toast.info(payload.message, opts)
+    }
+  }
+
   const { unreadCount, notifications } = storeToRefs(store)
+
+  const notify = {
+    success: (message: string) => toast.success(message),
+    error: (message: string) => toast.error(message),
+    info: (message: string) => toast.info(message),
+    warning: (message: string) => toast.warning(message),
+  }
+
+  const pushLocalNotification = (notification: Notification) => {
+    store.prependNotification(notification)
+  }
+
+  const decrementUnreadCount = () => {
+    store.decrementUnreadCount()
+  }
 
   return {
     unreadCount,
     notifications,
+    notify,
+    pushLocalNotification,
+    showNotification,
     startPolling,
     stopPolling,
     markAsRead,
     markAllAsRead,
+    decrementUnreadCount,
   }
 }
