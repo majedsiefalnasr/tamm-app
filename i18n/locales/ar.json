@@ -1,5 +1,8 @@
 {
   "auth": {
+    "appBrand": "TAMM",
+    "loginTitle": "تسجيل الدخول إلى حسابك",
+    "loginSubtitle": "أدخل بريدك الإلكتروني وكلمة المرور أدناه للمتابعة.",
     "email": "البريد الإلكتروني",
     "emailPlaceholder": "عنوان البريد",
     "emailRequired": "البريد الإلكتروني مطلوب",

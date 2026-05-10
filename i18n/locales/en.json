@@ -1,5 +1,8 @@
 {
   "auth": {
+    "appBrand": "TAMM",
+    "loginTitle": "Log in to your account",
+    "loginSubtitle": "Enter your email and password below to continue.",
     "email": "Email",
     "emailPlaceholder": "Email address",
     "emailRequired": "Email is required",

@@ -5,5 +5,7 @@ definePageMeta({
 </script>
 
 <template>
-  <AuthForgotPasswordForm />
+  <AuthSplitShell content-width="sm">
+    <AuthForgotPasswordForm />
+  </AuthSplitShell>
 </template>
