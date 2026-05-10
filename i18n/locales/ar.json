@@ -171,6 +171,9 @@
     },
     "super_admin": {
       "label": "مسؤول النظام"
+    },
+    "unknown": {
+      "label": "دور غير معروف"
     }
   },
   "common": {

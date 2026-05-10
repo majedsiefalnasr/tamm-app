@@ -61,35 +61,37 @@ describe('roleRoutes utilities', () => {
 
   describe('getDisplayNameForRole', () => {
     it('returns i18n key for client', () => {
-      expect(getDisplayNameForRole('client')).toBe('roles.client')
+      expect(getDisplayNameForRole('client')).toBe('roles.client.label')
     })
 
     it('returns i18n key for contractor', () => {
-      expect(getDisplayNameForRole('contractor')).toBe('roles.contractor')
+      expect(getDisplayNameForRole('contractor')).toBe('roles.contractor.label')
     })
 
     it('returns i18n key for field_engineer', () => {
       expect(getDisplayNameForRole('field_engineer')).toBe(
-        'roles.field_engineer'
+        'roles.field_engineer.label'
       )
     })
 
     it('returns i18n key for supervisor_engineer', () => {
       expect(getDisplayNameForRole('supervisor_engineer')).toBe(
-        'roles.supervisor_engineer'
+        'roles.supervisor_engineer.label'
       )
     })
 
     it('returns i18n key for admin', () => {
-      expect(getDisplayNameForRole('admin')).toBe('roles.admin')
+      expect(getDisplayNameForRole('admin')).toBe('roles.admin.label')
     })
 
     it('returns i18n key for super_admin', () => {
-      expect(getDisplayNameForRole('super_admin')).toBe('roles.super_admin')
+      expect(getDisplayNameForRole('super_admin')).toBe(
+        'roles.super_admin.label'
+      )
     })
 
-    it('returns roles.unknown for unknown role', () => {
-      expect(getDisplayNameForRole('unknown')).toBe('roles.unknown')
+    it('returns roles.unknown.label for unknown role', () => {
+      expect(getDisplayNameForRole('unknown')).toBe('roles.unknown.label')
     })
   })
 })

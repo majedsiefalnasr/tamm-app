@@ -21,6 +21,13 @@ import { getDisplayNameForRole } from '~/utils/roleRoutes'
 
 const auth = useAuthStore()
 const { isMobile } = useSidebar()
+const { localeProperties } = useI18n()
+
+/** RTL + dock-right sidebar: avoid opening the menu past the viewport edge. */
+const accountMenuSide = computed<'top' | 'right' | 'bottom' | 'left'>(() => {
+  if (isMobile.value) return 'bottom'
+  return localeProperties.value.dir === 'rtl' ? 'left' : 'right'
+})
 
 const userInitials = computed(() => {
   if (!auth.user?.name) return 'U'
@@ -36,6 +43,7 @@ const getRoleDisplayNameForDisplay = (role: string): string => {
 }
 
 const handleLogout = async () => {
+  if (auth.isLoading) return
   await auth.logout()
 }
 </script>
@@ -70,7 +78,7 @@ const handleLogout = async () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           class="min-w-56 rounded-lg"
-          :side="isMobile ? 'bottom' : 'right'"
+          :side="accountMenuSide"
           align="end"
           :side-offset="4"
         >
@@ -91,6 +99,7 @@ const handleLogout = async () => {
           <DropdownMenuItem
             as-button
             class="text-destructive focus:bg-destructive/10 cursor-pointer"
+            :disabled="auth.isLoading"
             @click="handleLogout"
           >
             {{ $t('common.logout') }}

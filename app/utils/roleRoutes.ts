@@ -263,14 +263,14 @@ export const isAdminRole = (role: string): boolean => {
 }
 
 export const getDisplayNameForRole = (role: string): string => {
-  // Used for i18n display
+  /** Leaf keys — locales nest labels under `roles.<role>.label`. */
   const roleNameMap: Record<string, string> = {
-    client: 'roles.client',
-    contractor: 'roles.contractor',
-    field_engineer: 'roles.field_engineer',
-    supervisor_engineer: 'roles.supervisor_engineer',
-    admin: 'roles.admin',
-    super_admin: 'roles.super_admin',
+    client: 'roles.client.label',
+    contractor: 'roles.contractor.label',
+    field_engineer: 'roles.field_engineer.label',
+    supervisor_engineer: 'roles.supervisor_engineer.label',
+    admin: 'roles.admin.label',
+    super_admin: 'roles.super_admin.label',
   }
-  return roleNameMap[role] ?? 'roles.unknown'
+  return roleNameMap[role] ?? 'roles.unknown.label'
 }

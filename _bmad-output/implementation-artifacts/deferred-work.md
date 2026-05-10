@@ -1,5 +1,13 @@
 # Deferred Work Items
 
+## Deferred from: code review of 09-01-audit-shadcn-gaps-and-cli-plan.md (2026-05-10)
+
+- **Global radius token rescaling** — Commit `2cd1965` changes `--radius-sm/md` and adds larger radius steps in `tailwind.css`; validate against design-spec tokens before treating as regression.
+
+- **Avatar URLs from profile** — `SidebarUserMenu` renders `auth.user.avatar_url` directly; optional hardening (proxy, allowlist, CSP) deferred unless AppSec scope.
+
+- **Breadcrumb chevron in RTL** — Separator may still read LTR visually in Arabic; polish when shell UX (09-02) is finalized.
+
 ## Deferred from: code review of 08-05-admin-dashboard.md (2026-05-10)
 
 - **Admin disputes routes missing** — Dashboard and `DashboardDisputes` link to `/admin/disputes` and `/admin/disputes/:id`; implement pages or retarget when mediation UX exists.

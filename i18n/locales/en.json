@@ -171,6 +171,9 @@
     },
     "super_admin": {
       "label": "Super Admin"
+    },
+    "unknown": {
+      "label": "Unknown role"
     }
   },
   "common": {

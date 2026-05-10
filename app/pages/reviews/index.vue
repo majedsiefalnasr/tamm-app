@@ -6,7 +6,7 @@ import PendingReviewsList from '~/components/review/PendingReviewsList.vue'
 
 definePageMeta({
   roles: ['supervisor_engineer'],
-  pageTitle: 'pages.reviews',
+  pageTitle: 'pages.reviews.title',
 })
 
 const {

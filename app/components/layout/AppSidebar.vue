@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import {
@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '~/components/ui/sidebar'
 import type { NavItem } from '~/utils/roleRoutes'
 import { getHomePageForRole } from '~/utils/roleRoutes'
@@ -23,6 +24,14 @@ const auth = useAuthStore()
 const route = useRoute()
 const { localeProperties } = useI18n()
 const { getNavigationForRole } = useRoleRoutes()
+const { setOpenMobile } = useSidebar()
+
+watch(
+  () => route.fullPath,
+  () => {
+    setOpenMobile(false)
+  }
+)
 
 const sidebarSide = computed(() =>
   localeProperties.value.dir === 'rtl' ? 'right' : 'left'

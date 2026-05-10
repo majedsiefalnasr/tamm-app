@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 
   /**
    * Fonts via `<link>` (non-blocking) instead of CSS `@import` so first paint isn’t delayed.
-   * Loads Cairo/Tajawal for Arabic (`locale=ar`) and Inter for default English UI.
+   * Loads Cairo/Tajawal for Arabic (default locale) and Inter when locale is English.
    */
   app: {
     head: {
@@ -101,8 +101,8 @@ export default defineNuxtConfig({
       { code: 'en', dir: 'ltr', file: 'en.json' },
       { code: 'ar', dir: 'rtl', file: 'ar.json' },
     ],
-    defaultLocale: 'en',
-    /** Same URLs for all locales; switching locale will move to user settings / persisted pref later. */
+    defaultLocale: 'ar',
+    /** Same URLs for all locales; cookie `i18n_locale` overrides for returning users. */
     strategy: 'no_prefix',
     /** Cookie-only persistence is handled in `i18n/localeDetector.ts` + `i18n-locale-cookie.client.ts`. */
     detectBrowserLanguage: false,
