@@ -66,6 +66,9 @@ vi.stubGlobal(
 
 vi.stubGlobal('useRoleRoutes', () => ({
   getHomePageForRole: () => '/dashboard',
+  getNavigationForRole: () => [],
+  getDisplayNameForRole: () => 'roles.admin.label',
+  isAdminRole: () => true,
 }))
 
 vi.stubGlobal('useAdminProjects', () => ({

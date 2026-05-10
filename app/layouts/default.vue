@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import AppSidebar from '~/components/layout/AppSidebar.vue'
+import GlobalCommandPalette from '~/components/layout/GlobalCommandPalette.vue'
 import Topbar from '~/components/layout/Topbar.vue'
+import { provideCommandPalette } from '~/composables/useCommandPalette'
 import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
+
+provideCommandPalette()
 </script>
 
 <template>
@@ -14,6 +18,7 @@ import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
           <slot />
         </div>
       </div>
+      <GlobalCommandPalette />
     </SidebarInset>
   </SidebarProvider>
 </template>

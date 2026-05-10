@@ -219,6 +219,24 @@
     "system_flags": "System Flags",
     "system_logs": "System Logs"
   },
+  "commandPalette": {
+    "title": "Command palette",
+    "description": "Search and jump to a page you have access to",
+    "searchPlaceholder": "Search pages…",
+    "empty": "No matching pages",
+    "groupRecents": "Recent",
+    "groupShortcuts": "All pages",
+    "open": "Open command palette",
+    "modMeta": "⌘",
+    "modCtrl": "Ctrl"
+  },
+  "settings": {
+    "title": "Settings",
+    "keyboardShortcuts": "Keyboard shortcuts",
+    "shortcut_palette_label": "Command palette",
+    "shortcut_palette_desc": "Open the palette from anywhere to jump to navigation pages you are allowed to view.",
+    "shortcut_palette_detail": "Use either ⌘ K (macOS) or Ctrl K (Windows/Linux)."
+  },
   "milestone": {
     "project_unknown": "Project",
     "action": {

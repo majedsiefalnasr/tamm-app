@@ -33,9 +33,9 @@ watch(
 )
 
 /**
- * `Sidebar.vue` maps `side="left"` to `start-0` (inline-start): dock left in LTR,
- * dock right in RTL (Arabic). Locale-specific flipping was for the old physical
- * `left-*` / `right-*` positioning and inverted after logical properties.
+ * `Sidebar.vue` maps `side="left"` to `start-0` (inline-start): dock at inline-start in LTR,
+ * dock at inline-end in RTL (Arabic). Older locale hacks used physical directional Tailwind and were
+ * removed in favor of logical properties (`ms-*`, `ps-*`, `start-*`, `end-*`).
  */
 const SIDEBAR_DOCK: 'left' | 'right' = 'left'
 

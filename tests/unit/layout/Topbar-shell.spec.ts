@@ -24,7 +24,7 @@ describe('Topbar (app shell)', () => {
     } as ReturnType<typeof useRoute>)
   })
 
-  it('uses design-spec header height h-20 for shell alignment', () => {
+  it('uses design-spec header height token (--header-height) for shell alignment', () => {
     const wrapper = mount(Topbar, {
       global: {
         stubs: {
@@ -37,6 +37,11 @@ describe('Topbar (app shell)', () => {
           BreadcrumbLink: { template: '<span><slot /></span>' },
           BreadcrumbPage: { template: '<span><slot /></span>' },
           BreadcrumbSeparator: { template: '<span />' },
+          Tooltip: { template: '<div><slot /></div>' },
+          TooltipTrigger: { template: '<div><slot /></div>' },
+          TooltipContent: { template: '<div><slot /></div>' },
+          Button: { template: '<button type="button"><slot /></button>' },
+          Kbd: { template: '<span><slot /></span>' },
         },
         mocks: {
           $t: (key: string) => key,
@@ -45,6 +50,6 @@ describe('Topbar (app shell)', () => {
     })
 
     const header = wrapper.find('header')
-    expect(header.classes()).toContain('h-20')
+    expect(header.classes().join(' ')).toContain('h-(--header-height)')
   })
 })
