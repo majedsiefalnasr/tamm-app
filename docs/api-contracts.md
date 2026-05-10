@@ -3,15 +3,51 @@
 **API Version:** 1.0.0  
 **Base URL:** `/api/v1`  
 **Authentication:** Bearer JWT token in `Authorization` header  
-**Last Updated:** 2026-05-07 — Verified against live server (https://tamm.ultimate-dev2.com/docs?api-docs.json)
+**Last Updated:** 2026-05-10 — Verified against live OpenAPI (https://tamm.ultimate-dev2.com/docs?api-docs.json) and UI explorer (https://tamm.ultimate-dev2.com/api/documentation#/)
+
+**Companion doc:** [`BACKEND_BLOCKERS.md`](./BACKEND_BLOCKERS.md) — open questions, frontend/backend split, and divergences from older frontend assumptions.
 
 ---
 
 ## Legend
 
-- ✅ **Available** — Endpoint is implemented and ready to use
-- ⏳ **Planned** — Endpoint is in the roadmap but not yet implemented
-- ❓ **Schema Pending** — Endpoint exists but detailed schema needs clarification
+- ✅ **Available** — Listed in OpenAPI and callable on the dev server (schemas vary in completeness)
+- ⏳ **Planned** — Not in OpenAPI / not delivered yet
+- ❓ **Schema pending** — Route exists but request/response body is underspecified in Swagger
+
+---
+
+## Global response envelope & pagination
+
+Successful and error responses use a common wrapper (see **Error Response Format** below):
+
+- `success` — boolean
+- `data` — payload or `null` on error
+- `meta` — object (often `{}`); list endpoints may include `meta.pagination`
+- `error` — `null` on success; on failure typically `{ "code": string, "message": string }`
+
+**Pagination** (when present under `meta.pagination`):
+
+```json
+{
+  "current_page": 1,
+  "limit": 10,
+  "total": 45,
+  "last_page": 5
+}
+```
+
+Query params are usually `page` and `limit` (confirm per resource in Swagger).
+
+---
+
+## Milestone status (live API)
+
+Statuses in OpenAPI for milestones **differ** from the older frontend spec (`not_started`, `in_progress`, etc.). Align `utils/statusMachine.ts` with:
+
+`draft` → `submitted` (via submit) → `under_review` → `approved` | `rejected`
+
+**Client final sign-off** is **not** `POST /milestones/{id}/final-approve`; use the **Approvals** API (`POST /approvals/{approval}/approve`). See **Approval Endpoints**.
 
 ---
 
@@ -72,7 +108,7 @@ All public unless otherwise noted.
 ```
 
 **Frontend Use:** Auth composable — self-registration (if enabled)  
-**Notes:** ❓ See BACKEND_BLOCKERS.md Q#3
+**Notes:** OpenAPI allows `email` to be `null` when registering — confirm validation rules (email vs phone). ❓ BACKEND_BLOCKERS.md Q#3 (roles such as `owner` in examples vs product roles).
 
 ---
 
@@ -191,22 +227,22 @@ All public unless otherwise noted.
 {
   "success": true,
   "data": {
-    "id": "string",
+    "id": 1,
     "name": "string",
-    "email": "string",
+    "email": "string | null",
     "phone": "string | null",
-    "role": "string | string[]",
-    "status": "string",
-    "avatar_url": "string | null",
-    "created_at": "datetime",
-    "updated_at": "datetime"
-  }
+    "role": "string",
+    "status": "active | suspended | pending_verification | banned",
+    "created_at": "datetime"
+  },
+  "meta": {},
+  "error": null
 }
 ```
 
 **Frontend Use:** Load user on app start  
 **Implemented:** ✅ Ready to build  
-**Notes:** ❓ See BACKEND_BLOCKERS.md Q#8
+**Notes:** Matches OpenAPI `UserResource`. Extra profile fields (`avatar_url`, `updated_at`, multi-role) ❓ BACKEND_BLOCKERS.md Q#7, Q#8.
 
 ---
 
@@ -315,14 +351,16 @@ All public unless otherwise noted.
 
 **Response (200):**
 
+OpenAPI documents **`ApiSuccessMessageResponse`** (success message only — **no JWT** in this response):
+
 ```json
 {
   "success": true,
   "data": {
-    "token": "eyJhbGci...",
-    "token_type": "Bearer",
-    "expires_in": 3600
-  }
+    "message": "string"
+  },
+  "meta": {},
+  "error": null
 }
 ```
 
@@ -338,7 +376,7 @@ All public unless otherwise noted.
 }
 ```
 
-**Frontend Use:** 2FA verification dialog  
+**Frontend Use:** Account verification after OTP (not a second login step unless backend states otherwise)  
 **Notes:** ❓ See BACKEND_BLOCKERS.md Q#2
 
 ---
@@ -389,22 +427,22 @@ All require authentication.
 {
   "success": true,
   "data": {
-    "id": "string",
+    "id": 1,
     "name": "string",
-    "email": "string",
+    "email": "string | null",
     "phone": "string | null",
-    "role": "string | string[]",
-    "status": "string",
-    "avatar_url": "string | null",
-    "created_at": "datetime",
-    "updated_at": "datetime"
-  }
+    "role": "string",
+    "status": "active | suspended | pending_verification | banned",
+    "created_at": "datetime"
+  },
+  "meta": {},
+  "error": null
 }
 ```
 
 **Frontend Use:** Profile page  
 **Implemented:** ✅ Ready to build  
-**Notes:** ❓ See BACKEND_BLOCKERS.md Q#8
+**Notes:** OpenAPI aligns `GET /auth/me` with `UserResource`; extended profile fields ❓ BACKEND_BLOCKERS.md Q#8.
 
 ---
 
@@ -500,27 +538,30 @@ file: File (image, required)
   "success": true,
   "data": [
     {
-      "id": "string",
+      "id": 1,
       "name": "string",
-      "email": "string",
+      "email": "string | null",
       "phone": "string | null",
-      "role": "string | string[]",
+      "role": "string",
       "status": "string",
       "created_at": "datetime"
     }
   ],
   "meta": {
-    "total": 150,
-    "page": 1,
-    "limit": 10,
-    "pages": 15
-  }
+    "pagination": {
+      "current_page": 1,
+      "limit": 10,
+      "total": 150,
+      "last_page": 15
+    }
+  },
+  "error": null
 }
 ```
 
 **Frontend Use:** Admin user list page  
 **Implemented:** ✅ Ready to build  
-**Notes:** ❓ See BACKEND_BLOCKERS.md Q#9, Q#10
+**Notes:** ❓ Query filters/sorting not fully documented in Swagger — BACKEND_BLOCKERS.md Q#9, Q#10. Confirm live `meta` shape matches this pattern.
 
 ---
 
@@ -578,21 +619,22 @@ file: File (image, required)
 {
   "success": true,
   "data": {
-    "id": "string",
+    "id": 1,
     "name": "string",
-    "email": "string",
+    "email": "string | null",
     "phone": "string | null",
-    "role": "string | string[]",
-    "status": "string",
-    "avatar_url": "string | null",
-    "created_at": "datetime",
-    "updated_at": "datetime"
-  }
+    "role": "string",
+    "status": "active | suspended | pending_verification | banned",
+    "created_at": "datetime"
+  },
+  "meta": {},
+  "error": null
 }
 ```
 
 **Frontend Use:** User detail page  
-**Implemented:** ✅ Ready to build
+**Implemented:** ✅ Ready to build  
+**Notes:** `avatar_url` / `updated_at` may appear at runtime even if omitted from OpenAPI — verify Q#8.
 
 ---
 
@@ -703,17 +745,20 @@ All require authentication.
     }
   ],
   "meta": {
-    "total": 50,
-    "page": 1,
-    "limit": 10,
-    "pages": 5
-  }
+    "pagination": {
+      "current_page": 1,
+      "limit": 10,
+      "total": 50,
+      "last_page": 5
+    }
+  },
+  "error": null
 }
 ```
 
 **Frontend Use:** Projects list page  
 **Implemented:** ✅ Ready to build  
-**Notes:** ❓ See BACKEND_BLOCKERS.md Q#5, Q#9, Q#10
+**Notes:** ❓ Full project resource + filters — Swagger thin on this route; BACKEND_BLOCKERS.md Q#5, Q#9, Q#10. Confirm `meta.pagination` on live responses.
 
 ---
 
@@ -1675,162 +1720,186 @@ All require authentication (admin level).
 
 ---
 
-## ⏳ PLANNED — Not Yet Available
+## Milestone Endpoints
 
-These endpoints are **not yet in the Swagger spec**. See `BACKEND_BLOCKERS.md` for timelines and details.
+All paths below are under `/api/v1`. Path parameter `{milestone}` is an **integer** in OpenAPI.
 
-### Milestones (Phase 4)
+| Method | Path                               | Status       | Notes                                                                                                                                                                         |
+| ------ | ---------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/milestones`                      | ✅ Available | Query: `project_id`, `status` (`draft` \| `submitted` \| `under_review` \| `approved` \| `rejected`), `assigned_to`, `limit` (default 10). Response: `MilestoneListResponse`. |
+| POST   | `/milestones`                      | ✅ Available | Body: `CreateMilestoneRequestBody` — `title`, `amount`, `assigned_to`, `project_id` required; optional `description`, `currency`, `due_date`.                                 |
+| GET    | `/milestones/{milestone}`          | ✅ Available | Response: `MilestoneDetailResponse` (includes nested `project`, `payments`, review fields when present).                                                                      |
+| PUT    | `/milestones/{milestone}`          | ✅ Available | Same body shape as create per OpenAPI reference.                                                                                                                              |
+| DELETE | `/milestones/{milestone}`          | ✅ Available | Success: `ApiSuccessMessageResponse`.                                                                                                                                         |
+| POST   | `/milestones/{milestone}/submit`   | ✅ Available | Contractor submits for review.                                                                                                                                                |
+| POST   | `/milestones/{milestone}/approve`  | ✅ Available | Optional body: `ApproveMilestoneRequestBody` (`notes`).                                                                                                                       |
+| POST   | `/milestones/{milestone}/reject`   | ✅ Available | Body: `RejectMilestoneRequestBody` (`reason` required).                                                                                                                       |
+| GET    | `/milestones/{milestone}/progress` | ✅ Available | ❓ Response body not fully described in Swagger — verify with backend.                                                                                                        |
 
-- `GET /milestones` — list milestones
-- `GET /milestones/{id}` — fetch milestone details
-- `POST /milestones` — create milestone
-- `PUT /milestones/{id}` — update milestone
-- `POST /milestones/{id}/approve` — supervisor approval
-- `POST /milestones/{id}/reject` — rejection
-- `POST /milestones/{id}/final-approve` — client final approval
+**Not in OpenAPI:** `POST /milestones/{id}/final-approve` — use **Approvals** for client final approval.
 
-**Status:** ⏳ Planned  
-**Impact:** 🔴 CRITICAL — blocks approval workflow
-
----
-
-### Reports (Phase 5)
-
-- `POST /reports` — submit field report
-- `GET /reports/{id}` — fetch report
-- `PUT /reports/{id}` — update report
-- `POST /reports/{id}/approve` — supervisor approval
-- `POST /reports/{id}/reject` — rejection
-- `GET /projects/{projectId}/reports` — list project reports
-- `GET /milestones/{milestoneId}/reports` — list milestone reports
-
-**Status:** ⏳ Planned  
-**Impact:** 🔴 CRITICAL — blocks field work tracking
+**Frontend:** Align composables and `statusMachine.ts` with milestone enums above; see `BACKEND_BLOCKERS.md` divergences.
 
 ---
 
-### Payments (Phase 6)
+## Approval Endpoints
 
-- `GET /payments` — list payments
-- `GET /payments/{id}` — payment details
-- `POST /payments/{id}/release` — release from escrow
-- `POST /payments/{id}/dispute` — flag dispute
-- `POST /payments/{id}/cancel` — cancel payment
+Unified approval records (e.g. client sign-off on a milestone). Path `{approval}` is an **integer**.
 
-**Status:** ⏳ Planned  
-**Impact:** 🔴 CRITICAL — blocks payment workflow
+| Method | Path                            | Status       | Notes                                                                                                               |
+| ------ | ------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/approvals`                    | ✅ Available | Query: `status` (`pending` \| `approved` \| `rejected` \| `cancelled`), `type` (e.g. `milestone`), `page`, `limit`. |
+| GET    | `/approvals/{approval}`         | ✅ Available | Detail: `ApprovalDetailResponse`.                                                                                   |
+| POST   | `/approvals/{approval}/approve` | ✅ Available | Optional body: `ApproveApprovalRequestBody` (`notes`).                                                              |
+| POST   | `/approvals/{approval}/reject`  | ✅ Available | Body: `RejectApprovalRequestBody` (`notes` required per schema).                                                    |
+
+**Resource highlights (`ApprovalResource`):** `type`, `status`, `approvable` (`type`, `id`, `url`, `status`), `requested_by`, `assigned_to`, amounts/currency, timestamps.
+
+**❓ Open:** When approvals are created and how to resolve `approval` id from a milestone — see BACKEND_BLOCKERS.md Q#11.
 
 ---
 
-### Notifications (Phase 7)
+## Task Endpoints
 
-**Status:** ⏳ Planned  
-**Impact:** 🟠 HIGH — blocks real-time updates (defer to post-launch)
+Tasks hang under milestones; task id is an **integer** where noted.
 
-#### `GET /notifications`
+| Method | Path                            | Status       | Notes                                            |
+| ------ | ------------------------------- | ------------ | ------------------------------------------------ |
+| GET    | `/milestones/{milestone}/tasks` | ✅ Available | ❓ List schema minimal in Swagger.               |
+| POST   | `/milestones/{milestone}/tasks` | ✅ Available | Body: `title`, `assigned_to` (integer) required. |
+| POST   | `/tasks/{task}/start`           | ✅ Available |                                                  |
+| POST   | `/tasks/{task}/mark-complete`   | ✅ Available |                                                  |
+| POST   | `/tasks/{task}/approve`         | ✅ Available | Optional `notes`.                                |
+| POST   | `/tasks/{task}/reject`          | ✅ Available | Body: `reason` required.                         |
+| GET    | `/contractor/tasks`             | ✅ Available | Contractor task inbox.                           |
 
-**Status:** ⏳ Planned  
-**Purpose:** Fetch all notifications for authenticated user
+**❓ Open:** Full task resource schema — BACKEND_BLOCKERS.md Q#12.
 
-**Response (200) — With notifications:**
+---
 
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "notif-001",
-      "user_id": "user-123",
-      "title": "Report Submitted",
-      "body": "Foundation Work — Shopping Mall Project",
-      "link": "/projects/proj-001/milestones/m-001",
-      "is_read": false,
-      "created_at": "2026-05-09T10:30:00Z",
-      "read_at": null
-    }
-  ]
-}
-```
+## Field report endpoints
 
-**Response (200) — No notifications:**
+URLs use **`field-reports`**, not `/reports`.
 
-```json
-{
-  "success": true,
-  "data": []
-}
-```
+| Method | Path                                      | Status       | Notes                                        |
+| ------ | ----------------------------------------- | ------------ | -------------------------------------------- |
+| GET    | `/projects/{project}/field-reports`       | ✅ Available | `{project}` integer in OpenAPI.              |
+| POST   | `/projects/{project}/field-reports`       | ✅ Available | Body: `type`, `report_date` (date) required. |
+| POST   | `/field-reports/{report}/submit`          | ✅ Available |                                              |
+| POST   | `/field-reports/{report}/approve`         | ✅ Available | Optional `notes`.                            |
+| POST   | `/field-reports/{report}/reject`          | ✅ Available | Body: `reason` required.                     |
+| POST   | `/field-reports/{report}/request-changes` | ✅ Available | Body: `feedback` required.                   |
+| POST   | `/field-reports/{report}/media`           | ✅ Available | ❓ Multipart details in Swagger — confirm.   |
+| GET    | `/field-engineer/reports/me`              | ✅ Available | Current user’s reports.                      |
 
-**Response Schema:**
+**❓ Open:** Report types enum, full resource shape — BACKEND_BLOCKERS.md Q#13.
 
-- `id` (string) — unique notification identifier
-- `user_id` (string) — recipient user ID
-- `title` (string) — notification title (localized by backend)
-- `body` (string) — notification body/description (localized by backend)
-- `link` (string) — navigation target URL (e.g., `/projects/:id/milestones/:mid`, `/payments`)
-- `is_read` (boolean) — read status
-- `created_at` (string) — ISO 8601 timestamp
-- `read_at` (string | null) — ISO 8601 timestamp when marked as read, or null
+---
 
-**Event Types Supported:**
+## Payment endpoints
 
-| Event               | Title                    | Body Example                            | Link                            |
-| ------------------- | ------------------------ | --------------------------------------- | ------------------------------- |
-| Report Submitted    | "Report Submitted"       | "[Milestone] — [Project]"               | `/projects/:id/milestones/:mid` |
-| Supervisor Approved | "Approved by Supervisor" | "[Milestone] — awaiting your approval"  | `/projects/:id/milestones/:mid` |
-| Supervisor Rejected | "Rejected by Supervisor" | "[Milestone] — [reason]"                | `/projects/:id/milestones/:mid` |
-| Client Approved     | "Approved by Client"     | "[Milestone] — payment pending"         | `/projects/:id/milestones/:mid` |
-| Client Rejected     | "Rejected by Client"     | "[Milestone] — [reason]"                | `/projects/:id/milestones/:mid` |
-| Payment Released    | "Payment Released"       | "SAR [amount] released for [milestone]" | `/payments`                     |
-| Project Created     | "New Project Created"    | "[Project name]"                        | `/projects/:id`                 |
+| Method | Path                  | Status       | Notes                                                                                                                     |
+| ------ | --------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/payments`           | ✅ Available | Query: `status` (`pending` \| `awaiting_release` \| `processing` \| `paid` \| `failed`), `milestone_id`, `page`, `limit`. |
+| POST   | `/payments`           | ✅ Available | Body: `CreatePaymentRequestBody`.                                                                                         |
+| GET    | `/payments/{payment}` | ✅ Available | `{payment}` integer.                                                                                                      |
+| PATCH  | `/payments/{payment}` | ✅ Available | Body: `UpdatePaymentStatusRequestBody` — ❓ confirm allowed fields / release flow (BACKEND_BLOCKERS.md Q#14).             |
 
-#### `POST /notifications/:id/read`
+**Statuses differ** from the older frontend escrow narrative; map UI copy and state machine to the enum above.
 
-**Status:** ⏳ Planned  
-**Purpose:** Mark a notification as read
+---
 
-**Response (200):**
+## Withdrawal endpoints
 
-```json
-{
-  "success": true,
-  "data": {
-    "id": "notif-001",
-    "is_read": true,
-    "read_at": "2026-05-09T10:35:00Z"
-  }
-}
-```
+| Method | Path                                              | Status       | Notes                                                                               |
+| ------ | ------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------- |
+| POST   | `/withdrawals`                                    | ✅ Available | Body requires `milestone_id`, `amount`, `bank_account_details` (structure ❓ Q#15). |
+| GET    | `/withdrawals/me`                                 | ✅ Available | Contractor history.                                                                 |
+| POST   | `/withdrawals/{withdrawal}/cancel`                | ✅ Available |                                                                                     |
+| GET    | `/admin/withdrawals`                              | ✅ Available |                                                                                     |
+| GET    | `/admin/withdrawals/pending`                      | ✅ Available |                                                                                     |
+| POST   | `/admin/withdrawals/{withdrawal}/start-review`    | ✅ Available |                                                                                     |
+| POST   | `/admin/withdrawals/{withdrawal}/approve`         | ✅ Available |                                                                                     |
+| POST   | `/admin/withdrawals/{withdrawal}/reject`          | ✅ Available |                                                                                     |
+| POST   | `/admin/withdrawals/{withdrawal}/mark-processing` | ✅ Available |                                                                                     |
+| POST   | `/admin/withdrawals/{withdrawal}/mark-completed`  | ✅ Available | Body: `transaction_proof_url` (uri) required.                                       |
 
-#### `POST /notifications/read-all`
+---
 
-**Status:** ⏳ Planned  
-**Purpose:** Mark all unread notifications as read
+## Notification endpoints
 
-**Response (200):**
+**Status:** ✅ Available
 
-```json
-{
-  "success": true,
-  "data": {
-    "marked_count": 5
-  }
-}
-```
+| Method | Path                          | Notes                                                                                                                                       |
+| ------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/notifications`              | Query: `page`, `limit` (default 20), `unread_only`, `type`. Response: `NotificationListResponse` + `meta.pagination` + `meta.unread_count`. |
+| GET    | `/notifications/unread-count` | `UnreadCountResponse` → `data.count`.                                                                                                       |
+| POST   | `/notifications/{id}/read`    | `{id}` is **uuid** string. Returns `ApiSuccessMessageResponse`.                                                                             |
+| POST   | `/notifications/read-all`     |                                                                                                                                             |
+| DELETE | `/notifications/{id}`         | `{id}` uuid.                                                                                                                                |
+
+**Item shape (`NotificationResource`) — OpenAPI:**
+
+| Field        | Type             | Notes                                                                                           |
+| ------------ | ---------------- | ----------------------------------------------------------------------------------------------- |
+| `id`         | uuid string      |                                                                                                 |
+| `type`       | string           | e.g. `milestone_approved`                                                                       |
+| `title`      | string           |                                                                                                 |
+| `message`    | string           | **Not** `body`                                                                                  |
+| `data`       | object           | Arbitrary payload — derive navigation from keys backend puts here (`BACKEND_BLOCKERS.md` Q#16). |
+| `read_at`    | datetime \| null | **Unread** when `null` — **not** a separate `is_read` flag in schema                            |
+| `created_at` | datetime         |                                                                                                 |
+
+---
+
+## Supervisor assignment endpoints
+
+| Method | Path                                      | Status                                 |
+| ------ | ----------------------------------------- | -------------------------------------- |
+| GET    | `/supervisor/projects/pending-acceptance` | ✅ Available                           |
+| POST   | `/supervisor/projects/{id}/accept`        | ✅ Available                           |
+| POST   | `/supervisor/projects/{id}/reject`        | ✅ Available — body: `reason` required |
+
+---
+
+## Field engineer assignment endpoints
+
+| Method | Path                                              | Status       | Notes                     |
+| ------ | ------------------------------------------------- | ------------ | ------------------------- |
+| POST   | `/projects/{project}/field-engineer/assign`       | ✅ Available | Body: `field_engineer_id` |
+| POST   | `/projects/{project}/field-engineer/revoke`       | ✅ Available | Body: `reason`            |
+| GET    | `/projects/{project}/field-engineer-history`      | ✅ Available |                           |
+| GET    | `/field-engineer/assignments/pending`             | ✅ Available |                           |
+| GET    | `/field-engineer/assignments/active`              | ✅ Available |                           |
+| POST   | `/field-engineer/assignments/{assignment}/accept` | ✅ Available | Optional `notes`          |
+| POST   | `/field-engineer/assignments/{assignment}/reject` | ✅ Available | Body: `reason`            |
+
+---
+
+## ⏳ Planned / ❓ Schema gaps
+
+These remain **out of OpenAPI** or **underspecified** — track details in `BACKEND_BLOCKERS.md`.
+
+| Item                                                                      | Status            | Notes                                                                                           |
+| ------------------------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------- |
+| `GET /admin/dashboard`                                                    | ⏳ Planned        | Frontend uses mocks until backend ships contract.                                               |
+| `GET /projects`, `POST /projects`, `GET /projects/{id}`, user list/detail | ❓ Schema pending | Routes exist; Swagger responses often `200 OK` only — need full resource schemas (Q#5, Q#8–10). |
+| Legacy `/reports/*` paths                                                 | ⏳ Not used       | Replaced by **`field-reports`** routes above.                                                   |
+| `POST /payments/{id}/release`, `/dispute`, `/cancel`                      | ⏳ Not in OpenAPI | Use **`PATCH /payments/{payment}`** and withdrawals flow unless backend adds dedicated routes.  |
 
 ---
 
 ## Error Response Format
 
-**Status:** ❓ Schema pending  
-**See:** BACKEND_BLOCKERS.md Q#4
+**Status:** ✅ Documented in OpenAPI (`ApiErrorResponse`) — always confirm edge cases with backend.
 
-**Expected format:**
+**Typical error envelope:**
 
 ```json
 {
   "success": false,
   "data": null,
+  "meta": null,
   "error": {
     "code": "ERROR_CODE",
     "message": "Human-readable description"
@@ -1838,7 +1907,7 @@ These endpoints are **not yet in the Swagger spec**. See `BACKEND_BLOCKERS.md` f
 }
 ```
 
-**For validation errors (422):**
+**Validation errors (422)** — field bag may appear **inside** `error` (confirm per endpoint):
 
 ```json
 {
@@ -1873,7 +1942,22 @@ These endpoints are **not yet in the Swagger spec**. See `BACKEND_BLOCKERS.md` f
 
 ## TypeScript Types (shared/types/)
 
+Starter shapes — **normalize ID types** (`number` vs `string` vs uuid) once BACKEND_BLOCKERS.md Q#17 is answered.
+
 ```ts
+// api.ts — list responses that use meta.pagination
+export interface PaginationMeta {
+  current_page: number
+  limit: number
+  total: number
+  last_page: number
+}
+
+export interface ApiListMeta {
+  pagination?: PaginationMeta
+  unread_count?: number
+}
+
 // auth.ts
 export interface AuthToken {
   token: string
@@ -1882,44 +1966,68 @@ export interface AuthToken {
 }
 
 export interface AuthUser {
-  id: string
+  id: number // OpenAPI UserResource uses integer; widen to string if backend confirms UUIDs
   name: string
-  email: string
+  email: string | null
   phone: string | null
-  role: string | string[]
-  status: string
-  avatar_url: string | null
+  role: string
+  status: 'active' | 'suspended' | 'pending_verification' | 'banned'
   created_at: string
-  updated_at: string
 }
 
-// project.ts
-export interface Project {
+// milestone.ts — statuses from OpenAPI MilestoneResource
+export type MilestoneStatusApi =
+  | 'draft'
+  | 'submitted'
+  | 'under_review'
+  | 'approved'
+  | 'rejected'
+
+export interface Milestone {
+  id: number
+  title: string
+  description: string | null
+  status: MilestoneStatusApi
+  amount: number
+  currency: string
+  due_date: string | null
+  created_at: string
+  updated_at: string
+  created_by: { id: number; name: string }
+  assigned_to: { id: number; name: string }
+  project_id: number
+}
+
+// notification.ts — OpenAPI NotificationResource
+export interface NotificationItem {
   id: string
+  type: string
+  title: string
+  message: string
+  data: Record<string, unknown>
+  read_at: string | null
+  created_at: string
+}
+
+// project.ts — ❓ confirm against GET /projects payload when schema lands
+export interface Project {
+  id: number | string
   name: string
   description: string
-  status: 'draft' | 'active' | 'completed' | 'cancelled'
-  client_id: string
-  contractor_id: string | null
-  supervisor_id: string | null
-  budget: number
-  start_date: string
-  end_date: string
+  status: string
   created_at: string
   updated_at: string
 }
 
 // user.ts
 export interface User {
-  id: string
+  id: number
   name: string
-  email: string
+  email: string | null
   phone: string | null
-  role: string | string[]
+  role: string
   status: 'active' | 'suspended' | 'pending_verification' | 'banned'
-  avatar_url: string | null
   created_at: string
-  updated_at: string
 }
 ```
 
@@ -1927,24 +2035,22 @@ export interface User {
 
 ## Next Steps
 
-**Ready Now:**
+**Contracts in OpenAPI — integrate:**
 
-- ✅ Phase 1–3 (auth, profile, projects)
-- ✅ Phase 8–9 (admin, users)
+- ✅ Milestones, approvals, tasks, field reports, payments, withdrawals, notifications
+- ✅ Supervisor and field-engineer assignment flows
 
-**Awaiting Backend:**
+**Still blocking full parity:**
 
-- ⏳ Phase 4 (milestones)
-- ⏳ Phase 5 (reports)
-- ⏳ Phase 6 (payments)
-- ⏳ Phase 7 (notifications)
+- ⏳ `GET /admin/dashboard` (mock until shipped)
+- ❓ Rich schemas for `GET/POST /projects`, `GET /users`, and related list filters (Swagger stubs)
 
-**Share with Backend Team:**
+**Coordinate with backend:**
 
-- See `BACKEND_BLOCKERS.md` for 10 critical questions
+- See `BACKEND_BLOCKERS.md` for open questions (Q#1–Q#17), milestone vs approval flow, and notification `data` payloads.
 
 ---
 
 **Document owner:** Frontend team  
-**Last updated:** 2026-05-05  
-**Next update:** When backend answers questions or delivers new endpoints
+**Last updated:** 2026-05-10  
+**Next update:** When backend publishes Project/User schemas and dashboard endpoint
