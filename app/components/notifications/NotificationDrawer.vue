@@ -30,6 +30,11 @@ const showMarkAllButton = computed(() => {
   return unreadCount.value > 0
 })
 
+const drawerOpen = computed({
+  get: () => props.open,
+  set: value => emit('update:open', value),
+})
+
 const visibleNotifications = computed(() => {
   const uid = auth.user?.id
   return notifications.value.filter(n => !n.user_id || n.user_id === uid)
@@ -55,7 +60,7 @@ const handleMarkAllAsRead = () => {
 </script>
 
 <template>
-  <Sheet :open="open" @update:open="emit('update:open', $event)">
+  <Sheet v-model:open="drawerOpen">
     <SheetContent side="end" class="w-[380px] md:w-[420px]">
       <!-- Header -->
       <SheetHeader class="border-border border-b px-0 py-4">

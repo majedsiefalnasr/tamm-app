@@ -254,6 +254,7 @@
       "bank_name": "Bank Name",
       "transaction_reference": "Transaction Reference",
       "receipt_image": "Receipt Image",
+      "receipt_preview_alt": "Receipt preview",
       "notes": "Notes (optional)",
       "cancel": "Cancel",
       "confirm": "Confirm Payment"
@@ -529,9 +530,13 @@
     },
     "form": {
       "amount": "Amount *",
+      "amount_placeholder": "0.00",
+      "currency": "SAR",
       "iban": "Bank Account Number *",
+      "iban_placeholder": "SA...",
       "notes": "Notes (optional)",
       "notes_placeholder": "Enter any additional notes (optional)",
+      "loading": "Submitting...",
       "submit": "Submit Request",
       "cancel": "Cancel"
     },

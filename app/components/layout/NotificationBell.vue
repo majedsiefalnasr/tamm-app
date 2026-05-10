@@ -39,6 +39,7 @@ onBeforeUnmount(() => {
       size="icon"
       class="border-border hover:border-primary hover:text-primary"
       :aria-label="$t('common.notifications')"
+      :aria-expanded="drawerOpen"
       @click="handleBellClick"
     >
       <BellIcon class="h-5 w-5" />
@@ -47,7 +48,7 @@ onBeforeUnmount(() => {
     <!-- Badge -->
     <div
       v-if="showBadge"
-      class="bg-destructive text-destructive-foreground absolute -end-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[9px] font-bold"
+      class="bg-destructive text-destructive-foreground absolute -inset-e-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[9px] font-bold"
     >
       {{ displayCount }}
     </div>

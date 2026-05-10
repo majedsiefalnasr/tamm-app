@@ -32,6 +32,12 @@ const { t } = useI18n()
 const selectedFile = ref<File | null>(null)
 const filePreviewUrl = ref<string | null>(null)
 
+const handleOpenChange = (isOpen: boolean) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
+
 const paymentSchema = toTypedSchema(
   z.object({
     bank_name: z.string().min(2, t('validation.required')).max(100),
@@ -40,14 +46,19 @@ const paymentSchema = toTypedSchema(
   })
 )
 
-const { handleSubmit, errors, isSubmitting, resetForm, values } = useForm({
-  validationSchema: paymentSchema,
-  initialValues: {
-    bank_name: '',
-    transaction_reference: '',
-    notes: '',
-  },
-})
+const { handleSubmit, errors, isSubmitting, resetForm, values, setFieldError } =
+  useForm({
+    validationSchema: paymentSchema,
+    initialValues: {
+      bank_name: '',
+      transaction_reference: '',
+      notes: '',
+    },
+  })
+
+const setReceiptError = (message?: string) => {
+  setFieldError('receipt_image', message)
+}
 
 // File upload handler
 const handleFileSelect = (e: Event) => {
@@ -58,14 +69,14 @@ const handleFileSelect = (e: Event) => {
 
   // Validate file type and extension
   if (!['image/jpeg', 'image/png'].includes(file.type)) {
-    errors.value.receipt_image = t('validation.file.invalid_type')
+    setReceiptError(t('validation.file.invalid_type'))
     selectedFile.value = null
     filePreviewUrl.value = null
     return
   }
 
   if (!/\.(jpg|jpeg|png)$/i.test(file.name)) {
-    errors.value.receipt_image = t('validation.file.invalid_extension')
+    setReceiptError(t('validation.file.invalid_extension'))
     selectedFile.value = null
     filePreviewUrl.value = null
     return
@@ -73,13 +84,14 @@ const handleFileSelect = (e: Event) => {
 
   // Validate file size (5MB)
   if (file.size > 5 * 1024 * 1024) {
-    errors.value.receipt_image = t('validation.file.too_large')
+    setReceiptError(t('validation.file.too_large'))
     selectedFile.value = null
     filePreviewUrl.value = null
     return
   }
 
   selectedFile.value = file
+  setReceiptError(undefined)
 
   // Create preview
   const reader = new FileReader()
@@ -87,7 +99,7 @@ const handleFileSelect = (e: Event) => {
     filePreviewUrl.value = e.target?.result as string
   }
   reader.onerror = () => {
-    errors.value.receipt_image = t('validation.file.read_error')
+    setReceiptError(t('validation.file.read_error'))
     filePreviewUrl.value = null
   }
   reader.readAsDataURL(file)
@@ -110,7 +122,7 @@ const formattedAmount = computed(() => {
   if (amount === null || amount === undefined || amount <= 0) {
     return t('validation.amount_invalid')
   }
-  return formatCurrency(amount, 'ar')
+  return formatCurrency(amount)
 })
 
 // Submit form
@@ -120,7 +132,7 @@ const onSubmit = handleSubmit(async () => {
 
   // Re-validate file exists before submission
   if (!selectedFile.value) {
-    errors.value.receipt_image = t('validation.required')
+    setReceiptError(t('validation.required'))
     return
   }
 
@@ -168,7 +180,7 @@ watch(
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="$emit('close')">
+  <Dialog :open="open" @update:open="handleOpenChange">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>{{ t('payment.dialog.title') }}</DialogTitle>
@@ -248,7 +260,7 @@ watch(
             <img
               v-if="filePreviewUrl"
               :src="filePreviewUrl"
-              alt="Receipt preview"
+              :alt="t('payment.dialog.receipt_preview_alt')"
               class="aspect-video w-full rounded-xl object-cover"
             />
           </Field>

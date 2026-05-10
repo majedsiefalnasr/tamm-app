@@ -254,6 +254,7 @@
       "bank_name": "اسم البنك",
       "transaction_reference": "رقم العملية",
       "receipt_image": "صورة الإيصال",
+      "receipt_preview_alt": "معاينة الإيصال",
       "notes": "ملاحظات (اختياري)",
       "cancel": "إلغاء",
       "confirm": "تأكيد الدفع"
@@ -529,9 +530,13 @@
     },
     "form": {
       "amount": "المبلغ *",
+      "amount_placeholder": "0.00",
+      "currency": "ر.س",
       "iban": "رقم الحساب البنكي *",
+      "iban_placeholder": "SA...",
       "notes": "ملاحظات (اختياري)",
       "notes_placeholder": "أدخل أي ملاحظات إضافية (اختياري)",
+      "loading": "جارٍ الإرسال...",
       "submit": "إرسال الطلب",
       "cancel": "إلغاء"
     },

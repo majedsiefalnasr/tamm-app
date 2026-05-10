@@ -39,12 +39,21 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+const handleOpenChange = (isOpen: boolean) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
+
 const withdrawalSchema = toTypedSchema(
   z.object({
     amount: z
       .number()
       .positive(t('validation.amount_required'))
-      .max(props.availableBalance, t('validation.amount_exceeds_available')),
+      .refine(
+        value => value <= props.availableBalance,
+        t('validation.amount_exceeds_available')
+      ),
     iban: z
       .string()
       .min(15, t('validation.invalid_iban'))
@@ -89,7 +98,7 @@ watch(
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="$emit('close')">
+  <Dialog :open="open" @update:open="handleOpenChange">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>{{ t('withdrawal.request.title') }}</DialogTitle>
@@ -106,7 +115,7 @@ watch(
               id="amount"
               v-model.number="values.amount"
               type="number"
-              placeholder="0.00"
+              :placeholder="t('withdrawal.form.amount_placeholder')"
               step="0.01"
               min="0"
               :max="availableBalance"
@@ -115,7 +124,7 @@ watch(
             <span
               class="text-muted-foreground text-sm font-medium whitespace-nowrap"
             >
-              SAR
+              {{ t('withdrawal.form.currency') }}
             </span>
           </div>
           <FieldError :errors="[errors.amount]" class="text-xs" />
@@ -128,7 +137,7 @@ watch(
             id="iban"
             v-model="values.iban"
             type="text"
-            placeholder="SA..."
+            :placeholder="t('withdrawal.form.iban_placeholder')"
             :aria-invalid="!!errors.iban"
           />
           <FieldError :errors="[errors.iban]" class="text-xs" />
@@ -162,10 +171,9 @@ watch(
           >
             {{
               formIsSubmitting || props.isSubmitting
-                ? '...'
+                ? t('withdrawal.form.loading')
                 : t('withdrawal.form.submit')
             }}
-            {{ !formIsSubmitting && !props.isSubmitting ? '→' : '' }}
           </Button>
         </DialogFooter>
       </form>
