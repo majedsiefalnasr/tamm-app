@@ -36,11 +36,11 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-10T10:43:50Z
-last_updated: 2026-05-10T12:52:23Z
+last_updated: 2026-05-10T13:12:11Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
-story_location: {project-root}/_bmad-output/implementation-artifacts
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
   # Epic 01 — Authentication & Session Management
@@ -121,7 +121,7 @@ development_status:
   epic-09: in-progress
   09-01-audit-shadcn-gaps-and-cli-plan: done
   09-02-app-shell-alignment: done
-  09-03-auth-shells: backlog
+  09-03-auth-shells: review
   09-04-forms-normalization: backlog
   09-05-lists-and-data-surfaces: backlog
   09-06-overlays-standardization: backlog

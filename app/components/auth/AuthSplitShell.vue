@@ -14,7 +14,7 @@ const maxWidthClass = computed(() =>
 </script>
 
 <template>
-  <div class="grid min-h-svh lg:grid-cols-2">
+  <div class="bg-background grid min-h-svh lg:grid-cols-2">
     <div class="flex flex-col gap-4 p-6 md:p-10">
       <div class="flex justify-center gap-2 md:justify-start">
         <NuxtLink to="/" class="flex items-center gap-2 font-medium">
@@ -28,7 +28,7 @@ const maxWidthClass = computed(() =>
         </div>
       </div>
     </div>
-    <div class="bg-muted relative hidden lg:block">
+    <div class="bg-muted relative hidden overflow-hidden border-s lg:block">
       <img
         src="/placeholder.svg"
         alt=""
