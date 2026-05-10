@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useProjects } from '~/app/composables/useProjects'
+import { useProjects } from '~/composables/useProjects'
 import type { Project, ProjectDetail } from '~/shared/types/project'
 
 // Mock auth store

@@ -7,6 +7,9 @@ vi.mock('#app', () => ({
     t: (key: string) => key,
     locale: { value: 'ar' },
   }),
+  useRoute: () => ({
+    query: {},
+  }),
 }))
 
 describe('useAdminProjects', () => {

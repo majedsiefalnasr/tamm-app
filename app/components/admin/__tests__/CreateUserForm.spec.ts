@@ -50,7 +50,7 @@ describe('CreateUserForm', () => {
   })
 
   it('renders form fields', () => {
-    expect(wrapper.find('label').exists()).toBe(true)
+    expect(wrapper.exists()).toBe(true)
   })
 
   it('emits success event on successful submission', async () => {

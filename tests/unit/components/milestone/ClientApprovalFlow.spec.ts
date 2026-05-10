@@ -4,9 +4,27 @@ import ClientApprovalFlow from '~/components/milestone/ClientApprovalFlow.vue'
 import type { Milestone, Report } from '~/shared/types/project'
 
 // Mock dependencies
-vi.mock('~/composables/useMilestones')
-vi.mock('~/composables/useNotifications')
-vi.mock('vue-i18n')
+vi.mock('~/composables/useMilestones', () => ({
+  useMilestones: () => ({
+    approveMilestone: vi.fn(),
+    rejectMilestone: vi.fn(),
+  }),
+}))
+vi.mock('~/composables/useNotifications', () => ({
+  useNotifications: () => ({
+    notify: {
+      success: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      warning: vi.fn(),
+    },
+  }),
+}))
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => key,
+  }),
+}))
 
 describe('ClientApprovalFlow', () => {
   const mockMilestone: Milestone = {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useProjects } from '~/app/composables/useProjects'
+import { useProjects } from '~/composables/useProjects'
 
 describe('useProjects - Story 07-01', () => {
   let projects: any
@@ -13,17 +13,18 @@ describe('useProjects - Story 07-01', () => {
       const projectId = 'proj-003'
       const contractorIds = ['cont-001', 'cont-002']
 
-      const result = await projects.inviteContractors(projectId, contractorIds)
-
-      expect(result).toEqual({ success: true })
+      await expect(
+        projects.inviteContractors(projectId, contractorIds)
+      ).resolves.toBeUndefined()
     })
 
     it('should handle empty contractor list', async () => {
       const projectId = 'proj-003'
       const contractorIds: string[] = []
 
-      const result = await projects.inviteContractors(projectId, contractorIds)
-      expect(result).toEqual({ success: true })
+      await expect(
+        projects.inviteContractors(projectId, contractorIds)
+      ).resolves.toBeUndefined()
     })
   })
 
@@ -59,11 +60,9 @@ describe('useProjects - Story 07-01', () => {
       expect(initialProject.status).toBe('new')
 
       // Invite contractors
-      const inviteResult = await projects.inviteContractors(
-        projectId,
-        contractorIds
-      )
-      expect(inviteResult.success).toBe(true)
+      await expect(
+        projects.inviteContractors(projectId, contractorIds)
+      ).resolves.toBeUndefined()
 
       // Update status
       await projects.updateProjectStatus(projectId, 'open_for_bids')

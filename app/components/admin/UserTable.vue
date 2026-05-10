@@ -107,6 +107,11 @@ function formatRelativeTime(dateString: string): string {
 
         <!-- User rows -->
         <template v-else>
+          <TableRow v-if="formattedUsers.length === 0">
+            <TableCell colspan="6" class="h-24 text-center">
+              {{ t('admin.users.empty_state') }}
+            </TableCell>
+          </TableRow>
           <TableRow
             v-for="user in formattedUsers"
             :key="user.id"

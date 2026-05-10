@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { canTransition } from '../../../utils/statusMachine'
+import { canTransition } from '~/utils/statusMachine'
 
 describe('statusMachine - Project Transitions', () => {
   it('allows new → open_for_bids', () => {

@@ -1,9 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { useNotifications } from './useNotifications'
 
 // Mock useApi
 vi.mock('#app', async () => ({
   useApi: vi.fn(),
+}))
+
+vi.mock('~/stores/auth', () => ({
+  useAuthStore: () => ({
+    user: { id: 'user1' },
+  }),
 }))
 
 const mockNotifications = [
@@ -32,10 +39,11 @@ const mockNotifications = [
 describe('useNotifications composable', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    setActivePinia(createPinia())
   })
 
   afterEach(() => {
-    vi.clearAllIntervals()
+    vi.clearAllTimers()
   })
 
   it('initializes with empty notifications and 0 unread count', () => {

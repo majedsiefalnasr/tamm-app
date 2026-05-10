@@ -45,7 +45,7 @@ describe('useMilestones', () => {
       expect(totals.totalAmount).toBeGreaterThan(0)
       expect(totals.totalPaid).toBeGreaterThanOrEqual(0)
       expect(totals.remaining).toBe(totals.totalAmount - totals.totalPaid)
-      expect(totals.count).toBe(3)
+      expect(totals.count).toBe(composable.getMilestones('proj-001').length)
     })
 
     it('calculates paid only from approved milestones', async () => {

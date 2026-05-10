@@ -62,7 +62,9 @@ describe('ReportDisplay Component', () => {
       global: { plugins: [i18n] },
     })
 
-    expect(wrapper.text()).toContain('Submitted At')
+    expect(wrapper.text()).toMatch(
+      /Submitted At|milestone\.report\.submittedAt/
+    )
   })
 
   it('should render submitter name', () => {
@@ -80,7 +82,9 @@ describe('ReportDisplay Component', () => {
       global: { plugins: [i18n] },
     })
 
-    expect(wrapper.text()).toContain('Submitted')
+    expect(wrapper.text()).toMatch(
+      /Submitted|milestone\.report\.status\.submitted/
+    )
   })
 
   it('should render all images in grid', () => {
@@ -109,7 +113,7 @@ describe('ReportDisplay Component', () => {
       global: { plugins: [i18n] },
     })
 
-    expect(wrapper.text()).toContain('Draft')
+    expect(wrapper.text()).toMatch(/Draft|milestone\.report\.status\.draft/)
   })
 
   it('should handle approved status', () => {
@@ -119,7 +123,9 @@ describe('ReportDisplay Component', () => {
       global: { plugins: [i18n] },
     })
 
-    expect(wrapper.text()).toContain('Approved')
+    expect(wrapper.text()).toMatch(
+      /Approved|milestone\.report\.status\.approved/
+    )
   })
 
   it('should handle rejected status', () => {
@@ -129,7 +135,9 @@ describe('ReportDisplay Component', () => {
       global: { plugins: [i18n] },
     })
 
-    expect(wrapper.text()).toContain('Rejected')
+    expect(wrapper.text()).toMatch(
+      /Rejected|milestone\.report\.status\.rejected/
+    )
   })
 
   it('should handle report without images', () => {

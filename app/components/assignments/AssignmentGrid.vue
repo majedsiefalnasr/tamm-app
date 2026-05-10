@@ -3,6 +3,14 @@ import { computed } from 'vue'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '~/components/ui/empty'
+import { ClipboardCheck } from 'lucide-vue-next'
 import type { Milestone } from '~/shared/types/project'
 
 interface Props {
@@ -91,29 +99,18 @@ const emptyStateKey = computed(() => {
     </div>
 
     <!-- Empty State -->
-    <div
+    <Empty
       v-else-if="!milestones || milestones.length === 0"
-      class="border-border/50 flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed p-8 text-center"
+      class="border-border bg-card"
     >
-      <div class="text-muted-foreground">
-        <svg
-          class="mx-auto h-10 w-10"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
-      <p class="text-muted-foreground text-sm font-medium">
-        {{ $t(emptyStateKey) }}
-      </p>
-    </div>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <ClipboardCheck />
+        </EmptyMedia>
+      </EmptyHeader>
+      <EmptyTitle>{{ $t(emptyStateKey) }}</EmptyTitle>
+      <EmptyDescription>{{ $t('common.none') }}</EmptyDescription>
+    </Empty>
 
     <!-- Assignment Grid -->
     <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2">

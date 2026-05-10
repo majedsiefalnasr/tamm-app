@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { CreditCard } from 'lucide-vue-next'
 import type { Withdrawal } from '~/shared/types/payment'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '~/components/ui/empty'
 import WithdrawalStatusPill from './WithdrawalStatusPill.vue'
 import { formatCurrency } from '~/utils/formatters'
 
@@ -53,22 +61,18 @@ const formatDate = (dateString: string) => {
 <template>
   <div class="space-y-6" data-testid="withdrawals-list">
     <!-- Empty State -->
-    <div
+    <Empty
       v-if="!hasAnyWithdrawals && !isLoading"
-      class="border-border bg-card rounded-2xl border border-dashed p-10 text-center"
+      class="border-border bg-card"
     >
-      <div
-        class="text-muted-foreground mx-auto mb-4 flex h-10 w-10 items-center justify-center"
-      >
-        💳
-      </div>
-      <h3 class="text-ink mb-1 text-sm font-bold">
-        {{ t('withdrawal.empty.title') }}
-      </h3>
-      <p class="text-muted-foreground text-xs">
-        {{ t('withdrawal.empty.subtitle') }}
-      </p>
-    </div>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <CreditCard />
+        </EmptyMedia>
+      </EmptyHeader>
+      <EmptyTitle>{{ t('withdrawal.empty.title') }}</EmptyTitle>
+      <EmptyDescription>{{ t('withdrawal.empty.subtitle') }}</EmptyDescription>
+    </Empty>
 
     <!-- Withdrawal Groups -->
     <template
@@ -106,7 +110,7 @@ const formatDate = (dateString: string) => {
               </div>
 
               <!-- Right: Status -->
-              <div class="flex-shrink-0">
+              <div class="shrink-0">
                 <WithdrawalStatusPill
                   :status="item.status"
                   :approved-at="item.approved_at"

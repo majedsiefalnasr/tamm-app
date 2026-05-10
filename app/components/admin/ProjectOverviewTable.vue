@@ -29,7 +29,7 @@ interface Emits {
   'page-change': [page: number]
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
   currentPage: 1,
   pagination: () => ({

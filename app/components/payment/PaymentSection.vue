@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { Milestone } from '~/shared/types/project'
+import { Inbox } from 'lucide-vue-next'
 import PaymentRow from './PaymentRow.vue'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '~/components/ui/empty'
 
 interface Props {
   title: string
@@ -22,12 +30,18 @@ defineProps<Props>()
     </h2>
 
     <!-- Empty State -->
-    <div
+    <Empty
       v-if="payments.length === 0"
-      class="text-muted-foreground py-8 text-center"
+      class="border-border bg-card text-muted-foreground"
     >
-      {{ $t('common.none') }}
-    </div>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Inbox />
+        </EmptyMedia>
+      </EmptyHeader>
+      <EmptyTitle>{{ $t('common.none') }}</EmptyTitle>
+      <EmptyDescription>{{ $t('payment.empty.none') }}</EmptyDescription>
+    </Empty>
 
     <!-- Payment List -->
     <div v-else class="space-y-2">

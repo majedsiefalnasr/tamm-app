@@ -4,6 +4,14 @@ import { Button } from '~/components/ui/button'
 import { Card } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '~/components/ui/empty'
+import { ClipboardList } from 'lucide-vue-next'
 import type { Milestone } from '~/shared/types/project'
 
 interface Props {
@@ -83,14 +91,20 @@ const handleRetry = () => {
     </div>
 
     <!-- Empty State -->
-    <div
+    <Empty
       v-else-if="sortedMilestones.length === 0"
-      class="border-border/50 bg-card/50 rounded-2xl border p-6 text-center"
+      class="border-border bg-card"
     >
-      <p class="text-muted-foreground text-sm">
-        {{ $t('dashboard.contractor.noActiveMilestones') }}
-      </p>
-    </div>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <ClipboardList />
+        </EmptyMedia>
+      </EmptyHeader>
+      <EmptyTitle>{{
+        $t('dashboard.contractor.noActiveMilestones')
+      }}</EmptyTitle>
+      <EmptyDescription>{{ $t('common.none') }}</EmptyDescription>
+    </Empty>
 
     <!-- Active Milestones List -->
     <div v-else class="space-y-3">

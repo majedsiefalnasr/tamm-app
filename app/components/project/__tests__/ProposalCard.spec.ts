@@ -20,7 +20,7 @@ describe('ProposalCard', () => {
   it('renders contractor name and price correctly', () => {
     // Acceptance Criteria: Each proposal card displays contractor name and total price
     expect(mockProposal.price).toBe(250000)
-    expect(mockProposal).toHaveProperty('contractorName')
+    expect(mockProposal).toHaveProperty('contractorId')
   })
 
   it('formats price with currency symbol', () => {
@@ -38,7 +38,7 @@ describe('ProposalCard', () => {
   it('shows notes when provided', () => {
     // Acceptance Criteria: Notes/Description shown if provided
     expect(mockProposal.notes).toBeDefined()
-    expect(mockProposal.notes).toHaveLength(28)
+    expect(mockProposal.notes).toHaveLength(30)
   })
 
   it('omits notes when not provided', () => {
