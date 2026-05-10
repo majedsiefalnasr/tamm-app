@@ -7,7 +7,7 @@ import { useNotifications } from '~/composables/useNotifications'
 import ApprovalQueueItem from './ApprovalQueueItem.vue'
 import ClientApprovalFlow from '~/components/milestone/ClientApprovalFlow.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
-import PageSkeleton from '~/components/common/PageSkeleton.vue'
+import ApprovalQueueSkeleton from '~/components/client/ApprovalQueueSkeleton.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 
 interface Props {
@@ -60,7 +60,7 @@ const handleApprovalError = () => {
 <template>
   <div class="space-y-4">
     <!-- Loading state -->
-    <PageSkeleton v-if="loading" />
+    <ApprovalQueueSkeleton v-if="loading" />
 
     <!-- Error state -->
     <ErrorState

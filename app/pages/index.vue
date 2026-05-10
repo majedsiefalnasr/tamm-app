@@ -1,13 +1,5 @@
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['auth'],
-})
-
-const auth = useAuthStore()
-const { getHomePageForRole } = useRoleRoutes()
-const role = auth.user?.role ?? 'client'
-
-await navigateTo(getHomePageForRole(role), { replace: true })
+await navigateTo('/dashboard', { replace: true })
 </script>
 
 <template>

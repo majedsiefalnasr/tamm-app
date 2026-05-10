@@ -14,7 +14,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 
 const handleSuccess = () => {
   emit('update:open', false)
@@ -31,7 +31,7 @@ const handleCancel = () => {
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle class="text-start">{{
-          $t('admin.users.create.title')
+          t('admin.users.create.title')
         }}</DialogTitle>
       </DialogHeader>
       <CreateUserForm @success="handleSuccess" @cancel="handleCancel" />

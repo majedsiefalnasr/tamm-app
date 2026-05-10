@@ -18,34 +18,34 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const { $t } = useI18n()
+const { t } = useI18n()
 
 const cards = computed(() => {
   return [
     {
       id: 'total',
-      label: $t('admin.projects.total_projects'),
+      label: t('admin.projects.total_projects'),
       count: props.summary.total,
       icon: Folder,
       tone: 'primary',
     },
     {
       id: 'active',
-      label: $t('admin.projects.active_projects'),
+      label: t('admin.projects.active_projects'),
       count: props.summary.active,
       icon: CheckCircle,
       tone: 'success',
     },
     {
       id: 'on_hold',
-      label: $t('admin.projects.on_hold_projects'),
+      label: t('admin.projects.on_hold_projects'),
       count: props.summary.onHold,
       icon: AlertCircle,
       tone: 'warning',
     },
     {
       id: 'completed',
-      label: $t('admin.projects.completed_projects'),
+      label: t('admin.projects.completed_projects'),
       count: props.summary.completed,
       icon: Check,
       tone: 'default',

@@ -1,5 +1,4 @@
 import { ref, computed } from 'vue'
-import type { Report } from '~/shared/types/project'
 
 export interface ReportData {
   id: string
@@ -20,7 +19,8 @@ export interface ReportData {
 
 export const useReports = () => {
   const reports = ref<ReportData[]>([])
-  const loading = ref(false)
+  /** True until first workspace / engineer fetch completes */
+  const loading = ref(true)
   const error = ref<string | null>(null)
 
   // Mock reports data
@@ -66,42 +66,41 @@ export const useReports = () => {
   ) => {
     loading.value = true
     error.value = null
+    reports.value = []
     const id = engineerId ?? 'eng-1'
 
-    try {
-      // TODO: replace mock — GET /api/v1/reports?field_engineer_id={engineerId}&limit=5&sort=submitted_at:desc
-      const fromTemplate = mockReports.filter(
-        r => r.field_engineer_id === 'eng-1'
-      )
-      const engineerReports =
-        id === 'unknown-engineer'
-          ? []
-          : fromTemplate
-              .map(r => ({ ...r, field_engineer_id: id }))
-              .sort(
-                (a, b) =>
-                  new Date(b.submitted_at).getTime() -
-                  new Date(a.submitted_at).getTime()
-              )
-              .slice(0, limit)
+    queueMicrotask(() => {
+      try {
+        // TODO: replace mock — GET /api/v1/reports?field_engineer_id={engineerId}&limit=5&sort=submitted_at:desc
+        const fromTemplate = mockReports.filter(
+          r => r.field_engineer_id === 'eng-1'
+        )
+        const engineerReports =
+          id === 'unknown-engineer'
+            ? []
+            : fromTemplate
+                .map(r => ({ ...r, field_engineer_id: id }))
+                .sort(
+                  (a, b) =>
+                    new Date(b.submitted_at).getTime() -
+                    new Date(a.submitted_at).getTime()
+                )
+                .slice(0, limit)
 
-      reports.value = engineerReports
-      return {
-        data: computed(() => reports.value),
-        loading: computed(() => loading.value),
-        error: computed(() => null),
+        reports.value = engineerReports
+      } catch (err) {
+        error.value =
+          err instanceof Error ? err.message : 'Failed to load reports'
+        reports.value = []
+      } finally {
+        loading.value = false
       }
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : 'Failed to load reports'
-      reports.value = []
-      return {
-        data: computed(() => []),
-        loading: computed(() => loading.value),
-        error: computed(() => error.value),
-      }
-    } finally {
-      loading.value = false
+    })
+
+    return {
+      data: computed(() => reports.value),
+      loading: computed(() => loading.value),
+      error: computed(() => error.value),
     }
   }
 
@@ -110,11 +109,31 @@ export const useReports = () => {
     return report
   }
 
+  /** Workspace `/reports` listing — mock until GET /reports ships */
+  const fetchReportsWorkspace = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      reports.value = [...mockReports].sort(
+        (a, b) =>
+          new Date(b.submitted_at).getTime() -
+          new Date(a.submitted_at).getTime()
+      )
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : 'Failed to load reports'
+      reports.value = []
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     reports: computed(() => reports.value),
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     getReportsByFieldEngineer,
     getReportByMilestoneId,
+    fetchReportsWorkspace,
   }
 }

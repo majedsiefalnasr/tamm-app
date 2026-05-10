@@ -34,7 +34,7 @@ type Emits = {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 const { can } = usePermission()
 const { assignEngineers } = useProjects()
 const { fetchEngineersByRole } = useAdminUsers()
@@ -47,11 +47,11 @@ const assigningEngineers = ref(false)
 // Validation schema with cross-field validation
 const assignEngineersSchema = z
   .object({
-    supervisor_engineer_id: z.string().min(1, $t('errors.supervisor_required')),
-    field_engineer_id: z.string().min(1, $t('errors.field_required')),
+    supervisor_engineer_id: z.string().min(1, t('errors.supervisor_required')),
+    field_engineer_id: z.string().min(1, t('errors.field_required')),
   })
   .refine(data => data.supervisor_engineer_id !== data.field_engineer_id, {
-    message: $t('errors.same_engineer'),
+    message: t('errors.same_engineer'),
     path: ['field_engineer_id'],
   })
 
@@ -82,11 +82,11 @@ onMounted(async () => {
       supervisorEngineers.value.length === 0 ||
       fieldEngineers.value.length === 0
     ) {
-      toast.error($t('errors.failed_to_load_engineers'))
+      toast.error(t('errors.failed_to_load_engineers'))
     }
   } catch (error) {
     console.error('Failed to load engineers:', error)
-    toast.error($t('errors.failed_to_load_engineers'))
+    toast.error(t('errors.failed_to_load_engineers'))
   } finally {
     loadingEngineers.value = false
   }
@@ -95,7 +95,7 @@ onMounted(async () => {
 const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
   // Permission check
   if (!can('assign_engineers')) {
-    toast.error($t('errors.permission_denied'))
+    toast.error(t('errors.permission_denied'))
     return
   }
 
@@ -108,10 +108,10 @@ const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
     )
 
     if (result.success) {
-      toast.success($t('errors.engineers_assigned'))
+      toast.success(t('errors.engineers_assigned'))
       emit('success')
     } else {
-      toast.error(result.error || $t('errors.engineers_assignment_failed'))
+      toast.error(result.error || t('errors.engineers_assignment_failed'))
     }
   } catch (error: any) {
     if (error?.data?.error?.errors) {
@@ -119,7 +119,7 @@ const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
         setFieldError(field, (messages as string[])[0])
       })
     } else {
-      toast.error($t('errors.engineers_assignment_failed'))
+      toast.error(t('errors.engineers_assignment_failed'))
     }
   } finally {
     assigningEngineers.value = false
@@ -137,7 +137,7 @@ const handleCancel = () => {
     <!-- Supervisor Engineer Select -->
     <div class="space-y-1.5">
       <Label for="supervisor" class="text-start">{{
-        $t('admin.projects.assign_engineers.supervisor_label')
+        t('admin.projects.assign_engineers.supervisor_label')
       }}</Label>
       <div v-if="loadingEngineers" class="space-y-2">
         <Skeleton class="h-10 w-full" />
@@ -146,7 +146,7 @@ const handleCancel = () => {
         v-else-if="supervisorEngineers.length === 0"
         class="text-muted-foreground text-sm"
       >
-        {{ $t('errors.failed_to_load_engineers') }}
+        {{ t('errors.failed_to_load_engineers') }}
       </div>
       <Select v-else v-model="values.supervisor_engineer_id">
         <SelectTrigger
@@ -155,7 +155,7 @@ const handleCancel = () => {
         >
           <SelectValue
             :placeholder="
-              $t('admin.projects.assign_engineers.supervisor_placeholder')
+              t('admin.projects.assign_engineers.supervisor_placeholder')
             "
           />
         </SelectTrigger>
@@ -181,7 +181,7 @@ const handleCancel = () => {
     <!-- Field Engineer Select -->
     <div class="space-y-1.5">
       <Label for="field" class="text-start">{{
-        $t('admin.projects.assign_engineers.field_label')
+        t('admin.projects.assign_engineers.field_label')
       }}</Label>
       <div v-if="loadingEngineers" class="space-y-2">
         <Skeleton class="h-10 w-full" />
@@ -190,7 +190,7 @@ const handleCancel = () => {
         v-else-if="fieldEngineers.length === 0"
         class="text-muted-foreground text-sm"
       >
-        {{ $t('errors.failed_to_load_engineers') }}
+        {{ t('errors.failed_to_load_engineers') }}
       </div>
       <Select v-else v-model="values.field_engineer_id">
         <SelectTrigger
@@ -199,7 +199,7 @@ const handleCancel = () => {
         >
           <SelectValue
             :placeholder="
-              $t('admin.projects.assign_engineers.field_placeholder')
+              t('admin.projects.assign_engineers.field_placeholder')
             "
           />
         </SelectTrigger>
@@ -231,7 +231,7 @@ const handleCancel = () => {
         :disabled="assigningEngineers"
         @click="handleCancel"
       >
-        {{ $t('admin.projects.assign_engineers.cancel') }}
+        {{ t('admin.projects.assign_engineers.cancel') }}
       </Button>
       <Button
         type="submit"
@@ -239,7 +239,7 @@ const handleCancel = () => {
         :disabled="assigningEngineers || loadingEngineers"
         :loading="assigningEngineers"
       >
-        {{ $t('admin.projects.assign_engineers.submit') }}
+        {{ t('admin.projects.assign_engineers.submit') }}
       </Button>
     </div>
   </form>

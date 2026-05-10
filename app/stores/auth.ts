@@ -27,6 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref<string | null>(null)
   const statusCode = ref<number | null>(null)
 
+  /** Deduplicate concurrent `/auth/me` when middleware + plugins both call `init()` */
+  let initInflight: Promise<void> | null = null
+
   const isAuthenticated = computed(() => !!token.value && !!user.value)
 
   const login = async (email: string, password: string) => {
@@ -76,28 +79,31 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const init = async () => {
-    // Only init if we have a token and haven't already loaded user
     if (!token.value || user.value) {
       return
     }
-
-    isLoading.value = true
-    try {
-      const response = await useApi('/auth/me')
-      if (response.success) {
-        user.value = response.data
-      } else {
-        // API returned success: false, clear auth
-        token.value = null
-        user.value = null
-      }
-    } catch {
-      // Network error or other failure — clear auth state
-      token.value = null
-      user.value = null
-    } finally {
-      isLoading.value = false
+    if (!initInflight) {
+      initInflight = (async () => {
+        isLoading.value = true
+        try {
+          const response = await useApi('/auth/me')
+          if (response.success) {
+            user.value = response.data
+          } else {
+            token.value = null
+            user.value = null
+          }
+        } catch {
+          token.value = null
+          user.value = null
+        } finally {
+          isLoading.value = false
+        }
+      })().finally(() => {
+        initInflight = null
+      })
     }
+    await initInflight
   }
 
   return {

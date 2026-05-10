@@ -37,7 +37,8 @@ export function useAdminProjects() {
   const route = useRoute()
 
   const projects = ref<AdminProjectOverviewItem[]>([])
-  const loading = ref(false)
+  /** True until first fetch completes (avoids empty UI flash before onMounted) */
+  const loading = ref(true)
   const error = ref<string | null>(null)
   const statusFilter = ref<AdminProjectStatus>(
     statusFromRouteQuery(route.query.status) ?? 'all'

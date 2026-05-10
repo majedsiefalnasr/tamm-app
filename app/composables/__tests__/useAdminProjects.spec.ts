@@ -18,10 +18,11 @@ describe('useAdminProjects', () => {
     const { projects, loading, fetchProjects } = useAdminProjects()
 
     expect(projects.value.length).toBe(0)
+    expect(loading.value).toBe(true)
+
+    await fetchProjects()
+
     expect(loading.value).toBe(false)
-
-    fetchProjects()
-
     expect(projects.value.length).toBeGreaterThan(0)
   })
 

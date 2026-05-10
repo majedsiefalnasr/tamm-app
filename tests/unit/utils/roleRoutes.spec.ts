@@ -7,38 +7,25 @@ import {
 
 describe('roleRoutes utilities', () => {
   describe('getHomePageForRole', () => {
-    it('returns /projects for client', () => {
-      expect(getHomePageForRole('client')).toBe('/projects')
+    it('returns /dashboard for every known role', () => {
+      for (const role of [
+        'client',
+        'contractor',
+        'field_engineer',
+        'supervisor_engineer',
+        'admin',
+        'super_admin',
+      ]) {
+        expect(getHomePageForRole(role)).toBe('/dashboard')
+      }
     })
 
-    it('returns /dashboard for contractor', () => {
-      expect(getHomePageForRole('contractor')).toBe('/dashboard')
+    it('returns /dashboard for unknown role', () => {
+      expect(getHomePageForRole('unknown')).toBe('/dashboard')
     })
 
-    it('returns /assignments for field_engineer', () => {
-      expect(getHomePageForRole('field_engineer')).toBe('/assignments')
-    })
-
-    it('returns /dashboard/supervisor for supervisor_engineer', () => {
-      expect(getHomePageForRole('supervisor_engineer')).toBe(
-        '/dashboard/supervisor'
-      )
-    })
-
-    it('returns /admin/dashboard for admin', () => {
-      expect(getHomePageForRole('admin')).toBe('/admin/dashboard')
-    })
-
-    it('returns /admin/dashboard for super_admin', () => {
-      expect(getHomePageForRole('super_admin')).toBe('/admin/dashboard')
-    })
-
-    it('returns /projects for unknown role', () => {
-      expect(getHomePageForRole('unknown')).toBe('/projects')
-    })
-
-    it('returns /projects for empty string', () => {
-      expect(getHomePageForRole('')).toBe('/projects')
+    it('returns /dashboard for empty string', () => {
+      expect(getHomePageForRole('')).toBe('/dashboard')
     })
   })
 

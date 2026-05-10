@@ -1,28 +1,32 @@
 import { describe, it, expect } from 'vitest'
+import { flushPromises } from '@vue/test-utils'
 import { useReports } from '../useReports'
 
 describe('useReports', () => {
   describe('getReportsByFieldEngineer', () => {
-    it('should return reports for the given engineer ID', () => {
+    it('should return reports for the given engineer ID', async () => {
       const { getReportsByFieldEngineer } = useReports()
       const { data } = getReportsByFieldEngineer('eng-1')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       expect(data.value.length).toBeGreaterThan(0)
     })
 
-    it('should limit results to specified count', () => {
+    it('should limit results to specified count', async () => {
       const { getReportsByFieldEngineer } = useReports()
       const { data } = getReportsByFieldEngineer('eng-1', 2)
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       expect(data.value.length).toBeLessThanOrEqual(2)
     })
 
-    it('should return reports sorted by submission date descending', () => {
+    it('should return reports sorted by submission date descending', async () => {
       const { getReportsByFieldEngineer } = useReports()
       const { data } = getReportsByFieldEngineer('eng-1')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       if (data.value.length > 1) {
         for (let i = 0; i < data.value.length - 1; i++) {
@@ -33,10 +37,11 @@ describe('useReports', () => {
       }
     })
 
-    it('should include required fields for display', () => {
+    it('should include required fields for display', async () => {
       const { getReportsByFieldEngineer } = useReports()
       const { data } = getReportsByFieldEngineer('eng-1')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       if (data.value.length > 0) {
         const report = data.value[0]
@@ -49,20 +54,22 @@ describe('useReports', () => {
       }
     })
 
-    it('should return empty array for unknown engineer', () => {
+    it('should return empty array for unknown engineer', async () => {
       const { getReportsByFieldEngineer } = useReports()
       const { data } = getReportsByFieldEngineer('unknown-engineer')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       expect(data.value.length).toBe(0)
     })
   })
 
   describe('getReportByMilestoneId', () => {
-    it('should return report for given milestone ID', () => {
+    it('should return report for given milestone ID', async () => {
       const { getReportsByFieldEngineer, getReportByMilestoneId } = useReports()
       getReportsByFieldEngineer('eng-1')
 
+      await flushPromises()
       const report = getReportByMilestoneId('ms-1')
       expect(report).toBeDefined()
     })

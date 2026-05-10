@@ -57,7 +57,8 @@ export interface DashboardStatCard {
 }
 
 export function useAdminDashboard() {
-  const loading = ref(false)
+  /** True until first onMounted fetch runs — avoids empty-state flash before fetch starts */
+  const loading = ref(true)
   const error = ref<string | null>(null)
   const data = ref<DashboardSummary | null>(null)
   let abortController: AbortController | null = null
@@ -83,7 +84,7 @@ export function useAdminDashboard() {
         value: s.active_projects,
         icon: 'FolderOpen',
         tone: 'primary',
-        link: '/admin/projects?status=active',
+        link: '/projects?status=active',
       },
       {
         testId: 'stat-pending-milestone-review',
@@ -91,7 +92,7 @@ export function useAdminDashboard() {
         value: s.milestones_pending_review,
         icon: 'ClipboardList',
         tone: s.milestones_pending_review > 0 ? 'warning' : 'default',
-        link: '/admin/projects?milestone_review=1',
+        link: '/projects?milestone_review=1',
       },
       {
         testId: 'stat-payments-ready-release',
@@ -99,7 +100,7 @@ export function useAdminDashboard() {
         value: s.payments_ready_for_release,
         icon: 'Banknote',
         tone: 'accent',
-        link: '/admin/projects?payment_release=1',
+        link: '/projects?payment_release=1',
       },
       {
         testId: 'stat-awaiting-contractor-selection',
@@ -109,7 +110,7 @@ export function useAdminDashboard() {
         icon: 'Briefcase',
         tone:
           s.projects_awaiting_contractor_selection > 0 ? 'accent' : 'default',
-        link: '/admin/projects?status=under_review',
+        link: '/projects?status=under_review',
       },
       {
         testId: 'stat-new-users-month',
@@ -117,7 +118,7 @@ export function useAdminDashboard() {
         value: s.new_users_this_month,
         icon: 'UserPlus',
         tone: 'default',
-        link: '/admin/users',
+        link: '/users',
       },
     ]
   })
@@ -133,7 +134,7 @@ export function useAdminDashboard() {
       value: n,
       icon: 'AlertCircle',
       tone: 'danger',
-      link: '/admin/disputes',
+      link: '/disputes',
     }
   })
 
@@ -162,7 +163,6 @@ export function useAdminDashboard() {
 
     try {
       if (USE_MOCK) {
-        await new Promise(resolve => setTimeout(resolve, 500))
         data.value = mockDashboardData
       } else {
         const response = await useApi<DashboardResponse>('/admin/dashboard', {
@@ -184,29 +184,29 @@ export function useAdminDashboard() {
         return
       }
 
-      const { $t } = useI18n()
+      const { t } = useI18n()
       const errorMessage = err instanceof Error ? err.message : 'Unknown error'
 
       if (
         errorMessage.includes('401') ||
         errorMessage.includes('Unauthorized')
       ) {
-        error.value = $t('errors.unauthorized')
+        error.value = t('errors.unauthorized')
         console.error('[useAdminDashboard] Authentication error (401):', err)
       } else if (
         errorMessage.includes('timeout') ||
         errorMessage.includes('timed out')
       ) {
-        error.value = $t('errors.timeout')
+        error.value = t('errors.timeout')
         console.error('[useAdminDashboard] Request timeout:', err)
       } else if (
         errorMessage.includes('Failed to fetch') ||
         errorMessage.includes('NetworkError')
       ) {
-        error.value = $t('errors.network')
+        error.value = t('errors.network')
         console.error('[useAdminDashboard] Network error:', err)
       } else {
-        error.value = $t('errors.server')
+        error.value = t('errors.server')
         console.error('[useAdminDashboard] Server error:', err)
       }
 

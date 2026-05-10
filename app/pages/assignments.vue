@@ -4,7 +4,6 @@ import { useMilestones } from '~/composables/useMilestones'
 
 definePageMeta({
   roles: ['field_engineer'],
-  middleware: ['auth', 'role'],
 })
 
 const currentTab = ref('active')

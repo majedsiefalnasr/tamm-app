@@ -20,7 +20,7 @@ const emit = defineEmits<{
   'toggle-status': []
 }>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -32,13 +32,13 @@ const { $t } = useI18n()
     </DropdownMenuTrigger>
     <DropdownMenuContent align="start">
       <DropdownMenuItem @click="emit('edit')">
-        {{ $t('admin.users.actions.edit') }}
+        {{ t('admin.users.actions.edit') }}
       </DropdownMenuItem>
       <DropdownMenuItem @click="emit('toggle-status')">
         {{
           user.status === 'active'
-            ? $t('admin.users.actions.deactivate')
-            : $t('admin.users.actions.activate')
+            ? t('admin.users.actions.deactivate')
+            : t('admin.users.actions.activate')
         }}
       </DropdownMenuItem>
     </DropdownMenuContent>

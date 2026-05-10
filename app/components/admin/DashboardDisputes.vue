@@ -54,7 +54,7 @@ function formatDate(dateStr: string) {
         {{ t('admin.dashboard.disputes.title') }}
       </h3>
       <NuxtLink
-        to="/admin/disputes"
+        to="/disputes"
         class="text-primary hover:text-primary/80 text-sm font-medium transition"
         data-testid="disputes-view-all"
       >
@@ -151,7 +151,7 @@ function formatDate(dateStr: string) {
               </td>
               <td class="px-3 py-3 text-start">
                 <NuxtLink
-                  :to="`/admin/disputes/${dispute.id}`"
+                  :to="`/disputes/${dispute.id}`"
                   class="text-primary hover:text-primary/80 font-medium transition"
                 >
                   {{ t('admin.dashboard.disputes.mediate') }}

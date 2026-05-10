@@ -15,7 +15,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('should load dashboard page', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Check page title using data-testid
@@ -23,7 +23,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('should display dashboard sections', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // KPI stat cards (Story 08-05)
@@ -54,7 +54,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('should display stats cards with values', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Check stats cards are visible by data-testid
@@ -65,7 +65,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('should display projects table', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Check for projects section by data-testid
@@ -74,11 +74,11 @@ test.describe('Admin Dashboard', () => {
 
     // Check for "View All" link for projects
     const viewAllLink = page.locator('[data-testid="projects-view-all"]')
-    await expect(viewAllLink).toHaveAttribute('href', '/admin/projects')
+    await expect(viewAllLink).toHaveAttribute('href', '/projects')
   })
 
   test('should navigate to projects page', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Find and click the projects "View All" link
@@ -89,14 +89,14 @@ test.describe('Admin Dashboard', () => {
       await viewAllLink.click()
 
       // Should navigate to projects page
-      await page.waitForURL('**/admin/projects')
-      await expect(page).toHaveURL(/admin\/projects/)
+      await page.waitForURL('**/projects')
+      await expect(page).toHaveURL(/projects/)
     }
   })
 
   test('should display loading state while fetching', async ({ page }) => {
     // Navigate to dashboard
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Page should be fully loaded with content
@@ -104,7 +104,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('should support RTL layout', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Check for RTL direction on html element
@@ -115,7 +115,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('stats cards should be clickable links', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     const statLinks = page.locator(
@@ -140,7 +140,7 @@ test.describe('Admin Dashboard', () => {
       }
     })
 
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Page should not crash, error state or mock data should show
@@ -151,7 +151,7 @@ test.describe('Admin Dashboard', () => {
   test('disputes table should display disputes when available', async ({
     page,
   }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     const disputesSection = page.locator('[data-testid="disputes-section"]')
@@ -169,7 +169,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   test('activity chart should render', async ({ page }) => {
-    await page.goto('/admin/dashboard')
+    await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
     // Check for activity section by data-testid

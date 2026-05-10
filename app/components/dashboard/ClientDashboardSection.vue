@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import ApprovalQueueWidget from '~/components/client/ApprovalQueueWidget.vue'
 import DashboardPaymentSummary from '~/components/dashboard/DashboardPaymentSummary.vue'
 import ProjectSummaryCards from '~/components/dashboard/ProjectSummaryCards.vue'
@@ -7,13 +7,7 @@ import RecentActivitySection from '~/components/dashboard/RecentActivitySection.
 import { useProjects } from '~/composables/useProjects'
 import { useActivity } from '~/composables/useActivity'
 
-definePageMeta({
-  middleware: ['auth'],
-  roles: ['client'],
-  pageTitle: 'pages.client_dashboard',
-})
-
-const { projects, loading: projectsLoading } = useProjects()
+const { projects, loading: projectsLoading, fetchProjects } = useProjects()
 const {
   recentActivity,
   loading: activityLoading,
@@ -22,15 +16,21 @@ const {
 } = useActivity()
 
 onMounted(async () => {
-  await getRecentActivity()
+  try {
+    await Promise.all([fetchProjects(), getRecentActivity()])
+  } finally {
+    projectsHydrating.value = false
+  }
 })
 
 const projectsList = computed(() => projects.value || [])
+
+/** True until first client-dashboard bootstrap completes — hides zeros before fetchProjects runs */
+const projectsHydrating = ref(true)
 </script>
 
 <template>
   <div class="space-y-6">
-    <!-- Page header -->
     <div>
       <h1 class="text-ink text-3xl font-bold">
         {{ $t('pages.client_dashboard') }}
@@ -40,23 +40,20 @@ const projectsList = computed(() => projects.value || [])
       </p>
     </div>
 
-    <!-- Main content -->
     <div class="grid gap-6">
-      <!-- Milestones Awaiting Approval (Highest Priority) -->
       <div class="border-border bg-card rounded-2xl border p-6">
         <ApprovalQueueWidget />
       </div>
 
-      <!-- Payment Summary -->
-      <DashboardPaymentSummary />
-
-      <!-- Project Summary Cards -->
-      <ProjectSummaryCards
-        :projects="projectsList"
-        :is-loading="projectsLoading"
+      <DashboardPaymentSummary
+        :loading="projectsLoading || projectsHydrating"
       />
 
-      <!-- Recent Activity Section -->
+      <ProjectSummaryCards
+        :projects="projectsList"
+        :is-loading="projectsLoading || projectsHydrating"
+      />
+
       <RecentActivitySection
         :activities="recentActivity"
         :is-loading="activityLoading"

@@ -24,7 +24,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 const auth = useAuthStore()
 const { createUser, creating } = useAdminUsers()
 
@@ -41,18 +41,18 @@ const { values, handleSubmit, errors, setFieldError, isSubmitting } =
 
 const availableRoles = computed(() => {
   const roles = [
-    { value: 'client', label: $t('roles.client.label') },
-    { value: 'contractor', label: $t('roles.contractor.label') },
-    { value: 'field_engineer', label: $t('roles.field_engineer.label') },
+    { value: 'client', label: t('roles.client.label') },
+    { value: 'contractor', label: t('roles.contractor.label') },
+    { value: 'field_engineer', label: t('roles.field_engineer.label') },
     {
       value: 'supervisor_engineer',
-      label: $t('roles.supervisor_engineer.label'),
+      label: t('roles.supervisor_engineer.label'),
     },
   ]
 
   // Only super_admin can create admin users; safeguard against logout race
   if (auth.user && auth.user.role === 'super_admin') {
-    roles.push({ value: 'admin', label: $t('roles.admin.label') })
+    roles.push({ value: 'admin', label: t('roles.admin.label') })
   }
 
   return roles
@@ -61,7 +61,7 @@ const availableRoles = computed(() => {
 const onSubmit = handleSubmit(async formValues => {
   try {
     await createUser(formValues as CreateUserPayload)
-    toast.success($t('errors.user_created'))
+    toast.success(t('errors.user_created'))
     emit('success')
   } catch (error: any) {
     if (error?.data?.error?.errors) {
@@ -69,7 +69,7 @@ const onSubmit = handleSubmit(async formValues => {
         setFieldError(field, (messages as string[])[0])
       })
     } else {
-      toast.error($t('errors.user_creation_failed'))
+      toast.error(t('errors.user_creation_failed'))
     }
   }
 })
@@ -80,12 +80,12 @@ const onSubmit = handleSubmit(async formValues => {
     <!-- Full Name -->
     <div class="space-y-1.5">
       <Label for="name" class="text-start">{{
-        $t('admin.users.create.full_name')
+        t('admin.users.create.full_name')
       }}</Label>
       <Input
         id="name"
         v-model="values.name"
-        :placeholder="$t('admin.users.create.full_name_placeholder')"
+        :placeholder="t('admin.users.create.full_name_placeholder')"
         :class="{ 'border-destructive': errors.name }"
       />
       <div v-if="errors.name" class="text-destructive text-xs">
@@ -96,13 +96,13 @@ const onSubmit = handleSubmit(async formValues => {
     <!-- Email -->
     <div class="space-y-1.5">
       <Label for="email" class="text-start">{{
-        $t('admin.users.create.email')
+        t('admin.users.create.email')
       }}</Label>
       <Input
         id="email"
         v-model="values.email"
         type="email"
-        :placeholder="$t('admin.users.create.email_placeholder')"
+        :placeholder="t('admin.users.create.email_placeholder')"
         :class="{ 'border-destructive': errors.email }"
       />
       <div v-if="errors.email" class="text-destructive text-xs">
@@ -113,12 +113,12 @@ const onSubmit = handleSubmit(async formValues => {
     <!-- Role -->
     <div class="space-y-1.5">
       <Label for="role" class="text-start">{{
-        $t('admin.users.create.role')
+        t('admin.users.create.role')
       }}</Label>
       <Select v-model="values.role">
         <SelectTrigger :class="{ 'border-destructive': errors.role }">
           <SelectValue
-            :placeholder="$t('admin.users.create.role_placeholder')"
+            :placeholder="t('admin.users.create.role_placeholder')"
           />
         </SelectTrigger>
         <SelectContent>
@@ -139,13 +139,13 @@ const onSubmit = handleSubmit(async formValues => {
     <!-- Phone (Optional) - only show if user starts typing -->
     <div v-if="values.phone" class="space-y-1.5">
       <Label for="phone" class="text-start">{{
-        $t('admin.users.create.phone')
+        t('admin.users.create.phone')
       }}</Label>
       <Input
         id="phone"
         v-model="values.phone"
         type="tel"
-        :placeholder="$t('admin.users.create.phone_placeholder')"
+        :placeholder="t('admin.users.create.phone_placeholder')"
       />
     </div>
     <!-- Show placeholder if phone is empty - allow user to add phone -->
@@ -157,7 +157,7 @@ const onSubmit = handleSubmit(async formValues => {
         class="text-muted-foreground text-start"
         @click="values.phone = ''"
       >
-        + {{ $t('admin.users.create.phone') }}
+        + {{ t('admin.users.create.phone') }}
       </Button>
     </div>
 
@@ -170,7 +170,7 @@ const onSubmit = handleSubmit(async formValues => {
         :disabled="creating"
         @click="() => emit('cancel')"
       >
-        {{ $t('admin.users.create.cancel') }}
+        {{ t('admin.users.create.cancel') }}
       </Button>
       <Button
         type="submit"
@@ -178,7 +178,7 @@ const onSubmit = handleSubmit(async formValues => {
         :disabled="creating"
         :loading="creating"
       >
-        {{ $t('admin.users.create.submit') }}
+        {{ t('admin.users.create.submit') }}
       </Button>
     </div>
   </form>

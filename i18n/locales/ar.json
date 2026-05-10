@@ -140,7 +140,18 @@
     "contractor_dashboard": "لوحة تحكم المقاول",
     "contractor_dashboard_subtitle": "تتبع أعمالك والمدفوعات المعلقة",
     "supervisor_dashboard": "لوحة تحكم الإشراف",
-    "supervisor_dashboard_subtitle": "رتّب المراجعات وتتبع القرارات"
+    "supervisor_dashboard_subtitle": "رتّب المراجعات وتتبع القرارات",
+    "reports_title": "التقارير",
+    "reports_subtitle": "تقارير المراحل المقدّمة لمشاريعك.",
+    "reports_empty_title": "لا توجد تقارير بعد",
+    "reports_empty_description": "ستظهر التقارير هنا عند تقديم المهندسين الميدانيين للمراحل.",
+    "disputes_title": "النزاعات",
+    "disputes_subtitle": "إدارة النزاعات المفتوحة والوساطة.",
+    "disputes_empty_title": "مساحة النزاعات",
+    "disputes_empty_description": "ستُربط إدارة النزاعات بالواجهة البرمجية عند توفرها.",
+    "disputes_detail_placeholder": "عرض تفاصيل النزاع غير مفعّل بعد.",
+    "admin_payments_title": "المدفوعات (مسؤول)",
+    "admin_payments_description": "ستظهر أدوات المدفوعات وسحوبات المنظمة هنا عند إطلاق مساحة مدفوعات المسؤول."
   },
   "roles": {
     "client": {
@@ -179,7 +190,10 @@
     "showLess": "عرض أقل",
     "of": "من",
     "retry": "أعد المحاولة",
-    "redirecting": "جاري التوجيه…"
+    "redirecting": "جاري التوجيه…",
+    "no_data": "لا توجد بيانات",
+    "error_occurred": "حدث خطأ",
+    "error_description": "يرجى المحاولة مرة أخرى أو التواصل مع الدعم إذا استمرت المشكلة."
   },
   "nav": {
     "sections": {

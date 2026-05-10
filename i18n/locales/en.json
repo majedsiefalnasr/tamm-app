@@ -140,7 +140,18 @@
     "contractor_dashboard": "Contractor Dashboard",
     "contractor_dashboard_subtitle": "Track your work and pending payments",
     "supervisor_dashboard": "Supervisor Dashboard",
-    "supervisor_dashboard_subtitle": "Prioritize reviews and track decisions"
+    "supervisor_dashboard_subtitle": "Prioritize reviews and track decisions",
+    "reports_title": "Reports",
+    "reports_subtitle": "Submitted milestone reports for your projects.",
+    "reports_empty_title": "No reports yet",
+    "reports_empty_description": "Reports will appear here when field engineers submit milestones.",
+    "disputes_title": "Disputes",
+    "disputes_subtitle": "Manage and mediate open disputes.",
+    "disputes_empty_title": "Dispute workspace",
+    "disputes_empty_description": "Detailed dispute handling will connect to the API when available.",
+    "disputes_detail_placeholder": "Dispute detail view is not wired yet.",
+    "admin_payments_title": "Payments (admin)",
+    "admin_payments_description": "Org-wide payment and withdrawal tools will appear here when the admin payments workspace ships."
   },
   "roles": {
     "client": {
@@ -179,7 +190,10 @@
     "showLess": "Show Less",
     "of": "of",
     "retry": "Retry",
-    "redirecting": "Redirecting…"
+    "redirecting": "Redirecting…",
+    "no_data": "No data",
+    "error_occurred": "Something went wrong",
+    "error_description": "Please try again or contact support if the problem persists."
   },
   "nav": {
     "sections": {

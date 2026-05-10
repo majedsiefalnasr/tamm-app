@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const auth = useAuthStore()
 const { localeProperties } = useI18n()
 
 useHead(() => {
@@ -12,10 +11,6 @@ useHead(() => {
       dir: resolvedDir as 'ltr' | 'rtl',
     },
   }
-})
-
-onMounted(async () => {
-  await auth.init()
 })
 </script>
 

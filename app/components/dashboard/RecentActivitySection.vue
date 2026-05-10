@@ -7,7 +7,7 @@ import {
   UserIcon,
 } from '@heroicons/vue/20/solid'
 import type { ActivityEvent } from '~/composables/useActivity'
-import PageSkeleton from '~/components/common/PageSkeleton.vue'
+import RecentActivityListSkeleton from '~/components/dashboard/RecentActivityListSkeleton.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import { formatDate } from '~/utils/formatters'
@@ -52,7 +52,7 @@ const formatActivityDate = (date: Date) => formatDate(date.toISOString())
     </h2>
 
     <!-- Loading state -->
-    <PageSkeleton v-if="isLoading" />
+    <RecentActivityListSkeleton v-if="isLoading" />
 
     <!-- Error state -->
     <ErrorState

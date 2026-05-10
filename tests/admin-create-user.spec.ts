@@ -5,7 +5,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 test.describe('Admin Create User Dialog', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to admin users page
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
     await page.waitForLoadState('networkidle')
   })
 

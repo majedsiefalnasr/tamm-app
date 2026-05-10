@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { Project } from '~/shared/types/project'
 import { useMilestones } from '~/composables/useMilestones'
 import { useProjects } from '~/composables/useProjects'
@@ -8,6 +8,7 @@ import EmptyState from '~/components/common/EmptyState.vue'
 import PageSkeleton from '~/components/common/PageSkeleton.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import { Badge } from '~/components/ui/badge'
+import { Skeleton } from '~/components/ui/skeleton'
 import { formatDate } from '~/utils/formatters'
 
 const {
@@ -46,6 +47,9 @@ const showPendingBanner = computed(() => pendingReviews.value.length > 0)
 
 // TODO: replace mock — GET supervisor/field-team (or derive from milestones/reports API)
 /** Mock field-team summary until endpoint exists */
+/** Until first parallel dashboard fetch completes */
+const supervisorBootstrap = ref(true)
+
 const fieldTeamRows = computed(() => [
   {
     engineerName: 'Mohammed Hassan',
@@ -60,7 +64,11 @@ const fieldTeamRows = computed(() => [
 ])
 
 onMounted(async () => {
-  await fetchProjects()
+  try {
+    await Promise.all([fetchProjects(), refreshPendingReviews()])
+  } finally {
+    supervisorBootstrap.value = false
+  }
 })
 
 function progressPercent(p: Project): number {
@@ -86,43 +94,55 @@ const handleReviewActionComplete = async () => {
 
     <!-- KPI row -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-      >
-        <p class="text-muted-foreground text-xs font-semibold uppercase">
-          {{ $t('dashboard.supervisor.statPending') }}
-        </p>
-        <p
-          class="mt-3 text-2xl font-extrabold md:text-[28px]"
-          :class="
-            pendingReviewsCount > 0
-              ? 'text-rose-700 dark:text-rose-400'
-              : 'text-ink'
-          "
+      <template v-if="supervisorBootstrap">
+        <div
+          v-for="k in 3"
+          :key="`kpi-skel-${k}`"
+          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
         >
-          {{ pendingReviewsCount }}
-        </p>
-      </div>
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-      >
-        <p class="text-muted-foreground text-xs font-semibold uppercase">
-          {{ $t('dashboard.supervisor.statActiveProjects') }}
-        </p>
-        <p class="text-primary mt-3 text-2xl font-extrabold md:text-[28px]">
-          {{ projectsLoading ? '—' : activeProjectsCount }}
-        </p>
-      </div>
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-      >
-        <p class="text-muted-foreground text-xs font-semibold uppercase">
-          {{ $t('dashboard.supervisor.statApprovedMonth') }}
-        </p>
-        <p class="text-accent mt-3 text-2xl font-extrabold md:text-[28px]">
-          {{ supervisorApprovedThisMonthCount }}
-        </p>
-      </div>
+          <Skeleton class="mb-3 h-3 w-28 rounded-md" />
+          <Skeleton class="h-9 w-16 rounded-md" />
+        </div>
+      </template>
+      <template v-else>
+        <div
+          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
+        >
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ $t('dashboard.supervisor.statPending') }}
+          </p>
+          <p
+            class="mt-3 text-2xl font-extrabold md:text-[28px]"
+            :class="
+              pendingReviewsCount > 0
+                ? 'text-rose-700 dark:text-rose-400'
+                : 'text-ink'
+            "
+          >
+            {{ pendingReviewsCount }}
+          </p>
+        </div>
+        <div
+          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
+        >
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ $t('dashboard.supervisor.statActiveProjects') }}
+          </p>
+          <p class="text-primary mt-3 text-2xl font-extrabold md:text-[28px]">
+            {{ projectsLoading ? '—' : activeProjectsCount }}
+          </p>
+        </div>
+        <div
+          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
+        >
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ $t('dashboard.supervisor.statApprovedMonth') }}
+          </p>
+          <p class="text-accent mt-3 text-2xl font-extrabold md:text-[28px]">
+            {{ supervisorApprovedThisMonthCount }}
+          </p>
+        </div>
+      </template>
     </div>
 
     <!-- Pending reviews -->
@@ -162,7 +182,12 @@ const handleReviewActionComplete = async () => {
           </div>
         </div>
 
-        <PageSkeleton v-if="pendingLoading && pendingReviews.length === 0" />
+        <PageSkeleton
+          v-if="
+            supervisorBootstrap ||
+            (pendingLoading && pendingReviews.length === 0)
+          "
+        />
 
         <ErrorState
           v-else-if="pendingErrorMessage"
@@ -206,8 +231,13 @@ const handleReviewActionComplete = async () => {
         </div>
       </div>
 
+      <div v-if="supervisorBootstrap" class="space-y-4 py-2">
+        <Skeleton class="h-14 w-full rounded-xl" />
+        <Skeleton class="h-14 w-full rounded-xl" />
+        <Skeleton class="h-14 w-full rounded-xl" />
+      </div>
       <div
-        v-if="supervisorRecentDecisionsTop.length === 0"
+        v-else-if="supervisorRecentDecisionsTop.length === 0"
         class="border-border rounded-2xl border border-dashed p-10 text-center"
       >
         <p class="text-ink text-sm font-bold">
@@ -265,7 +295,12 @@ const handleReviewActionComplete = async () => {
         </NuxtLink>
       </div>
 
-      <PageSkeleton v-if="projectsLoading && supervisorProjects.length === 0" />
+      <PageSkeleton
+        v-if="
+          supervisorBootstrap ||
+          (projectsLoading && supervisorProjects.length === 0)
+        "
+      />
 
       <EmptyState
         v-else-if="supervisorProjects.length === 0"
@@ -335,7 +370,7 @@ const handleReviewActionComplete = async () => {
         </p>
       </div>
 
-      <ul class="divide-border divide-y">
+      <ul v-if="!supervisorBootstrap" class="divide-border divide-y">
         <li
           v-for="(row, idx) in fieldTeamRows"
           :key="idx"
@@ -350,6 +385,10 @@ const handleReviewActionComplete = async () => {
           }}</span>
         </li>
       </ul>
+      <div v-else class="space-y-4 py-2">
+        <Skeleton class="h-12 w-full rounded-xl" />
+        <Skeleton class="h-12 w-full rounded-xl" />
+      </div>
     </section>
   </div>
 </template>

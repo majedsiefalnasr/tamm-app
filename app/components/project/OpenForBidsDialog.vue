@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useAdminUsers } from '~/app/composables/useAdminUsers'
+import { useAdminUsers } from '~/composables/useAdminUsers'
 import {
   Dialog,
   DialogContent,

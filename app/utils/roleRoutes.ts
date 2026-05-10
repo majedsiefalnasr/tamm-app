@@ -15,7 +15,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'overview',
         label: 'nav.overview',
         icon: 'LayoutDashboard',
-        href: '/dashboard/client',
+        href: '/dashboard',
       },
       {
         key: 'projects',
@@ -91,7 +91,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'overview',
         label: 'nav.overview',
         icon: 'LayoutDashboard',
-        href: '/dashboard/field',
+        href: '/dashboard',
       },
       {
         key: 'projects',
@@ -123,7 +123,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'overview',
         label: 'nav.overview',
         icon: 'LayoutDashboard',
-        href: '/dashboard/supervisor',
+        href: '/dashboard',
       },
       {
         key: 'projects',
@@ -161,25 +161,25 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'overview',
         label: 'nav.overview',
         icon: 'LayoutDashboard',
-        href: '/admin/dashboard',
+        href: '/dashboard',
       },
       {
         key: 'projects',
         label: 'nav.projects',
         icon: 'Building2',
-        href: '/admin/projects',
+        href: '/projects',
       },
       {
         key: 'payments',
         label: 'nav.payments',
         icon: 'CreditCard',
-        href: '/admin/payments',
+        href: '/payments',
       },
       {
         key: 'reports',
         label: 'nav.reports',
         icon: 'ClipboardList',
-        href: '/admin/reports',
+        href: '/reports',
       },
       {
         key: 'messages',
@@ -187,7 +187,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         icon: 'MessageSquare',
         href: '/messages',
       },
-      { key: 'users', label: 'nav.users', icon: 'Users', href: '/admin/users' },
+      { key: 'users', label: 'nav.users', icon: 'Users', href: '/users' },
       {
         key: 'settings',
         label: 'nav.settings',
@@ -201,25 +201,25 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'overview',
         label: 'nav.overview',
         icon: 'LayoutDashboard',
-        href: '/admin/dashboard',
+        href: '/dashboard',
       },
       {
         key: 'projects',
         label: 'nav.projects',
         icon: 'Building2',
-        href: '/admin/projects',
+        href: '/projects',
       },
       {
         key: 'payments',
         label: 'nav.payments',
         icon: 'CreditCard',
-        href: '/admin/payments',
+        href: '/payments',
       },
       {
         key: 'reports',
         label: 'nav.reports',
         icon: 'ClipboardList',
-        href: '/admin/reports',
+        href: '/reports',
       },
       {
         key: 'messages',
@@ -227,7 +227,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         icon: 'MessageSquare',
         href: '/messages',
       },
-      { key: 'users', label: 'nav.users', icon: 'Users', href: '/admin/users' },
+      { key: 'users', label: 'nav.users', icon: 'Users', href: '/users' },
       {
         key: 'settings',
         label: 'nav.settings',
@@ -239,14 +239,14 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         key: 'system-flags',
         label: 'nav.system_flags',
         icon: 'ShieldCheck',
-        href: '/admin/system/flags',
+        href: '/system/flags',
         group: 'system',
       },
       {
         key: 'system-logs',
         label: 'nav.system_logs',
         icon: 'FileText',
-        href: '/admin/system/logs',
+        href: '/system/logs',
         group: 'system',
       },
     ],
@@ -254,16 +254,8 @@ export const getNavigationForRole = (role: string): NavItem[] => {
   return baseNav[role] ?? []
 }
 
-export const getHomePageForRole = (role: string): string => {
-  const roleHomeMap: Record<string, string> = {
-    client: '/projects',
-    contractor: '/dashboard',
-    field_engineer: '/assignments',
-    supervisor_engineer: '/dashboard/supervisor',
-    admin: '/admin/dashboard',
-    super_admin: '/admin/dashboard',
-  }
-  return roleHomeMap[role] ?? '/projects'
+export const getHomePageForRole = (_role: string): string => {
+  return '/dashboard'
 }
 
 export const isAdminRole = (role: string): boolean => {

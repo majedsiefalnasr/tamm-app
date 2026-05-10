@@ -5,6 +5,14 @@ import { mockAdminUsers } from '~/composables/__mocks__/admin-users'
 import type { SelectContractorFailure } from '~/composables/useProjects'
 import { formatCurrency } from '~/utils/formatters'
 import { canTransition } from '~/utils/statusMachine'
+import ErrorState from '~/components/common/ErrorState.vue'
+import { Button } from '~/components/ui/button'
+import AssignEngineersDialog from '~/components/project/AssignEngineersDialog.vue'
+import CloseBiddingDialog from '~/components/project/CloseBiddingDialog.vue'
+import OpenForBidsDialog from '~/components/project/OpenForBidsDialog.vue'
+import ProposalSummary from '~/components/project/ProposalSummary.vue'
+import ProposalsList from '~/components/project/ProposalsList.vue'
+import SubmitProposalDialog from '~/components/project/SubmitProposalDialog.vue'
 
 definePageMeta({
   layout: 'default',
@@ -31,6 +39,18 @@ const {
   error,
   refresh,
 } = await useAsyncData(`project-${id}`, () => useProjects().getProjectById(id))
+
+const projectErrorMessage = computed(() => {
+  const e = error.value as unknown
+  if (e == null) return t('common.error_description')
+  if (typeof e === 'string') return e
+  if (e instanceof Error) return e.message
+  if (typeof e === 'object' && e !== null && 'message' in e) {
+    const m = (e as { message?: unknown }).message
+    if (typeof m === 'string') return m
+  }
+  return t('common.error_description')
+})
 
 const isAdmin = computed(() =>
   ['admin', 'super_admin'].includes(auth.user?.role || '')
@@ -494,7 +514,7 @@ const handleCloseBiddingConfirmed = async () => {
 
   <!-- Error state -->
   <div v-else-if="error" class="min-h-screen">
-    <ErrorState :error="error" @retry="refresh()" />
+    <ErrorState :message="projectErrorMessage" @action="refresh()" />
   </div>
 
   <!-- Main content -->

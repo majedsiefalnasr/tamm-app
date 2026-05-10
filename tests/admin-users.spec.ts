@@ -15,7 +15,7 @@ test.describe('Admin User List', () => {
 
   test('should display admin users page with table', async ({ page }) => {
     // Navigate to admin users page
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Check page header exists
     const header = page.locator('h1')
@@ -27,7 +27,7 @@ test.describe('Admin User List', () => {
   })
 
   test('should display filter tabs with user counts', async ({ page }) => {
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Check that filter tabs exist
     const allTab = page.locator('button', { hasText: 'All' })
@@ -41,7 +41,7 @@ test.describe('Admin User List', () => {
   })
 
   test('should filter users when tab is clicked', async ({ page }) => {
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Get initial table row count
     const allRows = page.locator('table tbody tr')
@@ -63,7 +63,7 @@ test.describe('Admin User List', () => {
   })
 
   test('should display user table with correct columns', async ({ page }) => {
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Check table headers
     expect(page.locator('th', { hasText: /^Name$/i })).toBeTruthy()
@@ -82,7 +82,7 @@ test.describe('Admin User List', () => {
       setTimeout(() => route.continue(), 500)
     })
 
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Check if skeleton loader exists
     const skeletons = page.locator('[class*="skeleton"]')
@@ -93,7 +93,7 @@ test.describe('Admin User List', () => {
   })
 
   test('should open actions menu when clicking dropdown', async ({ page }) => {
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Wait for table to load
     await page.waitForLoadState('networkidle')
@@ -125,7 +125,7 @@ test.describe('Admin User List', () => {
   test('should show empty state when no users match filter', async ({
     page,
   }) => {
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // If a filter exists with no users, it should show empty state
     // Try clicking a filter and check for empty state text
@@ -149,7 +149,7 @@ test.describe('Admin User List', () => {
   }) => {
     // Attempt to access admin page without proper auth
     // This would result in 403 redirect to login or error page
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Should either redirect or show 403
     const notFoundText = page.locator('text=403')
@@ -164,7 +164,7 @@ test.describe('Admin User List', () => {
   test('should support RTL layout (Arabic)', async ({ page, context }) => {
     await setPreferredLocale(context, 'ar', BASE_URL)
 
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Check for RTL direction
     const html = page.locator('html')

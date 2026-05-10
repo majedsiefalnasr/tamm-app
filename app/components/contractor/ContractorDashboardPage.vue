@@ -19,6 +19,8 @@ const { getProjectProposals } = useProposals()
 
 const proposalsForContractor = ref<ProposalData[]>([])
 const proposalsLoading = ref(false)
+/** Until first parallel dashboard load completes — avoids empty copy flash */
+const initialDashboardLoad = ref(true)
 const milestonesError = ref(false)
 const milestonesErrorMessage = ref('')
 const projectsError = ref(false)
@@ -134,8 +136,11 @@ async function refreshMilestones() {
 }
 
 onMounted(async () => {
-  await refreshProjectsAndProposals()
-  await refreshMilestones()
+  try {
+    await Promise.all([refreshProjectsAndProposals(), refreshMilestones()])
+  } finally {
+    initialDashboardLoad.value = false
+  }
 })
 </script>
 
@@ -155,7 +160,7 @@ onMounted(async () => {
     <div class="grid gap-6">
       <ContractorActiveMilestones
         :milestones="activeMilestones"
-        :loading="milestonesLoading"
+        :loading="milestonesLoading || initialDashboardLoad"
         :has-error="milestonesError"
         :error-message="milestonesErrorMessage"
         @retry="refreshMilestones"
@@ -163,7 +168,7 @@ onMounted(async () => {
 
       <ContractorReviewMilestones
         :milestones="reviewMilestones"
-        :loading="milestonesLoading"
+        :loading="milestonesLoading || initialDashboardLoad"
         :has-error="milestonesError"
         :error-message="milestonesErrorMessage"
         @retry="refreshMilestones"
@@ -171,7 +176,7 @@ onMounted(async () => {
 
       <ContractorPaymentStatus
         :summary="paymentSummary"
-        :loading="milestonesLoading"
+        :loading="milestonesLoading || initialDashboardLoad"
         :has-error="milestonesError"
         :error-message="milestonesErrorMessage"
         @retry="refreshMilestones"
@@ -180,7 +185,7 @@ onMounted(async () => {
       <ContractorOpenBids
         :projects="openBidProjects"
         :proposals="proposalsForContractor"
-        :loading="projectsLoading || proposalsLoading"
+        :loading="projectsLoading || proposalsLoading || initialDashboardLoad"
         :has-error="projectsError"
         :error-message="projectsErrorMessage"
         @retry="refreshProjectsAndProposals"

@@ -1,36 +1,41 @@
 import { describe, it, expect } from 'vitest'
+import { flushPromises } from '@vue/test-utils'
 import { useMilestones } from '../useMilestones'
 
 describe('useMilestones - Field Engineer Methods', () => {
   describe('getMilestonesByFieldEngineer', () => {
-    it('should return all milestones when status is null', () => {
+    it('should return all milestones when status is null', async () => {
       const { getMilestonesByFieldEngineer } = useMilestones()
       const { data } = getMilestonesByFieldEngineer(null)
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       expect(data.value.length).toBeGreaterThan(0)
     })
 
-    it('should return only in_progress milestones when filtered by status', () => {
+    it('should return only in_progress milestones when filtered by status', async () => {
       const { getMilestonesByFieldEngineer } = useMilestones()
       const { data } = getMilestonesByFieldEngineer('in_progress')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       expect(data.value.every(m => m.status === 'in_progress')).toBe(true)
     })
 
-    it('should return under_review milestones when filtered by status', () => {
+    it('should return under_review milestones when filtered by status', async () => {
       const { getMilestonesByFieldEngineer } = useMilestones()
       const { data } = getMilestonesByFieldEngineer('under_review')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       expect(data.value.every(m => m.status === 'under_review')).toBe(true)
     })
 
-    it('should return milestones sorted by deadline ascending', () => {
+    it('should return milestones sorted by deadline ascending', async () => {
       const { getMilestonesByFieldEngineer } = useMilestones()
       const { data } = getMilestonesByFieldEngineer(null)
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       if (data.value && data.value.length > 1) {
         for (let i = 0; i < data.value.length - 1; i++) {
@@ -47,10 +52,11 @@ describe('useMilestones - Field Engineer Methods', () => {
       }
     })
 
-    it('should include project_name and project_address fields', () => {
+    it('should include project_name and project_address fields', async () => {
       const { getMilestonesByFieldEngineer } = useMilestones()
       const { data } = getMilestonesByFieldEngineer('in_progress')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       if (data.value.length > 0) {
         expect(data.value[0]).toHaveProperty('project_name')
@@ -58,10 +64,11 @@ describe('useMilestones - Field Engineer Methods', () => {
       }
     })
 
-    it('should include field_engineer_id for filtering', () => {
+    it('should include field_engineer_id for filtering', async () => {
       const { getMilestonesByFieldEngineer } = useMilestones()
       const { data } = getMilestonesByFieldEngineer('in_progress')
 
+      await flushPromises()
       expect(data.value).toBeDefined()
       if (data.value.length > 0) {
         expect(data.value[0]).toHaveProperty('field_engineer_id')

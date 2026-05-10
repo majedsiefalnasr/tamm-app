@@ -21,26 +21,26 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 
 const statusTabs = computed(() => [
-  { id: 'all' as const, label: $t('admin.projects.filter_all') },
-  { id: 'new' as const, label: $t('admin.projects.filter_new') },
+  { id: 'all' as const, label: t('admin.projects.filter_all') },
+  { id: 'new' as const, label: t('admin.projects.filter_new') },
   {
     id: 'open_for_bids' as const,
-    label: $t('admin.projects.filter_open_for_bids'),
+    label: t('admin.projects.filter_open_for_bids'),
   },
   {
     id: 'under_review' as const,
-    label: $t('admin.projects.filter_under_review'),
+    label: t('admin.projects.filter_under_review'),
   },
   {
     id: 'contractor_selected' as const,
-    label: $t('admin.projects.filter_contractor_selected'),
+    label: t('admin.projects.filter_contractor_selected'),
   },
-  { id: 'active' as const, label: $t('admin.projects.filter_active') },
-  { id: 'on_hold' as const, label: $t('admin.projects.filter_on_hold') },
-  { id: 'completed' as const, label: $t('admin.projects.filter_completed') },
+  { id: 'active' as const, label: t('admin.projects.filter_active') },
+  { id: 'on_hold' as const, label: t('admin.projects.filter_on_hold') },
+  { id: 'completed' as const, label: t('admin.projects.filter_completed') },
 ])
 
 const handleSearch = (value: string) => {
@@ -85,7 +85,7 @@ const handleTabClick = (tab: AdminProjectStatus) => {
         />
         <Input
           :model-value="searchQuery"
-          :placeholder="$t('admin.projects.search_placeholder')"
+          :placeholder="t('admin.projects.search_placeholder')"
           class="ps-10"
           :disabled="loading"
           @update:model-value="handleSearch"
@@ -94,7 +94,7 @@ const handleTabClick = (tab: AdminProjectStatus) => {
           v-if="searchQuery"
           class="text-muted-foreground hover:text-foreground absolute end-3 top-1/2 -translate-y-1/2 transition"
           :disabled="loading"
-          :aria-label="$t('common.clear')"
+          :aria-label="t('common.clear')"
           @click="handleClearSearch"
         >
           <X class="h-4 w-4" />

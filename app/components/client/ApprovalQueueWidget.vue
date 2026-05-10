@@ -10,6 +10,9 @@ const { t: $t } = useI18n()
 
 const localError = ref<string | null>(null)
 
+/** True until first fetch finishes — prevents empty-state flash before onMounted */
+const approvalsBootstrapping = ref(true)
+
 const count = computed(() => pendingApprovals.value.length)
 
 const countBadgeClass = computed(() =>
@@ -24,6 +27,8 @@ onMounted(async () => {
   } catch (err) {
     localError.value =
       err instanceof Error ? err.message : 'Failed to load approvals'
+  } finally {
+    approvalsBootstrapping.value = false
   }
 })
 
@@ -68,7 +73,7 @@ const handleActionComplete = async () => {
     <!-- List or state -->
     <ApprovalQueueList
       :items="pendingApprovals"
-      :loading="loading"
+      :loading="loading || approvalsBootstrapping"
       :error="localError || error || null"
       @retry="handleRetry"
       @action-complete="handleActionComplete"

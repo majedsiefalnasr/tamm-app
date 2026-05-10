@@ -10,7 +10,7 @@ test.describe('Admin Projects Overview Page', () => {
     await page.waitForNavigation()
 
     // Navigate to admin projects page
-    await page.goto('/admin/projects')
+    await page.goto('/projects')
     await page.waitForLoadState('networkidle')
   })
 
@@ -203,7 +203,7 @@ test.describe('Admin Projects Overview Page', () => {
     await page.waitForNavigation()
 
     // Try to navigate to admin projects
-    await page.goto('/admin/projects')
+    await page.goto('/projects')
 
     // Should be redirected to 403
     expect(page.url()).toMatch(/403|login/)

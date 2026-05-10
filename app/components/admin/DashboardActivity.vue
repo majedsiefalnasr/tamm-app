@@ -177,11 +177,14 @@ const hoveredIdx = ref<number | null>(null)
       </div>
     </template>
 
-    <!-- Empty state -->
-    <template v-else>
+    <!-- Loaded successfully but no series points -->
+    <template v-else-if="data">
       <p class="text-muted-foreground py-8 text-center">
         {{ t('common.no_data') }}
       </p>
     </template>
+
+    <!-- Error / not yet available (parent may show error banner) -->
+    <div v-else class="min-h-[200px]" aria-hidden="true" />
   </div>
 </template>

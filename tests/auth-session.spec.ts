@@ -145,7 +145,7 @@ test.describe('Session Persistence & Auto-Logout', () => {
     ])
 
     // Try to access admin-only route
-    await page.goto(`${BASE_URL}/admin/users`)
+    await page.goto(`${BASE_URL}/users`)
 
     // Should redirect to /403 if user lacks role (or to /login if token invalid)
     const url = page.url()

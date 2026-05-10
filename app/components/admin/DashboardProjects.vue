@@ -56,7 +56,7 @@ function clampProgress(percentage: number): number {
         {{ t('admin.dashboard.projects.title') }}
       </h3>
       <NuxtLink
-        to="/admin/projects"
+        to="/projects"
         class="text-primary hover:text-primary/80 text-sm font-medium transition"
         data-testid="projects-view-all"
       >

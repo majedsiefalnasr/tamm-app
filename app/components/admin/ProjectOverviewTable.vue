@@ -42,7 +42,7 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const { $t } = useI18n()
+const { t } = useI18n()
 const router = useRouter()
 
 const { getProjectProgress } = useAdminProjects()
@@ -69,7 +69,7 @@ const statusTone = (status: string) => {
 }
 
 const statusLabel = (status: string) => {
-  return $t(`status.${status}`)
+  return t(`status.${status}`)
 }
 
 const { locale } = useI18n()
@@ -135,10 +135,10 @@ const handleNextPage = () => {
     >
       <FolderOpen class="text-muted-foreground mb-4 h-8 w-8" />
       <h3 class="text-ink mb-1 text-center text-sm font-medium">
-        {{ $t('admin.projects.empty_state') }}
+        {{ t('admin.projects.empty_state') }}
       </h3>
       <p class="text-muted-foreground text-center text-sm">
-        {{ $t('admin.projects.empty_state_subtitle') }}
+        {{ t('admin.projects.empty_state_subtitle') }}
       </p>
     </div>
 
@@ -151,31 +151,31 @@ const handleNextPage = () => {
         <TableHeader>
           <TableRow class="bg-muted/50">
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.project_number') }}
+              {{ t('admin.projects.table.project_number') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.name') }}
+              {{ t('admin.projects.table.name') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.client') }}
+              {{ t('admin.projects.table.client') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.contractor') }}
+              {{ t('admin.projects.table.contractor') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.status') }}
+              {{ t('admin.projects.table.status') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.milestones_progress') }}
+              {{ t('admin.projects.table.milestones_progress') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.total_value') }}
+              {{ t('admin.projects.table.total_value') }}
             </TableHead>
             <TableHead class="text-start">
-              {{ $t('admin.projects.table.created_date') }}
+              {{ t('admin.projects.table.created_date') }}
             </TableHead>
             <TableHead class="text-center">
-              {{ $t('admin.projects.table.action') }}
+              {{ t('admin.projects.table.action') }}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -206,7 +206,7 @@ const handleNextPage = () => {
               {{
                 project.contractor
                   ? project.contractor.name
-                  : $t('admin.projects.unassigned')
+                  : t('admin.projects.unassigned')
               }}
             </TableCell>
 
@@ -258,7 +258,7 @@ const handleNextPage = () => {
                 class="text-primary hover:bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition"
                 @click="handleNavigateToProject(project.id)"
               >
-                {{ $t('admin.projects.table.view') }}
+                {{ t('admin.projects.table.view') }}
               </button>
             </TableCell>
           </TableRow>
@@ -273,14 +273,14 @@ const handleNextPage = () => {
     >
       <span class="text-muted-foreground text-sm">
         {{
-          $t('admin.projects.pagination', {
+          t('admin.projects.pagination', {
             current: pagination.current_page,
             total: pagination.total_pages,
           })
         }}
         •
         {{ pagination.total }}
-        {{ $t('admin.projects.table.project_number') }}
+        {{ t('admin.projects.table.project_number') }}
       </span>
 
       <div class="flex gap-2">
@@ -292,7 +292,7 @@ const handleNextPage = () => {
           @click="handlePreviousPage"
         >
           <ChevronRight class="h-4 w-4" />
-          {{ $t('common.previous') }}
+          {{ t('common.previous') }}
         </Button>
         <Button
           variant="outline"
@@ -301,7 +301,7 @@ const handleNextPage = () => {
           class="gap-1"
           @click="handleNextPage"
         >
-          {{ $t('common.next') }}
+          {{ t('common.next') }}
           <ChevronLeft class="h-4 w-4" />
         </Button>
       </div>

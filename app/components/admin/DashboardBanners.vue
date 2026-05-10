@@ -42,7 +42,7 @@ const { t } = useI18n()
           </div>
         </div>
         <NuxtLink
-          to="/admin/projects?status=new"
+          to="/projects?status=new"
           class="text-primary hover:text-primary/80 text-sm font-medium whitespace-nowrap"
         >
           {{ t('admin.dashboard.banners.view') }}
@@ -75,7 +75,7 @@ const { t } = useI18n()
           </div>
         </div>
         <NuxtLink
-          to="/admin/projects?payment_release=1"
+          to="/projects?payment_release=1"
           class="text-accent hover:text-accent/80 text-sm font-medium whitespace-nowrap"
         >
           {{ t('admin.dashboard.banners.view') }}
@@ -108,7 +108,7 @@ const { t } = useI18n()
           </div>
         </div>
         <NuxtLink
-          to="/admin/projects?milestone_review=1"
+          to="/projects?milestone_review=1"
           class="text-accent hover:text-accent/80 text-sm font-medium whitespace-nowrap"
           data-testid="banner-pending-reports-link"
         >
@@ -142,7 +142,7 @@ const { t } = useI18n()
           </div>
         </div>
         <NuxtLink
-          to="/admin/disputes"
+          to="/disputes"
           class="text-destructive hover:text-destructive/80 text-sm font-medium whitespace-nowrap"
         >
           {{ t('admin.dashboard.banners.view') }}

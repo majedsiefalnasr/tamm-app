@@ -39,7 +39,8 @@ function withTimeout<T>(
 
 export function useAdminUsers(initialRole?: Role | 'all' | null) {
   const users = ref<User[]>([])
-  const loading = ref(false)
+  /** True until first onMounted fetch completes */
+  const loading = ref(true)
   const error = ref<string | null>(null)
   const selectedRole = ref<Role | 'all'>(initialRole || 'all')
 

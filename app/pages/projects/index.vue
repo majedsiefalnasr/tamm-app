@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Button } from '~/components/ui/button'
 import ProjectCard from '~/components/project/ProjectCard.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
+import AdminProjectsPanel from '~/components/admin/AdminProjectsPanel.vue'
+import PageContentSkeleton from '~/components/common/PageContentSkeleton.vue'
 import type { ProjectStatus } from '~/shared/types/project'
 
 definePageMeta({
@@ -22,10 +25,15 @@ const route = useRoute()
 const auth = useAuthStore()
 const { projects, loading, error, fetchProjects, retryFetch } = useProjects()
 
-// Check if client role to show create button
+/** Until first fetch runs — covers gap before onMounted when loading is still false */
+const projectsRouteHydrating = ref(true)
+
+const isAdminProjectsUi = computed(() =>
+  ['admin', 'super_admin'].includes(auth.user?.role ?? '')
+)
+
 const isClient = computed(() => auth.user?.role === 'client')
 
-/** Parses `?filter=status:active` (story 08-01) or legacy `?status=active`. */
 const filterProjectStatus = computed((): ProjectStatus | null => {
   const rawFilter = route.query.filter
   const rawStatus = route.query.status
@@ -48,12 +56,18 @@ const displayProjects = computed(() => {
   return list.filter(p => p.status === st)
 })
 
-// Fetch projects on mount
 onMounted(async () => {
-  await fetchProjects()
+  if (!isAdminProjectsUi.value) {
+    try {
+      await fetchProjects()
+    } finally {
+      projectsRouteHydrating.value = false
+    }
+  } else {
+    projectsRouteHydrating.value = false
+  }
 })
 
-// Computed properties for UI states
 const hasProjects = computed(() => projects.value.length > 0)
 const hasFilteredProjects = computed(() => displayProjects.value.length > 0)
 const showEmpty = computed(
@@ -70,12 +84,15 @@ const showError = computed(() => !loading.value && error.value)
 const showProjects = computed(
   () => !loading.value && !error.value && hasFilteredProjects.value
 )
-const showLoading = computed(() => loading.value)
+const showLoading = computed(
+  () => loading.value || projectsRouteHydrating.value
+)
 </script>
 
 <template>
-  <div class="space-y-6 px-4 py-6 md:px-6">
-    <!-- Page Header -->
+  <AdminProjectsPanel v-if="isAdminProjectsUi" />
+
+  <div v-else class="space-y-6 px-4 py-6 md:px-6">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold">{{ $t('pages.projects') }}</h1>
@@ -83,44 +100,44 @@ const showLoading = computed(() => loading.value)
           {{ $t('project.subtitle') }}
         </p>
       </div>
-      <!-- Create Project Button (Client Only) -->
       <Button v-if="isClient" disabled class="gap-2">
         <span>{{ $t('project.create_project') }}</span>
       </Button>
     </div>
 
-    <!-- Loading State: Skeleton Cards -->
-    <div v-if="showLoading" class="grid gap-4 lg:grid-cols-2">
+    <PageContentSkeleton
+      v-if="showLoading && !hasProjects"
+      :show-cards="true"
+      :rows="5"
+    />
+
+    <div v-else-if="showLoading" class="grid gap-4 lg:grid-cols-2">
       <Skeleton class="h-80 rounded-2xl" />
       <Skeleton class="h-80 rounded-2xl" />
       <Skeleton class="h-80 rounded-2xl" />
     </div>
 
-    <!-- Error State -->
     <ErrorState
-      v-if="showError"
+      v-else-if="showError"
       :message="error || undefined"
-      @retry="retryFetch"
+      @action="retryFetch"
     />
 
-    <!-- Empty State -->
     <EmptyState
-      v-if="showEmpty"
+      v-else-if="showEmpty"
       icon="📁"
       title="project.no_projects"
       description="project.no_projects_description"
     />
 
-    <!-- Filtered empty (dashboard deep links) -->
     <EmptyState
-      v-if="showFilteredEmpty"
+      v-else-if="showFilteredEmpty"
       icon="📁"
       title="project.filter_empty_title"
       description="project.filter_empty_description"
     />
 
-    <!-- Projects Grid -->
-    <div v-if="showProjects" class="grid gap-4 lg:grid-cols-2">
+    <div v-else-if="showProjects" class="grid gap-4 lg:grid-cols-2">
       <ProjectCard
         v-for="project in displayProjects"
         :key="project.id"

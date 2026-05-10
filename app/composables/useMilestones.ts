@@ -915,109 +915,107 @@ export const useMilestones = () => {
     const engineerId = auth.user?.id ?? 'eng-1'
     loading.value = true
     error.value = null
+    fieldEngineerMilestones.value = []
 
-    try {
-      // Mock data for field engineer assignments (attribute to signed-in user for demo)
-      const mockFieldEngineerData: FieldEngineerMilestoneData[] = [
-        {
-          id: 'ms-1',
-          name: 'المرحلة الأولى - الأساسات',
-          description: 'Excavation, foundation, concrete structure',
-          amount: 50000,
-          order: 1,
-          status: 'in_progress',
-          project_id: 'proj-1',
-          project_name: 'مشروع البناء الأساسي',
-          project_address: 'شارع النيل، القاهرة',
-          field_engineer_id: engineerId,
-          deadline: '2026-05-20T23:59:59Z',
-          order_number: 1,
-          created_at: '2026-05-01T09:00:00Z',
-        },
-        {
-          id: 'ms-2',
-          name: 'المرحلة الثانية - الجدران',
-          description: 'Walls, finishing, internal work',
-          amount: 75000,
-          order: 2,
-          status: 'in_progress',
-          project_id: 'proj-1',
-          project_name: 'مشروع البناء الأساسي',
-          project_address: 'شارع النيل، القاهرة',
-          field_engineer_id: engineerId,
-          deadline: '2026-05-25T23:59:59Z',
-          order_number: 2,
-          created_at: '2026-05-02T09:00:00Z',
-        },
-        {
-          id: 'ms-3',
-          name: 'المرحلة الثالثة - الإنهاء',
-          description: 'Final checks and handover',
-          amount: 125000,
-          order: 3,
-          status: 'under_review',
-          project_id: 'proj-2',
-          project_name: 'مشروع الترميم',
-          project_address: 'حي المعادي، القاهرة',
-          field_engineer_id: engineerId,
-          deadline: '2026-06-01T23:59:59Z',
-          order_number: 3,
-          created_at: '2026-05-03T09:00:00Z',
-        },
-        {
-          id: 'ms-4',
-          name: 'المرحلة الرابعة - التسليم',
-          description: 'Project handover and completion',
-          amount: 100000,
-          order: 4,
-          status: 'supervisor_approved',
-          project_id: 'proj-2',
-          project_name: 'مشروع الترميم',
-          project_address: 'حي المعادي، القاهرة',
-          field_engineer_id: engineerId,
-          deadline: '2026-06-05T23:59:59Z',
-          order_number: 4,
-          created_at: '2026-05-04T09:00:00Z',
-        },
-      ]
+    queueMicrotask(() => {
+      try {
+        // Mock data for field engineer assignments (attribute to signed-in user for demo)
+        const mockFieldEngineerData: FieldEngineerMilestoneData[] = [
+          {
+            id: 'ms-1',
+            name: 'المرحلة الأولى - الأساسات',
+            description: 'Excavation, foundation, concrete structure',
+            amount: 50000,
+            order: 1,
+            status: 'in_progress',
+            project_id: 'proj-1',
+            project_name: 'مشروع البناء الأساسي',
+            project_address: 'شارع النيل، القاهرة',
+            field_engineer_id: engineerId,
+            deadline: '2026-05-20T23:59:59Z',
+            order_number: 1,
+            created_at: '2026-05-01T09:00:00Z',
+          },
+          {
+            id: 'ms-2',
+            name: 'المرحلة الثانية - الجدران',
+            description: 'Walls, finishing, internal work',
+            amount: 75000,
+            order: 2,
+            status: 'in_progress',
+            project_id: 'proj-1',
+            project_name: 'مشروع البناء الأساسي',
+            project_address: 'شارع النيل، القاهرة',
+            field_engineer_id: engineerId,
+            deadline: '2026-05-25T23:59:59Z',
+            order_number: 2,
+            created_at: '2026-05-02T09:00:00Z',
+          },
+          {
+            id: 'ms-3',
+            name: 'المرحلة الثالثة - الإنهاء',
+            description: 'Final checks and handover',
+            amount: 125000,
+            order: 3,
+            status: 'under_review',
+            project_id: 'proj-2',
+            project_name: 'مشروع الترميم',
+            project_address: 'حي المعادي، القاهرة',
+            field_engineer_id: engineerId,
+            deadline: '2026-06-01T23:59:59Z',
+            order_number: 3,
+            created_at: '2026-05-03T09:00:00Z',
+          },
+          {
+            id: 'ms-4',
+            name: 'المرحلة الرابعة - التسليم',
+            description: 'Project handover and completion',
+            amount: 100000,
+            order: 4,
+            status: 'supervisor_approved',
+            project_id: 'proj-2',
+            project_name: 'مشروع الترميم',
+            project_address: 'حي المعادي، القاهرة',
+            field_engineer_id: engineerId,
+            deadline: '2026-06-05T23:59:59Z',
+            order_number: 4,
+            created_at: '2026-05-04T09:00:00Z',
+          },
+        ]
 
-      // Filter by engineer and status
-      let filtered = mockFieldEngineerData.filter(
-        m => m.field_engineer_id === engineerId
-      )
+        // Filter by engineer and status
+        let filtered = mockFieldEngineerData.filter(
+          m => m.field_engineer_id === engineerId
+        )
 
-      if (status !== null && status !== undefined) {
-        filtered = filtered.filter(m => m.status === status)
+        if (status !== null && status !== undefined) {
+          filtered = filtered.filter(m => m.status === status)
+        }
+
+        // Sort by deadline ascending (oldest/closest first)
+        filtered.sort(
+          (a, b) =>
+            new Date(a.deadline || a.created_at).getTime() -
+            new Date(b.deadline || b.created_at).getTime()
+        )
+
+        fieldEngineerMilestones.value = filtered
+        // TODO: replace mock — GET /api/v1/milestones?field_engineer_id={engineerId}&status={status}
+      } catch (err) {
+        error.value =
+          err instanceof Error
+            ? err.message
+            : 'Failed to load field engineer milestones'
+        fieldEngineerMilestones.value = []
+      } finally {
+        loading.value = false
       }
+    })
 
-      // Sort by deadline ascending (oldest/closest first)
-      filtered.sort(
-        (a, b) =>
-          new Date(a.deadline || a.created_at).getTime() -
-          new Date(b.deadline || b.created_at).getTime()
-      )
-
-      fieldEngineerMilestones.value = filtered
-      // TODO: replace mock — GET /api/v1/milestones?field_engineer_id={engineerId}&status={status}
-
-      return {
-        data: computed(() => fieldEngineerMilestones.value),
-        loading: computed(() => false),
-        error: computed(() => null),
-      }
-    } catch (err) {
-      error.value =
-        err instanceof Error
-          ? err.message
-          : 'Failed to load field engineer milestones'
-      fieldEngineerMilestones.value = []
-      return {
-        data: computed(() => []),
-        loading: computed(() => false),
-        error: computed(() => error.value),
-      }
-    } finally {
-      loading.value = false
+    return {
+      data: computed(() => fieldEngineerMilestones.value),
+      loading: computed(() => loading.value),
+      error: computed(() => error.value),
     }
   }
 

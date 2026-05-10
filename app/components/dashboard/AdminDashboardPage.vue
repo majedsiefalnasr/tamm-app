@@ -12,12 +12,6 @@ import DashboardRecentActivity from '~/components/admin/DashboardRecentActivity.
 import DashboardSuperAdminSection from '~/components/admin/DashboardSuperAdminSection.vue'
 import { useAuthStore } from '~/stores/auth'
 
-definePageMeta({
-  roles: ['admin', 'super_admin'],
-  middleware: ['auth', 'role'],
-  pageTitle: 'admin.dashboard.page_title',
-})
-
 const auth = useAuthStore()
 
 const {
@@ -49,7 +43,6 @@ const welcomeDateFormatted = computed(() => {
 
 <template>
   <div class="space-y-6">
-    <!-- Page Title -->
     <div>
       <h1
         class="text-foreground text-3xl font-extrabold"
@@ -62,7 +55,6 @@ const welcomeDateFormatted = computed(() => {
       </p>
     </div>
 
-    <!-- Error state -->
     <div
       v-if="error"
       class="border-destructive/30 bg-destructive/5 flex items-start gap-3 rounded-2xl border p-4"
@@ -85,7 +77,6 @@ const welcomeDateFormatted = computed(() => {
       </div>
     </div>
 
-    <!-- Urgent Action Banners -->
     <DashboardBanners
       :new-projects="bannerCounts.newProjects"
       :pending-payments="bannerCounts.pendingPayments"
@@ -93,17 +84,14 @@ const welcomeDateFormatted = computed(() => {
       :disputes="bannerCounts.disputes"
     />
 
-    <!-- Summary KPIs -->
     <DashboardStats
       :stats="stats"
       :disputes-stat="disputesStat"
       :loading="loading"
     />
 
-    <!-- Epic 08-05 action queues -->
     <DashboardActionQueues :queues="actionQueues" :loading="loading" />
 
-    <!-- Recent platform events -->
     <DashboardRecentActivity :events="recentEventsFeed" :loading="loading" />
 
     <DashboardSuperAdminSection
@@ -111,16 +99,13 @@ const welcomeDateFormatted = computed(() => {
       :flags="superAdminFlags"
     />
 
-    <!-- Activity Chart -->
     <DashboardActivity :data="data?.activity_data ?? null" :loading="loading" />
 
-    <!-- Recent Projects -->
     <DashboardProjects
       :projects="data?.recent_projects ?? []"
       :loading="loading"
     />
 
-    <!-- Disputes Overview -->
     <DashboardDisputes
       :disputes="data?.open_disputes ?? []"
       :loading="loading"

@@ -16,7 +16,8 @@ export interface ActivityEvent {
 
 export const useActivity = () => {
   const activities = ref<ActivityEvent[]>([])
-  const loading = ref(false)
+  /** True until first getRecentActivity() completes — avoids empty-state flash */
+  const loading = ref(true)
   const error = ref<string | null>(null)
 
   // Mock activity data - TO DO: Replace with /api/v1/activity endpoint when available
