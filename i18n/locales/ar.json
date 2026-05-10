@@ -14,7 +14,24 @@
     "loggingIn": "جاري الدخول...",
     "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
     "connectionError": "خطأ في الاتصال — يرجى المحاولة مرة أخرى",
-    "forgotPassword": "هل نسيت كلمة المرور؟"
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "forgotPasswordTitle": "إعادة تعيين كلمة المرور",
+    "forgotPasswordHint": "أدخل بريدك الإلكتروني وسنرسل رابط إعادة التعيين إن وُجد حساب.",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "sendingResetLink": "جاري الإرسال…",
+    "resetLinkSentGeneric": "إن وُجد حساب لهذا البريد، ستصلك تعليمات إعادة التعيين قريباً.",
+    "resetRequestFailed": "تعذر إرسال الرابط. حاول مرة أخرى.",
+    "backToLogin": "العودة لتسجيل الدخول",
+    "resetPasswordTitle": "كلمة مرور جديدة",
+    "resetPasswordHint": "أدخل كلمة المرور الجديدة أدناه.",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmNewPassword": "تأكيد كلمة المرور",
+    "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
+    "passwordsMustMatch": "كلمتا المرور غير متطابقتين",
+    "resetPasswordSubmit": "تحديث كلمة المرور",
+    "resettingPassword": "جاري التحديث…",
+    "resetPasswordFailed": "تعذر إعادة التعيين. قد يكون الرابط منتهياً.",
+    "invalidResetToken": "رابط إعادة التعيين غير صالح أو مفقود. اطلب رابطاً جديداً من صفحة الدخول."
   },
   "errors": {
     "approval_queue_load_failed": "فشل تحميل قائمة الاعتمادات",
@@ -158,7 +175,8 @@
     "showMore": "عرض المزيد",
     "showLess": "عرض أقل",
     "of": "من",
-    "retry": "أعد المحاولة"
+    "retry": "أعد المحاولة",
+    "redirecting": "جاري التوجيه…"
   },
   "nav": {
     "home": "الرئيسية",

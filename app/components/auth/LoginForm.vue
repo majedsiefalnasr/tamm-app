@@ -51,7 +51,13 @@ const onSubmit = handleSubmit(async formValues => {
     >
       <!-- Logo -->
       <div class="mb-8 flex justify-center">
-        <img src="~/assets/logo.svg" alt="TAMM" class="h-12 w-auto" />
+        <img
+          src="/logo.svg"
+          alt="TAMM"
+          width="160"
+          height="40"
+          class="h-12 w-auto"
+        />
       </div>
 
       <!-- Form -->

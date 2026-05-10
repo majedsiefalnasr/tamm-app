@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" fill="none" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">TAMM</title>
+  <text
+    x="80"
+    y="29"
+    text-anchor="middle"
+    font-family="Inter, ui-sans-serif, system-ui, sans-serif"
+    font-size="24"
+    font-weight="700"
+    fill="#0f172a"
+  >
+    TAMM
+  </text>
+</svg>

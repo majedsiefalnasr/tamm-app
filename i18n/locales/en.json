@@ -14,7 +14,24 @@
     "loggingIn": "Logging in...",
     "invalidCredentials": "Invalid email or password",
     "connectionError": "Connection error — please try again",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordTitle": "Reset your password",
+    "forgotPasswordHint": "Enter your email and we will send you a reset link if an account exists.",
+    "sendResetLink": "Send reset link",
+    "sendingResetLink": "Sending…",
+    "resetLinkSentGeneric": "If an account exists for this email, you will receive reset instructions shortly.",
+    "resetRequestFailed": "Could not send reset link. Please try again.",
+    "backToLogin": "Back to login",
+    "resetPasswordTitle": "Choose a new password",
+    "resetPasswordHint": "Enter your new password below.",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordsMustMatch": "Passwords must match",
+    "resetPasswordSubmit": "Update password",
+    "resettingPassword": "Updating…",
+    "resetPasswordFailed": "Could not reset password. The link may have expired.",
+    "invalidResetToken": "This reset link is missing or invalid. Request a new link from the login page."
   },
   "errors": {
     "approval_queue_load_failed": "Failed to load approval queue",
@@ -158,7 +175,8 @@
     "showMore": "Show More",
     "showLess": "Show Less",
     "of": "of",
-    "retry": "Retry"
+    "retry": "Retry",
+    "redirecting": "Redirecting…"
   },
   "nav": {
     "home": "Home",

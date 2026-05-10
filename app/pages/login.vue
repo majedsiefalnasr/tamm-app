@@ -5,5 +5,6 @@ definePageMeta({
 </script>
 
 <template>
-  <LoginForm />
+  <!-- Nested under components/auth/ → auto-import name is AuthLoginForm -->
+  <AuthLoginForm />
 </template>

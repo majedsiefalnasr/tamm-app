@@ -1,4 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+/** Laravel/API origin for local dev proxies — not Python `http.server` (POST → 501). */
+const devApiProxyTarget =
+  process.env.NUXT_DEV_PROXY_TARGET || 'http://127.0.0.1:8000'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   future: { compatibilityVersion: 4 }, // enables app/ directory
@@ -15,13 +20,34 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ['@vueuse/core'],
     },
+    /** Client `$fetch('/api/...')` hits Vite in dev — forward POSTs to the backend. */
+    server: {
+      proxy: {
+        '/api': {
+          target: devApiProxyTarget,
+          changeOrigin: true,
+        },
+      },
+    },
   },
 
   css: ['@/assets/css/main.css', '@/assets/css/tailwind.css'],
 
+  /** Dev-only: SSR / Nitro-side `/api/...` → Laravel (pairs with vite.server.proxy). */
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: devApiProxyTarget,
+        changeOrigin: true,
+      },
+    },
+  },
+
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
+      // Leave empty in local dev so requests use `/api/v1/...` on the Nuxt origin (Vite + Nitro dev proxies).
+      // Set to your API origin when the browser must call the API directly (production or LAN); then configure Laravel CORS.
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '',
     },
   },
 

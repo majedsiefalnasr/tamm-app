@@ -392,7 +392,7 @@ export const useProjects = () => {
   ): Promise<void> => {
     try {
       // TODO: replace mock — POST /projects/:id/invitations
-      await $fetch(`/api/v1/projects/${projectId}/invitations`, {
+      await useApi(`/projects/${projectId}/invitations`, {
         method: 'POST',
         body: { contractor_ids: contractorIds },
       })

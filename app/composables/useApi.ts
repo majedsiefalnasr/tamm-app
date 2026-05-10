@@ -19,6 +19,30 @@ export interface ApiError extends Error {
   data?: any
 }
 
+/**
+ * Resolve URL for `/api/v1/...` requests.
+ *
+ * - `NUXT_PUBLIC_API_BASE` set (any mode): `{base}/api/v1/...` — use your deployed API origin
+ *   (e.g. `https://tamm.ultimate-dev2.com`). Swagger lives under `/api/documentation`, not in this value.
+ * - `NUXT_PUBLIC_API_BASE` empty **and** `import.meta.dev`: same-origin `/api/v1/...` → Vite/Nitro proxy.
+ * - Empty **and** production build: same-origin (reverse-proxy setups).
+ *
+ * Remote API from localhost requires Laravel CORS to allow your dev origin (`http://localhost:3000`, etc.).
+ */
+export const resolveApiUrl = (pathAfterV1: string): string => {
+  const config = useRuntimeConfig()
+  const base = String(config.public.apiBase ?? '')
+    .trim()
+    .replace(/\/+$/, '')
+  const path = `/api/v1${pathAfterV1.startsWith('/') ? '' : '/'}${pathAfterV1}`
+
+  if (import.meta.dev && !base) {
+    return path
+  }
+
+  return base ? `${base}${path}` : path
+}
+
 export const useApi = async <T = any>(
   url: string,
   options?: {
@@ -42,8 +66,10 @@ export const useApi = async <T = any>(
       headers.Authorization = `Bearer ${auth.token}`
     }
 
+    const requestUrl = resolveApiUrl(url)
+
     // Make the request
-    const response = await $fetch<ApiResponse<T>>(`/api/v1${url}`, {
+    const response = await $fetch<ApiResponse<T>>(requestUrl, {
       ...options,
       headers,
     })
