@@ -21,19 +21,26 @@ const { t } = useI18n()
       <CardHeader>
         <CardTitle>{{ t('settings.keyboardShortcuts') }}</CardTitle>
       </CardHeader>
-      <CardContent class="flex flex-col gap-4">
+      <CardContent class="flex flex-col gap-6">
         <div
           class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
+          <div class="min-w-0 flex-1 text-start">
             <p class="text-foreground font-medium">
               {{ t('settings.shortcut_palette_label') }}
             </p>
             <p class="text-muted-foreground text-sm">
               {{ t('settings.shortcut_palette_desc') }}
             </p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              {{ t('settings.shortcut_palette_detail') }}
+            </p>
           </div>
-          <div class="flex flex-wrap items-center gap-1">
+          <div
+            dir="ltr"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+            aria-hidden="true"
+          >
             <Kbd>{{ t('commandPalette.modMeta') }}</Kbd>
             <span class="text-muted-foreground text-xs">/</span>
             <Kbd>{{ t('commandPalette.modCtrl') }}</Kbd>
@@ -41,9 +48,56 @@ const { t } = useI18n()
             <Kbd>K</Kbd>
           </div>
         </div>
-        <p class="text-muted-foreground text-sm">
-          {{ t('settings.shortcut_palette_detail') }}
-        </p>
+
+        <div
+          class="flex flex-col gap-2 border-t pt-6 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="min-w-0 flex-1 text-start">
+            <p class="text-foreground font-medium">
+              {{ t('settings.shortcut_sidebar_label') }}
+            </p>
+            <p class="text-muted-foreground text-sm">
+              {{ t('settings.shortcut_sidebar_desc') }}
+            </p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              {{ t('settings.shortcut_sidebar_detail') }}
+            </p>
+          </div>
+          <div
+            dir="ltr"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+            aria-hidden="true"
+          >
+            <Kbd>{{ t('commandPalette.modMeta') }}</Kbd>
+            <span class="text-muted-foreground text-xs">/</span>
+            <Kbd>{{ t('commandPalette.modCtrl') }}</Kbd>
+            <span class="text-muted-foreground text-xs">+</span>
+            <Kbd>B</Kbd>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-col gap-2 border-t pt-6 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="min-w-0 flex-1 text-start">
+            <p class="text-foreground font-medium">
+              {{ t('settings.shortcut_escape_label') }}
+            </p>
+            <p class="text-muted-foreground text-sm">
+              {{ t('settings.shortcut_escape_desc') }}
+            </p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              {{ t('settings.shortcut_escape_detail') }}
+            </p>
+          </div>
+          <div
+            dir="ltr"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+            aria-hidden="true"
+          >
+            <Kbd>{{ t('settings.shortcut_escape_key') }}</Kbd>
+          </div>
+        </div>
       </CardContent>
     </Card>
   </div>

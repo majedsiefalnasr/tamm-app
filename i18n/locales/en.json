@@ -250,7 +250,14 @@
     "keyboardShortcuts": "Keyboard shortcuts",
     "shortcut_palette_label": "Command palette",
     "shortcut_palette_desc": "Open the palette from anywhere to jump to navigation pages you are allowed to view.",
-    "shortcut_palette_detail": "Use either ⌘ K (macOS) or Ctrl K (Windows/Linux)."
+    "shortcut_palette_detail": "Use either ⌘ K (macOS) or Ctrl K (Windows/Linux).",
+    "shortcut_sidebar_label": "Sidebar",
+    "shortcut_sidebar_desc": "Show or hide the main navigation sidebar.",
+    "shortcut_sidebar_detail": "Use ⌘ B (macOS) or Ctrl B (Windows/Linux).",
+    "shortcut_escape_label": "Close dialog or palette",
+    "shortcut_escape_desc": "Dismiss the focused modal, sheet, or command palette.",
+    "shortcut_escape_detail": "Press the Escape key.",
+    "shortcut_escape_key": "Esc"
   },
   "milestone": {
     "label": "Milestone",

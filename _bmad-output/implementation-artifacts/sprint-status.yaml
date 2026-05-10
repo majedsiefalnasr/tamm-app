@@ -1,6 +1,6 @@
 # Sprint Status for TAMM Frontend
 # Generated: 2026-05-10T10:43:50Z
-# Last updated: 2026-05-10T23:59:00Z
+# Last updated: 2026-05-10T15:00:00Z
 # Project: TAMM
 # Project key: NOKEY
 # Tracking system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-10T10:43:50Z
-last_updated: 2026-05-12T14:00:00Z
+last_updated: 2026-05-10T15:00:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -137,6 +137,6 @@ development_status:
   10-04-admin-list-density-column-presets: done
   10-05-mutation-feedback-normalization-audit: done
   10-06-contextual-helpers-milestone-payment-fields: done
-  10-07-shortcut-transparency-panel: backlog
+  10-07-shortcut-transparency-panel: done
   10-08-epic-10-rtl-regression-sweep: backlog
   epic-10-retrospective: optional

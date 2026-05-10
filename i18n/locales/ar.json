@@ -250,7 +250,14 @@
     "keyboardShortcuts": "اختصارات لوحة المفاتيح",
     "shortcut_palette_label": "لوحة الأوامر",
     "shortcut_palette_desc": "افتح اللوحة من أي مكان للانتقال السريع إلى صفحات التنقل المسموح لك بعرضها.",
-    "shortcut_palette_detail": "استخدم ⌘ K على macOS أو Ctrl K على Windows/Linux."
+    "shortcut_palette_detail": "استخدم ⌘ K على macOS أو Ctrl K على Windows/Linux.",
+    "shortcut_sidebar_label": "الشريط الجانبي",
+    "shortcut_sidebar_desc": "إظهار أو إخفاء شريط التنقل الرئيسي.",
+    "shortcut_sidebar_detail": "استخدم ⌘ B على macOS أو Ctrl B على Windows/Linux.",
+    "shortcut_escape_label": "إغلاق الحوار أو اللوحة",
+    "shortcut_escape_desc": "إغلاق النافذة المنبثقة أو اللوحة الجانبية أو لوحة الأوامر النشطة.",
+    "shortcut_escape_detail": "اضغط مفتاح الهروب (Escape).",
+    "shortcut_escape_key": "Esc"
   },
   "milestone": {
     "label": "المرحلة",
