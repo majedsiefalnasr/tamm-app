@@ -12,6 +12,7 @@ import { Skeleton } from '../ui/skeleton'
 import { Badge } from '../ui/badge'
 import UserActionMenu from './UserActionMenu.vue'
 import type { User } from '../../composables/useAdminUsers'
+import type { AdminUserListTablePreset } from '~/composables/useAdminUserListPreset'
 
 const { t } = useI18n()
 
@@ -27,17 +28,40 @@ onMounted(() => {
 interface Props {
   users?: User[]
   loading?: boolean
+  densityPreset?: AdminUserListTablePreset
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   users: () => [],
   loading: false,
+  densityPreset: 'default',
 })
 
 const emit = defineEmits<{
   'edit-user': [userId: string]
   'toggle-status': [userId: string]
 }>()
+
+const showOptionalColumns = computed(() => props.densityPreset !== 'minimal')
+
+const visibleColumnCount = computed(() => (showOptionalColumns.value ? 6 : 4))
+
+const headerDensityClass = computed(() =>
+  props.densityPreset === 'compact' ? '[&_th]:py-2 [&_th]:text-xs' : ''
+)
+
+const bodyRowDensityClass = computed(() => {
+  if (props.densityPreset === 'compact') {
+    return '[&_td]:py-2 [&_td]:text-xs'
+  }
+  return ''
+})
+
+const skeletonWidths = computed(() =>
+  showOptionalColumns.value
+    ? ['w-24', 'w-32', 'w-20', 'w-16', 'w-20', 'w-8']
+    : ['w-24', 'w-20', 'w-16', 'w-8']
+)
 
 const formattedUsers = computed(() => {
   return props.users.map(user => ({
@@ -71,11 +95,11 @@ function formatRelativeTime(dateString: string): string {
   <div class="overflow-x-auto">
     <Table>
       <TableHeader>
-        <TableRow class="bg-muted/50">
+        <TableRow class="bg-muted/50" :class="headerDensityClass">
           <TableHead class="text-start">{{
             t('admin.users.table.name')
           }}</TableHead>
-          <TableHead class="text-start">{{
+          <TableHead v-if="showOptionalColumns" class="text-start">{{
             t('admin.users.table.email')
           }}</TableHead>
           <TableHead class="text-start">{{
@@ -84,7 +108,7 @@ function formatRelativeTime(dateString: string): string {
           <TableHead class="text-start">{{
             t('admin.users.table.status')
           }}</TableHead>
-          <TableHead class="text-start">{{
+          <TableHead v-if="showOptionalColumns" class="text-start">{{
             t('admin.users.table.created')
           }}</TableHead>
           <TableHead class="text-start">{{
@@ -95,20 +119,21 @@ function formatRelativeTime(dateString: string): string {
       <TableBody>
         <!-- Skeleton rows while loading -->
         <template v-if="loading">
-          <TableRow v-for="i in skeletonRowCount" :key="`skeleton-${i}`">
-            <TableCell><Skeleton class="h-4 w-24" /></TableCell>
-            <TableCell><Skeleton class="h-4 w-32" /></TableCell>
-            <TableCell><Skeleton class="h-6 w-20" /></TableCell>
-            <TableCell><Skeleton class="h-6 w-16" /></TableCell>
-            <TableCell><Skeleton class="h-4 w-20" /></TableCell>
-            <TableCell><Skeleton class="h-8 w-8" /></TableCell>
+          <TableRow
+            v-for="i in skeletonRowCount"
+            :key="`skeleton-${i}`"
+            :class="bodyRowDensityClass"
+          >
+            <TableCell v-for="(w, idx) in skeletonWidths" :key="idx">
+              <Skeleton class="h-4" :class="w" />
+            </TableCell>
           </TableRow>
         </template>
 
         <!-- User rows -->
         <template v-else>
           <TableRow v-if="formattedUsers.length === 0">
-            <TableCell colspan="6" class="h-24 text-center">
+            <TableCell :colspan="visibleColumnCount" class="h-24 text-center">
               {{ t('admin.users.empty_state') }}
             </TableCell>
           </TableRow>
@@ -116,11 +141,18 @@ function formatRelativeTime(dateString: string): string {
             v-for="user in formattedUsers"
             :key="user.id"
             class="hover:bg-muted/50 transition"
+            :class="bodyRowDensityClass"
           >
-            <TableCell class="text-ink text-start font-medium">
+            <TableCell
+              class="text-ink text-start font-medium"
+              :class="densityPreset === 'compact' ? '' : 'text-sm'"
+            >
               {{ user.name }}
             </TableCell>
-            <TableCell class="text-muted-foreground text-start text-sm">
+            <TableCell
+              v-if="showOptionalColumns"
+              class="text-muted-foreground text-start text-sm"
+            >
               {{ user.email }}
             </TableCell>
             <TableCell class="text-start">
@@ -135,7 +167,10 @@ function formatRelativeTime(dateString: string): string {
                 {{ t(`admin.users.status.${user.status}`) }}
               </Badge>
             </TableCell>
-            <TableCell class="text-muted-foreground text-start text-sm">
+            <TableCell
+              v-if="showOptionalColumns"
+              class="text-muted-foreground text-start text-sm"
+            >
               {{ user.createdAgo }}
             </TableCell>
             <TableCell class="text-start">

@@ -694,6 +694,18 @@
       "filter_engineers": "Engineers",
       "filter_clients": "Clients",
       "filter_admins": "Admins",
+      "list_preset": {
+        "menu_label": "Table layout",
+        "open_sheet": "Change table layout",
+        "sheet_title": "Table layout",
+        "sheet_description": "Pick density and columns for the users list. Your choice is saved in this browser.",
+        "preset_default": "Default",
+        "preset_default_hint": "All columns with comfortable spacing.",
+        "preset_compact": "Compact",
+        "preset_compact_hint": "Denser rows for quicker scanning.",
+        "preset_minimal": "Minimal",
+        "preset_minimal_hint": "Hides email and created columns."
+      },
       "table": {
         "name": "Name",
         "email": "Email",

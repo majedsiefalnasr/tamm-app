@@ -694,6 +694,18 @@
       "filter_engineers": "المهندسون",
       "filter_clients": "العملاء",
       "filter_admins": "الإداريون",
+      "list_preset": {
+        "menu_label": "تخطيط الجدول",
+        "open_sheet": "تغيير تخطيط الجدول",
+        "sheet_title": "تخطيط الجدول",
+        "sheet_description": "اختر الكثافة والأعمدة لقائمة المستخدمين. يُحفظ اختيارك في هذا المتصفح.",
+        "preset_default": "افتراضي",
+        "preset_default_hint": "جميع الأعمدة مع مسافات مريحة.",
+        "preset_compact": "مضغوط",
+        "preset_compact_hint": "صفوف أكثر إحكامًا للمسح السريع.",
+        "preset_minimal": "الحد الأدنى",
+        "preset_minimal_hint": "إخفاء البريد الإلكتروني وتاريخ الإنشاء."
+      },
       "table": {
         "name": "الاسم",
         "email": "البريد الإلكتروني",
