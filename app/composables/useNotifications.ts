@@ -3,6 +3,12 @@ import { toast } from 'vue-sonner'
 import type { Notification } from '~/shared/types/notification'
 import { useNotificationsStore } from '~/stores/notifications'
 
+/** Options forwarded to vue-sonner — use `id` to dedupe/replace toasts per mutation. */
+export type SonnerToastOptions = {
+  id?: string
+  duration?: number
+}
+
 const POLLING_INTERVAL = 30000 // 30 seconds
 let globalPollTimer: number | undefined
 let globalVisibilityListener: (() => void) | undefined
@@ -85,24 +91,32 @@ export const useNotifications = () => {
     type: 'success' | 'error' | 'info'
     message: string
     duration?: number
+    id?: string
   }) => {
-    const opts = payload.duration != null ? { duration: payload.duration } : {}
+    const opts: SonnerToastOptions = {}
+    if (payload.duration != null) opts.duration = payload.duration
+    if (payload.id != null) opts.id = payload.id
+    const toastOpts = Object.keys(opts).length ? opts : undefined
     if (payload.type === 'success') {
-      toast.success(payload.message, opts)
+      toast.success(payload.message, toastOpts)
     } else if (payload.type === 'error') {
-      toast.error(payload.message, opts)
+      toast.error(payload.message, toastOpts)
     } else {
-      toast.info(payload.message, opts)
+      toast.info(payload.message, toastOpts)
     }
   }
 
   const { unreadCount, notifications } = storeToRefs(store)
 
   const notify = {
-    success: (message: string) => toast.success(message),
-    error: (message: string) => toast.error(message),
-    info: (message: string) => toast.info(message),
-    warning: (message: string) => toast.warning(message),
+    success: (message: string, opts?: SonnerToastOptions) =>
+      opts ? toast.success(message, opts) : toast.success(message),
+    error: (message: string, opts?: SonnerToastOptions) =>
+      opts ? toast.error(message, opts) : toast.error(message),
+    info: (message: string, opts?: SonnerToastOptions) =>
+      opts ? toast.info(message, opts) : toast.info(message),
+    warning: (message: string, opts?: SonnerToastOptions) =>
+      opts ? toast.warning(message, opts) : toast.warning(message),
   }
 
   const pushLocalNotification = (notification: Notification) => {

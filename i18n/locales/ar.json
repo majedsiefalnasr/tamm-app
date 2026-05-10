@@ -238,6 +238,7 @@
     "shortcut_palette_detail": "استخدم ⌘ K على macOS أو Ctrl K على Windows/Linux."
   },
   "milestone": {
+    "label": "المرحلة",
     "project_unknown": "مشروع",
     "action": {
       "pay": "دفع المرحلة"
@@ -296,6 +297,8 @@
     "dialog": {
       "title": "دفع المرحلة",
       "release_title": "تحرير الدفع",
+      "release_description": "تأكيد تحرير أموال الضمان إلى المقاول لهذه المرحلة.",
+      "release_confirm_loading": "جاري التحرير…",
       "escrow_explanation": "سيتم الاحتفاظ بالأموال بشكل آمن في ضمان حتى تتم الموافقة على هذه المرحلة.",
       "cannot_undo": "هذا الإجراء لا يمكن التراجع عنه",
       "bank_name": "اسم البنك",
@@ -718,6 +721,12 @@
         "edit": "تحرير",
         "activate": "تفعيل",
         "deactivate": "إلغاء تفعيل"
+      },
+      "deactivate_confirm": {
+        "title": "إلغاء تفعيل المستخدم؟",
+        "description": "سيفقد الوصول حتى يقوم مسؤول بتفعيله مرة أخرى.",
+        "confirm": "إلغاء التفعيل",
+        "cancel": "إلغاء"
       },
       "status": {
         "active": "نشط",

@@ -238,6 +238,7 @@
     "shortcut_palette_detail": "Use either ⌘ K (macOS) or Ctrl K (Windows/Linux)."
   },
   "milestone": {
+    "label": "Milestone",
     "project_unknown": "Project",
     "action": {
       "pay": "Pay Milestone"
@@ -296,6 +297,8 @@
     "dialog": {
       "title": "Pay for Milestone",
       "release_title": "Release payment",
+      "release_description": "Confirm releasing escrow funds to the contractor for this milestone.",
+      "release_confirm_loading": "Releasing…",
       "escrow_explanation": "Funds will be held securely in escrow until this milestone is approved.",
       "cannot_undo": "This action cannot be undone",
       "bank_name": "Bank Name",
@@ -718,6 +721,12 @@
         "edit": "Edit",
         "activate": "Activate",
         "deactivate": "Deactivate"
+      },
+      "deactivate_confirm": {
+        "title": "Deactivate user?",
+        "description": "They will lose access until an administrator activates them again.",
+        "confirm": "Deactivate",
+        "cancel": "Cancel"
       },
       "status": {
         "active": "Active",

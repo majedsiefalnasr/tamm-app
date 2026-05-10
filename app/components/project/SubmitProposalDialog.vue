@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import { toast } from 'vue-sonner'
+import { useNotifications } from '~/composables/useNotifications'
 import * as z from 'zod'
 import { useProposals } from '~/composables/useProposals'
 import type { ProjectStatus } from '~/shared/types/project'
@@ -37,6 +37,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { submitProposal } = useProposals()
+const { notify } = useNotifications()
 
 const isSubmitting = ref(false)
 const priceInput = ref('')
@@ -133,7 +134,7 @@ const onSubmitInvalid = () => {
 
 const onSubmit = handleSubmit(async formValues => {
   if (props.projectStatus !== 'open_for_bids') {
-    toast.error(t('projects.submitProposal.statusChangedError'))
+    notify.error(t('projects.submitProposal.statusChangedError'))
     return
   }
 
@@ -146,20 +147,20 @@ const onSubmit = handleSubmit(async formValues => {
     })
 
     if (result.success) {
-      toast.success(t('projects.submitProposal.successMessage'))
+      notify.success(t('projects.submitProposal.successMessage'))
       onOpenChange(false)
       emit('submitted', formValues)
     } else if (applyFieldErrors(result.fieldErrors)) {
-      toast.error(result.error || t('projects.submitProposal.errorMessage'))
+      notify.error(result.error || t('projects.submitProposal.errorMessage'))
     } else {
-      toast.error(result.error || t('projects.submitProposal.errorMessage'))
+      notify.error(result.error || t('projects.submitProposal.errorMessage'))
     }
   } catch (error: unknown) {
     const errorMsg =
       error instanceof Error
         ? error.message
         : t('projects.submitProposal.errorMessage')
-    toast.error(errorMsg)
+    notify.error(errorMsg)
   } finally {
     isSubmitting.value = false
   }

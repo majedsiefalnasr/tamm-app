@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import { toast } from 'vue-sonner'
 import { createUserSchema, type CreateUserPayload } from '#shared/types/user'
+import { useNotifications } from '~/composables/useNotifications'
 import { useAdminUsers } from '../../composables/useAdminUsers'
 import { useAuthStore } from '../../stores/auth'
 import { Button } from '../ui/button'
@@ -27,6 +27,7 @@ const emit = defineEmits<Emits>()
 const { t } = useI18n()
 const auth = useAuthStore()
 const { createUser, creating } = useAdminUsers()
+const { notify } = useNotifications()
 
 const { values, handleSubmit, errors, setFieldError, isSubmitting } =
   useForm<CreateUserPayload>({
@@ -61,7 +62,7 @@ const availableRoles = computed(() => {
 const onSubmit = handleSubmit(async formValues => {
   try {
     await createUser(formValues as CreateUserPayload)
-    toast.success(t('errors.user_created'))
+    notify.success(t('errors.user_created'))
     emit('success')
   } catch (error: any) {
     if (error?.data?.error?.errors) {
@@ -69,7 +70,7 @@ const onSubmit = handleSubmit(async formValues => {
         setFieldError(field, (messages as string[])[0])
       })
     } else {
-      toast.error(t('errors.user_creation_failed'))
+      notify.error(t('errors.user_creation_failed'))
     }
   }
 })

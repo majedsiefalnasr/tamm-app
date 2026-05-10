@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Milestone } from '~/shared/types/project'
-import { useI18n } from 'vue-i18n'
 import { useMilestones } from '~/composables/useMilestones'
-import { useNotifications } from '~/composables/useNotifications'
 import ApprovalQueueItem from './ApprovalQueueItem.vue'
 import ClientApprovalFlow from '~/components/milestone/ClientApprovalFlow.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
@@ -24,10 +22,7 @@ interface Emits {
 const { items, loading, error } = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { t } = useI18n()
 const { removePendingApproval } = useMilestones()
-const { notify } = useNotifications()
-
 const selectedMilestone = ref<Milestone | null>(null)
 const showApprovalDialog = ref(false)
 
@@ -42,18 +37,14 @@ const handleViewDetails = (milestone: Milestone) => {
   navigateTo(`/projects/${milestone.project_id}/milestones/${milestone.id}`)
 }
 
-const handleApprovalSuccess = () => {
+/** Refresh queue after ClientApprovalFlow completes — toasts stay inside the flow */
+const handleApprovalFinished = () => {
   if (selectedMilestone.value) {
     removePendingApproval(selectedMilestone.value.id)
-    notify.success(t('success.milestone_approved'))
   }
   showApprovalDialog.value = false
   selectedMilestone.value = null
   emit('action-complete')
-}
-
-const handleApprovalError = () => {
-  showApprovalDialog.value = false
 }
 </script>
 
@@ -95,8 +86,8 @@ const handleApprovalError = () => {
       :open="showApprovalDialog"
       :milestone="selectedMilestone"
       @update:open="showApprovalDialog = $event"
-      @approved="handleApprovalSuccess"
-      @rejected="handleApprovalError"
+      @approved="handleApprovalFinished"
+      @rejected="handleApprovalFinished"
     />
   </div>
 </template>

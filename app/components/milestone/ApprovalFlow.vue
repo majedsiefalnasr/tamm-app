@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type { Milestone, Report } from '~/shared/types/project'
 import { useMilestones } from '~/composables/useMilestones'
 import { useNotifications } from '~/composables/useNotifications'
+import { milestoneMutationToastId } from '~/utils/mutationFeedback'
 import { useI18n } from 'vue-i18n'
 import {
   Dialog,
@@ -52,7 +53,9 @@ const handleConfirmApprove = async () => {
 
   try {
     await approveMilestone(props.milestone.id, 'supervisor_engineer')
-    notify.success(t('success.milestone_approved'))
+    notify.success(t('success.milestone_approved'), {
+      id: milestoneMutationToastId('supervisor-approve', props.milestone.id),
+    })
     emit('approved')
     localOpen.value = false
     step.value = 'review'
@@ -61,7 +64,13 @@ const handleConfirmApprove = async () => {
     notify.error(
       t('errors.milestone_approval_failed', {
         message: error.value,
-      })
+      }),
+      {
+        id: milestoneMutationToastId(
+          'supervisor-approve-error',
+          props.milestone.id
+        ),
+      }
     )
   } finally {
     loading.value = false
@@ -79,7 +88,9 @@ const handleConfirmReject = async (reason: string) => {
 
   try {
     await rejectMilestone(props.milestone.id, reason, 'supervisor_engineer')
-    notify.success(t('success.milestone_rejected'))
+    notify.success(t('success.milestone_rejected'), {
+      id: milestoneMutationToastId('supervisor-reject', props.milestone.id),
+    })
     emit('rejected')
     localOpen.value = false
     step.value = 'review'
@@ -88,7 +99,13 @@ const handleConfirmReject = async (reason: string) => {
     notify.error(
       t('errors.milestone_rejection_failed', {
         message: error.value,
-      })
+      }),
+      {
+        id: milestoneMutationToastId(
+          'supervisor-reject-error',
+          props.milestone.id
+        ),
+      }
     )
   } finally {
     loading.value = false

@@ -16,7 +16,7 @@ import { Skeleton } from '../ui/skeleton'
 import { useAdminUsers } from '~/composables/useAdminUsers'
 import { useProjects } from '~/composables/useProjects'
 import { usePermission } from '~/composables/usePermission'
-import { toast } from 'vue-sonner'
+import { useNotifications } from '~/composables/useNotifications'
 import type {
   ProjectDetail,
   AssignEngineersPayload,
@@ -36,6 +36,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
+const { notify } = useNotifications()
 const { can } = usePermission()
 const { assignEngineers } = useProjects()
 const { fetchEngineersByRole } = useAdminUsers()
@@ -83,11 +84,11 @@ onMounted(async () => {
       supervisorEngineers.value.length === 0 ||
       fieldEngineers.value.length === 0
     ) {
-      toast.error(t('errors.failed_to_load_engineers'))
+      notify.error(t('errors.failed_to_load_engineers'))
     }
   } catch (error) {
     console.error('Failed to load engineers:', error)
-    toast.error(t('errors.failed_to_load_engineers'))
+    notify.error(t('errors.failed_to_load_engineers'))
   } finally {
     loadingEngineers.value = false
   }
@@ -96,7 +97,7 @@ onMounted(async () => {
 const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
   // Permission check
   if (!can('assign_engineers')) {
-    toast.error(t('errors.permission_denied'))
+    notify.error(t('errors.permission_denied'))
     return
   }
 
@@ -109,10 +110,10 @@ const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
     )
 
     if (result.success) {
-      toast.success(t('errors.engineers_assigned'))
+      notify.success(t('errors.engineers_assigned'))
       emit('success')
     } else {
-      toast.error(result.error || t('errors.engineers_assignment_failed'))
+      notify.error(result.error || t('errors.engineers_assignment_failed'))
     }
   } catch (error: any) {
     if (error?.data?.error?.errors) {
@@ -120,7 +121,7 @@ const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
         setFieldError(field, (messages as string[])[0])
       })
     } else {
-      toast.error(t('errors.engineers_assignment_failed'))
+      notify.error(t('errors.engineers_assignment_failed'))
     }
   } finally {
     assigningEngineers.value = false

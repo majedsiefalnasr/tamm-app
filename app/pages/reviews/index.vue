@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useAsyncData } from '#app'
 import { useMilestones } from '~/composables/useMilestones'
-import { useNotifications } from '~/composables/useNotifications'
 import PendingReviewsList from '~/components/review/PendingReviewsList.vue'
 
 definePageMeta({
@@ -16,8 +15,6 @@ const {
   loading,
   error,
 } = useMilestones()
-const { showNotification } = useNotifications()
-
 // Load pending reviews with caching
 const { data: reviews, refresh } = await useAsyncData(
   'pending-reviews',
@@ -32,13 +29,7 @@ const handleRetry = async () => {
 }
 
 const handleActionComplete = async () => {
-  // Show success message
-  showNotification({
-    type: 'success',
-    message: 'Action completed successfully',
-    duration: 3000,
-  })
-  // Refresh the list
+  // Toast is owned by ApprovalFlow; only refresh the list here.
   await refreshPendingReviews()
   await refresh()
 }

@@ -11,6 +11,7 @@ import ClientApprovalFlow from './ClientApprovalFlow.vue'
 import PaymentConfirmDialog from '~/components/payment/PaymentConfirmDialog.vue'
 import PaymentReleaseDialog from '~/components/payment/PaymentReleaseDialog.vue'
 import { derivePaymentStatus } from '~/utils/statusMachine'
+import { milestoneMutationToastId } from '~/utils/mutationFeedback'
 import { formatCurrency } from '~/utils/formatters'
 
 interface Props {
@@ -161,15 +162,16 @@ const handlePaymentSubmit = async (payload: PaymentPayload) => {
   try {
     await payForMilestone(props.milestone.id, payload)
     paymentDialogOpen.value = false
-    notify.success(t('payment.success.message'))
+    notify.success(t('payment.success.message'), {
+      id: milestoneMutationToastId('pay', props.milestone.id),
+    })
     // Emit actionComplete only after success confirmed (decision #1 + patch #27)
     emits('actionComplete')
   } catch (error) {
-    if (notify) {
-      notify.error(t('payment.error.message'))
-    } else {
-      console.error('Payment error:', error)
-    }
+    console.error('Payment error:', error)
+    notify.error(t('payment.error.message'), {
+      id: milestoneMutationToastId('pay-error', props.milestone.id),
+    })
   } finally {
     isPaymentSubmitting.value = false
   }
@@ -217,7 +219,10 @@ const handleReleasePaymentConfirm = async () => {
     notify.success(
       t('payment.message.released', {
         amount: formatCurrency(props.milestone.amount || 0),
-      })
+      }),
+      {
+        id: milestoneMutationToastId('release', props.milestone.id),
+      }
     )
     emits('actionComplete')
   } catch (error) {

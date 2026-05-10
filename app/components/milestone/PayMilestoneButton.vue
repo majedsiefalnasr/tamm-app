@@ -5,6 +5,7 @@ import { useAuth } from '~/composables/useAuth'
 import { usePermission } from '~/composables/usePermission'
 import { useMilestones, type PaymentPayload } from '~/composables/useMilestones'
 import { useNotifications } from '~/composables/useNotifications'
+import { milestoneMutationToastId } from '~/utils/mutationFeedback'
 import { Button } from '~/components/ui/button'
 import PaymentConfirmDialog from '~/components/payment/PaymentConfirmDialog.vue'
 import type { Milestone } from '~/shared/types/project'
@@ -40,10 +41,14 @@ const handlePaymentSubmit = async (payload: PaymentPayload) => {
   try {
     await payForMilestone(props.milestone.id, payload)
     dialogOpen.value = false
-    notify.success(t('payment.success.message'))
+    notify.success(t('payment.success.message'), {
+      id: milestoneMutationToastId('pay', props.milestone.id),
+    })
   } catch (error) {
     console.error('Payment error:', error)
-    notify.error(t('payment.error.message'))
+    notify.error(t('payment.error.message'), {
+      id: milestoneMutationToastId('pay-error', props.milestone.id),
+    })
   } finally {
     isSubmitting.value = false
   }

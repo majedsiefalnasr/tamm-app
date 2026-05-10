@@ -26,6 +26,16 @@ import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
 import { Label } from '~/components/ui/label'
 import { Users, Columns2 } from 'lucide-vue-next'
 import UserTable from '~/components/admin/UserTable.vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 import type { Role } from '#shared/types/user'
 
 definePageMeta({
@@ -100,11 +110,36 @@ const handleEditUser = (userId: string) => {
   showCreateDialog.value = true
 }
 
-const handleToggleStatus = async (userId: string) => {
+const deactivateAlertOpen = ref(false)
+const deactivateTargetId = ref<string | null>(null)
+
+const handleToggleStatus = (userId: string) => {
   if (!can('toggle_user_status')) {
     return
   }
-  await toggleUserStatus(userId)
+  const user = users.value.find(u => u.id === userId)
+  if (!user) return
+  if (user.status === 'active') {
+    deactivateTargetId.value = userId
+    deactivateAlertOpen.value = true
+    return
+  }
+  void toggleUserStatus(userId)
+}
+
+function onDeactivateAlertOpenChange(open: boolean) {
+  deactivateAlertOpen.value = open
+  if (!open) {
+    deactivateTargetId.value = null
+  }
+}
+
+async function confirmDeactivateUser() {
+  const id = deactivateTargetId.value
+  if (!id) return
+  await toggleUserStatus(id)
+  deactivateAlertOpen.value = false
+  deactivateTargetId.value = null
 }
 
 const handleCreateUserDialogClose = () => {
@@ -305,5 +340,34 @@ const handleUserCreated = () => {
     >
       <p class="text-destructive text-sm">{{ error }}</p>
     </div>
+
+    <AlertDialog
+      :open="deactivateAlertOpen"
+      @update:open="onDeactivateAlertOpenChange"
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{
+            t('admin.users.deactivate_confirm.title')
+          }}</AlertDialogTitle>
+          <AlertDialogDescription>{{
+            t('admin.users.deactivate_confirm.description')
+          }}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{{
+            t('admin.users.deactivate_confirm.cancel')
+          }}</AlertDialogCancel>
+          <AlertDialogAction as-child>
+            <Button
+              variant="destructive"
+              @click.prevent="confirmDeactivateUser"
+            >
+              {{ t('admin.users.deactivate_confirm.confirm') }}
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

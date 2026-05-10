@@ -1,5 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
+
+vi.mock('vue-sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+  },
+}))
+
+import { toast } from 'vue-sonner'
 import { useNotifications } from './useNotifications'
 
 // Mock useApi
@@ -115,5 +126,14 @@ describe('useNotifications composable', () => {
     expect(typeof notify.success).toBe('function')
     expect(typeof notify.info).toBe('function')
     expect(typeof notify.warning).toBe('function')
+  })
+
+  it('forwards Sonner options from notify.success', () => {
+    const { notify } = useNotifications()
+    notify.success('saved', { id: 'mutation:save', duration: 1500 })
+    expect(toast.success).toHaveBeenCalledWith('saved', {
+      id: 'mutation:save',
+      duration: 1500,
+    })
   })
 })
