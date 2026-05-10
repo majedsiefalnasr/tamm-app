@@ -1,16 +1,72 @@
 import type { DashboardSummary } from '~/shared/types/admin'
 
+const P001 = '550e8400-e29b-41d4-a716-446655440001'
+const P003 = '550e8400-e29b-41d4-a716-446655440003'
+const P006 = '550e8400-e29b-41d4-a716-446655440006'
+const P011 = '550e8400-e29b-41d4-a716-446655440011'
+
 export const mockDashboardData: DashboardSummary = {
   summary_stats: {
     active_projects: 12,
-    total_contractors: 8,
-    total_tracked_value: 250000,
+    milestones_pending_review: 4,
+    payments_ready_for_release: 2,
+    projects_awaiting_contractor_selection: 3,
+    new_users_this_month: 7,
     open_disputes: 2,
   },
   urgent_actions: {
     new_projects: 3,
     pending_payments: 5,
     disputes: 2,
+    pending_reports: 4,
+  },
+  action_queues: {
+    open_bidding: [
+      {
+        id: 'aq-open-1',
+        kind: 'open_bidding',
+        title: 'إصلاح المدرسة الابتدائية',
+        subtitle: 'مشروع جديد — يتطلب فتح باب العروض',
+        project_id: P006,
+        action_href: `/projects/${P006}`,
+        action_label_key: 'admin.dashboard.actions.open_bidding',
+      },
+      {
+        id: 'aq-open-2',
+        kind: 'open_bidding',
+        title: 'ملعب كرة قدم بالعبور',
+        subtitle: 'مشروع جديد — يتطلب فتح باب العروض',
+        project_id: P011,
+        action_href: `/projects/${P011}`,
+        action_label_key: 'admin.dashboard.actions.open_bidding',
+      },
+    ],
+    assign_engineers: [
+      {
+        id: 'aq-assign-1',
+        kind: 'assign_engineers',
+        title: 'عمارة سكنية 6 طوابق',
+        subtitle: 'تم اختيار المقاول — عيّن مهندس الإشراف ومهندس الموقع',
+        project_id: P003,
+        action_href: `/projects/${P003}`,
+        action_label_key: 'admin.dashboard.actions.assign_engineers',
+      },
+    ],
+    release_payment: [
+      {
+        id: 'aq-pay-1',
+        kind: 'release_payment',
+        title: 'مشروع البناء الأول — مرحلة معتمدة',
+        subtitle: 'الدفع جاهز للإفراج للمقاول',
+        project_id: P001,
+        milestone_id: 'm1',
+        action_href: `/projects/${P001}/milestones/m1`,
+        action_label_key: 'admin.dashboard.actions.release_payment',
+      },
+    ],
+  },
+  super_admin_flags: {
+    pending_permission_requests: 2,
   },
   recent_projects: [
     {
@@ -126,33 +182,88 @@ export const mockDashboardData: DashboardSummary = {
       title: 'مشروع جديد: مشروع البناء الأول',
       timestamp: '2026-05-09T15:30:00Z',
       related_entity_id: 'uuid-1',
+      related_name: 'أحمد محمد',
     },
     {
       id: 'event-2',
-      type: 'milestone_approved',
-      title: 'حجر كريم معتمد: الأساسات في مشروع البناء الأول',
-      timestamp: '2026-05-08T12:00:00Z',
+      type: 'milestone_under_review',
+      title: 'تقرير مرفوع للمراجعة',
+      subtitle: 'الأساسات — مشروع البناء الأول',
+      timestamp: '2026-05-09T12:00:00Z',
       related_entity_id: 'uuid-1',
+      related_name: 'مشروع البناء الأول',
     },
     {
       id: 'event-3',
-      type: 'payment_released',
-      title: 'دفع أفرج عن: 50000 ريال لـ شركة البناء المتحدة',
-      timestamp: '2026-05-07T10:45:00Z',
+      type: 'milestone_approved',
+      title: 'مرحلة معتمدة نهائياً',
+      subtitle: 'الأساسات',
+      timestamp: '2026-05-08T12:00:00Z',
       related_entity_id: 'uuid-1',
+      related_name: 'مشروع البناء الأول',
     },
     {
       id: 'event-4',
-      type: 'user_created',
-      title: 'مستخدم جديد: أحمد علي (مهندس موقع)',
-      timestamp: '2026-05-06T09:20:00Z',
+      type: 'payment_released',
+      title: 'تم الإفراج عن دفعة',
+      subtitle: '50٬000 ج.م.',
+      timestamp: '2026-05-07T10:45:00Z',
+      related_entity_id: 'uuid-1',
+      related_name: 'شركة البناء المتحدة',
     },
     {
       id: 'event-5',
+      type: 'contractor_selected',
+      title: 'تم اختيار مقاول للمشروع',
+      subtitle: 'عمارة سكنية 6 طوابق',
+      timestamp: '2026-05-06T18:00:00Z',
+      related_entity_id: 'uuid-3',
+      related_name: 'محمد حسن',
+    },
+    {
+      id: 'event-6',
+      type: 'bidding_opened',
+      title: 'فتح باب العروض',
+      subtitle: 'مركز صحي بالمنوفية',
+      timestamp: '2026-05-06T09:20:00Z',
+      related_entity_id: 'uuid-2',
+    },
+    {
+      id: 'event-7',
+      type: 'user_created',
+      title: 'مستخدم جديد: مهندس موقع',
+      timestamp: '2026-05-06T09:20:00Z',
+      related_name: 'أحمد علي',
+    },
+    {
+      id: 'event-8',
       type: 'milestone_approved',
-      title: 'حجر كريم معتمد: الأعمال الكهربائية في مشروع الإسكان',
+      title: 'مرحلة معتمدة: الأعمال الكهربائية',
       timestamp: '2026-05-05T16:30:00Z',
       related_entity_id: 'uuid-2',
+      related_name: 'مشروع الإسكان الثاني',
+    },
+    {
+      id: 'event-9',
+      type: 'project_created',
+      title: 'مشروع جديد: مستودع صناعي',
+      timestamp: '2026-05-04T11:00:00Z',
+      related_name: 'عمرو الشرقاوي',
+    },
+    {
+      id: 'event-10',
+      type: 'milestone_under_review',
+      title: 'بانتظار مراجعة المشرف',
+      subtitle: 'الهيكل الخرساني',
+      timestamp: '2026-05-03T08:00:00Z',
+      related_name: 'مجمع تجاري بالجيزة',
+    },
+    {
+      id: 'event-11',
+      type: 'payment_released',
+      title: 'إفراج دفع تلقائي',
+      timestamp: '2026-05-02T14:00:00Z',
+      related_name: 'مقاولون الشرق',
     },
   ],
 }

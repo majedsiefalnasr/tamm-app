@@ -1,5 +1,9 @@
 # Deferred Work Items
 
+## Deferred from: code review of 08-05-admin-dashboard.md (2026-05-10)
+
+- **Admin disputes routes missing** — Dashboard and `DashboardDisputes` link to `/admin/disputes` and `/admin/disputes/:id`; implement pages or retarget when mediation UX exists.
+
 ## Deferred from: code review of 08-03-field-engineer-dashboard-and-assignments-page.md (2026-05-10)
 
 - **Field engineer milestone retry** — `handleRetryMilestones` remains a placeholder until `getMilestonesByFieldEngineer` is backed by a real fetch/refresh API (`useMilestones.ts` / `FieldEngineerDashboard.vue`).

@@ -1260,7 +1260,7 @@ All require authentication (admin level).
 ### `GET /admin/dashboard`
 
 **Status:** ⏳ Not Available (mock data in use)  
-**Purpose:** Get dashboard summary with stats, banners, recent activity
+**Purpose:** Get dashboard summary with KPIs, urgent banners, action queues, recent activity (Story 08-05)
 
 **Auth Required:** Yes (admin, super_admin)
 
@@ -1272,14 +1272,35 @@ All require authentication (admin level).
   "data": {
     "summary_stats": {
       "active_projects": 12,
-      "total_contractors": 8,
-      "total_tracked_value": 250000.0,
+      "milestones_pending_review": 4,
+      "payments_ready_for_release": 2,
+      "projects_awaiting_contractor_selection": 3,
+      "new_users_this_month": 7,
       "open_disputes": 2
     },
     "urgent_actions": {
       "new_projects": 3,
       "pending_payments": 5,
-      "disputes": 2
+      "disputes": 2,
+      "pending_reports": 4
+    },
+    "action_queues": {
+      "open_bidding": [
+        {
+          "id": "uuid",
+          "kind": "open_bidding",
+          "title": "School repair project",
+          "subtitle": "New project — open bidding",
+          "project_id": "uuid",
+          "action_href": "/projects/uuid",
+          "action_label_key": "admin.dashboard.actions.open_bidding"
+        }
+      ],
+      "assign_engineers": [],
+      "release_payment": []
+    },
+    "super_admin_flags": {
+      "pending_permission_requests": 0
     },
     "recent_projects": [
       {
@@ -1316,18 +1337,22 @@ All require authentication (admin level).
       {
         "id": "uuid",
         "type": "project_created",
-        "title": "مشروع جديد: مشروع البناء الأول",
+        "title": "New project created",
+        "subtitle": "Optional detail line",
         "timestamp": "2026-05-08T15:30:00Z",
-        "related_entity_id": "uuid"
+        "related_entity_id": "uuid",
+        "related_name": "Client name"
       }
     ]
   }
 }
 ```
 
-**Frontend Use:** Admin dashboard page  
+**`recent_events.type`:** `project_created` | `milestone_approved` | `payment_released` | `user_created` | `contractor_selected` | `bidding_opened` | `milestone_under_review`
+
+**Frontend Use:** Admin dashboard page (`/admin/dashboard`)  
 **Implemented:** ✅ Ready to build (mock data in use)  
-**Notes:** Using mock data — replace with real endpoint when available
+**Notes:** `super_admin_flags` may be omitted for `admin` role. Replace mock when Laravel exposes the endpoint.
 
 ---
 

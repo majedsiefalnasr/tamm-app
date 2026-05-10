@@ -1,6 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { AlertTriangle } from 'lucide-vue-next'
 import { useAdminDashboard } from '~/composables/useAdminDashboard'
+import DashboardBanners from '~/components/admin/DashboardBanners.vue'
+import DashboardStats from '~/components/admin/DashboardStats.vue'
+import DashboardActivity from '~/components/admin/DashboardActivity.vue'
+import DashboardProjects from '~/components/admin/DashboardProjects.vue'
+import DashboardDisputes from '~/components/admin/DashboardDisputes.vue'
+import DashboardActionQueues from '~/components/admin/DashboardActionQueues.vue'
+import DashboardRecentActivity from '~/components/admin/DashboardRecentActivity.vue'
+import DashboardSuperAdminSection from '~/components/admin/DashboardSuperAdminSection.vue'
+import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
   roles: ['admin', 'super_admin'],
@@ -8,9 +18,24 @@ definePageMeta({
   pageTitle: 'admin.dashboard.page_title',
 })
 
-const { loading, error, data, bannerCounts, stats, disputesStat, retry } =
-  useAdminDashboard()
+const auth = useAuthStore()
+
+const {
+  loading,
+  error,
+  data,
+  bannerCounts,
+  stats,
+  disputesStat,
+  actionQueues,
+  recentEventsFeed,
+  superAdminFlags,
+  retry,
+} = useAdminDashboard()
+
 const { t } = useI18n()
+
+const showSuperAdminSection = computed(() => auth.user?.role === 'super_admin')
 </script>
 
 <template>
@@ -41,8 +66,8 @@ const { t } = useI18n()
       v-if="error"
       class="border-destructive/30 bg-destructive/5 flex items-start gap-3 rounded-2xl border p-4"
     >
-      <AlertTriangle class="text-destructive mt-0.5 h-4 w-4 flex-shrink-0" />
-      <div class="flex-1">
+      <AlertTriangle class="text-destructive mt-0.5 h-4 w-4 shrink-0" />
+      <div class="min-w-0 flex-1">
         <p class="text-destructive font-semibold">
           {{ t('admin.dashboard.error') }}
         </p>
@@ -50,6 +75,7 @@ const { t } = useI18n()
           {{ error }}
         </p>
         <button
+          type="button"
           class="text-destructive hover:text-destructive/80 mt-2 text-sm font-medium transition"
           @click="retry"
         >
@@ -62,14 +88,26 @@ const { t } = useI18n()
     <DashboardBanners
       :new-projects="bannerCounts.newProjects"
       :pending-payments="bannerCounts.pendingPayments"
+      :pending-reports="bannerCounts.pendingReports"
       :disputes="bannerCounts.disputes"
     />
 
-    <!-- Platform Stats -->
+    <!-- Summary KPIs -->
     <DashboardStats
       :stats="stats"
       :disputes-stat="disputesStat"
       :loading="loading"
+    />
+
+    <!-- Epic 08-05 action queues -->
+    <DashboardActionQueues :queues="actionQueues" :loading="loading" />
+
+    <!-- Recent platform events -->
+    <DashboardRecentActivity :events="recentEventsFeed" :loading="loading" />
+
+    <DashboardSuperAdminSection
+      v-if="showSuperAdminSection"
+      :flags="superAdminFlags"
     />
 
     <!-- Activity Chart -->

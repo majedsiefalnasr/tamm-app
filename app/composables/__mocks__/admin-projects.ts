@@ -131,7 +131,7 @@ export const mockAdminProjects: AdminProjectOverviewItem[] = [
     created_at: '2026-04-28T12:30:00Z',
     milestones: [
       { id: 'm16', status: 'approved' },
-      { id: 'm17', status: 'in_progress' },
+      { id: 'm17', status: 'under_review' },
       { id: 'm18', status: 'not_started' },
     ],
   },

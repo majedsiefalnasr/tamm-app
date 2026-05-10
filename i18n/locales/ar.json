@@ -598,6 +598,9 @@
       "filter_all": "الكل",
       "filter_new": "جديد",
       "filter_active": "نشط",
+      "filter_open_for_bids": "مفتوح للعروض",
+      "filter_under_review": "قيد المراجعة",
+      "filter_contractor_selected": "تم اختيار مقاول",
       "filter_on_hold": "معلق",
       "filter_completed": "مكتمل",
       "table": {
@@ -658,6 +661,8 @@
         "new_projects_subtitle": "لديك {count} مشروع في انتظار المراجعة",
         "pending_payments_title": "أفرجات دفع معلقة",
         "pending_payments_subtitle": "لديك {count} دفعة جاهزة للإفراج",
+        "pending_reports_title": "تقارير بانتظار مراجعة المشرف",
+        "pending_reports_subtitle": "{count} مراحل لديها تقارير تحتاج متابعة",
         "disputes_title": "نزاعات مفتوحة",
         "disputes_subtitle": "لديك {count} نزاع يحتاج إلى وساطة",
         "view": "عرض"
@@ -666,7 +671,34 @@
         "active_projects": "مشاريع نشطة",
         "registered_contractors": "المقاولون المسجلون",
         "total_tracked_value": "إجمالي المبالغ المُتتبَّعة",
-        "open_disputes": "نزاعات مفتوحة"
+        "open_disputes": "نزاعات مفتوحة",
+        "milestones_pending_review": "مراحل بانتظار المراجعة",
+        "payments_ready_for_release": "مدفوعات جاهزة للإفراج",
+        "projects_awaiting_contractor_selection": "بانتظار اختيار المقاول",
+        "new_users_this_month": "مستخدمون جدد هذا الشهر"
+      },
+      "action_queues": {
+        "title": "قوائم الإجراءات",
+        "open_bidding_title": "فتح باب العروض",
+        "assign_engineers_title": "تعيين المهندسين",
+        "release_payment_title": "إفراج الدفع",
+        "empty_open_bidding": "لا توجد مشاريع في انتظار فتح العروض",
+        "empty_assign_engineers": "لا توجد مشاريع في انتظار تعيين المهندسين",
+        "empty_release_payment": "لا توجد مراحل في انتظار إفراج الدفع"
+      },
+      "actions": {
+        "open_bidding": "فتح باب العروض",
+        "assign_engineers": "تعيين المهندسين",
+        "release_payment": "إفراج الدفع"
+      },
+      "recent_activity": {
+        "title": "النشاط الأخير",
+        "empty": "لا يوجد نشاط حديث على المنصة"
+      },
+      "super_admin": {
+        "pending_permissions_title": "طلبات صلاحيات",
+        "pending_permissions_subtitle": "{count} طلب صلاحيات على مستوى المشرف العام",
+        "coordination_note": "اربط GET /admin/dashboard الحقل super_admin_flags عند توفر الـ API."
       },
       "activity": {
         "title": "نشاط المنصة",

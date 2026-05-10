@@ -26,11 +26,20 @@ test.describe('Admin Dashboard', () => {
     await page.goto('/admin/dashboard')
     await page.waitForLoadState('networkidle')
 
-    // Check for stats cards by data-testid
+    // KPI stat cards (Story 08-05)
     await expect(
       page.locator('[data-testid="stat-active-projects"]')
     ).toBeVisible()
-    await expect(page.locator('[data-testid="stat-contractors"]')).toBeVisible()
+    await expect(
+      page.locator('[data-testid="stat-pending-milestone-review"]')
+    ).toBeVisible()
+
+    await expect(
+      page.locator('[data-testid="action-queues-section"]')
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="recent-activity-section"]')
+    ).toBeVisible()
 
     // Check for activity section
     await expect(page.locator('[data-testid="activity-section"]')).toBeVisible()
@@ -109,8 +118,9 @@ test.describe('Admin Dashboard', () => {
     await page.goto('/admin/dashboard')
     await page.waitForLoadState('networkidle')
 
-    // Find stat card links by data-testid
-    const statLinks = page.locator('[data-testid^="stat-link-"]')
+    const statLinks = page.locator(
+      '[data-testid^="stat-"]:not([data-testid^="stat-skeleton"])'
+    )
     const count = await statLinks.count()
 
     // Should have at least some stat card links

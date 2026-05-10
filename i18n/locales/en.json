@@ -598,6 +598,9 @@
       "filter_all": "All",
       "filter_new": "New",
       "filter_active": "Active",
+      "filter_open_for_bids": "Open for bids",
+      "filter_under_review": "Under review",
+      "filter_contractor_selected": "Contractor selected",
       "filter_on_hold": "On Hold",
       "filter_completed": "Completed",
       "table": {
@@ -658,6 +661,8 @@
         "new_projects_subtitle": "You have {count} project awaiting review",
         "pending_payments_title": "Pending Payment Releases",
         "pending_payments_subtitle": "You have {count} payment ready for release",
+        "pending_reports_title": "Reports Pending Supervisor Review",
+        "pending_reports_subtitle": "{count} milestones have reports awaiting cross-project attention",
         "disputes_title": "Open Disputes",
         "disputes_subtitle": "You have {count} dispute needing mediation",
         "view": "View"
@@ -666,7 +671,34 @@
         "active_projects": "Active Projects",
         "registered_contractors": "Registered Contractors",
         "total_tracked_value": "Total Tracked Value",
-        "open_disputes": "Open Disputes"
+        "open_disputes": "Open Disputes",
+        "milestones_pending_review": "Milestones Pending Review",
+        "payments_ready_for_release": "Payments Ready for Release",
+        "projects_awaiting_contractor_selection": "Awaiting Contractor Selection",
+        "new_users_this_month": "New Users This Month"
+      },
+      "action_queues": {
+        "title": "Action queues",
+        "open_bidding_title": "Open bidding",
+        "assign_engineers_title": "Assign engineers",
+        "release_payment_title": "Release payment",
+        "empty_open_bidding": "No projects waiting to open bidding",
+        "empty_assign_engineers": "No projects waiting for engineer assignment",
+        "empty_release_payment": "No milestones waiting for payment release"
+      },
+      "actions": {
+        "open_bidding": "Open for bids",
+        "assign_engineers": "Assign engineers",
+        "release_payment": "Release payment"
+      },
+      "recent_activity": {
+        "title": "Recent activity",
+        "empty": "No recent platform events"
+      },
+      "super_admin": {
+        "pending_permissions_title": "Permission escalations",
+        "pending_permissions_subtitle": "{count} pending admin-level permission requests",
+        "coordination_note": "Connect to GET /admin/dashboard super_admin_flags when the API is ready."
       },
       "activity": {
         "title": "Platform Activity",

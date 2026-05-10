@@ -4,19 +4,44 @@ import type {
   AdminProjectOverviewItem,
   AdminProjectsResponse,
   AdminProjectStatus,
-  ProjectOverviewFilter,
 } from '#shared/types/project'
+import { derivePaymentStatus } from '~/utils/statusMachine'
 import { mockAdminProjects } from './__mocks__/admin-projects'
 
 const API_ENDPOINT = '/admin/projects'
 const USE_MOCK = true // Set to false when API is available
 const DEBOUNCE_MS = 300
 
+const STATUS_QUERY_VALUES: AdminProjectStatus[] = [
+  'all',
+  'new',
+  'open_for_bids',
+  'under_review',
+  'contractor_selected',
+  'active',
+  'on_hold',
+  'completed',
+]
+
+function statusFromRouteQuery(
+  raw: string | string[] | null | undefined
+): AdminProjectStatus | null {
+  const s = Array.isArray(raw) ? raw[0] : raw
+  if (!s) return null
+  return STATUS_QUERY_VALUES.includes(s as AdminProjectStatus)
+    ? (s as AdminProjectStatus)
+    : null
+}
+
 export function useAdminProjects() {
+  const route = useRoute()
+
   const projects = ref<AdminProjectOverviewItem[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const statusFilter = ref<AdminProjectStatus>('all')
+  const statusFilter = ref<AdminProjectStatus>(
+    statusFromRouteQuery(route.query.status) ?? 'all'
+  )
   const searchQuery = ref('')
   const currentPage = ref(1)
   const pagination = ref({
@@ -48,6 +73,30 @@ export function useAdminProjects() {
         p =>
           p.name.toLowerCase().includes(q) ||
           p.client.name.toLowerCase().includes(q)
+      )
+    }
+
+    const mq = route.query.milestone_review
+    const milestoneReviewOn =
+      mq === '1' ||
+      mq === 'true' ||
+      (Array.isArray(mq) && mq.some(v => v === '1' || v === 'true'))
+    if (milestoneReviewOn) {
+      filtered = filtered.filter(p =>
+        p.milestones.some(m => m.status === 'under_review')
+      )
+    }
+
+    const pr = route.query.payment_release
+    const paymentReleaseOn =
+      pr === '1' ||
+      pr === 'true' ||
+      (Array.isArray(pr) && pr.some(v => v === '1' || v === 'true'))
+    if (paymentReleaseOn) {
+      filtered = filtered.filter(p =>
+        p.milestones.some(
+          m => derivePaymentStatus(m.status) === 'ready_for_payout'
+        )
       )
     }
 
@@ -143,6 +192,19 @@ export function useAdminProjects() {
     currentPage.value = page
     fetchProjects()
   }
+
+  watch(
+    () => route.query,
+    () => {
+      const next = statusFromRouteQuery(route.query.status)
+      if (next !== null) {
+        statusFilter.value = next
+      }
+      currentPage.value = 1
+      fetchProjects()
+    },
+    { deep: true }
+  )
 
   // Summary card calculations — reflect FILTERED counts, not global
   const summaryCards = computed(() => {

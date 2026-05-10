@@ -1,6 +1,60 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { DashboardSummary, DashboardResponse } from '~/shared/types/admin'
+import type {
+  DashboardSummary,
+  DashboardResponse,
+  ActionQueues,
+  RecentEvent,
+  SuperAdminDashboardFlags,
+} from '~/shared/types/admin'
 import { mockDashboardData } from './__mocks__/admin-dashboard'
+
+function normalizeDashboardPayload(raw: DashboardSummary): DashboardSummary {
+  const ss = raw.summary_stats ?? {
+    active_projects: 0,
+    milestones_pending_review: 0,
+    payments_ready_for_release: 0,
+    projects_awaiting_contractor_selection: 0,
+    new_users_this_month: 0,
+    open_disputes: 0,
+  }
+  return {
+    ...raw,
+    summary_stats: {
+      active_projects: ss.active_projects ?? 0,
+      milestones_pending_review: ss.milestones_pending_review ?? 0,
+      payments_ready_for_release: ss.payments_ready_for_release ?? 0,
+      projects_awaiting_contractor_selection:
+        ss.projects_awaiting_contractor_selection ?? 0,
+      new_users_this_month: ss.new_users_this_month ?? 0,
+      open_disputes: ss.open_disputes ?? 0,
+    },
+    urgent_actions: {
+      new_projects: raw.urgent_actions?.new_projects ?? 0,
+      pending_payments: raw.urgent_actions?.pending_payments ?? 0,
+      disputes: raw.urgent_actions?.disputes ?? 0,
+      pending_reports: raw.urgent_actions?.pending_reports ?? 0,
+    },
+    action_queues: raw.action_queues ?? {
+      open_bidding: [],
+      assign_engineers: [],
+      release_payment: [],
+    },
+    recent_events: raw.recent_events ?? [],
+    recent_projects: raw.recent_projects ?? [],
+    open_disputes: raw.open_disputes ?? [],
+    activity_data: raw.activity_data ?? { months: [], data: [] },
+  }
+}
+
+export interface DashboardStatCard {
+  testId: string
+  titleKey: string
+  value: number
+  icon: string
+  tone: 'primary' | 'default' | 'accent' | 'danger' | 'success' | 'warning'
+  link: string
+  isCurrency?: boolean
+}
 
 export function useAdminDashboard() {
   const loading = ref(false)
@@ -8,56 +62,98 @@ export function useAdminDashboard() {
   const data = ref<DashboardSummary | null>(null)
   let abortController: AbortController | null = null
 
-  // TODO: replace with environment variable when API is ready
   const USE_MOCK = import.meta.env.DEV && !import.meta.env.VITE_API_READY
 
   const bannerCounts = computed(() => ({
     newProjects: data.value?.urgent_actions?.new_projects ?? 0,
     pendingPayments: data.value?.urgent_actions?.pending_payments ?? 0,
     disputes: data.value?.urgent_actions?.disputes ?? 0,
+    pendingReports: data.value?.urgent_actions?.pending_reports ?? 0,
   }))
 
-  const stats = computed(() => [
-    {
-      title: 'admin.dashboard.stats.active_projects',
-      value: data.value?.summary_stats?.active_projects ?? 0,
-      icon: 'FolderOpen',
-      tone: 'primary' as const,
-      link: '/admin/projects?status=active',
-    },
-    {
-      title: 'admin.dashboard.stats.registered_contractors',
-      value: data.value?.summary_stats?.total_contractors ?? 0,
-      icon: 'Users',
-      tone: 'default' as const,
-      link: '/admin/users?role=contractor',
-    },
-    {
-      title: 'admin.dashboard.stats.total_tracked_value',
-      value: data.value?.summary_stats?.total_tracked_value ?? 0,
-      icon: 'TrendingUp',
-      tone: 'accent' as const,
-      isCurrency: true,
-      link: '/admin/payments',
-    },
-  ])
+  const stats = computed((): DashboardStatCard[] => {
+    const s = data.value?.summary_stats
+    if (!s) {
+      return []
+    }
+    return [
+      {
+        testId: 'stat-active-projects',
+        titleKey: 'admin.dashboard.stats.active_projects',
+        value: s.active_projects,
+        icon: 'FolderOpen',
+        tone: 'primary',
+        link: '/admin/projects?status=active',
+      },
+      {
+        testId: 'stat-pending-milestone-review',
+        titleKey: 'admin.dashboard.stats.milestones_pending_review',
+        value: s.milestones_pending_review,
+        icon: 'ClipboardList',
+        tone: s.milestones_pending_review > 0 ? 'warning' : 'default',
+        link: '/admin/projects?milestone_review=1',
+      },
+      {
+        testId: 'stat-payments-ready-release',
+        titleKey: 'admin.dashboard.stats.payments_ready_for_release',
+        value: s.payments_ready_for_release,
+        icon: 'Banknote',
+        tone: 'accent',
+        link: '/admin/projects?payment_release=1',
+      },
+      {
+        testId: 'stat-awaiting-contractor-selection',
+        titleKey:
+          'admin.dashboard.stats.projects_awaiting_contractor_selection',
+        value: s.projects_awaiting_contractor_selection,
+        icon: 'Briefcase',
+        tone:
+          s.projects_awaiting_contractor_selection > 0 ? 'accent' : 'default',
+        link: '/admin/projects?status=under_review',
+      },
+      {
+        testId: 'stat-new-users-month',
+        titleKey: 'admin.dashboard.stats.new_users_this_month',
+        value: s.new_users_this_month,
+        icon: 'UserPlus',
+        tone: 'default',
+        link: '/admin/users',
+      },
+    ]
+  })
 
-  const disputesStat = computed(() => {
-    if (
-      !data.value?.summary_stats ||
-      !data.value.summary_stats.open_disputes ||
-      data.value.summary_stats.open_disputes === 0
-    ) {
+  const disputesStat = computed((): DashboardStatCard | null => {
+    const n = data.value?.summary_stats?.open_disputes
+    if (n === undefined || n === null || n === 0) {
       return null
     }
     return {
-      title: 'admin.dashboard.stats.open_disputes',
-      value: data.value.summary_stats.open_disputes,
+      testId: 'stat-open-disputes',
+      titleKey: 'admin.dashboard.stats.open_disputes',
+      value: n,
       icon: 'AlertCircle',
-      tone: 'danger' as const,
+      tone: 'danger',
       link: '/admin/disputes',
     }
   })
+
+  const actionQueues = computed(
+    (): ActionQueues =>
+      data.value?.action_queues ?? {
+        open_bidding: [],
+        assign_engineers: [],
+        release_payment: [],
+      }
+  )
+
+  const recentEventsFeed = computed((): RecentEvent[] => {
+    const events = data.value?.recent_events ?? []
+    return events.slice(0, 10)
+  })
+
+  const superAdminFlags = computed(
+    (): SuperAdminDashboardFlags | null => data.value?.super_admin_flags ?? null
+  )
 
   async function fetchDashboard() {
     loading.value = true
@@ -66,7 +162,6 @@ export function useAdminDashboard() {
 
     try {
       if (USE_MOCK) {
-        // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500))
         data.value = mockDashboardData
       } else {
@@ -80,18 +175,18 @@ export function useAdminDashboard() {
           throw new Error('Invalid API response: missing data')
         }
 
-        data.value = response.data
+        data.value = normalizeDashboardPayload(
+          response.data as DashboardSummary
+        )
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        // Request was cancelled, don't show error
         return
       }
 
       const { $t } = useI18n()
       const errorMessage = err instanceof Error ? err.message : 'Unknown error'
 
-      // Categorize error type for better debugging
       if (
         errorMessage.includes('401') ||
         errorMessage.includes('Unauthorized')
@@ -126,12 +221,10 @@ export function useAdminDashboard() {
     fetchDashboard()
   }
 
-  // Load data on composable creation
   onMounted(() => {
     fetchDashboard()
   })
 
-  // Clean up on unmount
   onUnmounted(() => {
     if (abortController) {
       abortController.abort()
@@ -145,6 +238,9 @@ export function useAdminDashboard() {
     bannerCounts,
     stats,
     disputesStat,
+    actionQueues,
+    recentEventsFeed,
+    superAdminFlags,
     fetchDashboard,
     retry,
   }

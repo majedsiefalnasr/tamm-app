@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { AlertCircle, AlertTriangle, Zap, Inbox } from 'lucide-vue-next'
+import { AlertTriangle, Zap, Inbox, FileWarning } from 'lucide-vue-next'
 
 interface Props {
   newProjects: number
   pendingPayments: number
   disputes: number
+  pendingReports?: number
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), {
+  pendingReports: 0,
+})
 
 const { t } = useI18n()
 </script>
@@ -72,8 +75,42 @@ const { t } = useI18n()
           </div>
         </div>
         <NuxtLink
-          to="/admin/payments?status=awaiting_release"
+          to="/admin/projects?payment_release=1"
           class="text-accent hover:text-accent/80 text-sm font-medium whitespace-nowrap"
+        >
+          {{ t('admin.dashboard.banners.view') }}
+        </NuxtLink>
+      </div>
+    </div>
+
+    <!-- Pending report reviews -->
+    <div
+      v-if="pendingReports > 0"
+      class="border-accent/30 bg-card shadow-card rounded-2xl border p-4"
+    >
+      <div class="flex items-start justify-between">
+        <div class="flex items-start gap-3">
+          <FileWarning
+            class="text-accent mt-0.5 h-4 w-4 flex-shrink-0"
+            aria-hidden="true"
+          />
+          <div>
+            <p class="text-foreground font-semibold">
+              {{ t('admin.dashboard.banners.pending_reports_title') }}
+            </p>
+            <p class="text-muted-foreground text-sm">
+              {{
+                t('admin.dashboard.banners.pending_reports_subtitle', {
+                  count: pendingReports,
+                })
+              }}
+            </p>
+          </div>
+        </div>
+        <NuxtLink
+          to="/admin/projects?milestone_review=1"
+          class="text-accent hover:text-accent/80 text-sm font-medium whitespace-nowrap"
+          data-testid="banner-pending-reports-link"
         >
           {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>

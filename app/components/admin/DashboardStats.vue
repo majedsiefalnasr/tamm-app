@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import { FolderOpen, Users, TrendingUp, AlertCircle } from 'lucide-vue-next'
+import {
+  FolderOpen,
+  AlertCircle,
+  ClipboardList,
+  Banknote,
+  UserPlus,
+  Briefcase,
+} from 'lucide-vue-next'
 import { Skeleton } from '../ui/skeleton'
-
-interface Stat {
-  title: string
-  value: number
-  icon: string
-  tone: 'primary' | 'default' | 'accent' | 'danger' | 'success' | 'warning'
-  isCurrency?: boolean
-  link?: string
-}
+import type { DashboardStatCard } from '~/composables/useAdminDashboard'
 
 interface Props {
-  stats: Stat[]
-  disputesStat: Stat | null
+  stats: DashboardStatCard[]
+  disputesStat: DashboardStatCard | null
   loading?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
@@ -25,9 +24,11 @@ const { t, locale } = useI18n()
 
 const iconMap = {
   FolderOpen,
-  Users,
-  TrendingUp,
   AlertCircle,
+  ClipboardList,
+  Banknote,
+  UserPlus,
+  Briefcase,
 }
 
 function getIcon(iconName: string) {
@@ -61,34 +62,48 @@ function formatValue(value: number, isCurrency?: boolean) {
   }
   return new Intl.NumberFormat(locale.value).format(value)
 }
+
+const gridClass =
+  'grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6'
 </script>
 
 <template>
-  <div
-    :class="[
-      'grid gap-4',
-      'grid-cols-1',
-      'md:grid-cols-2',
-      disputesStat ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
-    ]"
-  >
-    <NuxtLink
-      v-for="stat in stats"
-      :key="stat.title"
-      :to="stat.link || '#'"
-      :data-testid="`stat-link-${stat.title}`"
-      class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
-    >
-      <div class="space-y-3">
-        <div v-if="loading" class="space-y-3">
+  <div :class="gridClass">
+    <template v-if="loading">
+      <div
+        v-for="i in 5"
+        :key="`stat-skel-${i}`"
+        class="border-border bg-card shadow-card rounded-2xl border p-4"
+        :data-testid="`stat-skeleton-${i}`"
+      >
+        <div class="space-y-3">
           <Skeleton class="h-4 w-24" />
           <Skeleton class="h-8 w-16" />
         </div>
+      </div>
+      <div
+        class="border-border bg-card shadow-card rounded-2xl border p-4"
+        data-testid="stat-skeleton-disputes"
+      >
+        <div class="space-y-3">
+          <Skeleton class="h-4 w-28" />
+          <Skeleton class="h-8 w-12" />
+        </div>
+      </div>
+    </template>
 
-        <template v-else>
+    <template v-else>
+      <NuxtLink
+        v-for="stat in stats"
+        :key="stat.testId"
+        :to="stat.link"
+        :data-testid="stat.testId"
+        class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
+      >
+        <div class="space-y-3">
           <div class="flex items-start justify-between">
             <p class="text-muted-foreground text-sm font-medium">
-              {{ $t(stat.title) }}
+              {{ t(stat.titleKey) }}
             </p>
             <component
               :is="getIcon(stat.icon)"
@@ -98,31 +113,30 @@ function formatValue(value: number, isCurrency?: boolean) {
           <p class="text-ink text-2xl font-extrabold">
             {{ formatValue(stat.value, stat.isCurrency) }}
           </p>
-        </template>
-      </div>
-    </NuxtLink>
-
-    <!-- Disputes stat (optional, only show if count > 0) -->
-    <NuxtLink
-      v-if="disputesStat && !loading"
-      :to="disputesStat.link || '#'"
-      data-testid="stat-link-disputes"
-      class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
-    >
-      <div class="space-y-3">
-        <div class="flex items-start justify-between">
-          <p class="text-muted-foreground text-sm font-medium">
-            {{ $t(disputesStat.title) }}
-          </p>
-          <component
-            :is="getIcon(disputesStat.icon)"
-            :class="['h-4 w-4', toneClasses[disputesStat.tone]]"
-          />
         </div>
-        <p class="text-ink text-2xl font-extrabold">
-          {{ formatValue(disputesStat.value) }}
-        </p>
-      </div>
-    </NuxtLink>
+      </NuxtLink>
+
+      <NuxtLink
+        v-if="disputesStat"
+        :to="disputesStat.link"
+        :data-testid="disputesStat.testId"
+        class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
+      >
+        <div class="space-y-3">
+          <div class="flex items-start justify-between">
+            <p class="text-muted-foreground text-sm font-medium">
+              {{ t(disputesStat.titleKey) }}
+            </p>
+            <component
+              :is="getIcon(disputesStat.icon)"
+              :class="['h-4 w-4', toneClasses[disputesStat.tone]]"
+            />
+          </div>
+          <p class="text-ink text-2xl font-extrabold">
+            {{ formatValue(disputesStat.value) }}
+          </p>
+        </div>
+      </NuxtLink>
+    </template>
   </div>
 </template>
