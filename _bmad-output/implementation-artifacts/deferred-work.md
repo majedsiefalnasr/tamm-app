@@ -1,5 +1,11 @@
 # Deferred Work Items
 
+## Deferred from: code review of 08-01-client-dashboard.md (2026-05-10)
+
+- **StatCard primitive vs bespoke dashboard cards** — Story AC references `StatCard` from design-spec; repo has no shared `StatCard` component yet. `ProjectSummaryCards` and `DashboardPaymentSummary` use inline card markup until the primitive is added.
+
+- **Canonical URL wording (`/dashboard` vs `/dashboard/client`)** — Client-facing dashboard is served at `/dashboard/client` with `/dashboard` acting as a multi-role hub (same pattern as story 08-02). Treat as spec/documentation alignment, not a functional defect.
+
 ## Deferred from: code review of 07-06-admin-assigns-engineers-after-contractor-selection.md (2026-05-10)
 
 - **Activate project gated on engineer assignment (Story 02-05)** — Acceptance criteria called for disabling admin activate until both engineers are assigned with tooltip copy; project detail “Admin Actions” block remains a Story 02-05 placeholder. Implement when activation UI lands.

@@ -368,6 +368,8 @@
     "subtitle": "Manage your construction projects",
     "no_projects": "No Projects Yet",
     "no_projects_description": "You don't have any projects yet. Create one to get started.",
+    "filter_empty_title": "No matching projects",
+    "filter_empty_description": "No projects match this filter. Try viewing all projects.",
     "types": {
       "villa": "Villa",
       "apartment": "Apartment",

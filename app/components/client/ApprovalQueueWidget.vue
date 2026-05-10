@@ -12,6 +12,12 @@ const localError = ref<string | null>(null)
 
 const count = computed(() => pendingApprovals.value.length)
 
+const countBadgeClass = computed(() =>
+  count.value > 2
+    ? 'bg-destructive text-destructive-foreground'
+    : 'bg-primary text-primary-foreground'
+)
+
 onMounted(async () => {
   try {
     await getPendingApprovals()
@@ -50,7 +56,10 @@ const handleActionComplete = async () => {
       </h2>
       <div
         v-if="count > 0"
-        class="bg-destructive text-destructive-foreground inline-flex items-center justify-center rounded-full px-2.5 py-1 text-xs font-bold"
+        :class="[
+          countBadgeClass,
+          'inline-flex items-center justify-center rounded-full px-2.5 py-1 text-xs font-bold',
+        ]"
       >
         {{ count }}
       </div>

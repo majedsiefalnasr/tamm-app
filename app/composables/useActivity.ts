@@ -1,5 +1,4 @@
 import { ref, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 export interface ActivityEvent {
   id: string
@@ -16,7 +15,6 @@ export interface ActivityEvent {
 }
 
 export const useActivity = () => {
-  const { t } = useI18n()
   const activities = ref<ActivityEvent[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)

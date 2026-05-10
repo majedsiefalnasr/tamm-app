@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, computed } from 'vue'
 import ApprovalQueueWidget from '~/components/client/ApprovalQueueWidget.vue'
 import DashboardPaymentSummary from '~/components/dashboard/DashboardPaymentSummary.vue'
 import ProjectSummaryCards from '~/components/dashboard/ProjectSummaryCards.vue'
@@ -8,6 +8,7 @@ import { useProjects } from '~/composables/useProjects'
 import { useActivity } from '~/composables/useActivity'
 
 definePageMeta({
+  middleware: ['auth'],
   roles: ['client'],
   pageTitle: 'pages.client_dashboard',
 })
@@ -60,6 +61,7 @@ const projectsList = computed(() => projects.value || [])
         :activities="recentActivity"
         :is-loading="activityLoading"
         :has-error="!!activityError"
+        @retry="getRecentActivity"
       />
     </div>
   </div>

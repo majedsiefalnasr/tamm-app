@@ -9,6 +9,8 @@ import {
 import type { ActivityEvent } from '~/composables/useActivity'
 import PageSkeleton from '~/components/common/PageSkeleton.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
+import ErrorState from '~/components/common/ErrorState.vue'
+import { formatDate } from '~/utils/formatters'
 
 interface Props {
   activities?: ActivityEvent[]
@@ -21,6 +23,10 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   hasError: false,
 })
+
+const emit = defineEmits<{
+  retry: []
+}>()
 
 const { activities, isLoading, hasError } = props
 
@@ -35,20 +41,7 @@ const hasActivities = computed(() => activities.length > 0)
 const getIcon = (iconType: string) =>
   iconMap[iconType as keyof typeof iconMap] || FolderIcon
 
-const formatActivityDate = (date: Date) => {
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-  if (hours < 24) {
-    return hours === 0 ? 'اليوم' : `قبل ${hours} ساعة`
-  } else if (days < 7) {
-    return `قبل ${days} يوم`
-  } else {
-    return date.toLocaleDateString('ar-EG')
-  }
-}
+const formatActivityDate = (date: Date) => formatDate(date.toISOString())
 </script>
 
 <template>
@@ -62,14 +55,12 @@ const formatActivityDate = (date: Date) => {
     <PageSkeleton v-if="isLoading" />
 
     <!-- Error state -->
-    <div
+    <ErrorState
       v-else-if="hasError"
-      class="border-destructive/20 bg-destructive/5 rounded-2xl border p-4"
-    >
-      <p class="text-destructive text-sm">
-        {{ $t('errors.activity_load_failed') }}
-      </p>
-    </div>
+      :message="$t('errors.activity_load_failed')"
+      action-label="common.retry"
+      @action="emit('retry')"
+    />
 
     <!-- Empty state -->
     <EmptyState

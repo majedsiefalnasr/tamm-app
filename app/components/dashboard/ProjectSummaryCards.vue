@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { Skeleton } from '~/components/ui/skeleton'
 import type { Project } from '~/shared/types/project'
 
 interface Props {
@@ -30,8 +31,13 @@ const completedCount = computed(
       {{ $t('dashboard.client.projectsSection') }}
     </h2>
 
+    <!-- Loading skeleton -->
+    <div v-if="isLoading" class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <Skeleton v-for="n in 3" :key="n" class="h-28 rounded-2xl md:h-32" />
+    </div>
+
     <!-- 3-column StatCard grid -->
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <!-- Total Projects -->
       <NuxtLink
         to="/projects"
@@ -47,7 +53,7 @@ const completedCount = computed(
 
       <!-- Active Projects -->
       <NuxtLink
-        to="/projects?status=active"
+        to="/projects?filter=status:active"
         class="border-border bg-card shadow-card hover:bg-muted rounded-2xl border p-4 transition-colors md:p-6"
       >
         <p class="text-muted-foreground text-xs font-semibold uppercase">
@@ -60,7 +66,7 @@ const completedCount = computed(
 
       <!-- Completed Projects -->
       <NuxtLink
-        to="/projects?status=completed"
+        to="/projects?filter=status:completed"
         class="border-border bg-card shadow-card hover:bg-muted rounded-2xl border p-4 transition-colors md:p-6"
       >
         <p class="text-muted-foreground text-xs font-semibold uppercase">

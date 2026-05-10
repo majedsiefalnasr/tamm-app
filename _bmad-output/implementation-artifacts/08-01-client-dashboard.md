@@ -1,6 +1,6 @@
 # Story 08-01 — Client Dashboard
 
-**Status:** ready-for-dev  
+**Status:** done  
 **Epic:** 08 — Role-Based Dashboards  
 **Story ID:** 8.1  
 **Priority:** 🟢 HIGH — Core client-facing feature  
@@ -518,6 +518,21 @@ if (!canTransition('milestone', milestone.status, 'under_review')) {
 - [ ] Component follows `<script setup lang="ts">` pattern
 - [ ] Optimistic updates: approve/reject update store first, rollback on error
 - [ ] No unused imports or variables
+
+---
+
+### Review Findings
+
+_Code review (2026-05-10)._
+
+- [x] [Review][Patch] Recent activity timestamps used hardcoded Arabic strings instead of locale-aware formatting — fixed via `formatDate()` in `RecentActivitySection.vue`.
+- [x] [Review][Patch] Activity section error state lacked retry — wired `ErrorState` + `@retry` → `getRecentActivity` from `client.vue`.
+- [x] [Review][Patch] Project summary cards ignored `isLoading` — added three skeleton placeholders in `ProjectSummaryCards.vue`.
+- [x] [Review][Patch] Dashboard links used `?status=` while AC specifies `?filter=status:*`; projects list ignored query — normalized links and implemented filtering in `projects/index.vue` (+ i18n empty-filter copy).
+- [x] [Review][Patch] Approval queue header badge always destructive — primary tone when count ≤ 2, destructive when &gt; 2 per AC (`ApprovalQueueWidget.vue`).
+- [x] [Review][Patch] Client dashboard page missing explicit `middleware: ['auth']` and unused `ref` import — fixed in `client.vue`; removed unused `useI18n` import in `useActivity.ts`.
+- [x] [Review][Defer] Story AC references reusable `StatCard`; codebase has no `StatCard` component — dashboard cards remain bespoke markup until shared primitive exists [`ProjectSummaryCards.vue`, `DashboardPaymentSummary.vue`] — deferred, pre-existing design-system gap.
+- [x] [Review][Defer] AC text describes client dashboard at `/dashboard` only; implementation uses `/dashboard/client` with `/dashboard` hub redirect (consistent with Epic 08 contractor hub pattern). Documentation/spec wording alignment only — deferred.
 
 ---
 

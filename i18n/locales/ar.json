@@ -368,6 +368,8 @@
     "subtitle": "أدر مشاريعك الإنشائية",
     "no_projects": "لا توجد مشاريع حتى الآن",
     "no_projects_description": "ليس لديك أي مشاريع حتى الآن. أنشئ مشروعاً للبدء.",
+    "filter_empty_title": "لا توجد مشاريع مطابقة",
+    "filter_empty_description": "لا توجد مشاريع تطابق هذا التصفية. جرّب عرض كل المشاريع.",
     "types": {
       "villa": "فيلا",
       "apartment": "شقة",
