@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Skeleton } from '../ui/skeleton'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import type { ActionQueues } from '~/shared/types/admin'
 
 interface Props {
@@ -37,20 +38,22 @@ function emptyLabel(
 </script>
 
 <template>
-  <div
-    class="bg-card border-border shadow-card rounded-2xl border p-6"
+  <Card
+    class="shadow-card gap-4 rounded-2xl py-6 shadow-none"
     data-testid="action-queues-section"
   >
-    <h3 class="text-foreground mb-4 text-lg font-extrabold">
-      {{ t('admin.dashboard.action_queues.title') }}
-    </h3>
+    <CardHeader>
+      <CardTitle class="text-foreground text-lg font-extrabold">
+        {{ t('admin.dashboard.action_queues.title') }}
+      </CardTitle>
+    </CardHeader>
 
-    <div v-if="loading" class="space-y-4">
+    <CardContent v-if="loading" class="space-y-4">
       <Skeleton class="h-24 w-full" />
       <Skeleton class="h-24 w-full" />
-    </div>
+    </CardContent>
 
-    <div v-else class="space-y-8">
+    <CardContent v-else class="space-y-8">
       <section data-testid="action-queue-open-bidding">
         <h4 class="text-muted-foreground mb-2 text-sm font-semibold">
           {{ queueSectionTitle('open_bidding') }}
@@ -143,6 +146,6 @@ function emptyLabel(
           {{ emptyLabel('release_payment') }}
         </p>
       </section>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 </template>

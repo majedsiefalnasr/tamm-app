@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Card } from '~/components/ui/card'
 import type { ReportData } from '~/composables/useReports'
 import { formatDate } from '~/utils/formatters'
 
@@ -82,10 +83,10 @@ const handleReportClick = (projectId: string, milestoneId: string) => {
 
     <!-- Reports List -->
     <div v-else class="space-y-3">
-      <div
+      <Card
         v-for="report in reports"
         :key="report.id"
-        class="border-border/50 bg-card hover:shadow-elevated cursor-pointer rounded-2xl border p-4 transition-shadow"
+        class="border-border/50 hover:shadow-elevated cursor-pointer gap-0 rounded-2xl p-4 shadow-none transition-shadow"
         @click="handleReportClick(report.project_id, report.milestone_id)"
       >
         <!-- Milestone & Project Info -->
@@ -113,7 +114,7 @@ const handleReportClick = (projectId: string, milestoneId: string) => {
         >
           {{ getStatusLabel(report.current_milestone_status) }}
         </Badge>
-      </div>
+      </Card>
     </div>
   </div>
 </template>

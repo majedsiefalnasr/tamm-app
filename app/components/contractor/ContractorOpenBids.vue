@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import { Button } from '~/components/ui/button'
+import { Card } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
 import type { Project, ProposalData } from '~/shared/types/project'
@@ -55,20 +56,16 @@ const handleRetry = () => {
 
     <!-- Skeleton Loading State -->
     <div v-if="loading" class="grid gap-4 md:grid-cols-2">
-      <div
-        v-for="i in 2"
-        :key="i"
-        class="border-border bg-card rounded-2xl border p-4"
-      >
+      <Card v-for="i in 2" :key="i" class="gap-0 rounded-2xl p-4 shadow-none">
         <Skeleton class="mb-3 h-4 w-40" />
         <Skeleton class="h-8 w-24" />
-      </div>
+      </Card>
     </div>
 
     <!-- Error State -->
-    <div
+    <Card
       v-else-if="hasError"
-      class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+      class="border-destructive/30 bg-destructive/5 gap-0 rounded-2xl p-4 shadow-none"
     >
       <p class="text-destructive mb-3 text-sm font-medium">
         {{ errorMessage || $t('errors.failed_to_load') }}
@@ -76,24 +73,24 @@ const handleRetry = () => {
       <Button variant="outline" size="sm" @click="handleRetry">
         {{ $t('common.retry') }}
       </Button>
-    </div>
+    </Card>
 
     <!-- Empty State -->
-    <div
+    <Card
       v-else-if="projects.length === 0"
-      class="border-border/50 bg-card/50 rounded-2xl border p-6 text-center"
+      class="border-border/50 bg-card/50 gap-0 rounded-2xl p-6 text-center shadow-none"
     >
       <p class="text-muted-foreground text-sm">
         {{ $t('dashboard.contractor.noOpenBids') }}
       </p>
-    </div>
+    </Card>
 
     <!-- Open Bids Grid -->
     <div v-else class="grid gap-4 md:grid-cols-2">
-      <div
+      <Card
         v-for="project in projects"
         :key="project.id"
-        class="border-border bg-card shadow-card rounded-2xl border p-4"
+        class="shadow-card gap-0 rounded-2xl p-4 shadow-none"
       >
         <div class="flex flex-col gap-3">
           <!-- Project Header -->
@@ -147,7 +144,7 @@ const handleRetry = () => {
             {{ $t('dashboard.contractor.viewProposal') }}
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   </div>
 </template>

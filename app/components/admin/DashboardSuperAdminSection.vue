@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ShieldAlert } from 'lucide-vue-next'
+import { Card } from '../ui/card'
 import type { SuperAdminDashboardFlags } from '~/shared/types/admin'
 
 interface Props {
@@ -12,9 +13,9 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div
+  <Card
     v-if="flags && flags.pending_permission_requests > 0"
-    class="border-primary/30 bg-primary/5 rounded-2xl border p-5"
+    class="border-primary/30 bg-primary/5 gap-0 rounded-2xl p-5 shadow-none"
     data-testid="super-admin-flags-section"
   >
     <div class="flex items-start gap-3">
@@ -39,5 +40,5 @@ const { t } = useI18n()
         </p>
       </div>
     </div>
-  </div>
+  </Card>
 </template>

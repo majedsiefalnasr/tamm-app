@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Card } from '~/components/ui/card'
 import type { Project } from '~/shared/types/project'
 
 interface Props {
@@ -39,42 +40,45 @@ const completedCount = computed(
     <!-- 3-column StatCard grid -->
     <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <!-- Total Projects -->
-      <NuxtLink
-        to="/projects"
-        class="border-border bg-card shadow-card hover:bg-muted rounded-2xl border p-4 transition-colors md:p-6"
-      >
-        <p class="text-muted-foreground text-xs font-semibold uppercase">
-          {{ $t('dashboard.client.totalProjects') }}
-        </p>
-        <p class="text-primary mt-3 text-2xl font-extrabold md:text-3xl">
-          {{ totalCount }}
-        </p>
+      <NuxtLink to="/projects" class="block">
+        <Card
+          class="hover:bg-muted shadow-card gap-0 rounded-2xl p-4 shadow-none transition-colors md:p-6"
+        >
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ $t('dashboard.client.totalProjects') }}
+          </p>
+          <p class="text-primary mt-3 text-2xl font-extrabold md:text-3xl">
+            {{ totalCount }}
+          </p>
+        </Card>
       </NuxtLink>
 
       <!-- Active Projects -->
-      <NuxtLink
-        to="/projects?filter=status:active"
-        class="border-border bg-card shadow-card hover:bg-muted rounded-2xl border p-4 transition-colors md:p-6"
-      >
-        <p class="text-muted-foreground text-xs font-semibold uppercase">
-          {{ $t('dashboard.client.activeProjects') }}
-        </p>
-        <p class="text-accent mt-3 text-2xl font-extrabold md:text-3xl">
-          {{ activeCount }}
-        </p>
+      <NuxtLink to="/projects?filter=status:active" class="block">
+        <Card
+          class="hover:bg-muted shadow-card gap-0 rounded-2xl p-4 shadow-none transition-colors md:p-6"
+        >
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ $t('dashboard.client.activeProjects') }}
+          </p>
+          <p class="text-accent mt-3 text-2xl font-extrabold md:text-3xl">
+            {{ activeCount }}
+          </p>
+        </Card>
       </NuxtLink>
 
       <!-- Completed Projects -->
-      <NuxtLink
-        to="/projects?filter=status:completed"
-        class="border-border bg-card shadow-card hover:bg-muted rounded-2xl border p-4 transition-colors md:p-6"
-      >
-        <p class="text-muted-foreground text-xs font-semibold uppercase">
-          {{ $t('dashboard.client.completedProjects') }}
-        </p>
-        <p class="text-primary mt-3 text-2xl font-extrabold md:text-3xl">
-          {{ completedCount }}
-        </p>
+      <NuxtLink to="/projects?filter=status:completed" class="block">
+        <Card
+          class="hover:bg-muted shadow-card gap-0 rounded-2xl p-4 shadow-none transition-colors md:p-6"
+        >
+          <p class="text-muted-foreground text-xs font-semibold uppercase">
+            {{ $t('dashboard.client.completedProjects') }}
+          </p>
+          <p class="text-primary mt-3 text-2xl font-extrabold md:text-3xl">
+            {{ completedCount }}
+          </p>
+        </Card>
       </NuxtLink>
     </div>
   </div>

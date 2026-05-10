@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { AlertTriangle } from 'lucide-vue-next'
+import { Card } from '~/components/ui/card'
 import { useAdminDashboard } from '~/composables/useAdminDashboard'
 import DashboardBanners from '~/components/admin/DashboardBanners.vue'
 import DashboardStats from '~/components/admin/DashboardStats.vue'
@@ -55,9 +56,9 @@ const welcomeDateFormatted = computed(() => {
       </p>
     </div>
 
-    <div
+    <Card
       v-if="error"
-      class="border-destructive/30 bg-destructive/5 flex items-start gap-3 rounded-2xl border p-4"
+      class="border-destructive/30 bg-destructive/5 flex-row items-start gap-3 rounded-2xl p-4 shadow-none"
     >
       <AlertTriangle class="text-destructive mt-0.5 h-4 w-4 shrink-0" />
       <div class="min-w-0 flex-1">
@@ -75,7 +76,7 @@ const welcomeDateFormatted = computed(() => {
           {{ t('admin.dashboard.retry') }}
         </button>
       </div>
-    </div>
+    </Card>
 
     <DashboardBanners
       :new-projects="bannerCounts.newProjects"

@@ -8,6 +8,7 @@ import {
   Briefcase,
 } from 'lucide-vue-next'
 import { Skeleton } from '../ui/skeleton'
+import { Card } from '../ui/card'
 import type { DashboardStatCard } from '~/composables/useAdminDashboard'
 
 interface Props {
@@ -70,26 +71,22 @@ const gridClass =
 <template>
   <div :class="gridClass">
     <template v-if="loading">
-      <div
+      <Card
         v-for="i in 5"
         :key="`stat-skel-${i}`"
-        class="border-border bg-card shadow-card rounded-2xl border p-4"
+        class="shadow-card gap-3 rounded-2xl p-4 shadow-none"
         :data-testid="`stat-skeleton-${i}`"
       >
-        <div class="space-y-3">
-          <Skeleton class="h-4 w-24" />
-          <Skeleton class="h-8 w-16" />
-        </div>
-      </div>
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-4"
+        <Skeleton class="h-4 w-24" />
+        <Skeleton class="h-8 w-16" />
+      </Card>
+      <Card
+        class="shadow-card gap-3 rounded-2xl p-4 shadow-none"
         data-testid="stat-skeleton-disputes"
       >
-        <div class="space-y-3">
-          <Skeleton class="h-4 w-28" />
-          <Skeleton class="h-8 w-12" />
-        </div>
-      </div>
+        <Skeleton class="h-4 w-28" />
+        <Skeleton class="h-8 w-12" />
+      </Card>
     </template>
 
     <template v-else>
@@ -98,9 +95,11 @@ const gridClass =
         :key="stat.testId"
         :to="stat.link"
         :data-testid="stat.testId"
-        class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
+        class="block"
       >
-        <div class="space-y-3">
+        <Card
+          class="shadow-card gap-3 rounded-2xl p-4 shadow-none transition hover:shadow-md"
+        >
           <div class="flex items-start justify-between">
             <p class="text-muted-foreground text-sm font-medium">
               {{ t(stat.titleKey) }}
@@ -113,16 +112,18 @@ const gridClass =
           <p class="text-ink text-2xl font-extrabold">
             {{ formatValue(stat.value, stat.isCurrency) }}
           </p>
-        </div>
+        </Card>
       </NuxtLink>
 
       <NuxtLink
         v-if="disputesStat"
         :to="disputesStat.link"
         :data-testid="disputesStat.testId"
-        class="border-border bg-card shadow-card rounded-2xl border p-4 transition hover:shadow-md"
+        class="block"
       >
-        <div class="space-y-3">
+        <Card
+          class="shadow-card gap-3 rounded-2xl p-4 shadow-none transition hover:shadow-md"
+        >
           <div class="flex items-start justify-between">
             <p class="text-muted-foreground text-sm font-medium">
               {{ t(disputesStat.titleKey) }}
@@ -135,7 +136,7 @@ const gridClass =
           <p class="text-ink text-2xl font-extrabold">
             {{ formatValue(disputesStat.value) }}
           </p>
-        </div>
+        </Card>
       </NuxtLink>
     </template>
   </div>

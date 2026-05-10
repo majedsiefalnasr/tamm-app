@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { formatCurrency } from '~/utils/formatters'
 import { usePayments } from '~/composables/usePayments'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Card } from '~/components/ui/card'
 
 interface Props {
   totalCommitted?: number
@@ -38,9 +39,7 @@ const paidOut = computed(
   <div class="space-y-4">
     <!-- 3-column StatCard grid -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3" :aria-busy="loading">
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-4 md:p-6"
-      >
+      <Card class="shadow-card gap-0 rounded-2xl p-4 shadow-none md:p-6">
         <template v-if="loading">
           <Skeleton class="mb-3 h-3 w-32 rounded-md" />
           <Skeleton class="h-9 w-40 rounded-md" />
@@ -53,11 +52,9 @@ const paidOut = computed(
             {{ formatCurrency(committed) }}
           </p>
         </template>
-      </div>
+      </Card>
 
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-4 md:p-6"
-      >
+      <Card class="shadow-card gap-0 rounded-2xl p-4 shadow-none md:p-6">
         <template v-if="loading">
           <Skeleton class="mb-3 h-3 w-32 rounded-md" />
           <Skeleton class="h-9 w-40 rounded-md" />
@@ -72,11 +69,9 @@ const paidOut = computed(
             {{ formatCurrency(inEscrow) }}
           </p>
         </template>
-      </div>
+      </Card>
 
-      <div
-        class="border-border bg-card shadow-card rounded-2xl border p-4 md:p-6"
-      >
+      <Card class="shadow-card gap-0 rounded-2xl p-4 shadow-none md:p-6">
         <template v-if="loading">
           <Skeleton class="mb-3 h-3 w-32 rounded-md" />
           <Skeleton class="h-9 w-40 rounded-md" />
@@ -89,7 +84,7 @@ const paidOut = computed(
             {{ formatCurrency(paidOut) }}
           </p>
         </template>
-      </div>
+      </Card>
     </div>
   </div>
 </template>

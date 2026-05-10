@@ -9,6 +9,7 @@ import PageSkeleton from '~/components/common/PageSkeleton.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Card } from '~/components/ui/card'
 import { formatDate } from '~/utils/formatters'
 
 const {
@@ -95,19 +96,17 @@ const handleReviewActionComplete = async () => {
     <!-- KPI row -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <template v-if="supervisorBootstrap">
-        <div
+        <Card
           v-for="k in 3"
           :key="`kpi-skel-${k}`"
-          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
+          class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6"
         >
           <Skeleton class="mb-3 h-3 w-28 rounded-md" />
           <Skeleton class="h-9 w-16 rounded-md" />
-        </div>
+        </Card>
       </template>
       <template v-else>
-        <div
-          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-        >
+        <Card class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6">
           <p class="text-muted-foreground text-xs font-semibold uppercase">
             {{ $t('dashboard.supervisor.statPending') }}
           </p>
@@ -121,37 +120,33 @@ const handleReviewActionComplete = async () => {
           >
             {{ pendingReviewsCount }}
           </p>
-        </div>
-        <div
-          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-        >
+        </Card>
+        <Card class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6">
           <p class="text-muted-foreground text-xs font-semibold uppercase">
             {{ $t('dashboard.supervisor.statActiveProjects') }}
           </p>
           <p class="text-primary mt-3 text-2xl font-extrabold md:text-[28px]">
             {{ projectsLoading ? '—' : activeProjectsCount }}
           </p>
-        </div>
-        <div
-          class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-        >
+        </Card>
+        <Card class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6">
           <p class="text-muted-foreground text-xs font-semibold uppercase">
             {{ $t('dashboard.supervisor.statApprovedMonth') }}
           </p>
           <p class="text-accent mt-3 text-2xl font-extrabold md:text-[28px]">
             {{ supervisorApprovedThisMonthCount }}
           </p>
-        </div>
+        </Card>
       </template>
     </div>
 
     <!-- Pending reviews -->
     <section>
-      <div
+      <Card
         :class="
           showPendingBanner
-            ? 'border-danger/30 bg-danger/5 rounded-2xl border p-5 md:p-6'
-            : 'border-border bg-card shadow-card rounded-2xl border p-5 md:p-6'
+            ? 'border-danger/30 bg-danger/5 gap-0 rounded-2xl p-5 shadow-none md:p-6'
+            : 'shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6'
         "
       >
         <div
@@ -211,184 +206,188 @@ const handleReviewActionComplete = async () => {
             @action-complete="handleReviewActionComplete"
           />
         </div>
-      </div>
+      </Card>
     </section>
 
     <!-- Recent decisions -->
-    <section
-      class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-    >
-      <div
-        class="border-border mb-4 flex flex-wrap items-end justify-between gap-3 border-b pb-4"
-      >
-        <div>
-          <h2 class="text-ink text-lg font-extrabold">
-            {{ $t('dashboard.supervisor.recentTitle') }}
-          </h2>
-          <p class="text-muted-foreground mt-0.5 text-xs">
-            {{ $t('dashboard.supervisor.recentSubtitle') }}
+    <section>
+      <Card class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6">
+        <div
+          class="border-border mb-4 flex flex-wrap items-end justify-between gap-3 border-b pb-4"
+        >
+          <div>
+            <h2 class="text-ink text-lg font-extrabold">
+              {{ $t('dashboard.supervisor.recentTitle') }}
+            </h2>
+            <p class="text-muted-foreground mt-0.5 text-xs">
+              {{ $t('dashboard.supervisor.recentSubtitle') }}
+            </p>
+          </div>
+        </div>
+
+        <div v-if="supervisorBootstrap" class="space-y-4 py-2">
+          <Skeleton class="h-14 w-full rounded-xl" />
+          <Skeleton class="h-14 w-full rounded-xl" />
+          <Skeleton class="h-14 w-full rounded-xl" />
+        </div>
+        <div
+          v-else-if="supervisorRecentDecisionsTop.length === 0"
+          class="border-border rounded-2xl border border-dashed p-10 text-center"
+        >
+          <p class="text-ink text-sm font-bold">
+            {{ $t('dashboard.supervisor.recentEmpty') }}
           </p>
         </div>
-      </div>
-
-      <div v-if="supervisorBootstrap" class="space-y-4 py-2">
-        <Skeleton class="h-14 w-full rounded-xl" />
-        <Skeleton class="h-14 w-full rounded-xl" />
-        <Skeleton class="h-14 w-full rounded-xl" />
-      </div>
-      <div
-        v-else-if="supervisorRecentDecisionsTop.length === 0"
-        class="border-border rounded-2xl border border-dashed p-10 text-center"
-      >
-        <p class="text-ink text-sm font-bold">
-          {{ $t('dashboard.supervisor.recentEmpty') }}
-        </p>
-      </div>
-      <ul v-else class="divide-border divide-y">
-        <li
-          v-for="row in supervisorRecentDecisionsTop"
-          :key="`${row.milestoneId}-${row.decidedAt}`"
-          class="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0"
-        >
-          <div class="min-w-0 flex-1">
-            <p class="text-ink text-sm font-semibold">
-              {{ row.milestoneName }}
-            </p>
-            <p class="text-muted-foreground text-xs">
-              {{ row.projectName }}
-            </p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <Badge
-              :variant="row.decision === 'approved' ? 'default' : 'destructive'"
-            >
-              {{ $t(`dashboard.supervisor.decision.${row.decision}`) }}
-            </Badge>
-            <span class="text-muted-foreground text-xs">{{
-              formatDate(row.decidedAt)
-            }}</span>
-          </div>
-        </li>
-      </ul>
+        <ul v-else class="divide-border divide-y">
+          <li
+            v-for="row in supervisorRecentDecisionsTop"
+            :key="`${row.milestoneId}-${row.decidedAt}`"
+            class="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0"
+          >
+            <div class="min-w-0 flex-1">
+              <p class="text-ink text-sm font-semibold">
+                {{ row.milestoneName }}
+              </p>
+              <p class="text-muted-foreground text-xs">
+                {{ row.projectName }}
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <Badge
+                :variant="
+                  row.decision === 'approved' ? 'default' : 'destructive'
+                "
+              >
+                {{ $t(`dashboard.supervisor.decision.${row.decision}`) }}
+              </Badge>
+              <span class="text-muted-foreground text-xs">{{
+                formatDate(row.decidedAt)
+              }}</span>
+            </div>
+          </li>
+        </ul>
+      </Card>
     </section>
 
     <!-- My projects -->
-    <section
-      class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-    >
-      <div
-        class="border-border mb-4 flex flex-wrap items-end justify-between gap-3 border-b pb-4"
-      >
-        <div>
-          <h2 class="text-ink text-lg font-extrabold">
-            {{ $t('dashboard.supervisor.projectsTitle') }}
-          </h2>
-          <p class="text-muted-foreground mt-0.5 text-xs">
-            {{ $t('dashboard.supervisor.projectsSubtitle') }}
-          </p>
-        </div>
-        <NuxtLink
-          to="/projects"
-          class="text-primary text-xs font-bold hover:underline"
+    <section>
+      <Card class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6">
+        <div
+          class="border-border mb-4 flex flex-wrap items-end justify-between gap-3 border-b pb-4"
         >
-          {{ $t('dashboard.supervisor.viewProjects') }}
-        </NuxtLink>
-      </div>
-
-      <PageSkeleton
-        v-if="
-          supervisorBootstrap ||
-          (projectsLoading && supervisorProjects.length === 0)
-        "
-      />
-
-      <EmptyState
-        v-else-if="supervisorProjects.length === 0"
-        icon="folder"
-        :title="$t('dashboard.supervisor.projectsEmpty')"
-        :description="$t('dashboard.supervisor.projectsEmptyHint')"
-      />
-
-      <ul v-else class="space-y-4">
-        <li
-          v-for="p in supervisorProjects"
-          :key="p.id"
-          class="border-border rounded-2xl border p-4"
-        >
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div class="min-w-0">
-              <NuxtLink
-                :to="`/projects/${p.id}`"
-                class="text-ink text-sm font-semibold hover:underline"
-              >
-                {{ p.name }}
-              </NuxtLink>
-              <p class="text-muted-foreground text-xs">
-                {{ p.city }}
-              </p>
-            </div>
-            <Badge variant="outline">{{
-              $t(`project.status.${p.status}`)
-            }}</Badge>
-          </div>
-          <div class="mt-3">
-            <div
-              class="bg-muted h-2.5 overflow-hidden rounded-full"
-              role="progressbar"
-              :aria-valuenow="progressPercent(p)"
-              aria-valuemin="0"
-              aria-valuemax="100"
-            >
-              <div
-                class="from-primary bg-gradient-to-[inline-start] h-full rounded-full to-emerald-400"
-                :style="{ width: `${progressPercent(p)}%` }"
-              />
-            </div>
-            <p class="text-muted-foreground mt-1 text-[11px]">
-              {{
-                $t('dashboard.supervisor.progressLabel', {
-                  done: p.completed_milestones,
-                  total: p.total_milestones,
-                })
-              }}
+          <div>
+            <h2 class="text-ink text-lg font-extrabold">
+              {{ $t('dashboard.supervisor.projectsTitle') }}
+            </h2>
+            <p class="text-muted-foreground mt-0.5 text-xs">
+              {{ $t('dashboard.supervisor.projectsSubtitle') }}
             </p>
           </div>
-        </li>
-      </ul>
+          <NuxtLink
+            to="/projects"
+            class="text-primary text-xs font-bold hover:underline"
+          >
+            {{ $t('dashboard.supervisor.viewProjects') }}
+          </NuxtLink>
+        </div>
+
+        <PageSkeleton
+          v-if="
+            supervisorBootstrap ||
+            (projectsLoading && supervisorProjects.length === 0)
+          "
+        />
+
+        <EmptyState
+          v-else-if="supervisorProjects.length === 0"
+          icon="folder"
+          :title="$t('dashboard.supervisor.projectsEmpty')"
+          :description="$t('dashboard.supervisor.projectsEmptyHint')"
+        />
+
+        <ul v-else class="space-y-4">
+          <li
+            v-for="p in supervisorProjects"
+            :key="p.id"
+            class="border-border rounded-2xl border p-4"
+          >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0">
+                <NuxtLink
+                  :to="`/projects/${p.id}`"
+                  class="text-ink text-sm font-semibold hover:underline"
+                >
+                  {{ p.name }}
+                </NuxtLink>
+                <p class="text-muted-foreground text-xs">
+                  {{ p.city }}
+                </p>
+              </div>
+              <Badge variant="outline">{{
+                $t(`project.status.${p.status}`)
+              }}</Badge>
+            </div>
+            <div class="mt-3">
+              <div
+                class="bg-muted h-2.5 overflow-hidden rounded-full"
+                role="progressbar"
+                :aria-valuenow="progressPercent(p)"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div
+                  class="from-primary bg-gradient-to-[inline-start] h-full rounded-full to-emerald-400"
+                  :style="{ width: `${progressPercent(p)}%` }"
+                />
+              </div>
+              <p class="text-muted-foreground mt-1 text-[11px]">
+                {{
+                  $t('dashboard.supervisor.progressLabel', {
+                    done: p.completed_milestones,
+                    total: p.total_milestones,
+                  })
+                }}
+              </p>
+            </div>
+          </li>
+        </ul>
+      </Card>
     </section>
 
     <!-- Field team -->
-    <section
-      class="border-border bg-card shadow-card rounded-2xl border p-5 md:p-6"
-    >
-      <div class="border-border mb-4 border-b pb-4">
-        <h2 class="text-ink text-lg font-extrabold">
-          {{ $t('dashboard.supervisor.fieldTeamTitle') }}
-        </h2>
-        <p class="text-muted-foreground mt-0.5 text-xs">
-          {{ $t('dashboard.supervisor.fieldTeamSubtitle') }}
-        </p>
-      </div>
+    <section>
+      <Card class="shadow-card gap-0 rounded-2xl p-5 shadow-none md:p-6">
+        <div class="border-border mb-4 border-b pb-4">
+          <h2 class="text-ink text-lg font-extrabold">
+            {{ $t('dashboard.supervisor.fieldTeamTitle') }}
+          </h2>
+          <p class="text-muted-foreground mt-0.5 text-xs">
+            {{ $t('dashboard.supervisor.fieldTeamSubtitle') }}
+          </p>
+        </div>
 
-      <ul v-if="!supervisorBootstrap" class="divide-border divide-y">
-        <li
-          v-for="(row, idx) in fieldTeamRows"
-          :key="idx"
-          class="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0"
-        >
-          <div>
-            <p class="text-ink text-sm font-semibold">{{ row.engineerName }}</p>
-            <p class="text-muted-foreground text-xs">{{ row.projectName }}</p>
-          </div>
-          <span class="text-muted-foreground text-xs">{{
-            formatDate(row.lastReportAt)
-          }}</span>
-        </li>
-      </ul>
-      <div v-else class="space-y-4 py-2">
-        <Skeleton class="h-12 w-full rounded-xl" />
-        <Skeleton class="h-12 w-full rounded-xl" />
-      </div>
+        <ul v-if="!supervisorBootstrap" class="divide-border divide-y">
+          <li
+            v-for="(row, idx) in fieldTeamRows"
+            :key="idx"
+            class="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0"
+          >
+            <div>
+              <p class="text-ink text-sm font-semibold">
+                {{ row.engineerName }}
+              </p>
+              <p class="text-muted-foreground text-xs">{{ row.projectName }}</p>
+            </div>
+            <span class="text-muted-foreground text-xs">{{
+              formatDate(row.lastReportAt)
+            }}</span>
+          </li>
+        </ul>
+        <div v-else class="space-y-4 py-2">
+          <Skeleton class="h-12 w-full rounded-xl" />
+          <Skeleton class="h-12 w-full rounded-xl" />
+        </div>
+      </Card>
     </section>
   </div>
 </template>

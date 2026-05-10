@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Skeleton } from '../ui/skeleton'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import type { ActivityChartData } from '~/shared/types/admin'
 
 interface Props {
@@ -68,123 +69,127 @@ const hoveredIdx = ref<number | null>(null)
 </script>
 
 <template>
-  <div
-    class="bg-card border-border shadow-card rounded-2xl border p-6"
+  <Card
+    class="shadow-card gap-4 rounded-2xl py-6 shadow-none"
     data-testid="activity-section"
   >
-    <h3 class="text-foreground mb-4 text-lg font-extrabold">
-      {{ t('admin.dashboard.activity.title') }}
-    </h3>
+    <CardHeader>
+      <CardTitle class="text-foreground text-lg font-extrabold">
+        {{ t('admin.dashboard.activity.title') }}
+      </CardTitle>
+    </CardHeader>
 
-    <!-- Loading state -->
-    <div v-if="loading" class="space-y-3">
-      <Skeleton class="h-64 w-full" />
-    </div>
+    <CardContent>
+      <!-- Loading state -->
+      <div v-if="loading" class="space-y-3">
+        <Skeleton class="h-64 w-full" />
+      </div>
 
-    <!-- Chart -->
-    <template v-else-if="data && data.data.length > 0">
-      <div class="overflow-x-auto" data-testid="activity-chart">
-        <!-- Charts always flow LTR regardless of document direction -->
-        <svg
-          :width="chartWidth"
-          :height="chartHeight"
-          class="mx-auto"
-          style="direction: ltr"
-        >
-          <!-- Grid lines -->
-          <line
-            :x1="padding"
-            :y1="chartHeight - padding"
-            :x2="chartWidth - padding"
-            :y2="chartHeight - padding"
-            class="stroke-border"
-            stroke-width="1"
-          />
-
-          <!-- Area -->
-          <path :d="areaPathD" class="fill-primary/20" />
-
-          <!-- Line -->
-          <path
-            :d="pathD"
-            class="stroke-primary"
-            stroke-width="2"
-            fill="none"
-          />
-
-          <!-- Points -->
-          <template
-            v-for="(point, idx) in computedData.points"
-            :key="`point-${idx}`"
+      <!-- Chart -->
+      <template v-else-if="data && data.data.length > 0">
+        <div class="overflow-x-auto" data-testid="activity-chart">
+          <!-- Charts always flow LTR regardless of document direction -->
+          <svg
+            :width="chartWidth"
+            :height="chartHeight"
+            class="mx-auto"
+            style="direction: ltr"
           >
-            <circle
-              :cx="point.x"
-              :cy="point.y"
-              :r="hoveredIdx === idx ? 5 : 3"
-              :class="[
-                'transition-all',
-                hoveredIdx === idx ? 'fill-primary' : 'fill-primary/60',
-              ]"
-              @mouseenter="hoveredIdx = idx"
-              @mouseleave="hoveredIdx = null"
+            <!-- Grid lines -->
+            <line
+              :x1="padding"
+              :y1="chartHeight - padding"
+              :x2="chartWidth - padding"
+              :y2="chartHeight - padding"
+              class="stroke-border"
+              stroke-width="1"
             />
 
-            <!-- Tooltip -->
-            <g v-if="hoveredIdx === idx" :key="`tooltip-${idx}`">
-              <rect
-                :x="point.x - 40"
-                :y="point.y - 35"
-                width="80"
-                height="30"
-                rx="4"
-                ry="4"
-                class="fill-foreground"
-              />
-              <text
-                :x="point.x"
-                :y="point.y - 15"
-                text-anchor="middle"
-                fill="white"
-                font-size="12"
-                font-weight="bold"
-                :aria-label="`${point.month}: ${point.value} items`"
-              >
-                {{ point.value }}
-              </text>
-            </g>
-          </template>
+            <!-- Area -->
+            <path :d="areaPathD" class="fill-primary/20" />
 
-          <!-- X-axis labels -->
-          <template v-for="(month, idx) in data.months" :key="`label-${idx}`">
-            <text
-              :x="
-                data.months.length === 1
-                  ? chartWidth / 2
-                  : padding +
-                    (idx / (data.months.length - 1)) *
-                      (chartWidth - 2 * padding)
-              "
-              :y="chartHeight - padding + 20"
-              text-anchor="middle"
-              fill="currentColor"
-              font-size="12"
-              class="fill-muted-foreground"
+            <!-- Line -->
+            <path
+              :d="pathD"
+              class="stroke-primary"
+              stroke-width="2"
+              fill="none"
+            />
+
+            <!-- Points -->
+            <template
+              v-for="(point, idx) in computedData.points"
+              :key="`point-${idx}`"
             >
-              {{ month ? month.substring(0, 3) : 'N/A' }}
-            </text>
-          </template>
-        </svg>
-      </div>
-    </template>
+              <circle
+                :cx="point.x"
+                :cy="point.y"
+                :r="hoveredIdx === idx ? 5 : 3"
+                :class="[
+                  'transition-all',
+                  hoveredIdx === idx ? 'fill-primary' : 'fill-primary/60',
+                ]"
+                @mouseenter="hoveredIdx = idx"
+                @mouseleave="hoveredIdx = null"
+              />
 
-    <!-- Loaded successfully but no series points -->
-    <template v-else-if="data">
-      <p class="text-muted-foreground py-8 text-center">
-        {{ t('common.no_data') }}
-      </p>
-    </template>
+              <!-- Tooltip -->
+              <g v-if="hoveredIdx === idx" :key="`tooltip-${idx}`">
+                <rect
+                  :x="point.x - 40"
+                  :y="point.y - 35"
+                  width="80"
+                  height="30"
+                  rx="4"
+                  ry="4"
+                  class="fill-foreground"
+                />
+                <text
+                  :x="point.x"
+                  :y="point.y - 15"
+                  text-anchor="middle"
+                  fill="white"
+                  font-size="12"
+                  font-weight="bold"
+                  :aria-label="`${point.month}: ${point.value} items`"
+                >
+                  {{ point.value }}
+                </text>
+              </g>
+            </template>
 
-    <!-- Error / not yet available (parent may show error banner) -->
-    <div v-else class="min-h-[200px]" aria-hidden="true" />
-  </div>
+            <!-- X-axis labels -->
+            <template v-for="(month, idx) in data.months" :key="`label-${idx}`">
+              <text
+                :x="
+                  data.months.length === 1
+                    ? chartWidth / 2
+                    : padding +
+                      (idx / (data.months.length - 1)) *
+                        (chartWidth - 2 * padding)
+                "
+                :y="chartHeight - padding + 20"
+                text-anchor="middle"
+                fill="currentColor"
+                font-size="12"
+                class="fill-muted-foreground"
+              >
+                {{ month ? month.substring(0, 3) : 'N/A' }}
+              </text>
+            </template>
+          </svg>
+        </div>
+      </template>
+
+      <!-- Loaded successfully but no series points -->
+      <template v-else-if="data">
+        <p class="text-muted-foreground py-8 text-center">
+          {{ t('common.no_data') }}
+        </p>
+      </template>
+
+      <!-- Error / not yet available (parent may show error banner) -->
+      <div v-else class="min-h-[200px]" aria-hidden="true" />
+    </CardContent>
+  </Card>
 </template>

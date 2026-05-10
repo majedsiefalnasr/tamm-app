@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '~/components/ui/button'
+import { Card } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
 import type { Milestone } from '~/shared/types/project'
@@ -62,20 +63,16 @@ const badgeClass = (status: string) => {
 
     <!-- Skeleton Loading State -->
     <div v-if="loading" class="space-y-3">
-      <div
-        v-for="i in 2"
-        :key="i"
-        class="border-border bg-card rounded-2xl border p-4"
-      >
+      <Card v-for="i in 2" :key="i" class="gap-0 rounded-2xl p-4 shadow-none">
         <Skeleton class="mb-2 h-4 w-40" />
         <Skeleton class="h-3 w-32" />
-      </div>
+      </Card>
     </div>
 
     <!-- Error State -->
-    <div
+    <Card
       v-else-if="hasError"
-      class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+      class="border-destructive/30 bg-destructive/5 gap-0 rounded-2xl p-4 shadow-none"
     >
       <p class="text-destructive mb-3 text-sm font-medium">
         {{ errorMessage || $t('errors.failed_to_load') }}
@@ -83,24 +80,24 @@ const badgeClass = (status: string) => {
       <Button variant="outline" size="sm" @click="handleRetry">
         {{ $t('common.retry') }}
       </Button>
-    </div>
+    </Card>
 
     <!-- Empty State -->
-    <div
+    <Card
       v-else-if="milestones.length === 0"
-      class="border-border/50 bg-card/50 rounded-2xl border p-6 text-center"
+      class="border-border/50 bg-card/50 gap-0 rounded-2xl p-6 text-center shadow-none"
     >
       <p class="text-muted-foreground text-sm">
         {{ $t('dashboard.contractor.noUnderReview') }}
       </p>
-    </div>
+    </Card>
 
     <!-- Review Milestones List -->
     <div v-else class="space-y-3">
-      <div
+      <Card
         v-for="milestone in milestones"
         :key="milestone.id"
-        class="border-border/50 bg-card rounded-2xl border p-4 opacity-75"
+        class="border-border/50 gap-0 rounded-2xl p-4 opacity-75 shadow-none"
       >
         <div class="flex flex-col gap-2">
           <!-- Header: Milestone Name & Project -->
@@ -128,7 +125,7 @@ const badgeClass = (status: string) => {
             </Badge>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   </div>
 </template>

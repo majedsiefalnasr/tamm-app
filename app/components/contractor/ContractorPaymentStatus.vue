@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '~/components/ui/button'
+import { Card } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
 import { formatCurrency } from '~/utils/formatters'
 
@@ -45,20 +46,20 @@ const handleRetry = () => {
 
     <!-- Loading State -->
     <div v-if="loading" class="grid gap-4 md:grid-cols-2">
-      <div class="border-border bg-card rounded-2xl border p-6">
+      <Card class="gap-0 rounded-2xl p-6 shadow-none">
         <Skeleton class="mb-3 h-4 w-32" />
         <Skeleton class="h-8 w-40" />
-      </div>
-      <div class="border-border bg-card rounded-2xl border p-6">
+      </Card>
+      <Card class="gap-0 rounded-2xl p-6 shadow-none">
         <Skeleton class="mb-3 h-4 w-32" />
         <Skeleton class="h-8 w-40" />
-      </div>
+      </Card>
     </div>
 
     <!-- Error State -->
-    <div
+    <Card
       v-else-if="hasError"
-      class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+      class="border-destructive/30 bg-destructive/5 gap-0 rounded-2xl p-4 shadow-none"
     >
       <p class="text-destructive mb-3 text-sm font-medium">
         {{ errorMessage || $t('errors.failed_to_load') }}
@@ -66,22 +67,22 @@ const handleRetry = () => {
       <Button variant="outline" size="sm" @click="handleRetry">
         {{ $t('common.retry') }}
       </Button>
-    </div>
+    </Card>
 
     <!-- Empty State (null summary) -->
-    <div
+    <Card
       v-else-if="!summary"
-      class="border-border/50 bg-card/50 rounded-2xl border p-6 text-center"
+      class="border-border/50 bg-card/50 gap-0 rounded-2xl p-6 text-center shadow-none"
     >
       <p class="text-muted-foreground text-sm">
         {{ $t('dashboard.contractor.noPaymentData') }}
       </p>
-    </div>
+    </Card>
 
     <!-- Payment Cards -->
     <div v-else class="grid gap-4 md:grid-cols-2">
       <!-- Pending Amount Card -->
-      <div class="border-border bg-card shadow-card rounded-2xl border p-6">
+      <Card class="shadow-card gap-0 rounded-2xl p-6 shadow-none">
         <p
           class="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase"
         >
@@ -96,10 +97,10 @@ const handleRetry = () => {
         >
           {{ summary.pendingCount }} {{ $t('common.pending') }}
         </p>
-      </div>
+      </Card>
 
       <!-- Recently Received Card -->
-      <div class="border-border bg-card shadow-card rounded-2xl border p-6">
+      <Card class="shadow-card gap-0 rounded-2xl p-6 shadow-none">
         <p
           class="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase"
         >
@@ -108,7 +109,7 @@ const handleRetry = () => {
         <p class="text-primary text-xl font-bold">
           {{ formatCurrency(summary?.recentlyReceived || 0) }}
         </p>
-      </div>
+      </Card>
     </div>
 
     <!-- View All Payments Link -->

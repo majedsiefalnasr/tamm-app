@@ -2,6 +2,7 @@
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Card } from '~/components/ui/card'
 import { AlertTriangle } from 'lucide-vue-next'
 import type { Milestone } from '~/shared/types/project'
 
@@ -48,9 +49,9 @@ const handleSubmitReport = (
     </div>
 
     <!-- Error State -->
-    <div
+    <Card
       v-if="hasError"
-      class="border-destructive/30 bg-destructive/5 flex items-start gap-3 rounded-2xl border p-4"
+      class="border-destructive/30 bg-destructive/5 flex-row items-start gap-3 rounded-2xl p-4 shadow-none"
     >
       <AlertTriangle class="text-destructive mt-0.5 h-4 w-4 flex-shrink-0" />
       <div class="flex-1">
@@ -64,7 +65,7 @@ const handleSubmitReport = (
           {{ $t('buttons.retry') }}
         </Button>
       </div>
-    </div>
+    </Card>
 
     <!-- Loading State -->
     <div v-else-if="loading" class="space-y-3">
@@ -102,10 +103,10 @@ const handleSubmitReport = (
 
     <!-- Milestones Grid -->
     <div v-else class="space-y-3">
-      <div
+      <Card
         v-for="milestone in milestones"
         :key="milestone.id"
-        class="border-border bg-card shadow-card hover:shadow-elevated rounded-2xl border p-4 transition-shadow"
+        class="hover:shadow-elevated shadow-card gap-0 rounded-2xl p-4 shadow-none transition-shadow"
       >
         <!-- Project Info -->
         <div class="mb-3 flex flex-col gap-1">
@@ -143,7 +144,7 @@ const handleSubmitReport = (
         >
           {{ $t('dashboard.fieldEngineer.submitReport') }}
         </Button>
-      </div>
+      </Card>
     </div>
   </div>
 </template>

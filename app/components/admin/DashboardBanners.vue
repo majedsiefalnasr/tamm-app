@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AlertTriangle, Zap, Inbox, FileWarning } from 'lucide-vue-next'
+import { Card } from '../ui/card'
 
 interface Props {
   newProjects: number
@@ -18,9 +19,9 @@ const { t } = useI18n()
 <template>
   <div class="space-y-3">
     <!-- New Projects Banner -->
-    <div
+    <Card
       v-if="newProjects > 0"
-      class="border-primary/30 bg-card shadow-card rounded-2xl border p-4"
+      class="border-primary/30 shadow-card gap-0 rounded-2xl p-4 shadow-none"
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
@@ -48,12 +49,12 @@ const { t } = useI18n()
           {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
-    </div>
+    </Card>
 
     <!-- Pending Payments Banner -->
-    <div
+    <Card
       v-if="pendingPayments > 0"
-      class="border-accent/30 bg-card shadow-card rounded-2xl border p-4"
+      class="border-accent/30 shadow-card gap-0 rounded-2xl p-4 shadow-none"
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
@@ -81,12 +82,12 @@ const { t } = useI18n()
           {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
-    </div>
+    </Card>
 
     <!-- Pending report reviews -->
-    <div
+    <Card
       v-if="pendingReports > 0"
-      class="border-accent/30 bg-card shadow-card rounded-2xl border p-4"
+      class="border-accent/30 shadow-card gap-0 rounded-2xl p-4 shadow-none"
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
@@ -115,12 +116,12 @@ const { t } = useI18n()
           {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
-    </div>
+    </Card>
 
     <!-- Disputes Banner -->
-    <div
+    <Card
       v-if="disputes > 0"
-      class="border-destructive/30 bg-card shadow-card rounded-2xl border p-4"
+      class="border-destructive/30 shadow-card gap-0 rounded-2xl p-4 shadow-none"
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start gap-3">
@@ -148,6 +149,6 @@ const { t } = useI18n()
           {{ t('admin.dashboard.banners.view') }}
         </NuxtLink>
       </div>
-    </div>
+    </Card>
   </div>
 </template>

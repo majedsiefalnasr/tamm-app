@@ -67,20 +67,16 @@ const handleRetry = () => {
 
     <!-- Skeleton Loading State -->
     <div v-if="loading" class="space-y-3">
-      <div
-        v-for="i in 3"
-        :key="i"
-        class="border-border bg-card rounded-2xl border p-4"
-      >
+      <Card v-for="i in 3" :key="i" class="gap-0 rounded-2xl p-4 shadow-none">
         <Skeleton class="mb-2 h-4 w-40" />
         <Skeleton class="h-3 w-32" />
-      </div>
+      </Card>
     </div>
 
     <!-- Error State -->
-    <div
+    <Card
       v-else-if="hasError"
-      class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+      class="border-destructive/30 bg-destructive/5 gap-0 rounded-2xl p-4 shadow-none"
     >
       <p class="text-destructive mb-3 text-sm font-medium">
         {{ errorMessage || $t('errors.failed_to_load') }}
@@ -88,7 +84,7 @@ const handleRetry = () => {
       <Button variant="outline" size="sm" @click="handleRetry">
         {{ $t('common.retry') }}
       </Button>
-    </div>
+    </Card>
 
     <!-- Empty State -->
     <Empty
@@ -108,10 +104,10 @@ const handleRetry = () => {
 
     <!-- Active Milestones List -->
     <div v-else class="space-y-3">
-      <div
+      <Card
         v-for="milestone in sortedMilestones"
         :key="milestone.id"
-        class="border-border bg-card shadow-card hover:shadow-elevated cursor-pointer rounded-2xl border p-4 transition-shadow"
+        class="hover:shadow-elevated shadow-card cursor-pointer gap-0 rounded-2xl p-4 shadow-none transition-shadow"
         @click="
           handleMilestoneClick(
             milestone.project_id || milestone.project?.id || '',
@@ -148,7 +144,7 @@ const handleRetry = () => {
             </Badge>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   </div>
 </template>
