@@ -803,7 +803,11 @@
       "assigningMessage": "جاري تعيين المهندسين...",
       "successMessage": "تم تعيين المهندسين بنجاح",
       "loadingError": "فشل تحميل قائمة المهندسين",
-      "selectBothError": "يجب اختيار كلا المهندسين"
+      "selectBothError": "يجب اختيار كلا المهندسين",
+      "saveError": "فشل حفظ التعيين. يرجى المحاولة مرة أخرى",
+      "emptyListsMessage": "لا يوجد مهندسون متاحون بعد. أضف مهندسين مشرفين وميدانيين أولاً.",
+      "noSupervisorsMessage": "لا يوجد مهندسون مشرفون متاحون.",
+      "noFieldEngineersMessage": "لا يوجد مهندسون ميدانيون متاحون."
     }
   }
 }

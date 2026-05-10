@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { Loader2 } from 'lucide-vue-next'
 import type { Engineer } from '~/shared/types/project'
 import { Button } from '~/components/ui/button'
 import { Label } from '~/components/ui/label'
@@ -28,13 +29,15 @@ interface Props {
 
 interface Emits {
   (e: 'close'): void
-  (e: 'save', supervisorId: string, fieldEngineerId: string): void
+  (e: 'assigned'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {})
 const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
+const { assignEngineers } = useProjects()
+const { notify } = useNotifications()
 
 const selectedSupervisor = ref<string | null>(null)
 const selectedFieldEngineer = ref<string | null>(null)
@@ -74,19 +77,33 @@ const handleSave = async () => {
   }
 
   saving.value = true
+  error.value = null
 
   try {
-    await emit('save', selectedSupervisor.value!, selectedFieldEngineer.value!)
+    const result = await assignEngineers(
+      props.projectId,
+      selectedSupervisor.value!,
+      selectedFieldEngineer.value!
+    )
+
+    if (result.success) {
+      notify.success(t('projects.assignEngineers.successMessage'))
+      emit('assigned')
+      emit('close')
+    } else {
+      const msg = result.error || t('projects.assignEngineers.saveError')
+      error.value = msg
+      notify.error(msg)
+    }
   } finally {
     saving.value = false
   }
 }
 
-const handleClose = () => {
-  selectedSupervisor.value = null
-  selectedFieldEngineer.value = null
-  error.value = null
-  emit('close')
+const onOpenChange = (open: boolean) => {
+  if (!open) {
+    emit('close')
+  }
 }
 
 watch(
@@ -97,13 +114,17 @@ watch(
       selectedFieldEngineer.value = props.currentFieldEngineerId || null
       error.value = null
       await fetchEngineers()
+    } else {
+      selectedSupervisor.value = null
+      selectedFieldEngineer.value = null
+      error.value = null
     }
   }
 )
 </script>
 
 <template>
-  <Dialog :open="isOpen" @update:open="handleClose">
+  <Dialog :open="isOpen" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>{{
@@ -124,6 +145,13 @@ watch(
       <div v-if="loading" class="space-y-4 py-4">
         <Skeleton class="h-10 w-full" />
         <Skeleton class="h-10 w-full" />
+      </div>
+
+      <div
+        v-else-if="supervisors.length === 0 && fieldEngineers.length === 0"
+        class="text-muted-foreground py-4 text-sm"
+      >
+        {{ t('projects.assignEngineers.emptyListsMessage') }}
       </div>
 
       <div v-else class="space-y-4 py-4">
@@ -147,6 +175,12 @@ watch(
               </SelectItem>
             </SelectContent>
           </Select>
+          <p
+            v-if="supervisors.length === 0"
+            class="text-muted-foreground text-xs"
+          >
+            {{ t('projects.assignEngineers.noSupervisorsMessage') }}
+          </p>
         </div>
 
         <div class="space-y-2">
@@ -169,16 +203,24 @@ watch(
               </SelectItem>
             </SelectContent>
           </Select>
+          <p
+            v-if="fieldEngineers.length === 0"
+            class="text-muted-foreground text-xs"
+          >
+            {{ t('projects.assignEngineers.noFieldEngineersMessage') }}
+          </p>
         </div>
       </div>
 
       <div class="flex justify-end gap-3 pt-4">
-        <Button variant="outline" :disabled="saving" @click="handleClose">
+        <Button variant="outline" :disabled="saving" @click="emit('close')">
           {{ t('buttons.cancel') }}
         </Button>
         <Button :disabled="!canSave || saving || loading" @click="handleSave">
           <template v-if="saving">
-            <span class="me-2">⏳</span>
+            <Loader2
+              class="text-muted-foreground me-2 inline size-4 animate-spin"
+            />
             {{ t('projects.assignEngineers.assigningMessage') }}
           </template>
           <template v-else>

@@ -803,7 +803,11 @@
       "assigningMessage": "Assigning engineers...",
       "successMessage": "Engineers assigned successfully",
       "loadingError": "Failed to load engineers list",
-      "selectBothError": "Both engineers must be selected"
+      "selectBothError": "Both engineers must be selected",
+      "saveError": "Failed to save assignment. Please try again.",
+      "emptyListsMessage": "No engineers are available yet. Add supervisor and field engineers first.",
+      "noSupervisorsMessage": "No supervisor engineers available.",
+      "noFieldEngineersMessage": "No field engineers available."
     }
   }
 }

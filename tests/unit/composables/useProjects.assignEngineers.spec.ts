@@ -1,126 +1,162 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useProjects } from '~/app/composables/useProjects'
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest'
+import type { ApiError } from '~/composables/useApi'
+import { useApi } from '~/composables/useApi'
+
+vi.mock('~/composables/useApi')
+
+const mockedUseApi = vi.mocked(useApi)
+
+let useProjects: typeof import('~/composables/useProjects').useProjects
+
+beforeAll(async () => {
+  vi.stubGlobal(
+    'useAuthStore',
+    vi.fn(() => ({
+      user: {
+        id: 'user-123',
+        name: 'Test User',
+        email: 'test@example.com',
+        role: 'admin',
+      },
+      token: null as string | null,
+    }))
+  )
+  ;({ useProjects } = await import('~/composables/useProjects'))
+})
 
 describe('useProjects.assignEngineers', () => {
-  let projectsComposable: ReturnType<typeof useProjects>
+  let composable: ReturnType<typeof useProjects>
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
-    projectsComposable = useProjects()
+    mockedUseApi.mockResolvedValue({
+      success: true,
+      data: {
+        supervisor_engineer_id: 'eng-001',
+        field_engineer_id: 'eng-002',
+        supervisor_engineer: { id: 'eng-001', name: 'Khaled Ibrahim' },
+        field_engineer: { id: 'eng-002', name: 'Mohammed Hassan' },
+      },
+    })
+    composable = useProjects()
   })
 
-  it('should assign engineers to a project in contractor_selected status', async () => {
-    // Setup a project in contractor_selected status
-    const projectId = 'proj-001'
-    const supervisorId = 'eng-001'
-    const fieldEngineerId = 'eng-002'
-
-    // Need to mock useProjects to include a contractor_selected project
-    const mockProjects = {
-      'proj-contractor': {
-        id: 'proj-contractor',
-        status: 'contractor_selected',
-        supervisor_engineer_id: undefined,
-        field_engineer_id: undefined,
-      },
-    }
-
-    const result = await projectsComposable.assignEngineers(
-      'proj-contractor',
-      supervisorId,
-      fieldEngineerId
+  it('calls assign-engineers API with contract body', async () => {
+    const result = await composable.assignEngineers(
+      'proj-002',
+      'eng-001',
+      'eng-002'
     )
 
     expect(result.success).toBe(true)
+    expect(mockedUseApi).toHaveBeenCalledWith(
+      '/admin/projects/proj-002/assign-engineers',
+      {
+        method: 'POST',
+        body: {
+          supervisor_engineer_id: 'eng-001',
+          field_engineer_id: 'eng-002',
+        },
+      }
+    )
   })
 
-  it('should fail when project does not exist', async () => {
-    const result = await projectsComposable.assignEngineers(
-      'non-existent-project',
+  it('merges engineer names from API data into project detail', async () => {
+    await composable.assignEngineers('proj-002', 'eng-001', 'eng-002')
+
+    const updated = await composable.getProjectById('proj-002')
+    expect(updated.supervisor_engineer_id).toBe('eng-001')
+    expect(updated.field_engineer_id).toBe('eng-002')
+    expect(updated.supervisor_name).toBe('Khaled Ibrahim')
+    expect(updated.field_engineer_name).toBe('Mohammed Hassan')
+  })
+
+  it('returns failure for non-existent project', async () => {
+    const result = await composable.assignEngineers(
+      'invalid-project',
       'eng-001',
       'eng-002'
     )
 
     expect(result.success).toBe(false)
-    expect(result.error).toContain('not found')
+    if (!result.success) {
+      expect(result.error).toContain('not found')
+    }
+    expect(mockedUseApi).not.toHaveBeenCalled()
   })
 
-  it('should fail when project status is not contractor_selected', async () => {
-    // This test would need a properly mocked project in different status
-    const result = await projectsComposable.assignEngineers(
+  it('rejects when project status is not contractor_selected', async () => {
+    const result = await composable.assignEngineers(
       'proj-001',
       'eng-001',
       'eng-002'
     )
 
-    // proj-001 is 'active' in the mock, so this should fail
-    if (result.success === false) {
-      expect(result.error).toContain('contractor_selected')
-    }
+    expect(result.success).toBe(false)
+    expect(mockedUseApi).not.toHaveBeenCalled()
   })
 
-  it('should return engineer objects after assignment', async () => {
-    // Verify that engineer objects are populated correctly
-    const result = await projectsComposable.assignEngineers(
-      'proj-contractor',
+  it('rejects empty engineer ids before calling API', async () => {
+    const result = await composable.assignEngineers('proj-002', '', 'eng-002')
+
+    expect(result.success).toBe(false)
+    expect(mockedUseApi).not.toHaveBeenCalled()
+  })
+
+  it('rolls back assignments when API returns a logical failure', async () => {
+    const before = await composable.getProjectById('proj-002')
+
+    mockedUseApi.mockResolvedValueOnce({
+      success: false,
+      data: {} as never,
+      message: 'Validation failed',
+    })
+
+    const result = await composable.assignEngineers(
+      'proj-002',
       'eng-001',
       'eng-002'
+    )
+
+    expect(result.success).toBe(false)
+    const after = await composable.getProjectById('proj-002')
+    expect(after.supervisor_engineer_id).toBe(before.supervisor_engineer_id)
+    expect(after.field_engineer_id).toBe(before.field_engineer_id)
+  })
+
+  it('rolls back assignments when API throws', async () => {
+    const before = await composable.getProjectById('proj-002')
+
+    const apiErr = new Error('Server error') as ApiError
+    apiErr.statusCode = 500
+    mockedUseApi.mockRejectedValueOnce(apiErr)
+
+    const result = await composable.assignEngineers(
+      'proj-002',
+      'eng-001',
+      'eng-002'
+    )
+
+    expect(result.success).toBe(false)
+    const after = await composable.getProjectById('proj-002')
+    expect(after.supervisor_engineer_id).toBe(before.supervisor_engineer_id)
+    expect(after.field_engineer_id).toBe(before.field_engineer_id)
+  })
+
+  it('keeps optimistic assignment when API is unavailable (mock fallback)', async () => {
+    const apiErr = new Error('Not Found') as ApiError
+    apiErr.statusCode = 404
+    mockedUseApi.mockRejectedValueOnce(apiErr)
+
+    const result = await composable.assignEngineers(
+      'proj-002',
+      'eng-003',
+      'eng-004'
     )
 
     expect(result.success).toBe(true)
-    // The engineer objects should be populated from mock data
-  })
-
-  it('should handle API errors gracefully and rollback', async () => {
-    // This test would need to mock API failure
-    // Test that state is rolled back on error
-    const result = await projectsComposable.assignEngineers(
-      'proj-contractor',
-      'eng-001',
-      'eng-002'
-    )
-
-    // On success, no rollback
-    if (result.success) {
-      expect(result.error).toBeUndefined()
-    }
-  })
-
-  it('should validate that both engineers are required fields', async () => {
-    // Verify that empty IDs are not allowed
-    // This would require validation at API level or UI level
-    const result = await projectsComposable.assignEngineers(
-      'proj-contractor',
-      '',
-      'eng-002'
-    )
-
-    // Result depends on backend validation
-    expect(result).toBeDefined()
-  })
-
-  it('should update project state optimistically', async () => {
-    const result = await projectsComposable.assignEngineers(
-      'proj-contractor',
-      'eng-001',
-      'eng-002'
-    )
-
-    if (result.success) {
-      // Verify that the project's engineer fields are updated
-      expect(result.success).toBe(true)
-    }
-  })
-
-  it('should preserve other project fields during assignment', async () => {
-    // Verify that assignment doesn't overwrite other project data
-    const result = await projectsComposable.assignEngineers(
-      'proj-contractor',
-      'eng-001',
-      'eng-002'
-    )
-
-    expect(result).toBeDefined()
-    // All other fields should remain unchanged
+    const updated = await composable.getProjectById('proj-002')
+    expect(updated.supervisor_engineer_id).toBe('eng-003')
+    expect(updated.field_engineer_id).toBe('eng-004')
   })
 })

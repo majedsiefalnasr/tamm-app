@@ -1,6 +1,6 @@
 # Story 07-06 — Admin Assigns Engineers After Contractor Selection
 
-**Status:** ready-for-dev  
+**Status:** done  
 **Epic:** 07 — Proposals & Contractor Selection  
 **Story ID:** 7.6  
 **Priority:** 🟢 HIGH — Enables project activation and work execution  
@@ -386,6 +386,14 @@ feat: Story 07-06 — Admin Assigns Engineers After Contractor Selection
 - [x] Test optimistic update & rollback
 - [x] Manual test full flow end-to-end
 - [x] RTL layout verification
+
+### Review Findings
+
+- [x] [Review][Patch] Project detail used `:open` / `@success` / `:project` while `AssignEngineersDialog` exposes `isOpen`, `@close`, and `@assigned`; dialog never received open state for `watch` fetch and save was never wired — fixed in `[id].vue` and dialog emits/plumbing.
+- [x] [Review][Patch] `assignEngineers` mocked assignment only (no `POST /admin/projects/:id/assign-engineers`), did not sync `supervisor_name` / `field_engineer_name`, and rollback omitted display fields — fixed in `useProjects.ts`.
+- [x] [Review][Patch] `assignEngineers` Vitest suite imported `~/app/composables/useProjects` (invalid with `~` → `app/`) and referenced non-existent `proj-contractor` mock — rewrote tests to mirror `selectContractor` patterns (`proj-002`).
+- [x] [Review][Patch] Submit loading used `await emit(...)` (does not await parent) and dialog `@update:open` treated every toggle as close — dialog now performs `assignEngineers` internally with accurate `saving` and `onOpenChange` guard.
+- [x] [Review][Defer] Activate-project prerequisite (disable activate until engineers assigned, tooltip) lives under Story 02-05; project detail “Admin Actions” is still a placeholder — deferred, pre-existing.
 
 ---
 

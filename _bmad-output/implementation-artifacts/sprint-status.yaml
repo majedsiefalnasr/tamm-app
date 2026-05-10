@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-07T22:00:00Z
-last_updated: 2026-05-10T12:00:00+03:00
+last_updated: 2026-05-10T18:00:00+03:00
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -105,7 +105,7 @@ development_status:
   07-03-admin-closes-bidding-for-review: done
   07-04-client-reviews-proposals: done
   07-05-client-selects-a-contractor: done
-  07-06-admin-assigns-engineers-after-contractor-selection: review
+  07-06-admin-assigns-engineers-after-contractor-selection: done
   epic-07-retrospective: optional
 
   # Epic 08 — Role-Based Dashboards

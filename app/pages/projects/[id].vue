@@ -331,7 +331,6 @@ const confirmContractorSelection = async (data: {
 }
 
 const handleEngineersAssigned = async () => {
-  isAssignEngineersDialogOpen.value = false
   await refresh()
 }
 
@@ -577,7 +576,11 @@ const handleCloseBiddingConfirmed = async () => {
     <!-- Assign Engineers button (admin only, status = contractor_selected) -->
     <div v-if="showAssignEngineersButton" class="flex gap-3">
       <Button @click="isAssignEngineersDialogOpen = true">
-        {{ t('projects.assignEngineers.button') }}
+        {{
+          project.supervisor_engineer_id && project.field_engineer_id
+            ? t('projects.assignEngineers.updateButton')
+            : t('projects.assignEngineers.button')
+        }}
       </Button>
     </div>
 
@@ -792,10 +795,11 @@ const handleCloseBiddingConfirmed = async () => {
   <!-- Assign Engineers Dialog -->
   <AssignEngineersDialog
     v-if="project"
-    :open="isAssignEngineersDialogOpen"
+    :is-open="isAssignEngineersDialogOpen"
     :project-id="project.id"
-    :project="project"
-    @update:open="isAssignEngineersDialogOpen = $event"
-    @success="handleEngineersAssigned"
+    :current-supervisor-id="project.supervisor_engineer_id"
+    :current-field-engineer-id="project.field_engineer_id"
+    @close="isAssignEngineersDialogOpen = false"
+    @assigned="handleEngineersAssigned"
   />
 </template>

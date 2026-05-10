@@ -459,11 +459,80 @@ export const useProjects = () => {
     return { success: true }
   }
 
+  type AssignEngineersApiData = {
+    supervisor_engineer_id?: string
+    field_engineer_id?: string
+    supervisor_engineer?: { id: string; name: string }
+    field_engineer?: { id: string; name: string }
+  }
+
+  const mockEngineerDirectory: Record<string, { id: string; name: string }> = {
+    'user-201': { id: 'user-201', name: 'Khaled Ibrahim' },
+    'user-202': { id: 'user-202', name: 'Mohammed Hassan' },
+    'eng-001': { id: 'eng-001', name: 'Khaled Ibrahim' },
+    'eng-002': { id: 'eng-002', name: 'Mohammed Hassan' },
+    'eng-003': { id: 'eng-003', name: 'Fatima Ahmed' },
+    'eng-004': { id: 'eng-004', name: 'Ali Mohammed' },
+  }
+
+  const applyMockEngineerAssignment = (
+    detail: ProjectDetail,
+    supervisorId: string,
+    fieldEngineerId: string
+  ) => {
+    detail.supervisor_engineer_id = supervisorId
+    detail.field_engineer_id = fieldEngineerId
+    const sup = mockEngineerDirectory[supervisorId] ?? {
+      id: supervisorId,
+      name: 'Engineer',
+    }
+    const fld = mockEngineerDirectory[fieldEngineerId] ?? {
+      id: fieldEngineerId,
+      name: 'Engineer',
+    }
+    detail.supervisor_engineer = sup
+    detail.field_engineer = fld
+    detail.supervisor_name = sup.name
+    detail.field_engineer_name = fld.name
+  }
+
+  const mergeAssignEngineersApiData = (
+    detail: ProjectDetail,
+    data: AssignEngineersApiData
+  ) => {
+    if (data.supervisor_engineer_id) {
+      detail.supervisor_engineer_id = data.supervisor_engineer_id
+    }
+    if (data.field_engineer_id) {
+      detail.field_engineer_id = data.field_engineer_id
+    }
+    if (data.supervisor_engineer) {
+      detail.supervisor_engineer = {
+        id: data.supervisor_engineer.id,
+        name: data.supervisor_engineer.name,
+      }
+      detail.supervisor_name = data.supervisor_engineer.name
+    }
+    if (data.field_engineer) {
+      detail.field_engineer = {
+        id: data.field_engineer.id,
+        name: data.field_engineer.name,
+      }
+      detail.field_engineer_name = data.field_engineer.name
+    }
+  }
+
   const assignEngineers = async (
     projectId: string,
     supervisorId: string,
     fieldEngineerId: string
-  ) => {
+  ): Promise<{ success: true } | { success: false; error: string }> => {
+    const sid = supervisorId?.trim()
+    const fid = fieldEngineerId?.trim()
+    if (!sid || !fid) {
+      return { success: false, error: 'Both engineers are required' }
+    }
+
     const projectDetail = mockProjectDetails[projectId]
     if (!projectDetail) {
       return { success: false, error: 'Project not found' }
@@ -476,36 +545,73 @@ export const useProjects = () => {
       }
     }
 
-    const prevSupervisor = projectDetail.supervisor_engineer_id
-    const prevField = projectDetail.field_engineer_id
+    const prev = {
+      supervisor_engineer_id: projectDetail.supervisor_engineer_id,
+      field_engineer_id: projectDetail.field_engineer_id,
+      supervisor_engineer: projectDetail.supervisor_engineer,
+      field_engineer: projectDetail.field_engineer,
+      supervisor_name: projectDetail.supervisor_name,
+      field_engineer_name: projectDetail.field_engineer_name,
+    }
+
+    applyMockEngineerAssignment(projectDetail, sid, fid)
+
+    const rollbackEngineers = () => {
+      projectDetail.supervisor_engineer_id = prev.supervisor_engineer_id
+      projectDetail.field_engineer_id = prev.field_engineer_id
+      projectDetail.supervisor_engineer = prev.supervisor_engineer
+      projectDetail.field_engineer = prev.field_engineer
+      projectDetail.supervisor_name = prev.supervisor_name
+      projectDetail.field_engineer_name = prev.field_engineer_name
+    }
+
+    const mockFallback = async () => {
+      await new Promise(resolve => setTimeout(resolve, 400))
+    }
 
     try {
-      projectDetail.supervisor_engineer_id = supervisorId
-      projectDetail.field_engineer_id = fieldEngineerId
+      const response = await useApi<AssignEngineersApiData>(
+        `/admin/projects/${projectId}/assign-engineers`,
+        {
+          method: 'POST',
+          body: {
+            supervisor_engineer_id: sid,
+            field_engineer_id: fid,
+          },
+        }
+      )
 
-      const mockEngineers: Record<string, { id: string; name: string }> = {
-        'eng-001': { id: 'eng-001', name: 'Khaled Ibrahim' },
-        'eng-002': { id: 'eng-002', name: 'Mohammed Hassan' },
-        'eng-003': { id: 'eng-003', name: 'Fatima Ahmed' },
-        'eng-004': { id: 'eng-004', name: 'Ali Mohammed' },
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'success' in response &&
+        response.success === false
+      ) {
+        rollbackEngineers()
+        return {
+          success: false,
+          error:
+            response.message ||
+            response.error?.message ||
+            'Failed to assign engineers',
+        }
       }
 
-      projectDetail.supervisor_engineer = mockEngineers[supervisorId] || {
-        id: supervisorId,
-        name: 'Engineer',
-      }
-      projectDetail.field_engineer = mockEngineers[fieldEngineerId] || {
-        id: fieldEngineerId,
-        name: 'Engineer',
+      const payload = response?.data
+      if (payload && typeof payload === 'object') {
+        mergeAssignEngineersApiData(projectDetail, payload)
       }
 
       return { success: true }
-    } catch (err) {
-      projectDetail.supervisor_engineer_id = prevSupervisor
-      projectDetail.field_engineer_id = prevField
-      const errorMsg =
-        err instanceof Error ? err.message : 'Failed to assign engineers'
-      return { success: false, error: errorMsg }
+    } catch (apiErr) {
+      if (isUnavailableProjectApiError(apiErr)) {
+        await mockFallback()
+        return { success: true }
+      }
+      rollbackEngineers()
+      const msg =
+        apiErr instanceof Error ? apiErr.message : 'Failed to assign engineers'
+      return { success: false, error: msg }
     }
   }
 

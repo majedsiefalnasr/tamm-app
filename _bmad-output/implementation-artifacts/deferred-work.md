@@ -1,5 +1,9 @@
 # Deferred Work Items
 
+## Deferred from: code review of 07-06-admin-assigns-engineers-after-contractor-selection.md (2026-05-10)
+
+- **Activate project gated on engineer assignment (Story 02-05)** — Acceptance criteria called for disabling admin activate until both engineers are assigned with tooltip copy; project detail “Admin Actions” block remains a Story 02-05 placeholder. Implement when activation UI lands.
+
 ## Deferred from: code review of 07-03-admin-closes-bidding-for-review.md (2026-05-10)
 
 - **Optional admin invitation metrics** — Story AC lists optional visibility for invitation vs proposal counts (“3 of 5 invited…”); not implemented in project detail for this story (explicitly optional).
