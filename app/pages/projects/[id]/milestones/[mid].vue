@@ -32,19 +32,43 @@ const { t } = useI18n()
 const projectId = computed(() => route.params.id as string)
 const milestoneId = computed(() => route.params.mid as string)
 
-// Fetch project and milestone data
+const milestonesComposable = useMilestones()
+
+// Fetch project and milestone data (merge Pinia milestone overlay for trust timeline + actions)
 const {
   data: project,
   pending: projectLoading,
   error: projectError,
+  refresh: refreshProject,
 } = await useAsyncData(
   () => `project-${projectId.value}`,
-  () => useProjects().getProjectById(projectId.value),
+  async () => {
+    await milestonesComposable.loadMilestones(projectId.value)
+    return useProjects().getProjectById(projectId.value)
+  },
   { watch: [projectId] }
 )
 
-const milestone = computed(() => {
-  return project.value?.milestones?.find(m => m.id === milestoneId.value)
+const milestone = computed((): Milestone | undefined => {
+  const base = project.value?.milestones?.find(m => m.id === milestoneId.value)
+  const overlay = milestonesComposable
+    .getMilestones(projectId.value)
+    .find(m => m.id === milestoneId.value)
+  if (!base && !overlay) return undefined
+  if (!overlay) return base
+  if (!base) return overlay
+  return {
+    ...base,
+    ...overlay,
+    tasks:
+      overlay.tasks && overlay.tasks.length > 0
+        ? overlay.tasks
+        : (base.tasks ?? []),
+    allowed_actions:
+      overlay.allowed_actions && overlay.allowed_actions.length > 0
+        ? overlay.allowed_actions
+        : (base.allowed_actions ?? []),
+  }
 })
 
 const isLoading = computed(() => projectLoading.value || !milestone.value)
@@ -72,15 +96,7 @@ const reportHistory = computed(() => {
 
 // Handle action completion
 const handleActionComplete = async () => {
-  // Refresh milestone data
-  if (project.value) {
-    const updated = await useProjects().getProjectById(projectId.value)
-    // Update the milestone in project data
-    const refreshed = updated?.milestones?.find(m => m.id === milestoneId.value)
-    if (refreshed && milestone.value) {
-      Object.assign(milestone.value, refreshed)
-    }
-  }
+  await refreshProject()
 }
 
 const goBack = () => {
@@ -97,7 +113,7 @@ const goBack = () => {
     <ErrorState
       v-else-if="error || !milestone"
       :message="error?.message || t('milestone.error.notFound')"
-      @retry="$fetch.refresh()"
+      @retry="refreshProject()"
     />
 
     <!-- Content -->
@@ -194,7 +210,7 @@ const goBack = () => {
         <MilestoneDetail :milestone="milestone" />
 
         <!-- Latest Report Section -->
-        <div>
+        <div id="milestone-report-evidence">
           <h2 class="mb-4 text-xl font-bold">
             {{ t('milestone.report.title') }}
           </h2>
@@ -215,8 +231,13 @@ const goBack = () => {
         <!-- Report History -->
         <ReportHistory :reports="reportHistory" />
 
-        <!-- Approval Timeline -->
-        <ApprovalTimeline :milestone="milestone" />
+        <!-- Trust timeline -->
+        <ApprovalTimeline
+          :milestone="milestone"
+          :project="project ?? undefined"
+          :reports="reportHistory"
+          :pending="projectLoading"
+        />
 
         <!-- Action Buttons -->
         <div

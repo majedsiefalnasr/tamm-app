@@ -1,189 +1,160 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Milestone, MilestoneStatus } from '~/shared/types/project'
+import type { Milestone, ProjectDetail, Report } from '~/shared/types/project'
 import { formatDate } from '~/utils/formatters'
+import {
+  buildMilestoneTrustTimeline,
+  type MilestoneTrustTimelineEvent,
+} from '~/utils/milestoneTrustTimeline'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
-
-interface TimelineEntry {
-  status: MilestoneStatus
-  timestamp: string
-  action: string
-  person?: {
-    name: string
-    role: string
-  }
-  reason?: string
-}
+import { Badge } from '~/components/ui/badge'
+import { Separator } from '~/components/ui/separator'
+import { Skeleton } from '~/components/ui/skeleton'
+import { usePermission } from '~/composables/usePermission'
 
 interface Props {
   milestone: Milestone
+  project?: ProjectDetail | null
+  reports?: Report[]
+  pending?: boolean
 }
 
-const props = defineProps<Props>()
-const { t } = useI18n()
-
-// Build timeline from milestone status and data
-// This is a simplified version - in a real app, you'd have full timeline data from API
-const timeline = computed(() => {
-  const entries: TimelineEntry[] = []
-
-  if (props.milestone.created_at) {
-    entries.push({
-      status: 'not_started',
-      timestamp: props.milestone.created_at,
-      action: t('milestone.timeline.created'),
-      person: undefined,
-    })
-  }
-
-  // Note: Full timeline would come from API in a real implementation
-  // For now, we're building a simplified view based on current milestone status
-  if (props.milestone.status !== 'not_started') {
-    entries.push({
-      status: 'in_progress',
-      timestamp: props.milestone.updated_at || props.milestone.created_at,
-      action: t('milestone.timeline.inProgress'),
-      person: undefined,
-    })
-  }
-
-  if (
-    ['under_review', 'supervisor_approved', 'approved', 'rejected'].includes(
-      props.milestone.status
-    )
-  ) {
-    entries.push({
-      status: 'under_review',
-      timestamp: props.milestone.updated_at || props.milestone.created_at,
-      action: t('milestone.timeline.underReview'),
-      person: props.milestone.latest_report?.submitted_by,
-    })
-  }
-
-  if (
-    ['supervisor_approved', 'approved', 'rejected'].includes(
-      props.milestone.status
-    )
-  ) {
-    entries.push({
-      status: 'supervisor_approved',
-      timestamp: props.milestone.updated_at || props.milestone.created_at,
-      action: t('milestone.timeline.supervisorApproved'),
-      person: undefined,
-    })
-  }
-
-  if (props.milestone.status === 'approved') {
-    entries.push({
-      status: 'approved',
-      timestamp: props.milestone.updated_at || props.milestone.created_at,
-      action: t('milestone.timeline.clientApproved'),
-      person: undefined,
-    })
-  }
-
-  if (props.milestone.status === 'rejected') {
-    entries.push({
-      status: 'rejected',
-      timestamp: props.milestone.updated_at || props.milestone.created_at,
-      action: t('milestone.timeline.rejected'),
-      person: undefined,
-      reason: t('milestone.timeline.rejectionReason'),
-    })
-  }
-
-  return entries
+const props = withDefaults(defineProps<Props>(), {
+  project: null,
+  reports: () => [],
+  pending: false,
 })
 
-const getStatusColor = (status: MilestoneStatus): string => {
-  const colors: Record<MilestoneStatus, string> = {
-    not_started: 'bg-muted',
-    in_progress: 'bg-accent',
-    under_review: 'bg-info',
-    supervisor_approved: 'bg-primary',
-    approved: 'bg-primary',
-    rejected: 'bg-destructive',
-  }
-  return colors[status] || 'bg-muted'
+const { t } = useI18n()
+const { can } = usePermission()
+
+const canViewPayment = computed(() => can('view_payment_status'))
+
+const timeline = computed((): MilestoneTrustTimelineEvent[] => {
+  return buildMilestoneTrustTimeline({
+    milestone: props.milestone,
+    project: props.project ?? undefined,
+    reports:
+      props.reports.length > 0
+        ? props.reports
+        : props.milestone.latest_report
+          ? [props.milestone.latest_report]
+          : [],
+    canViewPayment: canViewPayment.value,
+  })
+})
+
+const eventTitleKey = (kind: MilestoneTrustTimelineEvent['kind']): string =>
+  `milestone.trustTimeline.events.${kind}`
+
+const badgeVariantForKind = (
+  kind: MilestoneTrustTimelineEvent['kind']
+): 'default' | 'secondary' | 'destructive' | 'outline' => {
+  if (kind === 'decision_rejected') return 'destructive'
+  if (kind === 'payout_completed' || kind === 'client_approved')
+    return 'default'
+  if (kind === 'payment_confirmed') return 'secondary'
+  return 'outline'
 }
 
-const getIcon = (status: MilestoneStatus) => {
-  if (status === 'approved') return CheckCircleIcon
-  if (status === 'rejected') return XCircleIcon
+const getIcon = (kind: MilestoneTrustTimelineEvent['kind']) => {
+  if (kind === 'client_approved') return CheckCircleIcon
+  if (kind === 'decision_rejected') return XCircleIcon
   return undefined
+}
+
+const actorLabel = (entry: MilestoneTrustTimelineEvent): string => {
+  const a = entry.actor
+  if (!a || a.kind === 'system') {
+    return t('milestone.trustTimeline.actor.system')
+  }
+  const role = a.roleKey ? t(a.roleKey) : ''
+  if (a.name && role) return `${a.name} (${role})`
+  return a.name || role || t('milestone.trustTimeline.actor.system')
 }
 </script>
 
 <template>
   <div class="bg-card rounded-lg border p-6">
-    <h2 class="mb-8 text-xl font-bold">{{ t('milestone.timeline.title') }}</h2>
+    <h2 class="mb-8 text-xl font-bold">
+      {{ t('milestone.trustTimeline.title') }}
+    </h2>
 
-    <div v-if="timeline.length > 0" class="relative">
-      <!-- Timeline entries -->
-      <div class="space-y-6">
-        <div
-          v-for="(entry, index) in timeline"
-          :key="`${entry.status}-${index}`"
-          class="flex gap-4"
-        >
-          <!-- Timeline indicator -->
-          <div class="flex flex-col items-center">
-            <div
-              :class="{
-                'flex h-10 w-10 items-center justify-center rounded-full font-bold text-white': true,
-                [getStatusColor(entry.status)]: true,
-              }"
-            >
-              <component
-                :is="getIcon(entry.status)"
-                v-if="getIcon(entry.status)"
-                class="h-6 w-6"
-              />
-              <span v-else class="text-sm">{{ index + 1 }}</span>
-            </div>
-
-            <!-- Connector line (not last) -->
-            <div
-              v-if="index < timeline.length - 1"
-              class="bg-border mt-2 h-12 w-0.5"
-            />
-          </div>
-
-          <!-- Timeline content -->
-          <div class="flex-1 pt-1">
-            <div class="flex items-start justify-between">
-              <div>
-                <p class="text-ink font-semibold">{{ entry.action }}</p>
-                <p class="text-muted-foreground mt-1 text-sm">
-                  {{ formatDate(entry.timestamp) }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Person info (if available) -->
-            <div v-if="entry.person" class="text-muted-foreground mt-2 text-sm">
-              <span class="font-medium">{{ entry.person.name }}</span>
-              <span> ({{ entry.person.role }})</span>
-            </div>
-
-            <!-- Rejection reason (if applicable) -->
-            <div
-              v-if="entry.reason"
-              class="bg-destructive/10 border-destructive/20 mt-3 rounded-lg border p-3"
-            >
-              <p class="text-destructive mb-1 text-xs font-semibold uppercase">
-                {{ t('milestone.timeline.rejectionReason') }}
-              </p>
-              <p class="text-foreground text-sm">{{ entry.reason }}</p>
-            </div>
-          </div>
+    <div v-if="pending" class="space-y-5">
+      <div v-for="n in 4" :key="n" class="flex gap-4">
+        <Skeleton class="h-10 w-10 shrink-0 rounded-full" />
+        <div class="flex-1 space-y-2 pt-1">
+          <Skeleton class="h-4 w-full max-w-xs" />
+          <Skeleton class="h-3 w-full max-w-[14rem]" />
+          <Skeleton class="h-3 w-full max-w-md" />
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div v-else class="bg-muted/20 rounded-lg p-8 text-center">
-      <p class="text-muted-foreground">{{ t('milestone.timeline.empty') }}</p>
+    <div v-else class="relative">
+      <div class="space-y-4">
+        <template v-for="(entry, index) in timeline" :key="entry.id">
+          <Separator v-if="index > 0" />
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center">
+              <div
+                class="border-border bg-muted text-muted-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-full border font-bold"
+              >
+                <component
+                  :is="getIcon(entry.kind)"
+                  v-if="getIcon(entry.kind)"
+                  class="text-foreground h-6 w-6"
+                />
+                <span v-else class="text-sm">{{ index + 1 }}</span>
+              </div>
+            </div>
+
+            <div class="min-w-0 flex-1 pt-1">
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div class="flex min-w-0 flex-wrap items-center gap-2">
+                  <p class="text-ink font-semibold">
+                    {{ t(eventTitleKey(entry.kind)) }}
+                  </p>
+                  <Badge :variant="badgeVariantForKind(entry.kind)">
+                    {{ t(`milestone.trustTimeline.badges.${entry.kind}`) }}
+                  </Badge>
+                </div>
+              </div>
+              <p class="text-muted-foreground mt-1 text-sm">
+                {{ formatDate(entry.timestamp) }}
+              </p>
+              <p class="text-muted-foreground mt-2 text-sm">
+                {{ actorLabel(entry) }}
+              </p>
+
+              <div v-if="entry.evidenceAnchor" class="mt-3">
+                <a
+                  class="text-primary text-sm underline-offset-4 hover:underline"
+                  :href="entry.evidenceAnchor"
+                >
+                  {{ t('milestone.trustTimeline.evidenceLink') }}
+                </a>
+              </div>
+
+              <div
+                v-if="
+                  entry.kind === 'decision_rejected' && entry.rejection_reason
+                "
+                class="border-destructive/20 bg-destructive/10 mt-3 rounded-lg border p-3"
+              >
+                <p
+                  class="text-destructive mb-1 text-xs font-semibold uppercase"
+                >
+                  {{ t('milestone.trustTimeline.rejectionCaption') }}
+                </p>
+                <p class="text-foreground text-sm whitespace-pre-wrap">
+                  {{ entry.rejection_reason }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 </template>

@@ -248,6 +248,35 @@
       "approveMilestone": "Approve Milestone",
       "rejectMilestone": "Reject Milestone",
       "payMilestone": "Pay Milestone"
+    },
+    "trustTimeline": {
+      "title": "Trust timeline",
+      "evidenceLink": "View evidence",
+      "rejectionCaption": "Reason shared with participants",
+      "actor": {
+        "system": "System",
+        "supervisor": "Supervisor engineer",
+        "client": "Client",
+        "fieldEngineer": "Field engineer"
+      },
+      "badges": {
+        "milestone_created": "Setup",
+        "report_submitted": "Evidence",
+        "supervisor_approved": "Supervisor",
+        "decision_rejected": "Rejected",
+        "client_approved": "Client",
+        "payment_confirmed": "Payment",
+        "payout_completed": "Payout"
+      },
+      "events": {
+        "milestone_created": "Milestone created",
+        "report_submitted": "Report submitted for review",
+        "supervisor_approved": "Supervisor approved this milestone",
+        "decision_rejected": "Milestone rejected",
+        "client_approved": "Client gave final approval",
+        "payment_confirmed": "Payment recorded (escrow)",
+        "payout_completed": "Payment released to contractor"
+      }
     }
   },
   "payment": {

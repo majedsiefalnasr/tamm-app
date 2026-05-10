@@ -79,7 +79,15 @@ export const useMilestones = () => {
         amount: 50000,
         order: 1,
         status: 'approved',
+        tasks: [],
+        payment_status: 'paid',
+        allowed_actions: ['view_report'],
         created_at: '2026-04-20T09:00:00Z',
+        updated_at: '2026-04-22T11:00:00Z',
+        supervisor_approved_at: '2026-04-21T10:00:00Z',
+        client_approved_at: '2026-04-22T10:00:00Z',
+        payment_confirmed_at: '2026-04-22T10:30:00Z',
+        supervisor: { id: 'user-201', name: 'Khaled Ibrahim' },
       },
       {
         id: 'ms-2',
@@ -88,6 +96,9 @@ export const useMilestones = () => {
         amount: 75000,
         order: 2,
         status: 'in_progress',
+        tasks: [],
+        payment_status: 'pending_payment',
+        allowed_actions: ['submit_report'],
         created_at: '2026-05-01T09:00:00Z',
       },
       {
@@ -97,6 +108,9 @@ export const useMilestones = () => {
         amount: 125000,
         order: 3,
         status: 'not_started',
+        tasks: [],
+        payment_status: 'pending_payment',
+        allowed_actions: [],
         created_at: '2026-05-05T09:00:00Z',
       },
       {
@@ -477,11 +491,21 @@ export const useMilestones = () => {
 
     const prevMilestone = { ...milestone }
 
+    const decisionAt = new Date().toISOString()
+    const statusPatch: Partial<Milestone> = {
+      status: targetStatus as MilestoneStatus,
+      updated_at: decisionAt,
+    }
+    if (role === 'supervisor_engineer') {
+      statusPatch.supervisor_approved_at = decisionAt
+    } else {
+      statusPatch.client_approved_at = decisionAt
+    }
+
     // Optimistic update
     const updatedMilestone: Milestone = {
       ...milestone,
-      status: targetStatus as MilestoneStatus,
-      updated_at: new Date().toISOString(),
+      ...statusPatch,
     }
 
     milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
@@ -535,11 +559,18 @@ export const useMilestones = () => {
 
     const prevMilestone = { ...milestone }
 
+    const rejectedAt = new Date().toISOString()
+    const rejectionRole: 'supervisor_engineer' | 'client' =
+      role === 'client' ? 'client' : 'supervisor_engineer'
+
     // Optimistic update: status goes to in_progress (auto-transitioned)
     const updatedMilestone: Milestone = {
       ...milestone,
       status: 'in_progress' as MilestoneStatus,
-      updated_at: new Date().toISOString(),
+      rejection_reason: reason,
+      last_rejection_at: rejectedAt,
+      last_rejection_role: rejectionRole,
+      updated_at: rejectedAt,
     }
 
     milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
@@ -616,6 +647,9 @@ export const useMilestones = () => {
       milestonesMap.value[projectId][index] = {
         ...milestonesMap.value[projectId][index],
         latest_report: mockReport,
+        rejection_reason: undefined,
+        last_rejection_at: undefined,
+        last_rejection_role: undefined,
       }
 
       return mockReport
@@ -757,11 +791,14 @@ export const useMilestones = () => {
 
     const prevMilestone = { ...milestone }
 
+    const paidAt = new Date().toISOString()
+
     // Optimistic update: payment -> paid (milestone status derived from API response per decision #2)
     const updatedMilestone: Milestone = {
       ...milestone,
       payment_status: 'paid',
-      updated_at: new Date().toISOString(),
+      payment_confirmed_at: paidAt,
+      updated_at: paidAt,
     }
 
     milestonesMap.value[projectId][milestoneIndex] = updatedMilestone
@@ -774,6 +811,7 @@ export const useMilestones = () => {
           resolve({
             ...updatedMilestone,
             status: 'in_progress' as MilestoneStatus,
+            payment_confirmed_at: paidAt,
           })
         }, 500)
       })
@@ -839,11 +877,14 @@ export const useMilestones = () => {
     releasingMilestones.value.add(milestoneId)
     const prevMilestone = { ...milestone }
 
+    const releasedAt = new Date().toISOString()
+
     // Optimistic update: payment -> paid_out
     const updatedMilestone: Milestone = {
       ...milestone,
       payment_status: 'paid_out',
-      updated_at: new Date().toISOString(),
+      paid_out_at: releasedAt,
+      updated_at: releasedAt,
     }
 
     milestonesMap.value[projectId][milestoneIndex] = updatedMilestone

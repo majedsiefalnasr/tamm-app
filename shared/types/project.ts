@@ -95,6 +95,15 @@ export interface Milestone extends MilestoneDisplayFields {
     name: string
   }
   supervisor_approved_at?: string
+  /** ISO timestamp — client final approval (trust timeline narrative). */
+  client_approved_at?: string
+  /** Last user-visible rejection reason (never internal audit notes). */
+  rejection_reason?: string | null
+  /** Cleared when a new report submission cycle begins (frontend heuristic until audit API). */
+  last_rejection_at?: string
+  last_rejection_role?: 'supervisor_engineer' | 'client'
+  /** Client payment recorded (escrow) — trust timeline timestamp. */
+  payment_confirmed_at?: string
 }
 
 export interface Engineer {

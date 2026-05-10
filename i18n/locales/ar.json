@@ -248,6 +248,35 @@
       "approveMilestone": "اعتماد المرحلة",
       "rejectMilestone": "رفض المرحلة",
       "payMilestone": "دفع المرحلة"
+    },
+    "trustTimeline": {
+      "title": "خط زمني للثقة",
+      "evidenceLink": "عرض الأدلة",
+      "rejectionCaption": "السبب المشارك مع الأطراف",
+      "actor": {
+        "system": "النظام",
+        "supervisor": "مهندس الإشراف",
+        "client": "العميل",
+        "fieldEngineer": "مهندس الموقع"
+      },
+      "badges": {
+        "milestone_created": "إعداد",
+        "report_submitted": "أدلة",
+        "supervisor_approved": "إشراف",
+        "decision_rejected": "مرفوض",
+        "client_approved": "عميل",
+        "payment_confirmed": "دفع",
+        "payout_completed": "صرف"
+      },
+      "events": {
+        "milestone_created": "تم إنشاء المرحلة",
+        "report_submitted": "تم إرسال تقرير للمراجعة",
+        "supervisor_approved": "اعتمد المشرف هذه المرحلة",
+        "decision_rejected": "تم رفض المرحلة",
+        "client_approved": "منح العميل الاعتماد النهائي",
+        "payment_confirmed": "تم تسجيل الدفع (ضمان)",
+        "payout_completed": "تم صرف المبلغ للمقاول"
+      }
     }
   },
   "payment": {

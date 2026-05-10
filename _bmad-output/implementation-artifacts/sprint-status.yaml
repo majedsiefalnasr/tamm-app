@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-10T10:43:50Z
-last_updated: 2026-05-11T14:30:00Z
+last_updated: 2026-05-11T18:00:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -132,7 +132,7 @@ development_status:
   # Epic 10 — Product Experience Advancement (trust, clarity, operator speed)
   epic-10: in-progress
   10-01-global-command-palette: done
-  10-02-milestone-trust-timeline: backlog
+  10-02-milestone-trust-timeline: done
   10-03-role-dashboard-charts-selective-kpis: backlog
   10-04-admin-list-density-column-presets: backlog
   10-05-mutation-feedback-normalization-audit: backlog
