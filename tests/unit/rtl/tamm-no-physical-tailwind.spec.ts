@@ -1,8 +1,9 @@
 // @vitest-environment node
 
 /**
- * Epic 09 guardrail: TAMM-owned Vue must use logical Tailwind (ms/ps/start/end),
- * not physical ml/pl/left/right/text-left/etc. Vendor `app/components/ui/**` is excluded.
+ * RTL guardrail (Epic 09 closure + Epic 10 regression sweep): TAMM-owned Vue must use
+ * logical Tailwind (ms/ps/start/end), not physical ml/pl/left/right/text-left/etc.
+ * Vendor `app/components/ui/**` is excluded.
  */
 
 import { readdirSync, readFileSync, statSync } from 'node:fs'
