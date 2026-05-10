@@ -9,6 +9,36 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 }, // enables app/ directory
   devtools: { enabled: true },
 
+  /**
+   * Fonts via `<link>` (non-blocking) instead of CSS `@import` so first paint isn’t delayed.
+   * Matches default locale `ar` (Cairo/Tajawal) + Latin UI (Inter).
+   */
+  app: {
+    head: {
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: '',
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap',
+        },
+      ],
+    },
+  },
+
+  /** Node context (`nuxt.config.*`): enable `process.env` etc. (see `.nuxt/tsconfig.node.json`). */
+  typescript: {
+    nodeTsConfig: {
+      compilerOptions: {
+        types: ['node'],
+      },
+    },
+  },
+
   modules: [
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
@@ -18,7 +48,17 @@ export default defineNuxtConfig({
 
   vite: {
     optimizeDeps: {
-      include: ['@vueuse/core'],
+      include: [
+        '@vueuse/core',
+        'vee-validate',
+        '@vee-validate/zod',
+        'zod',
+        '@heroicons/vue/24/solid',
+        'class-variance-authority',
+        'reka-ui',
+        'clsx',
+        'tailwind-merge',
+      ],
     },
     /** Client `$fetch('/api/...')` hits Vite in dev — forward POSTs to the backend. */
     server: {

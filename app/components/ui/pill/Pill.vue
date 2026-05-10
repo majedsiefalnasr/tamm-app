@@ -8,7 +8,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
-  compact: false
+  compact: false,
 })
 
 const variantClasses = computed(() => {
@@ -22,7 +22,7 @@ const variantClasses = computed(() => {
     accent: 'bg-accent text-accent-foreground',
     destructive: 'bg-destructive text-destructive-foreground',
     secondary: 'bg-secondary text-secondary-foreground',
-    muted: 'bg-muted text-muted-foreground'
+    muted: 'bg-muted text-muted-foreground',
   }
 
   return `${baseClasses} ${variantMap[props.variant] || variantMap.default}`

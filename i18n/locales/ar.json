@@ -182,6 +182,11 @@
     "redirecting": "جاري التوجيه…"
   },
   "nav": {
+    "sections": {
+      "platform": "المنصة",
+      "other": "أخرى",
+      "system": "النظام"
+    },
     "home": "الرئيسية",
     "overview": "لوحة التحكم",
     "projects": "المشاريع",

@@ -1,0 +1,4 @@
+/**
+ * Non-token global hooks only. Design tokens and shadcn-vue theme variables live in `tailwind.css`.
+ * Loaded before `tailwind.css` in `nuxt.config` `css` array.
+ */

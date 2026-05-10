@@ -182,6 +182,11 @@
     "redirecting": "Redirecting…"
   },
   "nav": {
+    "sections": {
+      "platform": "Platform",
+      "other": "Other",
+      "system": "System"
+    },
     "home": "Home",
     "overview": "Dashboard",
     "projects": "Projects",

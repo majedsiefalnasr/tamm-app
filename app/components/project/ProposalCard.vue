@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ProposalData } from '~/shared/types/project'
+import { Pill } from '~/components/ui/pill'
 import { formatCurrency, formatDate } from '~/utils/formatters'
 
 interface Props {
@@ -91,12 +92,12 @@ const contractorName = computed(() => props.proposal.contractorName)
         </Button>
       </template>
       <template v-else-if="isSelected">
-        <Pill tone="primary" class="text-sm">
+        <Pill variant="primary" class="text-sm">
           {{ t('projects.proposals.selectedBadge') }}
         </Pill>
       </template>
       <template v-else>
-        <Pill tone="muted" class="text-sm">
+        <Pill variant="muted" class="text-sm">
           {{ t('projects.proposals.notSelectedBadge') }}
         </Pill>
       </template>
