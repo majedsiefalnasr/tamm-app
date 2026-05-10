@@ -21,12 +21,12 @@ import { getDisplayNameForRole } from '~/utils/roleRoutes'
 
 const auth = useAuthStore()
 const { isMobile } = useSidebar()
-const { localeProperties } = useI18n()
+const { locale } = useI18n()
 
 /** RTL + dock-right sidebar: avoid opening the menu past the viewport edge. */
 const accountMenuSide = computed<'top' | 'right' | 'bottom' | 'left'>(() => {
   if (isMobile.value) return 'bottom'
-  return localeProperties.value.dir === 'rtl' ? 'left' : 'right'
+  return locale.value === 'ar' ? 'left' : 'right'
 })
 
 const userInitials = computed(() => {

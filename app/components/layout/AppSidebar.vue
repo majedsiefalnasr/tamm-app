@@ -22,7 +22,7 @@ import SidebarUserMenu from '~/components/layout/SidebarUserMenu.vue'
 
 const auth = useAuthStore()
 const route = useRoute()
-const { localeProperties } = useI18n()
+const { locale } = useI18n()
 const { getNavigationForRole } = useRoleRoutes()
 const { setOpenMobile } = useSidebar()
 
@@ -33,8 +33,9 @@ watch(
   }
 )
 
-const sidebarSide = computed(() =>
-  localeProperties.value.dir === 'rtl' ? 'right' : 'left'
+/** Match `nuxt.config` locales: Arabic → dock sidebar on viewport right; English → left. */
+const sidebarSide = computed((): 'left' | 'right' =>
+  locale.value === 'ar' ? 'right' : 'left'
 )
 
 const navItems = computed((): NavItem[] => {
@@ -67,7 +68,9 @@ function isItemActive(href: string): boolean {
 
 <template>
   <Sidebar :side="sidebarSide" variant="inset" collapsible="icon">
-    <SidebarHeader>
+    <SidebarHeader
+      class="border-border flex h-20 shrink-0 flex-col justify-center border-b px-3 py-2"
+    >
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" as-child>
@@ -94,7 +97,7 @@ function isItemActive(href: string): boolean {
       </SidebarMenu>
     </SidebarHeader>
 
-    <SidebarContent>
+    <SidebarContent class="gap-4 px-3 py-3">
       <SidebarGroup v-if="groupedNav.main.length">
         <SidebarGroupLabel>{{ $t('nav.sections.platform') }}</SidebarGroupLabel>
         <SidebarMenu>
@@ -159,7 +162,7 @@ function isItemActive(href: string): boolean {
       </SidebarGroup>
     </SidebarContent>
 
-    <SidebarFooter>
+    <SidebarFooter class="border-border border-t px-3 pt-2 pb-3">
       <SidebarUserMenu />
     </SidebarFooter>
   </Sidebar>

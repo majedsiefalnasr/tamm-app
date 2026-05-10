@@ -7,9 +7,9 @@ import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
 <template>
   <SidebarProvider>
     <AppSidebar />
-    <SidebarInset>
+    <SidebarInset class="min-h-0">
       <Topbar />
-      <div class="flex flex-1 flex-col overflow-auto">
+      <div class="flex min-h-0 flex-1 flex-col overflow-auto">
         <slot />
       </div>
     </SidebarInset>

@@ -28,13 +28,13 @@ const pageTitleKey = computed(() => {
 
 <template>
   <header
-    class="border-border bg-background/95 sticky top-0 z-40 flex h-16 w-full shrink-0 items-center gap-2 border-b backdrop-blur-xl"
+    class="border-border bg-card/60 sticky top-0 z-40 flex h-20 w-full shrink-0 items-center gap-2 border-b backdrop-blur-xl backdrop-saturate-150"
   >
-    <div class="flex w-full min-w-0 items-center gap-2 px-4 md:px-6">
+    <div class="flex w-full min-w-0 items-center gap-2 px-4 md:px-8">
       <SidebarTrigger class="-ms-1 shrink-0" />
       <Separator
         orientation="vertical"
-        class="me-2 hidden h-4 shrink-0 sm:block"
+        class="me-2 hidden h-6 shrink-0 sm:block"
       />
       <Breadcrumb class="min-w-0 flex-1">
         <BreadcrumbList class="flex-wrap">
