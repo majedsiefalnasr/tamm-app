@@ -116,17 +116,18 @@ describe('useAdminProjects', () => {
     expect(summaryCards.value.completed).toBeGreaterThanOrEqual(0)
   })
 
-  it('calculates summary cards only for filtered projects', () => {
+  it('keeps summary cards global when table filters change', () => {
     const { summaryCards, statusFilter, handleStatusFilter, fetchProjects } =
       useAdminProjects()
+
+    statusFilter.value = 'all'
+    fetchProjects()
+    const globalSummary = { ...summaryCards.value }
 
     handleStatusFilter('completed')
     fetchProjects()
 
-    // All cards should reflect only completed projects
-    expect(summaryCards.value.total).toBeLessThanOrEqual(
-      mockAdminProjects.length
-    )
+    expect(summaryCards.value).toEqual(globalSummary)
   })
 
   it('calculates project progress correctly', () => {

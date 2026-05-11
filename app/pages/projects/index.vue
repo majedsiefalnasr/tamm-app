@@ -92,7 +92,7 @@ const showLoading = computed(
 <template>
   <AdminProjectsPanel v-if="isAdminProjectsUi" />
 
-  <div v-else class="space-y-6 px-4 py-6 md:px-6">
+  <div v-else class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold">{{ $t('pages.projects') }}</h1>
@@ -125,14 +125,14 @@ const showLoading = computed(
 
     <EmptyState
       v-else-if="showEmpty"
-      icon="📁"
+      icon="folder"
       title="project.no_projects"
       description="project.no_projects_description"
     />
 
     <EmptyState
       v-else-if="showFilteredEmpty"
-      icon="📁"
+      icon="folder"
       title="project.filter_empty_title"
       description="project.filter_empty_description"
     />

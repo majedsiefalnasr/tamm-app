@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog'
 import CreateUserForm from './CreateUserForm.vue'
+import type { User } from '../../composables/useAdminUsers'
 
 interface Props {
   open: boolean
+  user?: User | null
 }
 
 interface Emits {
@@ -28,13 +36,26 @@ const handleCancel = () => {
 
 <template>
   <Dialog :open="props.open" @update:open="emit('update:open', $event)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle class="text-start">{{
-          t('admin.users.create.title')
+          props.user
+            ? t('admin.users.actions.edit')
+            : t('admin.users.create.title')
         }}</DialogTitle>
+        <DialogDescription class="text-start">
+          {{
+            props.user
+              ? t('admin.users.create.edit_description')
+              : t('admin.users.create.description')
+          }}
+        </DialogDescription>
       </DialogHeader>
-      <CreateUserForm @success="handleSuccess" @cancel="handleCancel" />
+      <CreateUserForm
+        :user="props.user"
+        @success="handleSuccess"
+        @cancel="handleCancel"
+      />
     </DialogContent>
   </Dialog>
 </template>

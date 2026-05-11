@@ -3,7 +3,8 @@ import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Card } from '~/components/ui/card'
-import { AlertTriangle } from 'lucide-vue-next'
+import EmptyState from '~/components/common/EmptyState.vue'
+import SectionErrorCard from '~/components/common/SectionErrorCard.vue'
 import type { Milestone } from '~/shared/types/project'
 
 interface Props {
@@ -24,7 +25,6 @@ const emit = defineEmits<{
   retry: []
 }>()
 
-const { t } = useI18n()
 const router = useRouter()
 
 const handleSubmitReport = (
@@ -49,23 +49,11 @@ const handleSubmitReport = (
     </div>
 
     <!-- Error State -->
-    <Card
+    <SectionErrorCard
       v-if="hasError"
-      class="border-destructive/30 bg-destructive/5 flex-row items-start gap-3 rounded-2xl p-4 shadow-none"
-    >
-      <AlertTriangle class="text-destructive mt-0.5 h-4 w-4 flex-shrink-0" />
-      <div class="flex-1">
-        <p class="text-destructive font-semibold">
-          {{ $t('errors.failed_to_load') }}
-        </p>
-        <p class="text-muted-foreground mt-1 text-sm">
-          {{ errorMessage }}
-        </p>
-        <Button size="sm" variant="outline" class="mt-3" @click="emit('retry')">
-          {{ $t('buttons.retry') }}
-        </Button>
-      </div>
-    </Card>
+      :detail="errorMessage"
+      @retry="emit('retry')"
+    />
 
     <!-- Loading State -->
     <div v-else-if="loading" class="space-y-3">
@@ -77,29 +65,12 @@ const handleSubmitReport = (
     </div>
 
     <!-- Empty State -->
-    <div
+    <EmptyState
       v-else-if="!milestones || milestones.length === 0"
-      class="border-border/50 flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed p-8 text-center"
-    >
-      <div class="text-muted-foreground">
-        <svg
-          class="mx-auto h-10 w-10"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
-      <p class="text-muted-foreground text-sm font-medium">
-        {{ $t('dashboard.fieldEngineer.noActiveAssignments') }}
-      </p>
-    </div>
+      icon="clipboard"
+      class="rounded-2xl py-8"
+      title="dashboard.fieldEngineer.noActiveAssignments"
+    />
 
     <!-- Milestones Grid -->
     <div v-else class="space-y-3">

@@ -8,9 +8,9 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="space-y-6 px-4 py-6 md:px-6">
+  <div class="space-y-6">
     <EmptyState
-      icon="⚖️"
+      icon="scale"
       title="pages.disputes_title"
       description="pages.disputes_detail_placeholder"
     />

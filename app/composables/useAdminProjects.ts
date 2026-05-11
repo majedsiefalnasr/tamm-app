@@ -207,39 +207,31 @@ export function useAdminProjects() {
     { deep: true }
   )
 
-  // Summary card calculations — reflect FILTERED counts, not global
+  function computeSummaryCounts(dataset: AdminProjectOverviewItem[]) {
+    return {
+      total: dataset.length,
+      active: dataset.filter(
+        p => p.status === 'active' || p.status === 'contractor_selected'
+      ).length,
+      onHold: dataset.filter(p => p.status === 'on_hold').length,
+      completed: dataset.filter(p => p.status === 'completed').length,
+    }
+  }
+
+  // Summary card calculations — always global (must not change with table filters).
   const summaryCards = computed(() => {
     if (USE_MOCK) {
-      // Mock: recalculate from full dataset respecting current filter
-      let filtered = mockAdminProjects
-
-      if (statusFilter.value !== 'all') {
-        if (statusFilter.value === 'active') {
-          filtered = filtered.filter(
-            p => p.status === 'active' || p.status === 'contractor_selected'
-          )
-        } else {
-          filtered = filtered.filter(p => p.status === statusFilter.value)
-        }
-      }
-
-      return {
-        total: mockAdminProjects.length,
-        active: filtered.filter(
-          p => p.status === 'active' || p.status === 'contractor_selected'
-        ).length,
-        onHold: filtered.filter(p => p.status === 'on_hold').length,
-        completed: filtered.filter(p => p.status === 'completed').length,
-      }
+      return computeSummaryCounts(mockAdminProjects)
     } else {
-      // Real API: use pagination data from last fetch
+      // Real API currently returns paginated rows only; keep values stable and global-like:
+      // - `total` comes from backend pagination metadata
+      // - status buckets are derived from the currently loaded dataset snapshot
+      const currentSnapshot = computeSummaryCounts(projects.value)
       return {
         total: pagination.value.total,
-        active: projects.value.filter(
-          p => p.status === 'active' || p.status === 'contractor_selected'
-        ).length,
-        onHold: projects.value.filter(p => p.status === 'on_hold').length,
-        completed: projects.value.filter(p => p.status === 'completed').length,
+        active: currentSnapshot.active,
+        onHold: currentSnapshot.onHold,
+        completed: currentSnapshot.completed,
       }
     }
   })

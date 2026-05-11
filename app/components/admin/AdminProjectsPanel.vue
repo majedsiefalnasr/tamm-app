@@ -4,8 +4,7 @@ import { usePermission } from '~/composables/usePermission'
 import ProjectOverviewCards from '~/components/admin/ProjectOverviewCards.vue'
 import ProjectSearch from '~/components/admin/ProjectSearch.vue'
 import ProjectOverviewTable from '~/components/admin/ProjectOverviewTable.vue'
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
-import { AlertTriangle } from 'lucide-vue-next'
+import SectionErrorCard from '~/components/common/SectionErrorCard.vue'
 import PageContentSkeleton from '~/components/common/PageContentSkeleton.vue'
 
 const { t } = useI18n()
@@ -62,25 +61,13 @@ const handleRetry = () => {
     <template v-else>
       <ProjectOverviewCards :summary="summaryCards" :loading="loading" />
 
-      <Alert
+      <SectionErrorCard
         v-if="error"
-        variant="destructive"
-        class="border-destructive/50 bg-destructive/5"
-      >
-        <AlertTriangle class="h-4 w-4" />
-        <AlertTitle>{{ t('admin.projects.error') }}</AlertTitle>
-        <AlertDescription>
-          <div class="mt-2 flex gap-2">
-            <button
-              type="button"
-              class="bg-destructive hover:bg-destructive/90 rounded-md px-3 py-1 text-sm text-white"
-              @click="handleRetry"
-            >
-              {{ t('admin.projects.retry') }}
-            </button>
-          </div>
-        </AlertDescription>
-      </Alert>
+        title-key="admin.projects.error"
+        :detail="error || undefined"
+        retry-label-key="admin.projects.retry"
+        @retry="handleRetry"
+      />
 
       <ProjectSearch
         :status-filter="statusFilter"

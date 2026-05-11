@@ -66,8 +66,8 @@ const formatActivityDate = (date: Date) => formatDate(date.toISOString())
     <EmptyState
       v-else-if="!hasActivities"
       icon="history"
-      :title="$t('dashboard.client.noActivity')"
-      :description="$t('dashboard.client.noActivityDescription')"
+      title="dashboard.client.noActivity"
+      description="dashboard.client.noActivityDescription"
     />
 
     <!-- Activity list -->

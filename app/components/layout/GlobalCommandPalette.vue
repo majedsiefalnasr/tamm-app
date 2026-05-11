@@ -18,6 +18,8 @@ import {
   shouldBlockPaletteShortcut,
 } from '~/utils/commandPalette'
 import { getNavIcon } from '~/utils/navIcons'
+import { CornerDownLeft } from 'lucide-vue-next'
+import { Kbd } from '~/components/ui/kbd'
 
 const { t } = useI18n()
 const palette = useCommandPalette()
@@ -125,5 +127,32 @@ useEventListener('keydown', (event: KeyboardEvent) => {
         </CommandItem>
       </CommandGroup>
     </CommandList>
+
+    <div
+      class="border-border bg-muted/60 text-muted-foreground flex w-full flex-nowrap items-center gap-3 overflow-x-auto border-t px-3 py-2.5 text-xs"
+      aria-hidden="true"
+    >
+      <div class="flex shrink-0 items-center gap-2">
+        <Kbd
+          class="text-foreground/90 border-border bg-background h-6 gap-0 px-1.5 shadow-sm"
+        >
+          <CornerDownLeft class="size-3.5 shrink-0" aria-hidden="true" />
+        </Kbd>
+        <span class="text-foreground/90 whitespace-nowrap">{{
+          t('commandPalette.footerGoToPage')
+        }}</span>
+      </div>
+      <span class="bg-border block h-4 w-px shrink-0" aria-hidden="true" />
+      <div class="ms-auto flex shrink-0 items-center gap-2">
+        <Kbd
+          class="text-foreground/90 border-border bg-background h-6 px-2 shadow-sm"
+        >
+          {{ t('settings.shortcut_escape_key') }}
+        </Kbd>
+        <span class="text-foreground/90 whitespace-nowrap">{{
+          t('commandPalette.footerClose')
+        }}</span>
+      </div>
+    </div>
   </CommandDialog>
 </template>

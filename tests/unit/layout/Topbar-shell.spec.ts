@@ -4,12 +4,6 @@ import Topbar from '~/components/layout/Topbar.vue'
 import { useRoute } from 'vue-router'
 
 vi.mock('vue-router')
-vi.mock('~/components/layout/NotificationBell.vue', () => ({
-  default: {
-    name: 'NotificationBell',
-    template: '<div class="notification-bell-stub" />',
-  },
-}))
 vi.mock('~/stores/auth', () => ({
   useAuthStore: vi.fn(() => ({
     user: { role: 'client' as const },
@@ -37,11 +31,6 @@ describe('Topbar (app shell)', () => {
           BreadcrumbLink: { template: '<span><slot /></span>' },
           BreadcrumbPage: { template: '<span><slot /></span>' },
           BreadcrumbSeparator: { template: '<span />' },
-          Tooltip: { template: '<div><slot /></div>' },
-          TooltipTrigger: { template: '<div><slot /></div>' },
-          TooltipContent: { template: '<div><slot /></div>' },
-          Button: { template: '<button type="button"><slot /></button>' },
-          Kbd: { template: '<span><slot /></span>' },
         },
         mocks: {
           $t: (key: string) => key,

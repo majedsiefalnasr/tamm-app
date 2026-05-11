@@ -161,9 +161,7 @@ const payoutChartConfig = computed<ChartConfig>(() => ({
 </script>
 
 <template>
-  <div
-    class="mx-auto max-w-[1400px] space-y-6 px-4 pt-6 pb-16 md:px-8 md:pt-8 md:pb-20"
-  >
+  <div class="mx-auto max-w-[1400px] space-y-6">
     <div>
       <h1 class="text-ink text-3xl font-bold">
         {{ $t('pages.contractor_dashboard') }}

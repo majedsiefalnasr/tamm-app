@@ -37,18 +37,11 @@ watch(
 
 <template>
   <ContractorDashboardPage v-if="role === 'contractor'" />
-  <div
-    v-else
-    class="flex flex-col gap-4 px-4 py-4 pb-16 md:gap-6 md:py-6 md:pb-20 lg:px-6"
-  >
-    <ClientDashboardSection v-if="role === 'client'" />
-    <FieldEngineerDashboard v-else-if="role === 'field_engineer'" />
-    <SupervisorEngineerDashboard v-else-if="role === 'supervisor_engineer'" />
-    <AdminDashboardPage
-      v-else-if="role === 'admin' || role === 'super_admin'"
-    />
-    <div v-else class="text-muted-foreground text-sm">
-      {{ $t('errors.access_denied') }}
-    </div>
+  <ClientDashboardSection v-else-if="role === 'client'" />
+  <FieldEngineerDashboard v-else-if="role === 'field_engineer'" />
+  <SupervisorEngineerDashboard v-else-if="role === 'supervisor_engineer'" />
+  <AdminDashboardPage v-else-if="role === 'admin' || role === 'super_admin'" />
+  <div v-else class="text-muted-foreground text-sm">
+    {{ $t('errors.access_denied') }}
   </div>
 </template>

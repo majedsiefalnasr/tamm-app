@@ -18,7 +18,7 @@ interface Props {
   isLoading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
@@ -69,9 +69,11 @@ const formatDate = (dateString: string) => {
         <EmptyMedia variant="icon">
           <CreditCard />
         </EmptyMedia>
+        <EmptyTitle>{{ t('withdrawal.empty.title') }}</EmptyTitle>
+        <EmptyDescription>{{
+          t('withdrawal.empty.subtitle')
+        }}</EmptyDescription>
       </EmptyHeader>
-      <EmptyTitle>{{ t('withdrawal.empty.title') }}</EmptyTitle>
-      <EmptyDescription>{{ t('withdrawal.empty.subtitle') }}</EmptyDescription>
     </Empty>
 
     <!-- Withdrawal Groups -->

@@ -3,7 +3,7 @@ import type { ListboxRootEmits, ListboxRootProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
 import { ListboxRoot, useFilter, useForwardPropsEmits } from "reka-ui"
-import { reactive, ref, watch } from "vue"
+import { computed, reactive, ref, watch } from "vue"
 import { cn } from "@/lib/utils"
 import { provideCommandContext } from "."
 
@@ -74,12 +74,19 @@ provideCommandContext({
   allGroups,
   filterState,
 })
+
+const { locale } = useI18n()
+/** Match `app.vue` — Reka listbox defaults `dir="ltr"` on the filter control */
+const commandDir = computed((): "ltr" | "rtl" =>
+  locale.value === "ar" ? "rtl" : "ltr",
+)
 </script>
 
 <template>
   <ListboxRoot
     data-slot="command"
     v-bind="forwarded"
+    :dir="commandDir"
     :class="cn('bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md', props.class)"
   >
     <slot />

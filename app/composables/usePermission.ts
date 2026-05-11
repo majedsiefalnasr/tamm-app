@@ -31,6 +31,8 @@ export const usePermission = () => {
         'view_admin_panel',
         'view_admin_projects',
         'assign_engineers',
+        'toggle_user_status',
+        'edit_user',
       ],
       admin: [
         'view_projects',
@@ -47,6 +49,8 @@ export const usePermission = () => {
         'view_admin_panel',
         'view_admin_projects',
         'assign_engineers',
+        'toggle_user_status',
+        'edit_user',
       ],
       client: [
         'view_projects',

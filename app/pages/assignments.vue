@@ -44,7 +44,7 @@ const counts = computed(() => {
 </script>
 
 <template>
-  <div class="px-4 pt-6 pb-16 md:px-8 md:pt-8 md:pb-20">
+  <div>
     <!-- Page Header -->
     <div class="mb-8">
       <h1 class="text-ink text-2xl font-extrabold md:text-3xl">

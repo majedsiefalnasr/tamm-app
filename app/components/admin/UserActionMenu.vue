@@ -30,7 +30,12 @@ const { t } = useI18n()
         <MoreVertical class="h-4 w-4" />
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="start">
+    <DropdownMenuContent
+      side="bottom"
+      align="end"
+      :side-offset="6"
+      :collision-padding="8"
+    >
       <DropdownMenuItem @click="emit('edit')">
         {{ t('admin.users.actions.edit') }}
       </DropdownMenuItem>

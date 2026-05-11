@@ -5,6 +5,7 @@ import { mockAdminUsers } from '~/composables/__mocks__/admin-users'
 import type { SelectContractorFailure } from '~/composables/useProjects'
 import { formatCurrency } from '~/utils/formatters'
 import { canTransition } from '~/utils/statusMachine'
+import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import { Button } from '~/components/ui/button'
 import AssignEngineersDialog from '~/components/project/AssignEngineersDialog.vue'
@@ -501,7 +502,7 @@ const handleCloseBiddingConfirmed = async () => {
 
 <template>
   <!-- Loading state -->
-  <div v-if="pending" class="min-h-screen space-y-6 p-4 md:p-8">
+  <div v-if="pending" class="min-h-screen space-y-6">
     <div class="space-y-3">
       <div class="bg-muted-foreground/20 h-10 w-1/3 rounded-lg" />
       <div class="bg-muted-foreground/20 h-4 w-1/2 rounded-lg" />
@@ -518,7 +519,7 @@ const handleCloseBiddingConfirmed = async () => {
   </div>
 
   <!-- Main content -->
-  <div v-else-if="project" class="space-y-6 p-4 md:p-8">
+  <div v-else-if="project" class="space-y-6">
     <!-- Header card -->
     <div
       class="border-border bg-card shadow-card rounded-3xl border p-6 md:p-8"
@@ -733,12 +734,12 @@ const handleCloseBiddingConfirmed = async () => {
         </Button>
       </div>
 
-      <div
+      <EmptyState
         v-if="!project.milestones.length"
-        class="border-border rounded-lg border-2 border-dashed p-8 text-center"
-      >
-        <p class="text-muted-foreground text-sm">No milestones yet</p>
-      </div>
+        icon="folder"
+        class="border-0 bg-transparent py-6 shadow-none"
+        title="project.details.noMilestones"
+      />
 
       <div v-else class="space-y-3">
         <div

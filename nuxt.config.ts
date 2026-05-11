@@ -65,6 +65,9 @@ export default defineNuxtConfig({
         'tailwind-merge',
         'lucide-vue-next',
         'vue-sonner',
+        '@unovis/vue',
+        '@unovis/ts',
+        '@tanstack/vue-table',
       ],
     },
     /** Client `$fetch('/api/...')` hits Vite in dev — forward POSTs to the backend. */

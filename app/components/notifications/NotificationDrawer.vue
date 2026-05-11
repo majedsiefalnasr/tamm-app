@@ -85,8 +85,9 @@ const handleMarkAllAsRead = () => {
         <!-- Empty state -->
         <EmptyState
           v-if="visibleNotifications.length === 0"
+          icon="bell"
           class="flex h-64 flex-col items-center justify-center"
-          :title="$t('notif.drawer.empty')"
+          title="notif.drawer.empty"
         />
 
         <!-- Notification list -->

@@ -38,9 +38,9 @@ defineProps<Props>()
         <EmptyMedia variant="icon">
           <Inbox />
         </EmptyMedia>
+        <EmptyTitle>{{ $t('common.none') }}</EmptyTitle>
+        <EmptyDescription>{{ $t('payment.empty.none') }}</EmptyDescription>
       </EmptyHeader>
-      <EmptyTitle>{{ $t('common.none') }}</EmptyTitle>
-      <EmptyDescription>{{ $t('payment.empty.none') }}</EmptyDescription>
     </Empty>
 
     <!-- Payment List -->

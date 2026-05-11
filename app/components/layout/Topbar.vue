@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
@@ -10,28 +9,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '~/components/ui/breadcrumb'
-import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { SidebarTrigger } from '~/components/ui/sidebar'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '~/components/ui/tooltip'
-import { Kbd } from '~/components/ui/kbd'
-import { tryUseCommandPalette } from '~/composables/useCommandPalette'
-import NotificationBell from './NotificationBell.vue'
 import { useAuthStore } from '~/stores/auth'
 import { getHomePageForRole } from '~/utils/roleRoutes'
 
 const auth = useAuthStore()
 const route = useRoute()
-const { t } = useI18n()
-const palette = tryUseCommandPalette()
-
-function openCommandPalette() {
-  palette?.open()
-}
 
 const homeHref = computed(() => getHomePageForRole(auth.user?.role ?? 'client'))
 
@@ -70,38 +54,6 @@ const pageTitleKey = computed(() => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-
-      <div class="ms-auto flex shrink-0 items-center gap-3">
-        <Tooltip v-if="palette">
-          <TooltipTrigger as-child>
-            <Button
-              variant="ghost"
-              size="icon"
-              class="size-9 shrink-0"
-              :aria-label="t('commandPalette.open')"
-              type="button"
-              @click="openCommandPalette"
-            >
-              <MagnifyingGlassIcon class="size-5" aria-hidden="true" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent
-            side="bottom"
-            align="end"
-            class="flex flex-wrap items-center gap-2"
-          >
-            <span>{{ t('commandPalette.open') }}</span>
-            <span class="flex items-center gap-1" aria-hidden="true">
-              <Kbd>{{ t('commandPalette.modMeta') }}</Kbd>
-              <span class="text-muted-foreground text-xs">/</span>
-              <Kbd>{{ t('commandPalette.modCtrl') }}</Kbd>
-              <span class="text-muted-foreground text-xs">+</span>
-              <Kbd>K</Kbd>
-            </span>
-          </TooltipContent>
-        </Tooltip>
-        <NotificationBell />
-      </div>
     </div>
   </header>
 </template>

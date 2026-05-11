@@ -218,8 +218,8 @@ const handleReviewActionComplete = async () => {
         <EmptyState
           v-else-if="pendingReviews.length === 0"
           icon="inbox"
-          :title="$t('dashboard.supervisor.pendingEmptyTitle')"
-          :description="$t('dashboard.supervisor.pendingEmptyDescription')"
+          title="dashboard.supervisor.pendingEmptyTitle"
+          description="dashboard.supervisor.pendingEmptyDescription"
         />
 
         <div v-else class="space-y-3">
@@ -254,14 +254,12 @@ const handleReviewActionComplete = async () => {
           <Skeleton class="h-14 w-full rounded-xl" />
           <Skeleton class="h-14 w-full rounded-xl" />
         </div>
-        <div
+        <EmptyState
           v-else-if="supervisorRecentDecisionsTop.length === 0"
-          class="border-border rounded-2xl border border-dashed p-10 text-center"
-        >
-          <p class="text-ink text-sm font-bold">
-            {{ $t('dashboard.supervisor.recentEmpty') }}
-          </p>
-        </div>
+          icon="history"
+          class="rounded-2xl border-0 bg-transparent py-8 shadow-none"
+          title="dashboard.supervisor.recentEmpty"
+        />
         <ul v-else class="divide-border divide-y">
           <li
             v-for="row in supervisorRecentDecisionsTop"
@@ -325,8 +323,8 @@ const handleReviewActionComplete = async () => {
         <EmptyState
           v-else-if="supervisorProjects.length === 0"
           icon="folder"
-          :title="$t('dashboard.supervisor.projectsEmpty')"
-          :description="$t('dashboard.supervisor.projectsEmptyHint')"
+          title="dashboard.supervisor.projectsEmpty"
+          description="dashboard.supervisor.projectsEmptyHint"
         />
 
         <ul v-else class="space-y-4">

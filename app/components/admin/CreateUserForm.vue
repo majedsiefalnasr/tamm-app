@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { createUserSchema, type CreateUserPayload } from '#shared/types/user'
 import { useNotifications } from '~/composables/useNotifications'
 import { useAdminUsers } from '../../composables/useAdminUsers'
 import { useAuthStore } from '../../stores/auth'
+import type { User } from '../../composables/useAdminUsers'
 import { Button } from '../ui/button'
+import { DialogClose, DialogFooter } from '../ui/dialog'
 import { Field, FieldError, FieldLabel } from '../ui/field'
 import { Input } from '../ui/input'
 import {
@@ -22,16 +24,21 @@ interface Emits {
   cancel: []
 }
 
+const props = defineProps<{
+  user?: User | null
+}>()
+
 const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
 const auth = useAuthStore()
-const { createUser, creating } = useAdminUsers()
+const { createUser, updateUser, creating } = useAdminUsers()
 const { notify } = useNotifications()
 
-const { values, handleSubmit, errors, setFieldError, isSubmitting } =
+const { values, handleSubmit, errors, setFieldError, submitCount, resetForm } =
   useForm<CreateUserPayload>({
     validationSchema: toTypedSchema(createUserSchema),
+    validateOnMount: false,
     initialValues: {
       name: '',
       email: '',
@@ -61,25 +68,72 @@ const availableRoles = computed(() => {
 
 const onSubmit = handleSubmit(async formValues => {
   try {
-    await createUser(formValues as CreateUserPayload)
-    notify.success(t('errors.user_created'))
+    if (props.user?.id) {
+      await updateUser(props.user.id, formValues as CreateUserPayload)
+      notify.success(t('errors.user_updated'))
+    } else {
+      await createUser(formValues as CreateUserPayload)
+      notify.success(t('errors.user_created'))
+    }
     emit('success')
   } catch (error: any) {
     if (error?.data?.error?.errors) {
+      const allowedFields: Array<keyof CreateUserPayload> = [
+        'name',
+        'email',
+        'role',
+        'phone',
+      ]
       Object.entries(error.data.error.errors).forEach(([field, messages]) => {
-        setFieldError(field, (messages as string[])[0])
+        if (allowedFields.includes(field as keyof CreateUserPayload)) {
+          setFieldError(
+            field as keyof CreateUserPayload,
+            (messages as string[])[0]
+          )
+        }
       })
     } else {
-      notify.error(t('errors.user_creation_failed'))
+      notify.error(
+        props.user?.id
+          ? t('errors.user_update_failed')
+          : t('errors.user_creation_failed')
+      )
     }
   }
 })
+
+watch(
+  () => props.user,
+  user => {
+    if (user) {
+      resetForm({
+        values: {
+          name: user.name,
+          email: user.email,
+          role: user.role as CreateUserPayload['role'],
+          phone: user.phone ?? '',
+        },
+      })
+      return
+    }
+
+    resetForm({
+      values: {
+        name: '',
+        email: '',
+        role: undefined,
+        phone: '',
+      },
+    })
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <form class="space-y-4" @submit="onSubmit">
+  <form class="grid gap-4 py-1" @submit="onSubmit">
     <!-- Full Name -->
-    <Field class="gap-1.5 space-y-1.5">
+    <Field class="grid gap-2">
       <FieldLabel for="name" class="text-start">{{
         t('admin.users.create.full_name')
       }}</FieldLabel>
@@ -87,13 +141,16 @@ const onSubmit = handleSubmit(async formValues => {
         id="name"
         v-model="values.name"
         :placeholder="t('admin.users.create.full_name_placeholder')"
-        :class="{ 'border-destructive': errors.name }"
+        :class="{ 'border-destructive': submitCount > 0 && errors.name }"
       />
-      <FieldError :errors="[errors.name]" class="text-xs" />
+      <FieldError
+        :errors="submitCount > 0 ? [errors.name] : []"
+        class="text-xs"
+      />
     </Field>
 
     <!-- Email -->
-    <Field class="gap-1.5 space-y-1.5">
+    <Field class="grid gap-2">
       <FieldLabel for="email" class="text-start">{{
         t('admin.users.create.email')
       }}</FieldLabel>
@@ -102,18 +159,23 @@ const onSubmit = handleSubmit(async formValues => {
         v-model="values.email"
         type="email"
         :placeholder="t('admin.users.create.email_placeholder')"
-        :class="{ 'border-destructive': errors.email }"
+        :class="{ 'border-destructive': submitCount > 0 && errors.email }"
       />
-      <FieldError :errors="[errors.email]" class="text-xs" />
+      <FieldError
+        :errors="submitCount > 0 ? [errors.email] : []"
+        class="text-xs"
+      />
     </Field>
 
     <!-- Role -->
-    <Field class="gap-1.5 space-y-1.5">
+    <Field class="grid gap-2">
       <FieldLabel for="role" class="text-start">{{
         t('admin.users.create.role')
       }}</FieldLabel>
       <Select v-model="values.role">
-        <SelectTrigger :class="{ 'border-destructive': errors.role }">
+        <SelectTrigger
+          :class="{ 'border-destructive': submitCount > 0 && errors.role }"
+        >
           <SelectValue
             :placeholder="t('admin.users.create.role_placeholder')"
           />
@@ -128,53 +190,42 @@ const onSubmit = handleSubmit(async formValues => {
           </SelectItem>
         </SelectContent>
       </Select>
-      <FieldError :errors="[errors.role]" class="text-xs" />
+      <FieldError
+        :errors="submitCount > 0 ? [errors.role] : []"
+        class="text-xs"
+      />
     </Field>
 
-    <!-- Phone (Optional) - only show if user starts typing -->
-    <Field v-if="values.phone" class="gap-1.5 space-y-1.5">
+    <!-- Phone (Optional) -->
+    <Field class="grid gap-2">
       <FieldLabel for="phone" class="text-start">{{
         t('admin.users.create.phone')
       }}</FieldLabel>
       <Input
         id="phone"
-        v-model="values.phone"
+        :model-value="values.phone ?? ''"
         type="tel"
         :placeholder="t('admin.users.create.phone_placeholder')"
+        @update:model-value="values.phone = String($event)"
       />
     </Field>
-    <!-- Show placeholder if phone is empty - allow user to add phone -->
-    <div v-if="!values.phone" class="pt-2">
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        class="text-muted-foreground text-start"
-        @click="values.phone = ''"
-      >
-        + {{ t('admin.users.create.phone') }}
-      </Button>
-    </div>
 
-    <!-- Form Actions -->
-    <div class="flex gap-3 pt-4">
-      <Button
-        type="button"
-        variant="ghost"
-        class="flex-1"
-        :disabled="creating"
-        @click="() => emit('cancel')"
-      >
-        {{ t('admin.users.create.cancel') }}
+    <DialogFooter class="mt-2 gap-2">
+      <DialogClose as-child>
+        <Button
+          type="button"
+          variant="outline"
+          :disabled="creating"
+          @click="() => emit('cancel')"
+        >
+          {{ t('admin.users.create.cancel') }}
+        </Button>
+      </DialogClose>
+      <Button type="submit" :disabled="creating" :loading="creating">
+        {{
+          props.user?.id ? t('common.confirm') : t('admin.users.create.submit')
+        }}
       </Button>
-      <Button
-        type="submit"
-        class="flex-1"
-        :disabled="creating"
-        :loading="creating"
-      >
-        {{ t('admin.users.create.submit') }}
-      </Button>
-    </div>
+    </DialogFooter>
   </form>
 </template>

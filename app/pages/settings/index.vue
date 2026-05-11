@@ -10,7 +10,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+  <div class="flex flex-1 flex-col gap-6">
     <div>
       <h1 class="text-foreground text-2xl font-semibold tracking-tight">
         {{ t('settings.title') }}

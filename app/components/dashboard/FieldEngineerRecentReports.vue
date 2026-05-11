@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
+import EmptyState from '~/components/common/EmptyState.vue'
 import { Card } from '~/components/ui/card'
 import type { ReportData } from '~/composables/useReports'
 import { formatDate } from '~/utils/formatters'
@@ -57,29 +58,12 @@ const handleReportClick = (projectId: string, milestoneId: string) => {
     </div>
 
     <!-- Empty State -->
-    <div
+    <EmptyState
       v-else-if="!reports || reports.length === 0"
-      class="border-border/50 flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed p-8 text-center"
-    >
-      <div class="text-muted-foreground">
-        <svg
-          class="mx-auto h-10 w-10"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-          />
-        </svg>
-      </div>
-      <p class="text-muted-foreground text-sm font-medium">
-        {{ $t('dashboard.fieldEngineer.noRecentReports') }}
-      </p>
-    </div>
+      icon="clipboard"
+      class="rounded-2xl py-8"
+      title="dashboard.fieldEngineer.noRecentReports"
+    />
 
     <!-- Reports List -->
     <div v-else class="space-y-3">

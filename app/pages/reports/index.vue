@@ -39,7 +39,7 @@ function formatReportStatus(status: string) {
 </script>
 
 <template>
-  <div class="space-y-6 px-4 py-6 md:px-6">
+  <div class="space-y-6">
     <div>
       <h1 class="text-3xl font-bold">{{ $t('pages.reports_title') }}</h1>
       <p class="text-muted-foreground mt-2">
@@ -53,7 +53,7 @@ function formatReportStatus(status: string) {
 
     <EmptyState
       v-else-if="showEmpty"
-      icon="📋"
+      icon="clipboard"
       title="pages.reports_empty_title"
       description="pages.reports_empty_description"
     />

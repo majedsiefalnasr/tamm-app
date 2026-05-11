@@ -146,10 +146,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="bg-background min-h-screen p-4 md:p-6">
+  <div class="bg-background min-h-0 flex-1">
     <template v-if="isAdminPayments">
       <EmptyState
-        icon="💳"
+        icon="card"
         title="pages.admin_payments_title"
         description="pages.admin_payments_description"
       />
@@ -210,7 +210,9 @@ onUnmounted(() => {
       <!-- Empty State -->
       <EmptyState
         v-else-if="!hasAnyPayments"
-        :message="$t('payment.empty.none')"
+        icon="card"
+        title="payment.empty.none"
+        description="payment.empty.description"
       />
 
       <!-- Content -->

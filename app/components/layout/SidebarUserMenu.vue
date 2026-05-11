@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { ChevronUpDownIcon } from '@heroicons/vue/24/outline'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { Bell, ChevronsUpDown, UserCircle } from 'lucide-vue-next'
 import { useAuthStore } from '~/stores/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -17,11 +18,21 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
+import NotificationDrawer from '~/components/notifications/NotificationDrawer.vue'
+import { useNotifications } from '~/composables/useNotifications'
 import { getDisplayNameForRole } from '~/utils/roleRoutes'
 
 const auth = useAuthStore()
 const { isMobile } = useSidebar()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
+
+const notificationDrawerOpen = ref(false)
+const { unreadCount, startPolling, stopPolling } = useNotifications()
+
+const UNREAD_COUNT_THRESHOLD = 99
+const notificationBadgeText = computed(() =>
+  unreadCount.value > UNREAD_COUNT_THRESHOLD ? '99+' : String(unreadCount.value)
+)
 
 /** RTL + dock-right sidebar: avoid opening the menu past the viewport edge. */
 const accountMenuSide = computed<'top' | 'right' | 'bottom' | 'left'>(() => {
@@ -42,10 +53,26 @@ const getRoleDisplayNameForDisplay = (role: string): string => {
   return getDisplayNameForRole(role)
 }
 
+function openNotifications() {
+  notificationDrawerOpen.value = true
+}
+
+function goToAccount() {
+  navigateTo('/settings')
+}
+
 const handleLogout = async () => {
   if (auth.isLoading) return
   await auth.logout()
 }
+
+onMounted(() => {
+  startPolling()
+})
+
+onBeforeUnmount(() => {
+  stopPolling()
+})
 </script>
 
 <template>
@@ -73,7 +100,7 @@ const handleLogout = async () => {
                 auth.user?.email
               }}</span>
             </div>
-            <ChevronUpDownIcon class="ms-auto size-4 shrink-0 opacity-70" />
+            <ChevronsUpDown class="ms-auto size-4 shrink-0 opacity-70" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -96,9 +123,28 @@ const handleLogout = async () => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem class="cursor-pointer" @click="goToAccount">
+              <UserCircle class="size-4 shrink-0" aria-hidden="true" />
+              {{ t('nav.account') }}
+            </DropdownMenuItem>
+            <DropdownMenuItem class="cursor-pointer" @click="openNotifications">
+              <Bell class="size-4 shrink-0" aria-hidden="true" />
+              <span class="flex-1 text-start">{{
+                $t('common.notifications')
+              }}</span>
+              <span
+                v-if="unreadCount > 0"
+                class="bg-destructive text-destructive-foreground ms-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold"
+              >
+                {{ notificationBadgeText }}
+              </span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
-            as-button
-            class="text-destructive focus:bg-destructive/10 cursor-pointer"
+            variant="destructive"
+            class="cursor-pointer"
             :disabled="auth.isLoading"
             @click="handleLogout"
           >
@@ -108,4 +154,6 @@ const handleLogout = async () => {
       </DropdownMenu>
     </SidebarMenuItem>
   </SidebarMenu>
+
+  <NotificationDrawer v-model:open="notificationDrawerOpen" />
 </template>

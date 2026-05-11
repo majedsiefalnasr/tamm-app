@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SectionErrorCard from '~/components/common/SectionErrorCard.vue'
 import { Button } from '~/components/ui/button'
 import { Card } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -57,17 +58,12 @@ const handleRetry = () => {
     </div>
 
     <!-- Error State -->
-    <Card
+    <SectionErrorCard
       v-else-if="hasError"
-      class="border-destructive/30 bg-destructive/5 gap-0 rounded-2xl p-4 shadow-none"
-    >
-      <p class="text-destructive mb-3 text-sm font-medium">
-        {{ errorMessage || $t('errors.failed_to_load') }}
-      </p>
-      <Button variant="outline" size="sm" @click="handleRetry">
-        {{ $t('common.retry') }}
-      </Button>
-    </Card>
+      title-key="common.error_occurred"
+      :detail="errorMessage || $t('errors.failed_to_load')"
+      @retry="handleRetry"
+    />
 
     <!-- Empty State (null summary) -->
     <Card

@@ -105,7 +105,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto">
     <!-- Loading State -->
     <PageSkeleton v-if="isLoading" />
 
@@ -113,7 +113,7 @@ const goBack = () => {
     <ErrorState
       v-else-if="error || !milestone"
       :message="error?.message || t('milestone.error.notFound')"
-      @retry="refreshProject()"
+      @action="refreshProject()"
     />
 
     <!-- Content -->

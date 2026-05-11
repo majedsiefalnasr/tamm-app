@@ -23,6 +23,7 @@ export const createUserSchema = z.object({
   name: z.string().min(1, 'الاسم مطلوب'),
   email: z.string().email('البريد الإلكتروني غير صحيح'),
   role: z.enum([
+    'admin',
     'client',
     'contractor',
     'field_engineer',

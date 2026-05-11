@@ -1,4 +1,4 @@
-import { ref, computed, readonly, watch, onMounted } from 'vue'
+import { ref, computed, readonly, onMounted } from 'vue'
 import type { Role, CreateUserPayload } from '#shared/types/user'
 import { mockAdminUsers } from './__mocks__/admin-users'
 
@@ -38,52 +38,43 @@ function withTimeout<T>(
 }
 
 export function useAdminUsers(initialRole?: Role | 'all' | null) {
-  const users = ref<User[]>([])
+  /** Full list from API/mock — tab counts and filters derive from this */
+  const allUsers = ref<User[]>([])
   /** True until first onMounted fetch completes */
   const loading = ref(true)
   const error = ref<string | null>(null)
   const selectedRole = ref<Role | 'all'>(initialRole || 'all')
 
-  const fetchUsers = async (role?: Role | 'all' | null) => {
+  const users = computed<User[]>(() => {
+    const role = selectedRole.value
+    const list = allUsers.value
+    if (role === 'all') return list
+    if (role === 'engineer') {
+      return list.filter(
+        u => u.role === 'field_engineer' || u.role === 'supervisor_engineer'
+      )
+    }
+    return list.filter(u => u.role === role)
+  })
+
+  /** Always loads the complete user list; role tabs filter client-side so counts stay stable */
+  const fetchUsers = async () => {
     loading.value = true
     error.value = null
     try {
       let result: User[] = []
 
       if (USE_MOCK) {
-        // Mock implementation
-        const roleToFetch = role || selectedRole.value
-        if (roleToFetch === 'all') {
-          result = mockAdminUsers
-        } else if (roleToFetch === 'engineer') {
-          // Union filter: both field_engineer and supervisor_engineer
-          result = mockAdminUsers.filter(
-            u => u.role === 'field_engineer' || u.role === 'supervisor_engineer'
-          )
-        } else {
-          result = mockAdminUsers.filter(u => u.role === roleToFetch)
-        }
+        result = [...mockAdminUsers]
       } else {
-        // Real API implementation
-        const params = new URLSearchParams()
-        const roleToFetch = role || selectedRole.value
-        if (roleToFetch !== 'all') {
-          params.append(
-            'role',
-            roleToFetch === 'engineer' ? 'engineer' : roleToFetch
-          )
-        }
-
-        const queryString = params.toString()
-        const url = queryString
-          ? `${API_ENDPOINT}?${queryString}`
-          : API_ENDPOINT
-
-        const response = await withTimeout(useApi(url), TIMEOUT_MS.fetch)
+        const response = await withTimeout(
+          useApi(API_ENDPOINT),
+          TIMEOUT_MS.fetch
+        )
         result = response.data as User[]
       }
 
-      users.value = result
+      allUsers.value = result
     } catch (e) {
       const message =
         e instanceof Error && e.message
@@ -92,7 +83,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
             ? e
             : 'Failed to fetch users'
       error.value = message
-      users.value = []
+      allUsers.value = []
     } finally {
       loading.value = false
     }
@@ -101,7 +92,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
   const creating = ref(false)
 
   const toggleUserStatus = async (userId: string) => {
-    const user = users.value.find(u => u.id === userId)
+    const user = allUsers.value.find(u => u.id === userId)
     if (!user) {
       error.value = 'User not found'
       return
@@ -151,7 +142,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
-        users.value.unshift(newUser)
+        allUsers.value.unshift(newUser)
       } else {
         // Real API implementation
         // Backend auto-generates password and emails user — don't send password in request
@@ -165,11 +156,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
 
         // Refetch users list to include new user
         try {
-          await fetchUsers(
-            selectedRole.value === 'all'
-              ? undefined
-              : (selectedRole.value as Role)
-          )
+          await fetchUsers()
         } catch (refetchError) {
           // Log refetch failure but don't block success; user was created server-side
           console.warn(
@@ -191,21 +178,55 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     }
   }
 
+  const updateUser = async (userId: string, payload: CreateUserPayload) => {
+    creating.value = true
+    error.value = null
+    const user = allUsers.value.find(u => u.id === userId)
+    if (!user) {
+      creating.value = false
+      throw new Error('User not found')
+    }
+
+    const previousUser = { ...user }
+    user.name = payload.name
+    user.email = payload.email
+    user.role = payload.role as Role
+    user.phone = payload.phone || null
+    user.updated_at = new Date().toISOString()
+
+    try {
+      if (!USE_MOCK) {
+        await withTimeout(
+          useApi(`/admin/users/${userId}`, {
+            method: 'PUT',
+            body: payload,
+          }),
+          TIMEOUT_MS.mutate
+        )
+      }
+      return user
+    } catch (e) {
+      Object.assign(user, previousUser)
+      throw e
+    } finally {
+      creating.value = false
+    }
+  }
+
   const userCountByRole = computed(() => {
+    const list = allUsers.value
     const counts: Record<Role | 'all' | 'engineer', number> = {
-      all: users.value.length,
-      admin: users.value.filter(u => u.role === 'admin').length,
-      client: users.value.filter(u => u.role === 'client').length,
-      contractor: users.value.filter(u => u.role === 'contractor').length,
-      field_engineer: users.value.filter(u => u.role === 'field_engineer')
+      all: list.length,
+      admin: list.filter(u => u.role === 'admin').length,
+      client: list.filter(u => u.role === 'client').length,
+      contractor: list.filter(u => u.role === 'contractor').length,
+      field_engineer: list.filter(u => u.role === 'field_engineer').length,
+      supervisor_engineer: list.filter(u => u.role === 'supervisor_engineer')
         .length,
-      supervisor_engineer: users.value.filter(
-        u => u.role === 'supervisor_engineer'
-      ).length,
-      engineer: users.value.filter(
+      engineer: list.filter(
         u => u.role === 'field_engineer' || u.role === 'supervisor_engineer'
       ).length,
-      super_admin: users.value.filter(u => u.role === 'super_admin').length,
+      super_admin: list.filter(u => u.role === 'super_admin').length,
     }
     return counts
   })
@@ -215,20 +236,15 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     fetchUsers()
   })
 
-  // Watch for role changes
-  watch(selectedRole, newRole => {
-    fetchUsers(newRole)
-  })
-
   const fetchEngineersByRole = async (
     role: Role
   ): Promise<Array<{ id: string; name: string }>> => {
     try {
       // Ensure users are loaded before filtering (in case called before onMounted completes)
-      if (users.value.length === 0) {
-        await fetchUsers('all')
+      if (allUsers.value.length === 0) {
+        await fetchUsers()
       }
-      const filtered = users.value.filter(u => u.role === role)
+      const filtered = allUsers.value.filter(u => u.role === role)
       return filtered.map(u => ({
         id: u.id,
         name: u.name,
@@ -244,11 +260,11 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
   > => {
     try {
       // Ensure contractors are loaded (only fetch if we don't have any users yet)
-      const hasContractors = users.value.some(u => u.role === 'contractor')
-      if (users.value.length === 0 || !hasContractors) {
-        await fetchUsers('all')
+      const hasContractors = allUsers.value.some(u => u.role === 'contractor')
+      if (allUsers.value.length === 0 || !hasContractors) {
+        await fetchUsers()
       }
-      const contractors = users.value.filter(u => u.role === 'contractor')
+      const contractors = allUsers.value.filter(u => u.role === 'contractor')
       return contractors.map(u => ({
         id: u.id,
         name: u.name,
@@ -261,7 +277,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
   }
 
   return {
-    users: readonly(users),
+    users,
     loading: readonly(loading),
     error: readonly(error),
     selectedRole,
@@ -270,6 +286,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     fetchUsers,
     toggleUserStatus,
     createUser,
+    updateUser,
     refetch: () => fetchUsers(),
     fetchEngineersByRole,
     getContractorsList,

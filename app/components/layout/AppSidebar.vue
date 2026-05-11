@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import {
@@ -7,6 +7,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -14,6 +15,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
+import { Label } from '~/components/ui/label'
+import { Kbd } from '~/components/ui/kbd'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '~/components/ui/input-group'
+import { Search } from 'lucide-vue-next'
+import { tryUseCommandPalette } from '~/composables/useCommandPalette'
 import type { NavItem } from '~/utils/roleRoutes'
 import { getHomePageForRole } from '~/utils/roleRoutes'
 import { useRoleRoutes } from '~/composables/useRoleRoutes'
@@ -24,6 +34,14 @@ const auth = useAuthStore()
 const route = useRoute()
 const { getNavigationForRole } = useRoleRoutes()
 const { setOpenMobile } = useSidebar()
+const { t } = useI18n()
+const palette = tryUseCommandPalette()
+
+const sidebarSearchModel = ref('')
+
+function openCommandPaletteFromSearch() {
+  palette?.open()
+}
 
 watch(
   () => route.fullPath,
@@ -70,7 +88,7 @@ function isItemActive(href: string): boolean {
 <template>
   <Sidebar :side="SIDEBAR_DOCK" variant="inset" collapsible="offcanvas">
     <SidebarHeader
-      class="border-border flex shrink-0 flex-col justify-center border-b px-3 py-2"
+      class="border-border flex shrink-0 flex-col justify-center border-b py-2 ps-3 pe-3"
     >
       <SidebarMenu>
         <SidebarMenuItem>
@@ -96,9 +114,64 @@ function isItemActive(href: string): boolean {
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
+
+      <form
+        v-if="palette"
+        role="search"
+        class="group-data-[collapsible=icon]/sidebar-wrapper:hidden"
+        @submit.prevent="openCommandPaletteFromSearch"
+      >
+        <SidebarGroup class="py-0">
+          <SidebarGroupContent class="relative">
+            <Label for="sidebar-nav-search" class="sr-only">{{
+              t('commandPalette.open')
+            }}</Label>
+            <InputGroup
+              class="border-sidebar-border bg-sidebar-accent/40 shadow-none"
+            >
+              <InputGroupInput
+                id="sidebar-nav-search"
+                v-model="sidebarSearchModel"
+                type="search"
+                name="sidebar-nav-search"
+                readonly
+                tabindex="0"
+                autocomplete="off"
+                :placeholder="t('commandPalette.searchPlaceholder')"
+                :title="`${t('commandPalette.modMeta')}+K / ${t('commandPalette.modCtrl')}+K`"
+                class="text-sidebar-foreground placeholder:text-muted-foreground cursor-pointer"
+                @click="openCommandPaletteFromSearch"
+                @keydown.enter.prevent="openCommandPaletteFromSearch"
+              />
+              <InputGroupAddon
+                align="inline-start"
+                class="border-0 bg-transparent ps-2"
+                @click.stop="openCommandPaletteFromSearch"
+              >
+                <Search
+                  class="text-muted-foreground size-4 shrink-0 opacity-50"
+                  aria-hidden="true"
+                />
+              </InputGroupAddon>
+              <InputGroupAddon
+                align="inline-end"
+                class="border-0 bg-transparent ps-2"
+                dir="ltr"
+                @click.stop="openCommandPaletteFromSearch"
+              >
+                <Kbd
+                  class="text-muted-foreground h-5 min-w-0 px-1.5 font-mono text-[10px] leading-none"
+                >
+                  {{ t('commandPalette.modMeta') }} + K
+                </Kbd>
+              </InputGroupAddon>
+            </InputGroup>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </form>
     </SidebarHeader>
 
-    <SidebarContent class="gap-4 px-3 py-3">
+    <SidebarContent class="gap-4 py-3 ps-3 pe-3">
       <SidebarGroup v-if="groupedNav.main.length">
         <SidebarGroupLabel>{{ $t('nav.sections.platform') }}</SidebarGroupLabel>
         <SidebarMenu>
@@ -163,7 +236,7 @@ function isItemActive(href: string): boolean {
       </SidebarGroup>
     </SidebarContent>
 
-    <SidebarFooter class="border-border border-t px-3 pt-2 pb-3">
+    <SidebarFooter class="border-border border-t ps-3 pe-3 pt-2 pb-3">
       <SidebarUserMenu />
     </SidebarFooter>
   </Sidebar>

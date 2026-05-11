@@ -8,7 +8,9 @@ const homePage = computed(() => {
 </script>
 
 <template>
-  <div class="bg-background flex min-h-screen items-center justify-center px-4">
+  <div
+    class="bg-background flex min-h-screen flex-1 items-center justify-center"
+  >
     <div class="text-center">
       <h1 class="text-primary mb-4 text-6xl font-bold">403</h1>
       <p class="text-muted-foreground mb-8 text-xl">

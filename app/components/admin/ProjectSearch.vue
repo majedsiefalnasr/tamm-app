@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Search, X } from 'lucide-vue-next'
-import { Input } from '../ui/input'
+import { computed } from 'vue'
 import type { AdminProjectStatus } from '#shared/types/project'
 
 interface Props {
@@ -43,15 +41,6 @@ const statusTabs = computed(() => [
   { id: 'completed' as const, label: t('admin.projects.filter_completed') },
 ])
 
-const handleSearch = (value: string) => {
-  const truncated = value.slice(0, 100)
-  emit('update:search', truncated)
-}
-
-const handleClearSearch = () => {
-  emit('update:search', '')
-}
-
 const handleTabClick = (tab: AdminProjectStatus) => {
   emit('update:statusFilter', tab)
 }
@@ -75,31 +64,6 @@ const handleTabClick = (tab: AdminProjectStatus) => {
       >
         {{ tab.label }}
       </button>
-    </div>
-
-    <!-- Search Box -->
-    <div class="flex items-center gap-2">
-      <div class="relative flex-1">
-        <Search
-          class="text-muted-foreground absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2"
-        />
-        <Input
-          :model-value="searchQuery"
-          :placeholder="t('admin.projects.search_placeholder')"
-          class="ps-10"
-          :disabled="loading"
-          @update:model-value="handleSearch"
-        />
-        <button
-          v-if="searchQuery"
-          class="text-muted-foreground hover:text-foreground absolute end-3 top-1/2 -translate-y-1/2 transition"
-          :disabled="loading"
-          :aria-label="t('common.clear')"
-          @click="handleClearSearch"
-        >
-          <X class="h-4 w-4" />
-        </button>
-      </div>
     </div>
   </div>
 </template>

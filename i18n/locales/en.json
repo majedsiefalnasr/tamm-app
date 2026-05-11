@@ -56,11 +56,14 @@
     "role_required": "Role is required",
     "user_created": "User created successfully. Credentials sent via email.",
     "user_creation_failed": "Failed to create user. Please try again.",
+    "user_updated": "User updated successfully.",
+    "user_update_failed": "Failed to update user. Please try again.",
     "supervisor_required": "Supervisor Engineer is required",
     "field_required": "Field Engineer is required",
     "same_engineer": "Cannot assign the same engineer to both roles",
     "engineers_assigned": "Engineers assigned successfully",
     "engineers_assignment_failed": "Failed to assign engineers. Please try again.",
+    "failed_to_load": "We couldn't load this content.",
     "failed_to_load_engineers": "Failed to load engineers list",
     "contractor_not_invited": "This contractor is not invited to bid on this project."
   },
@@ -219,6 +222,7 @@
       "other": "Other",
       "system": "System"
     },
+    "account": "Account",
     "home": "Home",
     "overview": "Dashboard",
     "projects": "Projects",
@@ -243,7 +247,9 @@
     "groupShortcuts": "All pages",
     "open": "Open command palette",
     "modMeta": "⌘",
-    "modCtrl": "Ctrl"
+    "modCtrl": "Ctrl",
+    "footerGoToPage": "Go to page",
+    "footerClose": "Close"
   },
   "settings": {
     "title": "Settings",
@@ -731,13 +737,15 @@
         "preset_minimal": "Minimal",
         "preset_minimal_hint": "Hides email and created columns."
       },
+      "search_placeholder": "Search users by name, email, or role...",
       "table": {
         "name": "Name",
         "email": "Email",
         "role": "Role",
         "status": "Status",
         "created": "Created",
-        "actions": "Actions"
+        "actions": "Actions",
+        "columns_toggle": "Columns"
       },
       "actions": {
         "edit": "Edit",
@@ -757,6 +765,8 @@
       "empty_state": "No users found with this role",
       "create": {
         "title": "Create New User",
+        "description": "Fill in user details and create an account.",
+        "edit_description": "Update the user profile details and save changes.",
         "full_name": "Full Name",
         "full_name_placeholder": "e.g. Ahmed Mohammed Ali",
         "email": "Email",
@@ -794,7 +804,9 @@
         "total_value": "Total Value",
         "created_date": "Created",
         "action": "Action",
-        "view": "View"
+        "view": "View",
+        "columns_toggle": "Columns",
+        "no_results": "No matching projects found."
       },
       "empty_state": "No projects found",
       "empty_state_subtitle": "Try changing filters or search criteria",

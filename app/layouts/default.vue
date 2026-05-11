@@ -15,7 +15,11 @@ provideCommandPalette()
       <Topbar />
       <div class="flex min-h-0 flex-1 flex-col overflow-auto">
         <div class="@container/main flex min-h-0 flex-1 flex-col gap-2">
-          <slot />
+          <div
+            class="flex min-h-0 flex-1 flex-col gap-4 px-4 py-4 pb-16 md:gap-6 md:py-6 md:pb-20 lg:px-6"
+          >
+            <slot />
+          </div>
         </div>
       </div>
       <GlobalCommandPalette />

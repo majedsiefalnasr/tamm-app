@@ -48,8 +48,8 @@ const hasItems = computed(
     <EmptyState
       v-else-if="!hasItems"
       icon="inbox"
-      :title="$t('pages.reviews.empty.title')"
-      :description="$t('pages.reviews.empty.description')"
+      title="pages.reviews.empty.title"
+      description="pages.reviews.empty.description"
     />
 
     <!-- List of pending reviews -->

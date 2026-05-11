@@ -1,31 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAdminUsers } from '~/composables/useAdminUsers'
-import { useAdminUserListPreset } from '~/composables/useAdminUserListPreset'
 import { usePermission } from '~/composables/usePermission'
 import { useAuthStore } from '~/stores/auth'
 import { Button } from '~/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '~/components/ui/sheet'
-import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
-import { Label } from '~/components/ui/label'
-import { Users, Columns2 } from 'lucide-vue-next'
+import { Users } from 'lucide-vue-next'
+import SectionErrorCard from '~/components/common/SectionErrorCard.vue'
 import UserTable from '~/components/admin/UserTable.vue'
+import CreateUserDialog from '~/components/admin/CreateUserDialog.vue'
+import { Badge } from '~/components/ui/badge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,7 +26,8 @@ definePageMeta({
   pageTitle: 'admin.users.title',
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
 const { can } = usePermission()
 const auth = useAuthStore()
 
@@ -60,20 +44,6 @@ const {
   toggleUserStatus,
   refetch,
 } = useAdminUsers()
-
-const { preset, setPreset } = useAdminUserListPreset()
-const presetSheetOpen = ref(false)
-
-function handlePresetChange(value: string | undefined) {
-  if (value === 'default' || value === 'compact' || value === 'minimal') {
-    setPreset(value)
-  }
-}
-
-function handleMobilePresetChange(value: string) {
-  handlePresetChange(value)
-  presetSheetOpen.value = false
-}
 
 const showCreateDialog = ref(false)
 const editingUserId = ref<string | null>(null)
@@ -96,8 +66,18 @@ const filterTabs = computed(() => {
   return tabs
 })
 
+function handleRoleTabClick(role: Role | 'all') {
+  selectedRole.value = role
+}
+
 const hasEmptyResults = computed(
   () => !loading.value && users.value.length === 0
+)
+
+const editingUser = computed(() =>
+  editingUserId.value
+    ? (users.value.find(u => u.id === editingUserId.value) ?? null)
+    : null
 )
 
 const handleAddUser = () => {
@@ -142,11 +122,6 @@ async function confirmDeactivateUser() {
   deactivateTargetId.value = null
 }
 
-const handleCreateUserDialogClose = () => {
-  showCreateDialog.value = false
-  editingUserId.value = null
-}
-
 const handleUserCreated = () => {
   showCreateDialog.value = false
   editingUserId.value = null
@@ -161,156 +136,44 @@ const handleUserCreated = () => {
         {{ t('admin.users.title') }}
       </h1>
       <div class="flex flex-wrap items-center gap-2">
-        <div class="hidden md:block">
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="outline" size="sm" class="gap-2">
-                <Columns2 class="h-4 w-4" aria-hidden="true" />
-                {{ t('admin.users.list_preset.menu_label') }}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-56">
-              <DropdownMenuLabel>{{
-                t('admin.users.list_preset.menu_label')
-              }}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup
-                :model-value="preset"
-                @update:model-value="handlePresetChange"
-              >
-                <DropdownMenuRadioItem
-                  value="default"
-                  class="flex-col items-start gap-0 py-2"
-                >
-                  <span class="font-medium">{{
-                    t('admin.users.list_preset.preset_default')
-                  }}</span>
-                  <span class="text-muted-foreground text-xs font-normal">{{
-                    t('admin.users.list_preset.preset_default_hint')
-                  }}</span>
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem
-                  value="compact"
-                  class="flex-col items-start gap-0 py-2"
-                >
-                  <span class="font-medium">{{
-                    t('admin.users.list_preset.preset_compact')
-                  }}</span>
-                  <span class="text-muted-foreground text-xs font-normal">{{
-                    t('admin.users.list_preset.preset_compact_hint')
-                  }}</span>
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem
-                  value="minimal"
-                  class="flex-col items-start gap-0 py-2"
-                >
-                  <span class="font-medium">{{
-                    t('admin.users.list_preset.preset_minimal')
-                  }}</span>
-                  <span class="text-muted-foreground text-xs font-normal">{{
-                    t('admin.users.list_preset.preset_minimal_hint')
-                  }}</span>
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div class="md:hidden">
-          <Sheet v-model:open="presetSheetOpen">
-            <SheetTrigger as-child>
-              <Button
-                variant="outline"
-                size="sm"
-                class="gap-2"
-                :aria-label="t('admin.users.list_preset.open_sheet')"
-              >
-                <Columns2 class="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span class="truncate text-sm">{{
-                  t('admin.users.list_preset.menu_label')
-                }}</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="end" class="flex flex-col gap-6">
-              <SheetHeader class="text-start">
-                <SheetTitle>{{
-                  t('admin.users.list_preset.sheet_title')
-                }}</SheetTitle>
-                <SheetDescription>{{
-                  t('admin.users.list_preset.sheet_description')
-                }}</SheetDescription>
-              </SheetHeader>
-              <RadioGroup
-                class="flex flex-col gap-3"
-                :model-value="preset"
-                @update:model-value="handleMobilePresetChange"
-              >
-                <div class="border-border flex gap-3 rounded-lg border p-3">
-                  <RadioGroupItem id="preset-default" value="default" />
-                  <div class="grid flex-1 gap-1">
-                    <Label
-                      for="preset-default"
-                      class="cursor-pointer font-medium"
-                      >{{ t('admin.users.list_preset.preset_default') }}</Label
-                    >
-                    <p class="text-muted-foreground text-xs">
-                      {{ t('admin.users.list_preset.preset_default_hint') }}
-                    </p>
-                  </div>
-                </div>
-                <div class="border-border flex gap-3 rounded-lg border p-3">
-                  <RadioGroupItem id="preset-compact" value="compact" />
-                  <div class="grid flex-1 gap-1">
-                    <Label
-                      for="preset-compact"
-                      class="cursor-pointer font-medium"
-                      >{{ t('admin.users.list_preset.preset_compact') }}</Label
-                    >
-                    <p class="text-muted-foreground text-xs">
-                      {{ t('admin.users.list_preset.preset_compact_hint') }}
-                    </p>
-                  </div>
-                </div>
-                <div class="border-border flex gap-3 rounded-lg border p-3">
-                  <RadioGroupItem id="preset-minimal" value="minimal" />
-                  <div class="grid flex-1 gap-1">
-                    <Label
-                      for="preset-minimal"
-                      class="cursor-pointer font-medium"
-                      >{{ t('admin.users.list_preset.preset_minimal') }}</Label
-                    >
-                    <p class="text-muted-foreground text-xs">
-                      {{ t('admin.users.list_preset.preset_minimal_hint') }}
-                    </p>
-                  </div>
-                </div>
-              </RadioGroup>
-            </SheetContent>
-          </Sheet>
-        </div>
-
         <Button @click="handleAddUser">
           {{ t('admin.users.add_button') }}
         </Button>
       </div>
     </div>
 
-    <div class="border-border flex gap-x-2 border-b">
+    <div
+      class="border-border flex gap-x-2 overflow-x-auto border-b"
+      role="tablist"
+      :dir="locale === 'ar' ? 'rtl' : 'ltr'"
+      :aria-label="t('admin.users.title')"
+    >
       <button
         v-for="tab in filterTabs"
         :key="tab.id"
+        type="button"
+        role="tab"
+        :aria-selected="selectedRole === tab.id"
         :class="[
-          'border-b-2 py-3 ps-4 pe-4 text-sm font-medium transition',
+          'group flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition',
           selectedRole === tab.id
             ? 'border-primary text-primary'
             : 'text-muted-foreground hover:text-foreground border-transparent',
         ]"
-        @click="selectedRole = tab.id as Role | 'all'"
+        @click="handleRoleTabClick(tab.id)"
       >
-        {{ tab.label }}
-        <span class="ms-2 text-xs opacity-60">
-          ({{ userCountByRole[tab.id as keyof typeof userCountByRole] }})
-        </span>
+        <span class="whitespace-nowrap">{{ tab.label }}</span>
+        <Badge
+          variant="secondary"
+          :class="[
+            'min-w-6 justify-center border-transparent px-1.5 tabular-nums transition-colors',
+            selectedRole === tab.id
+              ? 'bg-primary/15 text-primary'
+              : 'bg-muted-foreground/15 text-muted-foreground',
+          ]"
+        >
+          {{ userCountByRole[tab.id as keyof typeof userCountByRole] }}
+        </Badge>
       </button>
     </div>
 
@@ -328,18 +191,17 @@ const handleUserCreated = () => {
       <UserTable
         :users="users"
         :loading="loading"
-        :density-preset="preset"
         @edit-user="handleEditUser"
         @toggle-status="handleToggleStatus"
       />
     </div>
 
-    <div
+    <SectionErrorCard
       v-if="error"
-      class="border-destructive bg-destructive/10 rounded-lg border p-4"
-    >
-      <p class="text-destructive text-sm">{{ error }}</p>
-    </div>
+      title-key="common.error_occurred"
+      :detail="error"
+      @retry="refetch"
+    />
 
     <AlertDialog
       :open="deactivateAlertOpen"
@@ -369,5 +231,17 @@ const handleUserCreated = () => {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    <CreateUserDialog
+      :open="showCreateDialog"
+      :user="editingUser"
+      @update:open="
+        open => {
+          showCreateDialog = open
+          if (!open) editingUserId = null
+        }
+      "
+      @success="handleUserCreated"
+    />
   </div>
 </template>

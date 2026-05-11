@@ -56,11 +56,14 @@
     "role_required": "الدور مطلوب",
     "user_created": "تم إنشاء المستخدم. تم إرسال بيانات الدخول عبر البريد الإلكتروني.",
     "user_creation_failed": "فشل إنشاء المستخدم. يرجى المحاولة لاحقاً.",
+    "user_updated": "تم تحديث المستخدم بنجاح.",
+    "user_update_failed": "فشل تحديث المستخدم. يرجى المحاولة لاحقاً.",
     "supervisor_required": "مهندس المراقبة مطلوب",
     "field_required": "مهندس الموقع مطلوب",
     "same_engineer": "لا يمكن تعيين نفس المهندس لدورين مختلفين",
     "engineers_assigned": "تم تعيين المهندسين بنجاح",
     "engineers_assignment_failed": "فشل تعيين المهندسين. يرجى المحاولة لاحقاً.",
+    "failed_to_load": "تعذر تحميل هذا المحتوى.",
     "failed_to_load_engineers": "فشل تحميل قائمة المهندسين",
     "contractor_not_invited": "هذا المقاول غير مدعو لتقديم عرض على هذا المشروع."
   },
@@ -219,6 +222,7 @@
       "other": "أخرى",
       "system": "النظام"
     },
+    "account": "الحساب",
     "home": "الرئيسية",
     "overview": "لوحة التحكم",
     "projects": "المشاريع",
@@ -243,7 +247,9 @@
     "groupShortcuts": "كل الصفحات",
     "open": "فتح لوحة الأوامر",
     "modMeta": "⌘",
-    "modCtrl": "Ctrl"
+    "modCtrl": "Ctrl",
+    "footerGoToPage": "الانتقال إلى الصفحة",
+    "footerClose": "إغلاق"
   },
   "settings": {
     "title": "الإعدادات",
@@ -731,13 +737,15 @@
         "preset_minimal": "الحد الأدنى",
         "preset_minimal_hint": "إخفاء البريد الإلكتروني وتاريخ الإنشاء."
       },
+      "search_placeholder": "ابحث عن المستخدم بالاسم أو البريد أو الدور...",
       "table": {
         "name": "الاسم",
         "email": "البريد الإلكتروني",
         "role": "الدور",
         "status": "الحالة",
         "created": "تاريخ الإنشاء",
-        "actions": "الإجراءات"
+        "actions": "الإجراءات",
+        "columns_toggle": "الأعمدة"
       },
       "actions": {
         "edit": "تحرير",
@@ -757,6 +765,8 @@
       "empty_state": "لا توجد مستخدمون بهذا الدور",
       "create": {
         "title": "إنشاء مستخدم جديد",
+        "description": "أدخل بيانات المستخدم لإنشاء الحساب.",
+        "edit_description": "حدّث بيانات المستخدم ثم احفظ التغييرات.",
         "full_name": "الاسم الكامل",
         "full_name_placeholder": "مثال: أحمد محمد علي",
         "email": "البريد الإلكتروني",
@@ -794,7 +804,9 @@
         "total_value": "القيمة الإجمالية",
         "created_date": "تم الإنشاء",
         "action": "إجراء",
-        "view": "عرض"
+        "view": "عرض",
+        "columns_toggle": "الأعمدة",
+        "no_results": "لا توجد مشاريع مطابقة."
       },
       "empty_state": "لا توجد مشاريع",
       "empty_state_subtitle": "جرب تغيير الفلتر أو البحث",

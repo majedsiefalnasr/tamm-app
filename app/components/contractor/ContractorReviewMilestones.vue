@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from '~/components/ui/button'
+import SectionErrorCard from '~/components/common/SectionErrorCard.vue'
 import { Card } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Badge } from '~/components/ui/badge'
@@ -70,17 +70,12 @@ const badgeClass = (status: string) => {
     </div>
 
     <!-- Error State -->
-    <Card
+    <SectionErrorCard
       v-else-if="hasError"
-      class="border-destructive/30 bg-destructive/5 gap-0 rounded-2xl p-4 shadow-none"
-    >
-      <p class="text-destructive mb-3 text-sm font-medium">
-        {{ errorMessage || $t('errors.failed_to_load') }}
-      </p>
-      <Button variant="outline" size="sm" @click="handleRetry">
-        {{ $t('common.retry') }}
-      </Button>
-    </Card>
+      title-key="common.error_occurred"
+      :detail="errorMessage || $t('errors.failed_to_load')"
+      @retry="handleRetry"
+    />
 
     <!-- Empty State -->
     <Card

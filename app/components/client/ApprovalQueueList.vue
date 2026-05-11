@@ -65,8 +65,8 @@ const handleApprovalFinished = () => {
     <EmptyState
       v-else-if="!hasItems"
       icon="inbox"
-      :title="$t('approval_queue.empty.title')"
-      :description="$t('approval_queue.empty.description')"
+      title="approval_queue.empty.title"
+      description="approval_queue.empty.description"
     />
 
     <!-- List of pending approvals -->

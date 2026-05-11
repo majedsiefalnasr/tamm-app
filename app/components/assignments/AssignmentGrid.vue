@@ -107,9 +107,9 @@ const emptyStateKey = computed(() => {
         <EmptyMedia variant="icon">
           <ClipboardCheck />
         </EmptyMedia>
+        <EmptyTitle>{{ $t(emptyStateKey) }}</EmptyTitle>
+        <EmptyDescription>{{ $t('common.none') }}</EmptyDescription>
       </EmptyHeader>
-      <EmptyTitle>{{ $t(emptyStateKey) }}</EmptyTitle>
-      <EmptyDescription>{{ $t('common.none') }}</EmptyDescription>
     </Empty>
 
     <!-- Assignment Grid -->

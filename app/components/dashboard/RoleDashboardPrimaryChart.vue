@@ -14,10 +14,13 @@ import {
 import { Skeleton } from '~/components/ui/skeleton'
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from '~/components/ui/empty'
+import { ChartSpline } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import type {
   RoleDashboardChartDefinition,
@@ -145,14 +148,19 @@ function xAccessor(d: RoleDashboardChartPoint): number {
 
       <Empty v-else class="border-border border border-dashed">
         <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <ChartSpline class="size-6 shrink-0" aria-hidden="true" />
+          </EmptyMedia>
           <EmptyTitle>{{ t(emptyTitleKey) }}</EmptyTitle>
           <EmptyDescription>{{ t(emptyDescriptionKey) }}</EmptyDescription>
         </EmptyHeader>
-        <Button variant="outline" size="sm" class="mt-2" as-child>
-          <NuxtLink :to="emptyActionHref">
-            {{ t(emptyActionLabelKey) }}
-          </NuxtLink>
-        </Button>
+        <EmptyContent>
+          <Button variant="outline" size="sm" as-child>
+            <NuxtLink :to="emptyActionHref">
+              {{ t(emptyActionLabelKey) }}
+            </NuxtLink>
+          </Button>
+        </EmptyContent>
       </Empty>
     </CardContent>
   </Card>
