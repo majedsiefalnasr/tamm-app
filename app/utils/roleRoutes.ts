@@ -8,7 +8,14 @@ export interface NavItem {
   badge?: number
 }
 
+export const normalizeRole = (role: string | null | undefined): string => {
+  if (!role) return ''
+  if (role === 'owner') return 'client'
+  return role
+}
+
 export const getNavigationForRole = (role: string): NavItem[] => {
+  const normalizedRole = normalizeRole(role)
   const baseNav: Record<string, NavItem[]> = {
     client: [
       {
@@ -251,7 +258,7 @@ export const getNavigationForRole = (role: string): NavItem[] => {
       },
     ],
   }
-  return baseNav[role] ?? []
+  return baseNav[normalizedRole] ?? []
 }
 
 export const getHomePageForRole = (_role: string): string => {
@@ -259,10 +266,11 @@ export const getHomePageForRole = (_role: string): string => {
 }
 
 export const isAdminRole = (role: string): boolean => {
-  return ['admin', 'super_admin'].includes(role)
+  return ['admin', 'super_admin'].includes(normalizeRole(role))
 }
 
 export const getDisplayNameForRole = (role: string): string => {
+  const normalizedRole = normalizeRole(role)
   /** Leaf keys — locales nest labels under `roles.<role>.label`. */
   const roleNameMap: Record<string, string> = {
     client: 'roles.client.label',
@@ -272,5 +280,5 @@ export const getDisplayNameForRole = (role: string): string => {
     admin: 'roles.admin.label',
     super_admin: 'roles.super_admin.label',
   }
-  return roleNameMap[role] ?? 'roles.unknown.label'
+  return roleNameMap[normalizedRole] ?? 'roles.unknown.label'
 }

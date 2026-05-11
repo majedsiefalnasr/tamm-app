@@ -40,7 +40,7 @@ describe('Milestone Detail Page', () => {
           name: 'Ahmed Hassan',
         },
       },
-      payment_status: 'pending_payment',
+      payment_status: 'pending',
       allowed_actions: ['submit_report', 'approve_milestone'],
       created_at: '2026-05-01T10:00:00Z',
       updated_at: '2026-05-08T10:00:00Z',
@@ -139,7 +139,7 @@ describe('Milestone Detail Page', () => {
 
   it('should display payment status', () => {
     // Test payment status display
-    expect(mockMilestone.payment_status).toBe('pending_payment')
+    expect(mockMilestone.payment_status).toBe('pending')
   })
 
   it('should handle loading state', () => {
@@ -163,11 +163,6 @@ describe('Milestone Detail Page', () => {
   it('should render approval timeline', () => {
     // Test timeline section
     const status = mockMilestone.status
-    expect([
-      'in_progress',
-      'under_review',
-      'supervisor_approved',
-      'approved',
-    ]).toContain(status)
+    expect(['in_progress', 'under_review', 'approved']).toContain(status)
   })
 })

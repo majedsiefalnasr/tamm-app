@@ -28,7 +28,7 @@ const handleRetry = () => {
 }
 
 const reviewerLabel = (milestone: Milestone) => {
-  if (milestone.status === 'supervisor_approved') {
+  if (milestone.status === 'approved') {
     return t('dashboard.contractor.awaitingClientApproval')
   }
   const supervisorName =
@@ -41,11 +41,11 @@ const reviewerLabel = (milestone: Milestone) => {
 }
 
 const badgeVariant = (status: string) => {
-  return status === 'supervisor_approved' ? 'secondary' : 'outline'
+  return status === 'approved' ? 'secondary' : 'outline'
 }
 
 const badgeClass = (status: string) => {
-  if (status === 'supervisor_approved') {
+  if (status === 'approved') {
     return 'bg-accent/15 text-accent'
   }
   return 'bg-info/15 text-info'

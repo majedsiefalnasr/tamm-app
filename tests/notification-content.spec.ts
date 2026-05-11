@@ -5,7 +5,7 @@ import arLocale from '~/i18n/locales/ar.json'
 describe('Notification Event i18n Keys', () => {
   const eventTypes = [
     'report_submitted',
-    'supervisor_approved',
+    'review_approved',
     'supervisor_rejected',
     'client_approved',
     'client_rejected',
@@ -32,7 +32,7 @@ describe('Notification Event i18n Keys', () => {
       expect(enLocale.notif.events.report_submitted.title).toBe(
         'Report Submitted'
       )
-      expect(enLocale.notif.events.supervisor_approved.title).toBe(
+      expect(enLocale.notif.events.review_approved.title).toBe(
         'Approved by Supervisor'
       )
       expect(enLocale.notif.events.supervisor_rejected.title).toBe(

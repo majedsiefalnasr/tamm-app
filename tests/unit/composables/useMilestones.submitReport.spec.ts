@@ -5,11 +5,7 @@ import { canTransition } from '~/utils/statusMachine'
 // Mock the utility functions
 vi.mock('~/utils/statusMachine', () => ({
   canTransition: vi.fn((type, from, to) => {
-    if (
-      type === 'milestone' &&
-      from === 'in_progress' &&
-      to === 'under_review'
-    ) {
+    if (type === 'milestone' && from === 'draft' && to === 'submitted') {
       return true
     }
     return false
@@ -38,7 +34,7 @@ describe('useMilestones - submitReport', () => {
     ;({ submitReport, loadMilestones, getMilestones } = useMilestones())
   })
 
-  it('submits a report for a milestone in in_progress status', async () => {
+  it('submits a report for a milestone in draft status', async () => {
     // Load mock milestones
     await loadMilestones('proj-001')
 
@@ -55,12 +51,12 @@ describe('useMilestones - submitReport', () => {
     expect(report.status).toBe('submitted')
   })
 
-  it('updates milestone status to under_review after successful submission', async () => {
+  it('updates milestone status to submitted after successful submission', async () => {
     await loadMilestones('proj-001')
     const milestones = getMilestones('proj-001')
     const targetMilestone = milestones.find(m => m.id === 'ms-2')
 
-    expect(targetMilestone?.status).toBe('in_progress')
+    expect(targetMilestone?.status).toBe('draft')
 
     await submitReport('proj-001', 'ms-2', {
       content: 'This is a valid report with sufficient content',
@@ -70,7 +66,7 @@ describe('useMilestones - submitReport', () => {
     const updatedMilestones = getMilestones('proj-001')
     const updatedMilestone = updatedMilestones.find(m => m.id === 'ms-2')
 
-    expect(updatedMilestone?.status).toBe('under_review')
+    expect(updatedMilestone?.status).toBe('submitted')
   })
 
   it('includes report in latest_report field after submission', async () => {
@@ -151,8 +147,8 @@ describe('useMilestones - submitReport', () => {
     // Verify canTransition was called with correct parameters
     expect(canTransitionSpy).toHaveBeenCalledWith(
       'milestone',
-      'in_progress',
-      'under_review'
+      'draft',
+      'submitted'
     )
   })
 
@@ -210,7 +206,7 @@ describe('useMilestones - submitReport', () => {
   it('validates transition before attempting submission', async () => {
     await loadMilestones('proj-001')
 
-    // Milestone ms-1 has status 'approved', cannot transition to 'under_review'
+    // Milestone ms-1 has status 'approved', cannot transition to 'submitted'
     const invalidTransition = async () => {
       try {
         await submitReport('proj-001', 'ms-1', {

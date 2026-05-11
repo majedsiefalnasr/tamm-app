@@ -7,11 +7,11 @@ import type { Withdrawal } from '~/shared/types/payment'
 
 describe('usePayments - Withdrawal Functions', () => {
   describe('getContractorBalance', () => {
-    it('calculates earned from milestones with paid_out or ready_for_payout status', () => {
+    it('calculates earned from milestones with processing or paid status', () => {
       const milestones = [
-        { amount: 100, payment_status: 'paid_out' },
-        { amount: 50, payment_status: 'ready_for_payout' },
-        { amount: 200, payment_status: 'paid' }, // Should not be included
+        { amount: 100, payment_status: 'processing' },
+        { amount: 50, payment_status: 'paid' },
+        { amount: 200, payment_status: 'pending' }, // Should not be included
       ]
 
       const balance = mockGetContractorBalance(milestones as any)
@@ -22,7 +22,7 @@ describe('usePayments - Withdrawal Functions', () => {
       const mockWithdrawals = [
         { id: '1', amount: 100, status: 'pending' },
         { id: '2', amount: 50, status: 'approved' },
-        { id: '3', amount: 25, status: 'withdrawable' }, // Should not be included
+        { id: '3', amount: 25, status: 'completed' }, // Should not be included
       ] as Withdrawal[]
 
       // Since the mock uses a module-level array, we'll test the logic directly
@@ -34,7 +34,7 @@ describe('usePayments - Withdrawal Functions', () => {
     })
 
     it('available balance is never negative', () => {
-      const milestones = [{ amount: 100, payment_status: 'paid_out' }]
+      const milestones = [{ amount: 100, payment_status: 'paid' }]
       const balance = mockGetContractorBalance(milestones as any)
 
       expect(balance.available).toBeGreaterThanOrEqual(0)
@@ -95,7 +95,7 @@ describe('usePayments - Withdrawal Functions', () => {
       expect(withdrawal.approved_at).toBeNull()
     })
 
-    it('validates approved to withdrawable transition', () => {
+    it('validates approved withdrawal state shape', () => {
       const approvedTime = new Date()
       const withdrawal: Withdrawal = {
         id: 'wd-1',

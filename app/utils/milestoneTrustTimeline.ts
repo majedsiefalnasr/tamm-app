@@ -4,7 +4,7 @@ import { derivePaymentStatus } from '~/utils/statusMachine'
 export type TrustTimelineEventKind =
   | 'milestone_created'
   | 'report_submitted'
-  | 'supervisor_approved'
+  | 'review_approved'
   | 'decision_rejected'
   | 'client_approved'
   | 'payment_confirmed'
@@ -92,13 +92,13 @@ export function buildMilestoneTrustTimeline(
   }
 
   const showSupervisorApproved =
-    Boolean(m.supervisor_approved_at) || m.status === 'supervisor_approved'
+    Boolean(m.supervisor_approved_at) || m.status === 'approved'
 
   if (showSupervisorApproved) {
     const ts = m.supervisor_approved_at || m.updated_at || m.created_at
     events.push({
       id: `supervisor-approved-${ts}`,
-      kind: 'supervisor_approved',
+      kind: 'review_approved',
       timestamp: ts,
       actor: m.supervisor
         ? {
@@ -156,11 +156,7 @@ export function buildMilestoneTrustTimeline(
 
   const paymentStatus = m.payment_status ?? derivePaymentStatus(m.status)
 
-  if (
-    canViewPayment &&
-    m.payment_confirmed_at &&
-    paymentStatus !== 'pending_payment'
-  ) {
+  if (canViewPayment && m.payment_confirmed_at && paymentStatus !== 'pending') {
     events.push({
       id: `payment-${m.payment_confirmed_at}`,
       kind: 'payment_confirmed',
@@ -177,10 +173,10 @@ export function buildMilestoneTrustTimeline(
 
   if (
     canViewPayment &&
-    m.payment_status === 'paid_out' &&
-    (m.paid_out_at || m.updated_at)
+    m.payment_status === 'paid' &&
+    (m.paid_at || m.updated_at)
   ) {
-    const ts = m.paid_out_at || m.updated_at!
+    const ts = m.paid_at || m.updated_at!
     events.push({
       id: `payout-${ts}`,
       kind: 'payout_completed',

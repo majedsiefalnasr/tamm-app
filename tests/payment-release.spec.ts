@@ -13,7 +13,7 @@ test.describe('Story 04-03 — Admin Releases Payment to Contractor', () => {
     await page.waitForURL('**/dashboard**', { timeout: 10000 })
   })
 
-  test('should show Release Payment button only on approved milestones with ready_for_payout status', async ({
+  test('should show Release Payment button only on approved milestones with processing status', async ({
     page,
   }) => {
     // Navigate to project with approved milestone

@@ -5,10 +5,13 @@ import { useAuthStore } from '~/stores/auth'
 
 function viewerUnreadCount(
   items: Notification[],
-  viewerId: string | undefined
+  viewerId: number | string | undefined
 ): number {
-  return items.filter(n => (!n.user_id || n.user_id === viewerId) && !n.is_read)
-    .length
+  return items.filter(n => {
+    const belongsToViewer =
+      !n.user_id || String(n.user_id) === String(viewerId ?? '')
+    return belongsToViewer && !n.read_at
+  }).length
 }
 
 export const useNotificationsStore = defineStore('notifications', () => {
@@ -41,9 +44,10 @@ export const useNotificationsStore = defineStore('notifications', () => {
     )
     if (
       notification &&
-      (!notification.user_id || notification.user_id === auth.user?.id)
+      (!notification.user_id ||
+        String(notification.user_id) === String(auth.user?.id ?? ''))
     ) {
-      notification.is_read = true
+      notification.read_at = new Date().toISOString()
       syncUnreadForViewer()
     }
   }
@@ -52,8 +56,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
     const auth = useAuthStore()
     const uid = auth.user?.id
     notifications.value.forEach((n: Notification) => {
-      if (!n.user_id || n.user_id === uid) {
-        n.is_read = true
+      if (!n.user_id || String(n.user_id) === String(uid ?? '')) {
+        n.read_at = new Date().toISOString()
       }
     })
     syncUnreadForViewer()

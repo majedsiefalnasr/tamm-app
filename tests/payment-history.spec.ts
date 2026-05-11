@@ -43,7 +43,7 @@ const mockMilestones: Milestone[] = [
     id: 'ms-1',
     name: 'Foundation & Structure',
     amount: 50000,
-    status: 'supervisor_approved',
+    status: 'approved',
     created_at: '2026-04-20T09:00:00Z',
     projectId: 'proj-001',
     project: { id: 'proj-001', name: 'Building A' },
@@ -61,7 +61,7 @@ const mockMilestones: Milestone[] = [
     id: 'ms-3',
     name: 'Final Handover',
     amount: 125000,
-    status: 'paid_out',
+    status: 'paid',
     created_at: '2026-05-05T09:00:00Z',
     projectId: 'proj-001',
     project: { id: 'proj-001', name: 'Building A' },
@@ -166,31 +166,27 @@ describe('PaymentRow Component', () => {
 })
 
 describe('Payment Status Filtering Logic', () => {
-  it('correctly filters pending payments (supervisor_approved + approved)', () => {
-    const pending = mockMilestones.filter(m =>
-      ['supervisor_approved', 'approved'].includes(m.status)
-    )
+  it('correctly filters pending payments (approved)', () => {
+    const pending = mockMilestones.filter(m => ['approved'].includes(m.status))
     expect(pending).toHaveLength(2)
-    expect(pending[0].status).toBe('supervisor_approved')
+    expect(pending[0].status).toBe('approved')
     expect(pending[1].status).toBe('approved')
   })
 
-  it('correctly filters received payments (paid_out)', () => {
-    const received = mockMilestones.filter(m => m.status === 'paid_out')
+  it('correctly filters received payments (paid)', () => {
+    const received = mockMilestones.filter(m => m.status === 'paid')
     expect(received).toHaveLength(1)
-    expect(received[0].status).toBe('paid_out')
+    expect(received[0].status).toBe('paid')
   })
 
   it('calculates pending total correctly', () => {
-    const pending = mockMilestones.filter(m =>
-      ['supervisor_approved', 'approved'].includes(m.status)
-    )
+    const pending = mockMilestones.filter(m => ['approved'].includes(m.status))
     const total = pending.reduce((sum, m) => sum + (m.amount || 0), 0)
     expect(total).toBe(125000)
   })
 
   it('calculates received total correctly', () => {
-    const received = mockMilestones.filter(m => m.status === 'paid_out')
+    const received = mockMilestones.filter(m => m.status === 'paid')
     const total = received.reduce((sum, m) => sum + (m.amount || 0), 0)
     expect(total).toBe(125000)
   })

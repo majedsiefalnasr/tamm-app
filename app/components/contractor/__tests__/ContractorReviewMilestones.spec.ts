@@ -13,14 +13,14 @@ describe('ContractorReviewMilestones', () => {
       id: '2',
       project_id: 'proj2',
       name: 'Framing',
-      status: 'supervisor_approved',
+      status: 'approved',
       supervisor_name: 'Fatima Hassan',
     },
   ]
 
-  it('filters review milestones by under_review or supervisor_approved', () => {
+  it('filters review milestones by under_review or approved', () => {
     const reviewMilestones = mockMilestones.filter(
-      m => m.status === 'under_review' || m.status === 'supervisor_approved'
+      m => m.status === 'under_review' || m.status === 'approved'
     )
     expect(reviewMilestones).toHaveLength(2)
   })
@@ -36,7 +36,7 @@ describe('ContractorReviewMilestones', () => {
       },
     ]
     const reviewMilestones = allMilestones.filter(
-      m => m.status === 'under_review' || m.status === 'supervisor_approved'
+      m => m.status === 'under_review' || m.status === 'approved'
     )
     expect(reviewMilestones).toHaveLength(2)
   })
@@ -47,25 +47,22 @@ describe('ContractorReviewMilestones', () => {
     expect(underReview[0].status).toBe('under_review')
   })
 
-  it('identifies supervisor_approved milestones correctly', () => {
-    const approved = mockMilestones.filter(
-      m => m.status === 'supervisor_approved'
-    )
+  it('identifies approved milestones correctly', () => {
+    const approved = mockMilestones.filter(m => m.status === 'approved')
     expect(approved).toHaveLength(1)
-    expect(approved[0].status).toBe('supervisor_approved')
+    expect(approved[0].status).toBe('approved')
   })
 
   it('handles empty milestone list', () => {
     const reviewMilestones = [].filter(
-      (m: any) =>
-        m.status === 'under_review' || m.status === 'supervisor_approved'
+      (m: any) => m.status === 'under_review' || m.status === 'approved'
     )
     expect(reviewMilestones).toHaveLength(0)
   })
 
   it('preserves milestone properties when filtering', () => {
     const reviewMilestones = mockMilestones.filter(
-      m => m.status === 'under_review' || m.status === 'supervisor_approved'
+      m => m.status === 'under_review' || m.status === 'approved'
     )
     expect(reviewMilestones[0]).toHaveProperty('supervisor_name')
     expect(reviewMilestones[0]).toHaveProperty('status')

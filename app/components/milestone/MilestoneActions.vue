@@ -53,9 +53,9 @@ const visibleActions = computed(() => {
   const actions = []
   const { milestone } = props
 
-  // Submit Report (field_engineer, in_progress only)
+  // Submit Report (field_engineer, draft only)
   if (
-    milestone.status === 'in_progress' &&
+    milestone.status === 'draft' &&
     can('submit_report', milestone.allowed_actions)
   ) {
     actions.push({
@@ -77,33 +77,9 @@ const visibleActions = computed(() => {
     })
   }
 
-  // Approve (client, supervisor_approved only)
+  // Pay Milestone (client, draft only)
   if (
-    milestone.status === 'supervisor_approved' &&
-    can('approve_milestone', milestone.allowed_actions)
-  ) {
-    actions.push({
-      type: 'approve_client',
-      label: t('milestone.actions.approveMilestone'),
-      variant: 'default',
-    })
-  }
-
-  // Reject (client, supervisor_approved only)
-  if (
-    milestone.status === 'supervisor_approved' &&
-    can('reject_milestone', milestone.allowed_actions)
-  ) {
-    actions.push({
-      type: 'reject_client',
-      label: t('milestone.actions.rejectMilestone'),
-      variant: 'destructive',
-    })
-  }
-
-  // Pay Milestone (client, not_started only)
-  if (
-    milestone.status === 'not_started' &&
+    milestone.status === 'draft' &&
     can('pay_milestone', milestone.allowed_actions)
   ) {
     actions.push({
@@ -114,10 +90,11 @@ const visibleActions = computed(() => {
   }
 
   // Release Payment (admin, approved status only)
-  const paymentStatus = derivePaymentStatus(milestone.status)
+  const paymentStatus =
+    milestone.payment_status || derivePaymentStatus(milestone.status)
   if (
     milestone.status === 'approved' &&
-    paymentStatus === 'ready_for_payout' &&
+    paymentStatus === 'processing' &&
     can('release_payment', milestone.allowed_actions)
   ) {
     actions.push({

@@ -22,8 +22,6 @@ const getStatusBadgeVariant = (status: string) => {
   switch (status) {
     case 'under_review':
       return 'secondary'
-    case 'supervisor_approved':
-      return 'default'
     case 'approved':
       return 'default'
     default:

@@ -16,13 +16,13 @@ const props = withDefaults(defineProps<Props>(), {
 const { t } = useI18n()
 
 const statusLabel = computed(() => {
-  const statusLabelMap: Record<MilestoneStatus, string> = {
-    not_started: t('milestone.status.notStarted'),
-    in_progress: t('milestone.status.inProgress'),
+  const statusLabelMap: Partial<Record<MilestoneStatus, string>> = {
+    draft: t('status.draft'),
+    submitted: t('status.submitted'),
     under_review: t('milestone.status.underReview'),
-    supervisor_approved: t('milestone.status.supervisorApproved'),
     approved: t('milestone.status.approved'),
     rejected: t('milestone.status.rejected'),
+    in_progress: t('status.in_progress'),
   }
   return statusLabelMap[props.status] || props.status
 })

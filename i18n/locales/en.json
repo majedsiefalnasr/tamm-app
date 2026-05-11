@@ -291,6 +291,7 @@
       "badges": {
         "milestone_created": "Setup",
         "report_submitted": "Evidence",
+        "review_approved": "Review",
         "supervisor_approved": "Supervisor",
         "decision_rejected": "Rejected",
         "client_approved": "Client",
@@ -300,6 +301,7 @@
       "events": {
         "milestone_created": "Milestone created",
         "report_submitted": "Report submitted for review",
+        "review_approved": "Review approved this milestone",
         "supervisor_approved": "Supervisor approved this milestone",
         "decision_rejected": "Milestone rejected",
         "client_approved": "Client gave final approval",
@@ -312,6 +314,10 @@
     "heading": "Payments",
     "subtitle": "Track your payment history across all projects",
     "status": {
+      "pending": "Pending",
+      "awaiting_release": "Awaiting release",
+      "processing": "Processing",
+      "failed": "Failed",
       "pending_payment": "Awaiting payment",
       "paid": "In escrow",
       "awaiting_approval": "Awaiting approval",
@@ -363,6 +369,7 @@
     "dashboard": {
       "total_committed": "Total committed",
       "total_in_escrow": "Total in escrow",
+      "total_paid": "Total paid",
       "total_paid_out": "Total paid out"
     },
     "project": {
@@ -487,6 +494,8 @@
     }
   },
   "status": {
+    "draft": "Draft",
+    "submitted": "Submitted",
     "in_progress": "In Progress",
     "under_review": "Under Review",
     "supervisor_approved": "Supervisor Approved",
@@ -617,6 +626,7 @@
     },
     "client_approval_dialog": {
       "title": "Final Approval",
+      "review_approved_badge": "✓ Review approved",
       "supervisor_approved_badge": "✓ Approved by Supervisor",
       "warning_title": "This action is final",
       "warning_message": "This will release payment to the contractor",
@@ -631,6 +641,7 @@
   },
   "approval_queue": {
     "title": "Pending Approvals",
+    "review_approved": "Approved by {name} on {date}",
     "supervisor_approved": "Approved by {name} on {date}",
     "empty": {
       "title": "No Pending Approvals",
@@ -662,8 +673,12 @@
       "cancel": "Cancel"
     },
     "status": {
-      "pending": "Under Review",
+      "pending": "Pending",
+      "under_review": "Under review",
       "approved": "Approved",
+      "processing": "Processing",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
       "withdrawable": "Ready for Withdrawal",
       "rejected": "Rejected",
       "paid": "Paid"
@@ -683,6 +698,9 @@
     "events": {
       "report_submitted": {
         "title": "Report Submitted"
+      },
+      "review_approved": {
+        "title": "Approved by Supervisor"
       },
       "supervisor_approved": {
         "title": "Approved by Supervisor"

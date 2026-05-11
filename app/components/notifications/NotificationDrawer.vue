@@ -37,7 +37,9 @@ const drawerOpen = computed({
 
 const visibleNotifications = computed(() => {
   const uid = auth.user?.id
-  return notifications.value.filter(n => !n.user_id || n.user_id === uid)
+  return notifications.value.filter(
+    n => !n.user_id || String(n.user_id) === String(uid ?? '')
+  )
 })
 
 const sortedNotifications = computed(() => {
@@ -48,8 +50,15 @@ const sortedNotifications = computed(() => {
 
 const handleNotificationClick = (notification: Notification) => {
   markAsRead(notification.id)
-  if (notification.link) {
-    router.push(notification.link)
+  if (notification.data?.action_url) {
+    router.push(notification.data.action_url)
+  } else if (
+    notification.data?.resource_type &&
+    notification.data?.resource_id
+  ) {
+    router.push(
+      `/${notification.data.resource_type}/${notification.data.resource_id}`
+    )
   }
   emit('update:open', false)
 }
@@ -97,14 +106,14 @@ const handleMarkAllAsRead = () => {
             :key="notification.id"
             class="border-border hover:bg-muted/50 flex cursor-pointer items-start gap-3 border-b px-4 py-3 transition last:border-0"
             :class="{
-              'bg-primary-50/40': !notification.is_read,
-              'bg-background': notification.is_read,
+              'bg-primary-50/40': !notification.read_at,
+              'bg-background': !!notification.read_at,
             }"
             @click="handleNotificationClick(notification)"
           >
             <!-- Unread dot -->
             <div
-              v-if="!notification.is_read"
+              v-if="!notification.read_at"
               class="bg-primary mt-1.5 h-2 w-2 shrink-0 rounded-full"
             />
 
@@ -114,7 +123,7 @@ const handleMarkAllAsRead = () => {
                 {{ notification.title }}
               </p>
               <p class="text-muted-foreground mt-0.5 line-clamp-2 text-xs">
-                {{ notification.body }}
+                {{ notification.message }}
               </p>
               <p class="text-muted-foreground mt-1 text-[10px]">
                 {{ formatRelativeTime(notification.created_at) }}

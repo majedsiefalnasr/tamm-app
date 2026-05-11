@@ -44,9 +44,7 @@ const milestonesWithPaymentStatus = computed(() =>
 // Group by payment status
 const pendingPayments = computed(() =>
   milestonesWithPaymentStatus.value
-    .filter(m =>
-      ['awaiting_approval', 'ready_for_payout'].includes(m.paymentStatus)
-    )
+    .filter(m => ['awaiting_release', 'processing'].includes(m.paymentStatus))
     .sort((a, b) => {
       const dateA = new Date(a.created_at || 0).getTime()
       const dateB = new Date(b.created_at || 0).getTime()
@@ -56,7 +54,7 @@ const pendingPayments = computed(() =>
 
 const receivedPayments = computed(() =>
   milestonesWithPaymentStatus.value
-    .filter(m => m.paymentStatus === 'paid_out')
+    .filter(m => m.paymentStatus === 'paid')
     .sort((a, b) => {
       const dateA = new Date(a.created_at || 0).getTime()
       const dateB = new Date(b.created_at || 0).getTime()

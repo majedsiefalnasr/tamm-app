@@ -33,9 +33,9 @@ describe('ClientApprovalFlow', () => {
     description: 'Test milestone',
     amount: 50000,
     order: 1,
-    status: 'supervisor_approved',
+    status: 'approved',
     tasks: [],
-    payment_status: 'pending_payment',
+    payment_status: 'pending',
     allowed_actions: ['approve_milestone', 'reject_milestone'],
     created_at: '2026-04-20T09:00:00Z',
   }

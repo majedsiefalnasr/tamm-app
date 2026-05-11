@@ -96,9 +96,9 @@ export const useMilestones = () => {
         description: 'Walls, finishing, internal work',
         amount: 75000,
         order: 2,
-        status: 'in_progress',
+        status: 'draft',
         tasks: [],
-        payment_status: 'pending_payment',
+        payment_status: 'pending',
         allowed_actions: ['submit_report'],
         created_at: '2026-05-01T09:00:00Z',
       },
@@ -108,9 +108,9 @@ export const useMilestones = () => {
         description: 'Final checks and handover',
         amount: 125000,
         order: 3,
-        status: 'not_started',
+        status: 'draft',
         tasks: [],
-        payment_status: 'pending_payment',
+        payment_status: 'pending',
         allowed_actions: [],
         created_at: '2026-05-05T09:00:00Z',
       },
@@ -122,7 +122,7 @@ export const useMilestones = () => {
         order: 4,
         status: 'under_review',
         tasks: [],
-        payment_status: 'pending_payment',
+        payment_status: 'processing',
         allowed_actions: [
           'review_milestone',
           'approve_milestone',
@@ -151,7 +151,7 @@ export const useMilestones = () => {
         order: 5,
         status: 'under_review',
         tasks: [],
-        payment_status: 'pending_payment',
+        payment_status: 'processing',
         allowed_actions: [
           'review_milestone',
           'approve_milestone',
@@ -222,7 +222,7 @@ export const useMilestones = () => {
       description: data.description,
       amount: data.amount,
       order: nextOrder,
-      status: 'not_started',
+      status: 'draft',
       created_at: new Date().toISOString(),
     }
 
@@ -488,8 +488,7 @@ export const useMilestones = () => {
     }
 
     // Validate transition
-    const targetStatus =
-      role === 'supervisor_engineer' ? 'supervisor_approved' : 'approved'
+    const targetStatus = 'approved'
     if (!canTransition('milestone', milestone.status, targetStatus)) {
       throw new Error('Invalid transition')
     }
@@ -568,10 +567,10 @@ export const useMilestones = () => {
     const rejectionRole: 'supervisor_engineer' | 'client' =
       role === 'client' ? 'client' : 'supervisor_engineer'
 
-    // Optimistic update: status goes to in_progress (auto-transitioned)
+    // Optimistic update: status resets to draft for next submit cycle
     const updatedMilestone: Milestone = {
       ...milestone,
-      status: 'in_progress' as MilestoneStatus,
+      status: 'draft' as MilestoneStatus,
       rejection_reason: reason,
       last_rejection_at: rejectedAt,
       last_rejection_role: rejectionRole,
@@ -617,7 +616,7 @@ export const useMilestones = () => {
     const milestone = milestones[index]
 
     // Validate transition
-    if (!canTransition('milestone', milestone.status, 'under_review')) {
+    if (!canTransition('milestone', milestone.status, 'submitted')) {
       throw new Error('Invalid status transition')
     }
 
@@ -627,7 +626,7 @@ export const useMilestones = () => {
     // Optimistic update
     milestonesMap.value[projectId][index] = {
       ...milestone,
-      status: 'under_review' as MilestoneStatus,
+      status: 'submitted' as MilestoneStatus,
       updated_at: new Date().toISOString(),
     }
 
@@ -675,10 +674,10 @@ export const useMilestones = () => {
     error.value = null
 
     try {
-      // TODO: replace mock — GET /milestones?client_id={auth.id}&status=supervisor_approved endpoint
+      // TODO: replace mock — replace with GET /approvals?type=milestone&status=pending endpoint
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      // Mock data: pending approvals sorted by supervisor_approved_at (oldest first)
+      // Mock data: pending approvals sorted by updated_at (oldest first)
       const mockPendingApprovals: Milestone[] = [
         {
           id: 'ms-2',
@@ -686,12 +685,12 @@ export const useMilestones = () => {
           description: 'Walls, finishing, internal work',
           amount: 75000,
           order: 2,
-          status: 'supervisor_approved',
+          status: 'approved',
           tasks: [],
-          payment_status: 'pending_payment',
+          payment_status: 'processing',
           allowed_actions: ['approve_milestone', 'reject_milestone'],
           created_at: '2026-05-01T09:00:00Z',
-          supervisor_approved_at: '2026-05-06T10:15:00Z',
+          updated_at: '2026-05-06T10:15:00Z',
           supervisor: {
             id: 'sup-001',
             name: 'Fatima Al-Mansouri',
@@ -708,12 +707,12 @@ export const useMilestones = () => {
           description: 'Electrical installation and testing',
           amount: 50000,
           order: 3,
-          status: 'supervisor_approved',
+          status: 'approved',
           tasks: [],
-          payment_status: 'pending_payment',
+          payment_status: 'processing',
           allowed_actions: ['approve_milestone', 'reject_milestone'],
           created_at: '2026-05-02T09:00:00Z',
-          supervisor_approved_at: '2026-05-05T14:30:00Z',
+          updated_at: '2026-05-05T14:30:00Z',
           supervisor: {
             id: 'sup-002',
             name: 'Ahmed Hassan',
@@ -726,11 +725,11 @@ export const useMilestones = () => {
         },
       ]
 
-      // Sort by supervisor_approved_at ascending (oldest first)
+      // Sort by updated_at ascending (oldest first)
       const sorted = [...mockPendingApprovals].sort(
         (a, b) =>
-          new Date(a.supervisor_approved_at || a.created_at).getTime() -
-          new Date(b.supervisor_approved_at || b.created_at).getTime()
+          new Date(a.updated_at || a.created_at).getTime() -
+          new Date(b.updated_at || b.created_at).getTime()
       )
 
       pendingApprovals.value = sorted
@@ -782,7 +781,9 @@ export const useMilestones = () => {
     }
 
     // Validate transition
-    if (!canTransition('payment', milestone.payment_status, 'paid')) {
+    if (
+      !canTransition('payment', milestone.payment_status, 'awaiting_release')
+    ) {
       error.value = `Cannot transition payment from ${milestone.payment_status} to paid`
       throw new Error(error.value)
     }
@@ -798,10 +799,10 @@ export const useMilestones = () => {
 
     const paidAt = new Date().toISOString()
 
-    // Optimistic update: payment -> paid (milestone status derived from API response per decision #2)
+    // Optimistic update: payment -> awaiting_release
     const updatedMilestone: Milestone = {
       ...milestone,
-      payment_status: 'paid',
+      payment_status: 'awaiting_release',
       payment_confirmed_at: paidAt,
       updated_at: paidAt,
     }
@@ -815,7 +816,8 @@ export const useMilestones = () => {
         setTimeout(() => {
           resolve({
             ...updatedMilestone,
-            status: 'in_progress' as MilestoneStatus,
+            status: 'submitted' as MilestoneStatus,
+            payment_status: 'processing',
             payment_confirmed_at: paidAt,
           })
         }, 500)
@@ -869,13 +871,13 @@ export const useMilestones = () => {
       throw new Error('Milestone not found')
     }
 
-    // Derive actual payment status from milestone status
-    const paymentStatus = derivePaymentStatus(milestone.status)
+    // Use current payment status directly
+    const paymentStatus = milestone.payment_status
 
-    // Validate transition from current payment status to paid_out
-    if (!canTransition('payment', paymentStatus, 'paid_out')) {
+    // Validate transition from current payment status to paid
+    if (!canTransition('payment', paymentStatus, 'paid')) {
       throw new Error(
-        'Invalid payment transition: payment is not in ready_for_payout state'
+        'Invalid payment transition: payment is not in processing state'
       )
     }
 
@@ -884,11 +886,10 @@ export const useMilestones = () => {
 
     const releasedAt = new Date().toISOString()
 
-    // Optimistic update: payment -> paid_out
+    // Optimistic update: payment -> paid
     const updatedMilestone: Milestone = {
       ...milestone,
-      payment_status: 'paid_out',
-      paid_out_at: releasedAt,
+      payment_status: 'paid',
       updated_at: releasedAt,
     }
 
@@ -973,7 +974,7 @@ export const useMilestones = () => {
             description: 'Excavation, foundation, concrete structure',
             amount: 50000,
             order: 1,
-            status: 'in_progress',
+            status: 'draft',
             project_id: 'proj-1',
             project_name: 'مشروع البناء الأساسي',
             project_address: 'شارع النيل، القاهرة',
@@ -988,7 +989,7 @@ export const useMilestones = () => {
             description: 'Walls, finishing, internal work',
             amount: 75000,
             order: 2,
-            status: 'in_progress',
+            status: 'draft',
             project_id: 'proj-1',
             project_name: 'مشروع البناء الأساسي',
             project_address: 'شارع النيل، القاهرة',
@@ -1018,7 +1019,7 @@ export const useMilestones = () => {
             description: 'Project handover and completion',
             amount: 100000,
             order: 4,
-            status: 'supervisor_approved',
+            status: 'approved',
             project_id: 'proj-2',
             project_name: 'مشروع الترميم',
             project_address: 'حي المعادي، القاهرة',

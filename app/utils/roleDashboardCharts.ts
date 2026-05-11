@@ -63,14 +63,14 @@ export function buildClientProjectProgressChart(
   }
 }
 
-/** Contractor — paid-out milestones grouped by payout month */
+/** Contractor — paid milestones grouped by payout month */
 export function buildContractorMonthlyPaidOutChart(
   milestones: Milestone[]
 ): RoleDashboardChartDefinition | null {
   const counts = new Map<string, number>()
   for (const m of milestones) {
-    if (m.payment_status !== 'paid_out') continue
-    const ts = m.paid_out_at ?? m.updated_at
+    if (m.payment_status !== 'paid') continue
+    const ts = m.paid_at ?? m.updated_at
     if (!ts) continue
     const key = monthBucketUtc(ts)
     if (!key) continue

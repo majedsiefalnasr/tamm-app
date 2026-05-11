@@ -3,6 +3,7 @@ import {
   getHomePageForRole,
   isAdminRole,
   getDisplayNameForRole,
+  normalizeRole,
 } from '../../../app/utils/roleRoutes'
 
 describe('roleRoutes utilities', () => {
@@ -22,6 +23,10 @@ describe('roleRoutes utilities', () => {
 
     it('returns /dashboard for unknown role', () => {
       expect(getHomePageForRole('unknown')).toBe('/dashboard')
+    })
+
+    it('returns /dashboard for owner alias role', () => {
+      expect(getHomePageForRole('owner')).toBe('/dashboard')
     })
 
     it('returns /dashboard for empty string', () => {
@@ -92,6 +97,21 @@ describe('roleRoutes utilities', () => {
 
     it('returns roles.unknown.label for unknown role', () => {
       expect(getDisplayNameForRole('unknown')).toBe('roles.unknown.label')
+    })
+
+    it('maps owner alias to client display label', () => {
+      expect(getDisplayNameForRole('owner')).toBe('roles.client.label')
+    })
+  })
+
+  describe('normalizeRole', () => {
+    it('maps owner to client', () => {
+      expect(normalizeRole('owner')).toBe('client')
+    })
+
+    it('returns empty string for missing role', () => {
+      expect(normalizeRole(undefined)).toBe('')
+      expect(normalizeRole(null)).toBe('')
     })
   })
 })

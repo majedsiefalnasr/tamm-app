@@ -29,8 +29,8 @@ const isVisible = () => {
   return (
     auth.value?.role === 'client' &&
     can('pay_milestone', props.milestone.allowed_actions) &&
-    props.milestone.status === 'not_started' &&
-    props.milestone.payment_status === 'pending_payment'
+    props.milestone.status === 'draft' &&
+    props.milestone.payment_status === 'pending'
   )
 }
 

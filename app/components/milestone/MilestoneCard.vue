@@ -32,12 +32,12 @@ const isLoading = ref(false)
 const isReportFormOpen = ref(false)
 
 const statusTones = {
-  not_started: 'muted',
-  in_progress: 'accent',
+  draft: 'muted',
+  submitted: 'accent',
   under_review: 'info',
-  supervisor_approved: 'info',
   approved: 'primary',
   rejected: 'danger',
+  in_progress: 'accent',
 } as const
 
 const statusTone = computed(() => {
@@ -145,9 +145,8 @@ const cardClasses = computed(() => {
     <!-- Progress Bar (Conditional) -->
     <div
       v-if="
-        milestone.status === 'in_progress' ||
+        milestone.status === 'submitted' ||
         milestone.status === 'under_review' ||
-        milestone.status === 'supervisor_approved' ||
         milestone.status === 'approved'
       "
       class="bg-muted mt-3 h-1.5 w-full overflow-hidden rounded-full"

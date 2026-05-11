@@ -27,10 +27,12 @@ const { t, locale } = useI18n()
 const groupedWithdrawals = computed(() => {
   const groups: Record<string, Withdrawal[]> = {
     pending: [],
+    under_review: [],
     approved: [],
-    withdrawable: [],
+    processing: [],
+    completed: [],
     rejected: [],
-    paid: [],
+    cancelled: [],
   }
 
   props.withdrawals.forEach(w => {
@@ -107,7 +109,7 @@ const formatDate = (dateString: string) => {
                   {{ formatCurrency(item.amount) }}
                 </p>
                 <p class="text-muted-foreground text-xs">
-                  {{ formatDate(item.requested_at) }}
+                  {{ formatDate(item.requested_at || item.created_at) }}
                 </p>
               </div>
 

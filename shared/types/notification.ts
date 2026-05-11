@@ -1,12 +1,22 @@
+export type NotificationId = string
+export type NotificationEntityId = number
+
+export type NotificationData = {
+  resource_type: string
+  resource_id: NotificationEntityId
+  action_url?: string
+  actor_name?: string
+}
+
 export type Notification = {
-  id: string
-  user_id: string
+  id: NotificationId
+  user_id: NotificationEntityId
+  type?: string
   title: string
-  body: string
-  link?: string
-  is_read?: boolean
-  created_at?: string
-  read_at?: string | null
+  message: string
+  data: NotificationData
+  created_at: string
+  read_at: string | null
 }
 
 export type NotificationResponse = {

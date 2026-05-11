@@ -143,10 +143,9 @@ const getTypeLabel = (type: string) => {
 
 const getMilestoneStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    not_started: 'Not Started',
-    in_progress: 'In Progress',
+    draft: 'Draft',
+    submitted: 'Submitted',
     under_review: 'Under Review',
-    supervisor_approved: 'Supervisor Approved',
     approved: 'Approved',
     rejected: 'Rejected',
   }

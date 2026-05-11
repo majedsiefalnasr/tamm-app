@@ -21,10 +21,9 @@ const i18n = createI18n({
           paymentStatus: 'Payment Status',
         },
         status: {
-          not_started: 'Not Started',
+          draft: 'Draft',
           in_progress: 'In Progress',
           under_review: 'Under Review',
-          supervisor_approved: 'Supervisor Approved',
           approved: 'Approved',
           rejected: 'Rejected',
         },
@@ -64,7 +63,7 @@ describe('MilestoneDetail Component', () => {
         },
       ],
       latest_report: undefined,
-      payment_status: 'pending_payment',
+      payment_status: 'pending',
       allowed_actions: [],
       created_at: '2026-05-01T10:00:00Z',
     }

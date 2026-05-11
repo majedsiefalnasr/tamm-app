@@ -60,7 +60,7 @@ export const mockGetContractorBalance = (
 ): ContractorBalance => {
   // Calculate from mock milestones
   const earned = milestones
-    .filter(m => ['paid_out', 'ready_for_payout'].includes(m.payment_status))
+    .filter(m => ['processing', 'paid'].includes(m.payment_status))
     .reduce((sum, m) => sum + (m.amount || 0), 0)
 
   const locked = mockWithdrawals

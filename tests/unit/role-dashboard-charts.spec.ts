@@ -78,7 +78,7 @@ describe('roleDashboardCharts', () => {
     expect(def?.points[0]?.values.progress).toBe(40)
   })
 
-  it('buildContractorMonthlyPaidOutChart aggregates paid_out milestones', () => {
+  it('buildContractorMonthlyPaidOutChart aggregates paid milestones', () => {
     const milestones: Milestone[] = [
       {
         id: 'm1',
@@ -87,10 +87,10 @@ describe('roleDashboardCharts', () => {
         amount: 100,
         status: 'approved',
         tasks: [],
-        payment_status: 'paid_out',
+        payment_status: 'paid',
         allowed_actions: [],
         created_at: '2026-01-01T00:00:00Z',
-        paid_out_at: '2026-03-15T10:00:00Z',
+        paid_at: '2026-03-15T10:00:00Z',
       },
       {
         id: 'm2',
@@ -99,10 +99,10 @@ describe('roleDashboardCharts', () => {
         amount: 100,
         status: 'approved',
         tasks: [],
-        payment_status: 'paid_out',
+        payment_status: 'paid',
         allowed_actions: [],
         created_at: '2026-01-01T00:00:00Z',
-        paid_out_at: '2026-03-20T10:00:00Z',
+        paid_at: '2026-03-20T10:00:00Z',
       },
       {
         id: 'm3',
@@ -111,7 +111,7 @@ describe('roleDashboardCharts', () => {
         amount: 100,
         status: 'in_progress',
         tasks: [],
-        payment_status: 'pending_payment',
+        payment_status: 'pending',
         allowed_actions: [],
         created_at: '2026-01-01T00:00:00Z',
       },

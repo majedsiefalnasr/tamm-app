@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
+import { normalizeRole } from '~/utils/roleRoutes'
 
 export interface AuthUser {
-  id: string
+  id: number | string
   name: string
-  email: string
+  email: string | null
   phone: string | null
   role: string
   status: string
@@ -20,7 +21,8 @@ export interface AuthState {
 
 export const useAuthStore = defineStore('auth', () => {
   const token = useCookie<string | null>('auth_token', {
-    maxAge: 60 * 60 * 24 * 7,
+    // refresh token TTL is two weeks (backend contract)
+    maxAge: 60 * 60 * 24 * 14,
   })
   const user = ref<AuthUser | null>(null)
   const isLoading = ref(false)
@@ -29,8 +31,70 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** Deduplicate concurrent `/auth/me` when middleware + plugins both call `init()` */
   let initInflight: Promise<void> | null = null
+  let refreshInflight: Promise<void> | null = null
+  let proactiveRefreshTimer: ReturnType<typeof setTimeout> | null = null
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
+
+  const normalizeAuthUser = (raw: any): AuthUser => {
+    return {
+      ...raw,
+      role: normalizeRole(raw?.role),
+    }
+  }
+
+  const clearRefreshTimer = () => {
+    if (!import.meta.client) return
+    if (proactiveRefreshTimer) {
+      clearTimeout(proactiveRefreshTimer)
+      proactiveRefreshTimer = null
+    }
+  }
+
+  const scheduleProactiveRefresh = () => {
+    if (!import.meta.client || !token.value) return
+    clearRefreshTimer()
+    proactiveRefreshTimer = setTimeout(
+      () => {
+        refreshSession().catch(() => {
+          // Silent failure fallback: request-time 401 path still handles logout.
+        })
+      },
+      55 * 60 * 1000
+    )
+  }
+
+  const refreshSession = async () => {
+    if (!token.value) return
+    if (refreshInflight) return refreshInflight
+
+    refreshInflight = (async () => {
+      try {
+        const response = await useApi('/auth/refresh', {
+          method: 'POST',
+          skipAuthRefresh: true,
+        })
+        if (response.success && response.data?.token) {
+          token.value = response.data.token
+          if (response.data.user) {
+            user.value = normalizeAuthUser(response.data.user)
+          }
+          scheduleProactiveRefresh()
+          return
+        }
+      } catch {
+        // fall through to clear auth state
+      }
+
+      token.value = null
+      user.value = null
+      clearRefreshTimer()
+    })().finally(() => {
+      refreshInflight = null
+    })
+
+    await refreshInflight
+  }
 
   const login = async (email: string, password: string) => {
     isLoading.value = true
@@ -44,11 +108,12 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (response.success) {
         token.value = response.data.token
-        user.value = response.data.user
+        user.value = normalizeAuthUser(response.data.user)
+        scheduleProactiveRefresh()
 
         // Redirect to role-based home page (not hardcoded /dashboard)
         const { getHomePageForRole } = useRoleRoutes()
-        const homePage = getHomePageForRole(response.data.user.role)
+        const homePage = getHomePageForRole(user.value.role)
         await navigateTo(homePage)
 
         return response.data
@@ -73,6 +138,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       error.value = null
       statusCode.value = null
+      clearRefreshTimer()
       isLoading.value = false
       await navigateTo('/login')
     }
@@ -88,14 +154,17 @@ export const useAuthStore = defineStore('auth', () => {
         try {
           const response = await useApi('/auth/me')
           if (response.success) {
-            user.value = response.data
+            user.value = normalizeAuthUser(response.data)
+            scheduleProactiveRefresh()
           } else {
             token.value = null
             user.value = null
+            clearRefreshTimer()
           }
         } catch {
           token.value = null
           user.value = null
+          clearRefreshTimer()
         } finally {
           isLoading.value = false
         }
@@ -116,5 +185,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     init,
+    refreshSession,
   }
 })

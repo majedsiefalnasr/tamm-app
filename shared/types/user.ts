@@ -8,15 +8,16 @@ export type Role =
   | 'field_engineer'
   | 'supervisor_engineer'
 
+export type EntityId = number
+
 export interface User {
-  id: string
+  id: EntityId
   name: string
-  email: string
+  email: string | null
   phone: string | null
   role: Role
-  status: 'active' | 'inactive'
+  status: 'active' | 'suspended' | 'pending_verification' | 'banned'
   created_at: string
-  updated_at: string
 }
 
 export const createUserSchema = z.object({

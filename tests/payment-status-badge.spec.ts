@@ -101,11 +101,11 @@ test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
       .getAttribute('data-status')
 
     expect([
-      'pending_payment',
+      'pending',
       'paid',
-      'awaiting_approval',
-      'ready_for_payout',
-      'paid_out',
+      'awaiting_release',
+      'processing',
+      'failed',
     ]).toContain(statusAttribute)
   })
 
@@ -148,11 +148,11 @@ test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
     const badgeText = await paymentBadge.textContent()
 
     const validEnglishLabels = [
-      'Awaiting payment',
+      'Pending',
       'In escrow',
-      'Awaiting approval',
-      'Ready for release',
-      'Paid out',
+      'Awaiting release',
+      'Processing',
+      'Failed',
     ]
     expect(validEnglishLabels.some(label => badgeText?.includes(label))).toBe(
       true
@@ -174,11 +174,11 @@ test.describe('Story 04-02 — Payment Status Badge on Milestone', () => {
     const badgeText = await paymentBadge.textContent()
 
     const validArabicLabels = [
-      'بانتظار الدفع',
+      'قيد الانتظار',
       'محتجز في الضمان',
-      'بانتظار الاعتماد',
-      'جاهز للصرف',
-      'تم الصرف',
+      'بانتظار الإفراج',
+      'قيد المعالجة',
+      'فشل',
     ]
     expect(validArabicLabels.some(label => badgeText?.includes(label))).toBe(
       true

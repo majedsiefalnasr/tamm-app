@@ -24,7 +24,7 @@ const canViewPayment = computed(() => {
 })
 
 const paymentStatus = computed(() => {
-  if (!props.milestone?.status) return 'pending_payment'
+  if (!props.milestone?.status) return 'pending'
   return derivePaymentStatus(props.milestone.status)
 })
 
@@ -32,7 +32,7 @@ const meta = computed(() => {
   const status = paymentStatus.value as keyof typeof PAYMENT_STATUS_META
   const metadata = PAYMENT_STATUS_META[status]
   if (!metadata) {
-    return PAYMENT_STATUS_META.pending_payment
+    return PAYMENT_STATUS_META.pending
   }
   return metadata
 })
@@ -66,7 +66,7 @@ const variant = computed(() => {
       :class="cn('inline-flex')"
       :data-status="paymentStatus"
     >
-      {{ meta.label ? t(meta.label) : t('payment.status.pending_payment') }}
+      {{ meta.label ? t(meta.label) : t('payment.status.pending') }}
     </Badge>
   </div>
 </template>

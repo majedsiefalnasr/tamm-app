@@ -12,13 +12,13 @@ test.describe('Story 04-01 — Client Pays for a Milestone', () => {
     await page.waitForURL('**/projects**')
   })
 
-  test('should show Pay Milestone button for client on not_started milestone with pending_payment', async ({
+  test('should show Pay Milestone button for client on draft milestone with pending status', async ({
     page,
   }) => {
     // Navigate to project
     await page.goto(`${BASE_URL}/projects/proj-001`)
 
-    // Find milestone with not_started status
+    // Find milestone with payable status
     const milestoneCards = page.locator('[class*="rounded-2xl"]')
     let foundPayButton = false
 
@@ -215,10 +215,10 @@ test.describe('Story 04-01 — Client Pays for a Milestone', () => {
     await expect(payButton).not.toBeVisible()
   })
 
-  test('should not show Pay Milestone button after milestone status changes from not_started', async ({
+  test('should not show Pay Milestone button after milestone status changes from draft', async ({
     page,
   }) => {
-    // Navigate to project with in_progress milestone (not not_started)
+    // Navigate to project with non-payable milestone status
     // Button should not be visible
     await page.goto(`${BASE_URL}/projects/proj-001`)
 

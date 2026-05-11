@@ -20,28 +20,36 @@ vi.mock('#app', async () => ({
 
 vi.mock('~/stores/auth', () => ({
   useAuthStore: () => ({
-    user: { id: 'user1' },
+    user: { id: 1 },
   }),
 }))
 
 const mockNotifications = [
   {
     id: '1',
-    user_id: 'user1',
+    user_id: 1,
     title: 'Report submitted',
-    body: 'Milestone A',
-    link: '/projects/1/milestones/1',
-    is_read: false,
+    message: 'Milestone A',
+    data: {
+      resource_type: 'milestones',
+      resource_id: 1,
+      action_url: '/projects/1/milestones/1',
+      actor_name: 'System',
+    },
     created_at: '2024-05-08T10:00:00Z',
     read_at: null,
   },
   {
     id: '2',
-    user_id: 'user1',
+    user_id: 1,
     title: 'Approved',
-    body: 'Milestone B',
-    link: '/projects/1/milestones/2',
-    is_read: true,
+    message: 'Milestone B',
+    data: {
+      resource_type: 'milestones',
+      resource_id: 2,
+      action_url: '/projects/1/milestones/2',
+      actor_name: 'System',
+    },
     created_at: '2024-05-07T15:30:00Z',
     read_at: '2024-05-07T16:00:00Z',
   },
@@ -96,7 +104,7 @@ describe('useNotifications composable', () => {
     await markAsRead('1')
 
     const notification = notifications.value.find(n => n.id === '1')
-    expect(notification?.is_read).toBe(true)
+    expect(notification?.read_at).toBeTruthy()
     expect(unreadCount.value).toBe(0)
   })
 
@@ -114,7 +122,7 @@ describe('useNotifications composable', () => {
 
     await markAllAsRead()
 
-    expect(notifications.value.every(n => n.is_read)).toBe(true)
+    expect(notifications.value.every(n => !!n.read_at)).toBe(true)
     expect(unreadCount.value).toBe(0)
   })
 

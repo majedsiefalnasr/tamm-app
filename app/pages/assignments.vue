@@ -17,13 +17,11 @@ const filteredMilestones = computed(() => {
   const data = allMilestones.value || []
   switch (currentTab.value) {
     case 'active':
-      return data.filter(m => m.status === 'in_progress')
+      return data.filter(m => m.status === 'draft')
     case 'under_review':
       return data.filter(m => m.status === 'under_review')
     case 'completed':
-      return data.filter(
-        m => m.status === 'approved' || m.status === 'supervisor_approved'
-      )
+      return data.filter(m => m.status === 'approved')
     default:
       return data
   }
@@ -36,9 +34,7 @@ const counts = computed(() => {
     all: data.length,
     active: data.filter(m => m.status === 'in_progress').length,
     underReview: data.filter(m => m.status === 'under_review').length,
-    completed: data.filter(
-      m => m.status === 'approved' || m.status === 'supervisor_approved'
-    ).length,
+    completed: data.filter(m => m.status === 'approved').length,
   }
 })
 </script>

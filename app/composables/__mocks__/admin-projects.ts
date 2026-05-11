@@ -13,7 +13,7 @@ export const mockAdminProjects: AdminProjectOverviewItem[] = [
     milestones: [
       { id: 'm1', status: 'approved' },
       { id: 'm2', status: 'in_progress' },
-      { id: 'm3', status: 'not_started' },
+      { id: 'm3', status: 'draft' },
     ],
   },
   {
@@ -52,7 +52,7 @@ export const mockAdminProjects: AdminProjectOverviewItem[] = [
     created_at: '2026-04-10T11:45:00Z',
     milestones: [
       { id: 'm6', status: 'approved' },
-      { id: 'm7', status: 'not_started' },
+      { id: 'm7', status: 'draft' },
     ],
   },
   {
@@ -92,7 +92,7 @@ export const mockAdminProjects: AdminProjectOverviewItem[] = [
     created_at: '2026-04-25T13:10:00Z',
     milestones: [
       { id: 'm11', status: 'in_progress' },
-      { id: 'm12', status: 'not_started' },
+      { id: 'm12', status: 'draft' },
     ],
   },
   {
@@ -132,7 +132,7 @@ export const mockAdminProjects: AdminProjectOverviewItem[] = [
     milestones: [
       { id: 'm16', status: 'approved' },
       { id: 'm17', status: 'under_review' },
-      { id: 'm18', status: 'not_started' },
+      { id: 'm18', status: 'draft' },
     ],
   },
   {

@@ -36,12 +36,12 @@ const mockMilestones: Record<string, Milestone[]> = {
       description: 'Walls, finishing, internal work',
       amount: 75000,
       order: 2,
-      status: 'in_progress',
+      status: 'draft',
       tasks: [
         { id: 'task-1', title: 'Wall construction', completed: false },
         { id: 'task-2', title: 'Internal finishing', completed: false },
       ],
-      payment_status: 'pending_payment',
+      payment_status: 'pending',
       allowed_actions: ['submit_report', 'view_report'],
       created_at: '2026-05-01T09:00:00Z',
     },
@@ -51,9 +51,9 @@ const mockMilestones: Record<string, Milestone[]> = {
       description: 'Final checks and handover',
       amount: 125000,
       order: 3,
-      status: 'not_started',
+      status: 'draft',
       tasks: [],
-      payment_status: 'pending_payment',
+      payment_status: 'pending',
       allowed_actions: ['submit_report'],
       created_at: '2026-05-05T09:00:00Z',
     },
@@ -109,9 +109,9 @@ export const useMilestonesStore = defineStore('milestones', () => {
       description: data.description,
       amount: data.amount,
       order: nextOrder,
-      status: 'not_started',
+      status: 'draft',
       tasks: [],
-      payment_status: 'pending_payment',
+      payment_status: 'pending',
       allowed_actions: [],
       created_at: new Date().toISOString(),
     }
@@ -185,8 +185,8 @@ export const useMilestonesStore = defineStore('milestones', () => {
   ) => {
     const { notify } = useNotifications()
     try {
-      await updateMilestoneStatus(projectId, milestoneId, 'supervisor_approved')
-      notify.success('milestone.status.supervisor_approved')
+      await updateMilestoneStatus(projectId, milestoneId, 'approved')
+      notify.success('milestone.status.approved')
     } catch (err) {
       notify.error('errors.milestone_approval_failed')
       throw err
@@ -227,8 +227,8 @@ export const useMilestonesStore = defineStore('milestones', () => {
     try {
       // TODO: replace mock — POST /milestones/:id/reject endpoint with reason
       await new Promise(resolve => setTimeout(resolve, 300))
-      // Auto-transition to in_progress (per status machine)
-      milestone.status = 'in_progress'
+      // Auto-transition to draft (per current status machine)
+      milestone.status = 'draft'
       notify.success('success.milestone_rejected')
     } catch (err) {
       milestone.status = previousStatus
@@ -252,7 +252,7 @@ export const useMilestonesStore = defineStore('milestones', () => {
     if (!milestone) throw new Error('Milestone not found')
 
     const previousStatus = milestone.status
-    milestone.status = 'under_review'
+    milestone.status = 'submitted'
 
     try {
       // TODO: replace mock — POST /reports endpoint

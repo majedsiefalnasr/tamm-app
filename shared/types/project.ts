@@ -4,24 +4,44 @@ import type {
 } from './project-display'
 
 export type ProjectStatus =
+  | 'draft'
+  | 'pending_admin_approval'
+  | 'approved'
+  | 'supervisor_assigned'
+  | 'supervisor_accepted'
+  | 'milestones_being_created'
+  | 'milestones_ready'
+  | 'awaiting_bids'
+  | 'bid_accepted'
+  | 'in_progress'
+  | 'on_hold'
+  | 'completed'
+  | 'cancelled'
+  | 'disputed'
+  // Legacy statuses kept temporarily while migrating older UI flows.
   | 'new'
   | 'open_for_bids'
   | 'under_review'
   | 'contractor_selected'
   | 'active'
-  | 'on_hold'
-  | 'completed'
 
 export type MilestoneStatus =
-  | 'not_started'
-  | 'in_progress'
+  | 'draft'
+  | 'submitted'
   | 'under_review'
-  | 'supervisor_approved'
   | 'approved'
   | 'rejected'
+  // Legacy statuses kept temporarily while migrating older UI flows.
+  | 'not_started'
+  | 'in_progress'
+  | 'supervisor_approved'
+
+export type ProjectEntityId = number
+export type LegacyEntityId = string
+export type ApiEntityId = ProjectEntityId | LegacyEntityId
 
 export interface Project extends ProjectDisplayFields {
-  id: string
+  id: ApiEntityId
   name: string
   description: string
   city: string
@@ -29,7 +49,7 @@ export interface Project extends ProjectDisplayFields {
   budget: number
   currency: string
   status: ProjectStatus
-  contractor_id?: string
+  contractor_id?: ApiEntityId
   contractor_name?: string
   created_at: string
   completed_milestones: number
@@ -37,30 +57,43 @@ export interface Project extends ProjectDisplayFields {
 }
 
 export type PaymentStatus =
-  | 'pending_payment'
+  | 'pending'
+  | 'awaiting_release'
+  | 'processing'
   | 'paid'
+  | 'failed'
+  // Legacy statuses kept temporarily while migrating older UI flows.
+  | 'pending_payment'
   | 'awaiting_approval'
   | 'ready_for_payout'
   | 'paid_out'
 
+export type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'approved'
+  | 'rejected'
+
 export interface Task {
-  id: string
-  milestone_id: string
+  id: ApiEntityId
+  milestone_id: ApiEntityId
   title: string
+  status?: TaskStatus
   contractor?: {
-    id: string
+    id: ApiEntityId
     name: string
   }
   completed?: boolean
 }
 
 export interface Report {
-  id: string
-  milestone_id: string
+  id: ApiEntityId
+  milestone_id: ApiEntityId
   content: string
   images: string[]
   submitted_by?: {
-    id: string
+    id: ApiEntityId
     name: string
   }
   submitted_at?: string
@@ -68,7 +101,7 @@ export interface Report {
 }
 
 export interface Milestone extends MilestoneDisplayFields {
-  id: string
+  id: ApiEntityId
   name: string
   description?: string
   amount: number
@@ -84,14 +117,14 @@ export interface Milestone extends MilestoneDisplayFields {
     id: string
     name: string
   }
-  project_id?: string
+  project_id?: ApiEntityId
   project?: {
-    id: string
+    id: ApiEntityId
     name: string
   }
-  supervisor_id?: string
+  supervisor_id?: ApiEntityId
   supervisor?: {
-    id: string
+    id: ApiEntityId
     name: string
   }
   supervisor_approved_at?: string
@@ -107,12 +140,12 @@ export interface Milestone extends MilestoneDisplayFields {
 }
 
 export interface Engineer {
-  id: string
+  id: ApiEntityId
   name: string
 }
 
 export interface ProjectDetail {
-  id: string
+  id: ApiEntityId
   name: string
   description: string
   city: string
@@ -122,15 +155,15 @@ export interface ProjectDetail {
   currency: string
   status: ProjectStatus
   /** Set when client selects a winning proposal (mock + API-backed detail). */
-  selected_proposal_id?: string
-  client_id: string
+  selected_proposal_id?: ApiEntityId
+  client_id: ApiEntityId
   client_name: string
-  contractor_id?: string
+  contractor_id?: ApiEntityId
   contractor_name?: string
-  supervisor_engineer_id?: string
+  supervisor_engineer_id?: ApiEntityId
   supervisor_engineer?: Engineer
   supervisor_name?: string
-  field_engineer_id?: string
+  field_engineer_id?: ApiEntityId
   field_engineer?: Engineer
   field_engineer_name?: string
   total_amount: number
@@ -151,22 +184,22 @@ export interface ProjectDetailResponse {
 
 // Admin project overview types
 export interface AdminProjectOverviewItem {
-  id: string
+  id: ApiEntityId
   project_number: string
   name: string
   status: ProjectStatus
   client: {
-    id: string
+    id: ApiEntityId
     name: string
   }
   contractor: {
-    id: string
+    id: ApiEntityId
     name: string
   } | null
   total_value: number
   created_at: string
   milestones: Array<{
-    id: string
+    id: ApiEntityId
     status: MilestoneStatus
   }>
 }
@@ -192,9 +225,9 @@ export interface ProjectOverviewFilter {
 
 // Proposal types
 export interface ProposalData {
-  id: string
-  projectId: string
-  contractorId: string
+  id: ApiEntityId
+  projectId: ApiEntityId
+  contractorId: ApiEntityId
   contractorName: string
   price: number
   estimatedDays: number
@@ -210,6 +243,6 @@ export interface ProposalPayload {
 }
 
 export interface AssignEngineersPayload {
-  supervisor_engineer_id: string
-  field_engineer_id: string
+  supervisor_engineer_id: ApiEntityId
+  field_engineer_id: ApiEntityId
 }

@@ -291,6 +291,7 @@
       "badges": {
         "milestone_created": "إعداد",
         "report_submitted": "أدلة",
+        "review_approved": "اعتماد مراجعة",
         "supervisor_approved": "إشراف",
         "decision_rejected": "مرفوض",
         "client_approved": "عميل",
@@ -300,6 +301,7 @@
       "events": {
         "milestone_created": "تم إنشاء المرحلة",
         "report_submitted": "تم إرسال تقرير للمراجعة",
+        "review_approved": "تم اعتماد المرحلة بعد المراجعة",
         "supervisor_approved": "اعتمد المشرف هذه المرحلة",
         "decision_rejected": "تم رفض المرحلة",
         "client_approved": "منح العميل الاعتماد النهائي",
@@ -312,6 +314,10 @@
     "heading": "المدفوعات",
     "subtitle": "تابع سجل مدفوعاتك عبر جميع المشاريع",
     "status": {
+      "pending": "قيد الانتظار",
+      "awaiting_release": "بانتظار الإفراج",
+      "processing": "قيد المعالجة",
+      "failed": "فشل",
       "pending_payment": "بانتظار الدفع",
       "paid": "محتجز في الضمان",
       "awaiting_approval": "بانتظار الاعتماد",
@@ -363,6 +369,7 @@
     "dashboard": {
       "total_committed": "إجمالي الالتزام",
       "total_in_escrow": "إجمالي المحجوز",
+      "total_paid": "إجمالي المدفوع",
       "total_paid_out": "إجمالي المصروف"
     },
     "project": {
@@ -487,6 +494,8 @@
     }
   },
   "status": {
+    "draft": "مسودة",
+    "submitted": "تم التقديم",
     "in_progress": "قيد التنفيذ",
     "under_review": "قيد المراجعة",
     "supervisor_approved": "موافق من الإشراف",
@@ -617,6 +626,7 @@
     },
     "client_approval_dialog": {
       "title": "اعتماد نهائي",
+      "review_approved_badge": "✓ تمت الموافقة بعد المراجعة",
       "supervisor_approved_badge": "✓ تمت الموافقة من قبل المشرف",
       "warning_title": "هذا الإجراء نهائي",
       "warning_message": "سيتم تحرير الدفعة للمقاول",
@@ -631,6 +641,7 @@
   },
   "approval_queue": {
     "title": "قائمة الاعتمادات",
+    "review_approved": "تمت الموافقة من قبل {name} في {date}",
     "supervisor_approved": "موافق من قبل {name} في {date}",
     "empty": {
       "title": "لا توجد موافقات معلقة",
@@ -662,8 +673,12 @@
       "cancel": "إلغاء"
     },
     "status": {
-      "pending": "قيد المراجعة",
+      "pending": "قيد الانتظار",
+      "under_review": "قيد المراجعة",
       "approved": "تم الموافقة",
+      "processing": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "cancelled": "ملغي",
       "withdrawable": "جاهز للسحب",
       "rejected": "مرفوض",
       "paid": "تم الصرف"
@@ -683,6 +698,9 @@
     "events": {
       "report_submitted": {
         "title": "تم رفع التقرير"
+      },
+      "review_approved": {
+        "title": "موافقة من المشرف"
       },
       "supervisor_approved": {
         "title": "موافقة من المشرف"

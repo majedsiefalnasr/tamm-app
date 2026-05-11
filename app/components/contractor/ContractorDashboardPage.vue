@@ -50,7 +50,7 @@ const activeMilestones = computed(() =>
 
 const reviewMilestones = computed(() =>
   milestonesForContractor.value.filter(
-    m => m.status === 'under_review' || m.status === 'supervisor_approved'
+    m => m.status === 'under_review' || m.status === 'approved'
   )
 )
 
@@ -60,8 +60,8 @@ const paymentSummary = computed(() => {
   const pending = allMilestones
     .filter(
       m =>
-        m.payment_status === 'awaiting_approval' ||
-        m.payment_status === 'ready_for_payout'
+        m.payment_status === 'awaiting_release' ||
+        m.payment_status === 'processing'
     )
     .reduce((sum, m) => sum + (m.amount || 0), 0)
 
@@ -70,8 +70,8 @@ const paymentSummary = computed(() => {
 
   const recent = allMilestones
     .filter(m => {
-      if (m.payment_status !== 'paid_out') return false
-      const paidAt = m.paid_out_at ?? m.updated_at
+      if (m.payment_status !== 'paid') return false
+      const paidAt = m.updated_at
       if (!paidAt) return false
       return new Date(paidAt) > thirtyDaysAgo
     })
@@ -82,8 +82,8 @@ const paymentSummary = computed(() => {
     recentlyReceived: recent,
     pendingCount: allMilestones.filter(
       m =>
-        m.payment_status === 'awaiting_approval' ||
-        m.payment_status === 'ready_for_payout'
+        m.payment_status === 'awaiting_release' ||
+        m.payment_status === 'processing'
     ).length,
   }
 })

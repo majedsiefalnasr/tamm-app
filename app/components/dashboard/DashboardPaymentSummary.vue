@@ -78,7 +78,7 @@ const paidOut = computed(
         </template>
         <template v-else>
           <p class="text-muted-foreground text-xs font-semibold uppercase">
-            {{ $t('payment.dashboard.total_paid_out') }}
+            {{ $t('payment.dashboard.total_paid') }}
           </p>
           <p class="text-primary mt-3 text-2xl font-extrabold md:text-3xl">
             {{ formatCurrency(paidOut) }}

@@ -2,54 +2,158 @@
 // Reference: docs/status-flows.md
 
 export type ProjectStatus =
-  | 'new'
-  | 'open_for_bids'
-  | 'under_review'
-  | 'contractor_selected'
-  | 'active'
+  | 'draft'
+  | 'pending_admin_approval'
+  | 'approved'
+  | 'supervisor_assigned'
+  | 'supervisor_accepted'
+  | 'milestones_being_created'
+  | 'milestones_ready'
+  | 'awaiting_bids'
+  | 'bid_accepted'
+  | 'in_progress'
   | 'on_hold'
   | 'completed'
+  | 'cancelled'
+  | 'disputed'
 
 export type MilestoneStatus =
-  | 'not_started'
-  | 'in_progress'
+  | 'draft'
+  | 'submitted'
   | 'under_review'
-  | 'supervisor_approved'
   | 'approved'
   | 'rejected'
 
-export type ReportStatus = 'draft' | 'submitted' | 'under_review'
+export type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'approved'
+  | 'rejected'
+
+export type PaymentStatus =
+  | 'pending'
+  | 'awaiting_release'
+  | 'processing'
+  | 'paid'
+  | 'failed'
+
+export type FieldReportStatus =
+  | 'draft'
+  | 'submitted'
+  | 'under_review'
+  | 'approved'
+  | 'rejected'
+  | 'request_changes'
+
+export type WithdrawalStatus =
+  | 'pending'
+  | 'under_review'
+  | 'approved'
+  | 'processing'
+  | 'completed'
+  | 'rejected'
+  | 'cancelled'
+
+export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'cancelled'
+
+export type AssignmentStatus = 'pending' | 'accepted' | 'rejected' | 'revoked'
 
 // Project status transitions (docs/status-flows.md §2)
 const projectTransitions: Record<ProjectStatus, ProjectStatus[]> = {
-  new: ['open_for_bids'],
-  open_for_bids: ['under_review'],
-  under_review: ['contractor_selected'],
-  contractor_selected: ['active'],
-  active: ['on_hold', 'completed'],
-  on_hold: ['active'],
+  draft: ['pending_admin_approval'],
+  pending_admin_approval: ['approved', 'cancelled'],
+  approved: ['supervisor_assigned', 'on_hold', 'cancelled'],
+  supervisor_assigned: ['supervisor_accepted', 'approved', 'on_hold'],
+  supervisor_accepted: [
+    'milestones_being_created',
+    'milestones_ready',
+    'in_progress',
+    'on_hold',
+  ],
+  milestones_being_created: ['milestones_ready', 'on_hold'],
+  milestones_ready: ['awaiting_bids', 'bid_accepted', 'in_progress', 'on_hold'],
+  awaiting_bids: ['bid_accepted', 'on_hold', 'cancelled'],
+  bid_accepted: ['in_progress', 'on_hold'],
+  in_progress: ['on_hold', 'completed', 'disputed', 'cancelled'],
+  on_hold: ['in_progress', 'cancelled'],
+  disputed: ['in_progress', 'cancelled', 'completed'],
   completed: [],
+  cancelled: [],
 }
 
 // Milestone status transitions (docs/status-flows.md §1)
 const milestoneTransitions: Record<MilestoneStatus, MilestoneStatus[]> = {
-  not_started: ['in_progress'],
-  in_progress: ['under_review'],
-  under_review: ['supervisor_approved', 'rejected'],
-  supervisor_approved: ['approved', 'rejected'],
-  approved: [],
-  rejected: ['in_progress'], // Always bounces back to in_progress
-}
-
-// Report status transitions (docs/status-flows.md §3)
-const reportTransitions: Record<ReportStatus, ReportStatus[]> = {
   draft: ['submitted'],
   submitted: ['under_review'],
-  under_review: [], // Terminal — report status doesn't change on approve/reject
+  under_review: ['approved', 'rejected'],
+  approved: [],
+  rejected: ['draft'],
 }
 
+// Field report status transitions
+const fieldReportTransitions: Record<FieldReportStatus, FieldReportStatus[]> = {
+  draft: ['submitted'],
+  submitted: ['under_review', 'approved', 'rejected', 'request_changes'],
+  under_review: ['approved', 'rejected', 'request_changes'],
+  approved: [],
+  rejected: ['draft'],
+  request_changes: ['draft'],
+}
+
+const paymentTransitions: Record<PaymentStatus, PaymentStatus[]> = {
+  pending: ['awaiting_release'],
+  awaiting_release: ['processing'],
+  processing: ['paid', 'failed'],
+  failed: ['pending'],
+  paid: [],
+}
+
+const taskTransitions: Record<TaskStatus, TaskStatus[]> = {
+  pending: ['in_progress'],
+  in_progress: ['completed'],
+  completed: ['approved', 'rejected'],
+  approved: [],
+  rejected: ['in_progress'],
+}
+
+const withdrawalTransitions: Record<WithdrawalStatus, WithdrawalStatus[]> = {
+  pending: ['under_review', 'cancelled'],
+  under_review: ['approved', 'rejected'],
+  approved: ['processing'],
+  processing: ['completed'],
+  completed: [],
+  rejected: [],
+  cancelled: [],
+}
+
+const approvalTransitions: Record<ApprovalStatus, ApprovalStatus[]> = {
+  pending: ['approved', 'rejected', 'cancelled'],
+  approved: [],
+  rejected: [],
+  cancelled: [],
+}
+
+const assignmentTransitions: Record<AssignmentStatus, AssignmentStatus[]> = {
+  pending: ['accepted', 'rejected'],
+  accepted: ['revoked'],
+  rejected: [],
+  revoked: [],
+}
+
+type EntityType =
+  | 'project'
+  | 'milestone'
+  | 'field_report'
+  | 'report'
+  | 'payment'
+  | 'task'
+  | 'withdrawal'
+  | 'approval'
+  | 'assignment'
+
 export function canTransition(
-  entityType: 'project' | 'milestone' | 'report',
+  entityType: EntityType,
   fromStatus: string,
   toStatus: string
 ): boolean {
@@ -65,16 +169,49 @@ export function canTransition(
       : false
   }
 
-  if (entityType === 'report') {
-    const transitions = reportTransitions[fromStatus as ReportStatus]
-    return transitions ? transitions.includes(toStatus as ReportStatus) : false
+  if (entityType === 'field_report' || entityType === 'report') {
+    const transitions = fieldReportTransitions[fromStatus as FieldReportStatus]
+    return transitions
+      ? transitions.includes(toStatus as FieldReportStatus)
+      : false
+  }
+
+  if (entityType === 'payment') {
+    const transitions = paymentTransitions[fromStatus as PaymentStatus]
+    return transitions ? transitions.includes(toStatus as PaymentStatus) : false
+  }
+
+  if (entityType === 'task') {
+    const transitions = taskTransitions[fromStatus as TaskStatus]
+    return transitions ? transitions.includes(toStatus as TaskStatus) : false
+  }
+
+  if (entityType === 'withdrawal') {
+    const transitions = withdrawalTransitions[fromStatus as WithdrawalStatus]
+    return transitions
+      ? transitions.includes(toStatus as WithdrawalStatus)
+      : false
+  }
+
+  if (entityType === 'approval') {
+    const transitions = approvalTransitions[fromStatus as ApprovalStatus]
+    return transitions
+      ? transitions.includes(toStatus as ApprovalStatus)
+      : false
+  }
+
+  if (entityType === 'assignment') {
+    const transitions = assignmentTransitions[fromStatus as AssignmentStatus]
+    return transitions
+      ? transitions.includes(toStatus as AssignmentStatus)
+      : false
   }
 
   return false
 }
 
 export function getValidTransitions(
-  entityType: 'project' | 'milestone' | 'report',
+  entityType: EntityType,
   fromStatus: string
 ): string[] {
   if (entityType === 'project') {
@@ -85,8 +222,28 @@ export function getValidTransitions(
     return milestoneTransitions[fromStatus as MilestoneStatus] || []
   }
 
-  if (entityType === 'report') {
-    return reportTransitions[fromStatus as ReportStatus] || []
+  if (entityType === 'field_report' || entityType === 'report') {
+    return fieldReportTransitions[fromStatus as FieldReportStatus] || []
+  }
+
+  if (entityType === 'payment') {
+    return paymentTransitions[fromStatus as PaymentStatus] || []
+  }
+
+  if (entityType === 'task') {
+    return taskTransitions[fromStatus as TaskStatus] || []
+  }
+
+  if (entityType === 'withdrawal') {
+    return withdrawalTransitions[fromStatus as WithdrawalStatus] || []
+  }
+
+  if (entityType === 'approval') {
+    return approvalTransitions[fromStatus as ApprovalStatus] || []
+  }
+
+  if (entityType === 'assignment') {
+    return assignmentTransitions[fromStatus as AssignmentStatus] || []
   }
 
   return []

@@ -95,9 +95,7 @@ export function useAdminProjects() {
       (Array.isArray(pr) && pr.some(v => v === '1' || v === 'true'))
     if (paymentReleaseOn) {
       filtered = filtered.filter(p =>
-        p.milestones.some(
-          m => derivePaymentStatus(m.status) === 'ready_for_payout'
-        )
+        p.milestones.some(m => derivePaymentStatus(m.status) === 'processing')
       )
     }
 

@@ -36,11 +36,14 @@ export const usePayments = () => {
     const committed = allMilestones.reduce((sum, m) => sum + (m.amount || 0), 0)
 
     const inEscrow = allMilestones
-      .filter(m => derivePaymentStatus(m.status) === 'paid')
+      .filter(m => {
+        const status = derivePaymentStatus(m.status)
+        return status === 'awaiting_release' || status === 'processing'
+      })
       .reduce((sum, m) => sum + (m.amount || 0), 0)
 
     const paidOut = allMilestones
-      .filter(m => derivePaymentStatus(m.status) === 'paid_out')
+      .filter(m => derivePaymentStatus(m.status) === 'paid')
       .reduce((sum, m) => sum + (m.amount || 0), 0)
 
     return { committed, inEscrow, paidOut }
@@ -55,17 +58,15 @@ export const usePayments = () => {
     const paid = projectMilestones
       .filter(m => {
         const status = derivePaymentStatus(m.status)
-        return [
-          'paid',
-          'awaiting_approval',
-          'ready_for_payout',
-          'paid_out',
-        ].includes(status)
+        return ['awaiting_release', 'processing', 'paid'].includes(status)
       })
       .reduce((sum, m) => sum + (m.amount || 0), 0)
 
     const inEscrow = projectMilestones
-      .filter(m => derivePaymentStatus(m.status) === 'paid')
+      .filter(m => {
+        const status = derivePaymentStatus(m.status)
+        return status === 'awaiting_release' || status === 'processing'
+      })
       .reduce((sum, m) => sum + (m.amount || 0), 0)
 
     const remaining = Math.max(0, value - paid)

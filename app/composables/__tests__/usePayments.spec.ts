@@ -25,7 +25,7 @@ vi.mock('../useMilestones', () => ({
             id: 'ms-3',
             name: 'Final',
             amount: 125000,
-            status: 'not_started',
+            status: 'draft',
           },
         ],
       }
@@ -48,9 +48,9 @@ vi.mock('../useProjects', () => ({
 vi.mock('~/utils/statusMachine', () => ({
   derivePaymentStatus: (status: string) => {
     const mapping: Record<string, string> = {
-      approved: 'paid_out',
-      in_progress: 'paid',
-      not_started: 'pending_payment',
+      approved: 'paid',
+      in_progress: 'processing',
+      draft: 'pending',
     }
     return mapping[status] || status
   },
@@ -72,7 +72,7 @@ describe('usePayments', () => {
     // In escrow = only 'paid' status: in_progress (75000)
     expect(totals.inEscrow).toBe(75000)
 
-    // Paid out = only 'paid_out' status: approved (50000)
+    // Paid out = only 'paid' status: approved (50000)
     expect(totals.paidOut).toBe(50000)
   })
 
@@ -82,7 +82,7 @@ describe('usePayments', () => {
     // Value = sum of all milestones: 50000 + 75000 = 125000
     expect(proj1.value).toBe(125000)
 
-    // Paid = milestones in [paid, awaiting_approval, ready_for_payout, paid_out]
+    // Paid = milestones in [awaiting_release, processing, paid]
     // approved (50000) and in_progress (75000) = 125000
     expect(proj1.paid).toBe(125000)
 

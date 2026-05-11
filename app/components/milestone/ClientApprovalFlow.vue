@@ -150,9 +150,7 @@ const dialogTitle = computed(() => {
               <span class="text-primary text-lg">✓</span>
               <p class="text-foreground text-sm font-semibold">
                 {{
-                  t(
-                    'milestones.client_approval_dialog.supervisor_approved_badge'
-                  )
+                  t('milestones.client_approval_dialog.review_approved_badge')
                 }}
               </p>
             </div>

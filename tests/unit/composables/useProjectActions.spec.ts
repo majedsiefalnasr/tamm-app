@@ -29,7 +29,7 @@ const mockProject: ProjectDetail = {
       name: 'Foundation',
       amount: 50000,
       order: 1,
-      status: 'not_started',
+      status: 'draft',
       created_at: '2026-05-08T00:00:00Z',
     },
   ],

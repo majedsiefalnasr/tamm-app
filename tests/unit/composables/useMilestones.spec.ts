@@ -61,20 +61,16 @@ describe('useMilestones', () => {
   })
 
   describe('Milestone transitions', () => {
-    it('validates approved milestone cannot go to supervisor_approved', () => {
-      expect(
-        canTransition('milestone', 'approved', 'supervisor_approved')
-      ).toBe(false)
+    it('validates approved milestone cannot go to submitted', () => {
+      expect(canTransition('milestone', 'approved', 'submitted')).toBe(false)
     })
 
-    it('validates in_progress can transition to under_review', () => {
-      expect(canTransition('milestone', 'in_progress', 'under_review')).toBe(
-        true
-      )
+    it('validates draft can transition to submitted', () => {
+      expect(canTransition('milestone', 'draft', 'submitted')).toBe(true)
     })
 
-    it('validates rejected transitions to in_progress', () => {
-      expect(canTransition('milestone', 'rejected', 'in_progress')).toBe(true)
+    it('validates rejected transitions to draft', () => {
+      expect(canTransition('milestone', 'rejected', 'draft')).toBe(true)
     })
   })
 })

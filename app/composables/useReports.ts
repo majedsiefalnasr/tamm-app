@@ -8,12 +8,7 @@ export interface ReportData {
   project_name: string
   field_engineer_id: string
   submitted_at: string
-  status:
-    | 'submitted'
-    | 'under_review'
-    | 'supervisor_approved'
-    | 'approved'
-    | 'rejected'
+  status: 'submitted' | 'under_review' | 'approved' | 'rejected'
   current_milestone_status: string
 }
 
@@ -45,7 +40,7 @@ export const useReports = () => {
       field_engineer_id: 'eng-1',
       submitted_at: '2026-05-07T14:15:00Z',
       status: 'submitted',
-      current_milestone_status: 'supervisor_approved',
+      current_milestone_status: 'approved',
     },
     {
       id: 'report-3',

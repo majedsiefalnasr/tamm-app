@@ -2,6 +2,7 @@
  * useApi - Composable for API requests with automatic Bearer token injection and 401 auto-logout
  * Wraps $fetch with auth state management and error handling
  */
+import { normalizeRole } from '~/utils/roleRoutes'
 
 export interface ApiResponse<T = any> {
   success: boolean
@@ -18,6 +19,8 @@ export interface ApiError extends Error {
   status?: number
   data?: any
 }
+
+let refreshInFlight: Promise<boolean> | null = null
 
 /**
  * Resolve URL for `/api/v1/...` requests.
@@ -49,30 +52,66 @@ export const useApi = async <T = any>(
     method?: string
     body?: any
     headers?: Record<string, string>
+    skipAuthRefresh?: boolean
     [key: string]: any
   }
 ): Promise<ApiResponse<T>> => {
   const auth = useAuthStore()
+  const requestUrl = resolveApiUrl(url)
 
-  try {
-    // Prepare request headers with Bearer token
+  const buildHeaders = (): Record<string, string> => {
     const headers = {
       ...options?.headers,
       'Content-Type': 'application/json',
     }
-
-    // Add Bearer token if user is authenticated
     if (auth.token) {
       headers.Authorization = `Bearer ${auth.token}`
     }
+    return headers
+  }
 
-    const requestUrl = resolveApiUrl(url)
-
-    // Make the request
-    const response = await $fetch<ApiResponse<T>>(requestUrl, {
+  const sendRequest = async (): Promise<ApiResponse<T>> => {
+    return await $fetch<ApiResponse<T>>(requestUrl, {
       ...options,
-      headers,
+      headers: buildHeaders(),
     })
+  }
+
+  const attemptTokenRefresh = async (): Promise<boolean> => {
+    if (refreshInFlight) return refreshInFlight
+
+    refreshInFlight = (async () => {
+      try {
+        const refreshResponse = await $fetch<
+          ApiResponse<{ token: string; user?: any }>
+        >(resolveApiUrl('/auth/refresh'), {
+          method: 'POST',
+          headers: buildHeaders(),
+        })
+
+        if (refreshResponse?.success && refreshResponse?.data?.token) {
+          auth.token = refreshResponse.data.token
+          if (refreshResponse.data.user) {
+            const nextUser = { ...refreshResponse.data.user }
+            nextUser.role = normalizeRole(nextUser.role)
+            auth.user = nextUser
+          }
+          return true
+        }
+      } catch {
+        // No-op: handled by false return.
+      } finally {
+        refreshInFlight = null
+      }
+
+      return false
+    })()
+
+    return refreshInFlight
+  }
+
+  try {
+    const response = await sendRequest()
 
     return response
   } catch (error: any) {
@@ -80,6 +119,29 @@ export const useApi = async <T = any>(
       error?.statusCode || error?.status || error?.response?.status
 
     // Handle 401 Unauthorized - trigger auto-logout
+    if (statusCode === 401 && !options?.skipAuthRefresh) {
+      const refreshed = await attemptTokenRefresh()
+      if (refreshed) {
+        try {
+          return await sendRequest()
+        } catch (retryError: any) {
+          const retryStatus =
+            retryError?.statusCode ||
+            retryError?.status ||
+            retryError?.response?.status
+          if (retryStatus !== 401) {
+            const apiError = new Error(
+              retryError.message || 'API request failed'
+            ) as ApiError
+            apiError.statusCode = retryStatus
+            apiError.status = retryStatus
+            apiError.data = retryError.data
+            throw apiError
+          }
+        }
+      }
+    }
+
     if (statusCode === 401) {
       // Clear auth state
       auth.token = null

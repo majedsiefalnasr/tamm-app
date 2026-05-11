@@ -36,11 +36,9 @@ const router = useRouter()
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status) {
-    case 'in_progress':
+    case 'draft':
       return 'secondary'
     case 'under_review':
-      return 'default'
-    case 'supervisor_approved':
       return 'default'
     case 'approved':
       return 'default'
@@ -78,7 +76,7 @@ const handleCardClick = (
   router.push(`/projects/${projectId}/milestones/${milestoneId}`)
 }
 
-const isActive = (status: string) => status === 'in_progress'
+const isActive = (status: string) => status === 'draft'
 
 const emptyStateKey = computed(() => {
   // Determine which empty state message to show based on current filter

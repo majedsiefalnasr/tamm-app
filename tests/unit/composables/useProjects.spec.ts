@@ -157,7 +157,7 @@ describe('useProjects composable', () => {
       const statuses = project.milestones.map(m => m.status)
       expect(statuses).toContain('approved')
       expect(statuses).toContain('in_progress')
-      expect(statuses).toContain('not_started')
+      expect(statuses).toContain('draft')
     })
   })
 

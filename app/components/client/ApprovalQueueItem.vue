@@ -32,7 +32,7 @@ const supervisorInfo = computed(() => {
         hour12: locale.value === 'ar',
       }
     )
-    return t('approval_queue.supervisor_approved', {
+    return t('approval_queue.review_approved', {
       name: milestone.supervisor.name,
       date: dateStr,
     })
