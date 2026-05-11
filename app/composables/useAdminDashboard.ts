@@ -5,6 +5,7 @@ import type {
   ActionQueues,
   RecentEvent,
   SuperAdminDashboardFlags,
+  AdminLovableOverview,
 } from '~/shared/types/admin'
 import { mockDashboardData } from './__mocks__/admin-dashboard'
 
@@ -43,6 +44,8 @@ function normalizeDashboardPayload(raw: DashboardSummary): DashboardSummary {
     recent_projects: raw.recent_projects ?? [],
     open_disputes: raw.open_disputes ?? [],
     activity_data: raw.activity_data ?? { months: [], data: [] },
+    lovable_overview:
+      (raw.lovable_overview as AdminLovableOverview | null | undefined) ?? null,
   }
 }
 
@@ -63,7 +66,8 @@ export function useAdminDashboard() {
   const data = ref<DashboardSummary | null>(null)
   let abortController: AbortController | null = null
 
-  const USE_MOCK = import.meta.env.DEV && !import.meta.env.VITE_API_READY
+  /** Mock dashboard until GET /admin/dashboard is contract-complete; set `VITE_ADMIN_DASHBOARD_USE_LIVE_API=true` to call the API. */
+  const USE_MOCK = import.meta.env.VITE_ADMIN_DASHBOARD_USE_LIVE_API !== 'true'
 
   const bannerCounts = computed(() => ({
     newProjects: data.value?.urgent_actions?.new_projects ?? 0,
@@ -156,6 +160,10 @@ export function useAdminDashboard() {
     (): SuperAdminDashboardFlags | null => data.value?.super_admin_flags ?? null
   )
 
+  const lovableOverview = computed(
+    (): AdminLovableOverview | null => data.value?.lovable_overview ?? null
+  )
+
   async function fetchDashboard() {
     loading.value = true
     error.value = null
@@ -241,6 +249,7 @@ export function useAdminDashboard() {
     actionQueues,
     recentEventsFeed,
     superAdminFlags,
+    lovableOverview,
     fetchDashboard,
     retry,
   }

@@ -12,17 +12,21 @@ import type { RecentDispute } from '~/shared/types/admin'
 interface Props {
   disputes: RecentDispute[]
   loading?: boolean
+  titleKey?: string
+  viewAllKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
+  titleKey: 'admin.dashboard.disputes.title',
+  viewAllKey: 'admin.dashboard.disputes.view_all',
 })
 
 const { t, locale } = useI18n()
 
 const statusToneMap = {
   open: 'danger',
-  mediating: 'accent',
+  mediating: 'info',
   resolved: 'primary',
 }
 
@@ -58,7 +62,7 @@ function formatDate(dateStr: string) {
   >
     <CardHeader>
       <CardTitle class="text-foreground text-lg font-extrabold">
-        {{ t('admin.dashboard.disputes.title') }}
+        {{ t(props.titleKey) }}
       </CardTitle>
       <CardAction>
         <NuxtLink
@@ -66,7 +70,7 @@ function formatDate(dateStr: string) {
           class="text-primary hover:text-primary/80 text-sm font-medium transition"
           data-testid="disputes-view-all"
         >
-          {{ t('admin.dashboard.disputes.view_all') }}
+          {{ t(props.viewAllKey) }}
         </NuxtLink>
       </CardAction>
     </CardHeader>
@@ -133,13 +137,25 @@ function formatDate(dateStr: string) {
                   {{ dispute.dispute_number }}
                 </td>
                 <td class="text-foreground px-3 py-3 text-start">
-                  {{ dispute.project_name }}
+                  {{
+                    dispute.project_display_key
+                      ? t(dispute.project_display_key)
+                      : dispute.project_name
+                  }}
                 </td>
                 <td class="text-muted-foreground px-3 py-3 text-start">
-                  {{ dispute.requester_name }}
+                  {{
+                    dispute.requester_label_key
+                      ? t(dispute.requester_label_key)
+                      : dispute.requester_name
+                  }}
                 </td>
                 <td class="text-muted-foreground px-3 py-3 text-start">
-                  {{ dispute.subject }}
+                  {{
+                    dispute.subject_key
+                      ? t(dispute.subject_key)
+                      : dispute.subject
+                  }}
                 </td>
                 <td class="px-3 py-3 text-start">
                   <span
@@ -147,8 +163,8 @@ function formatDate(dateStr: string) {
                     :class="{
                       'bg-red-100 text-red-700':
                         getStatusTone(dispute.status) === 'danger',
-                      'bg-amber-100 text-amber-700':
-                        getStatusTone(dispute.status) === 'accent',
+                      'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-200':
+                        getStatusTone(dispute.status) === 'info',
                       'bg-primary/15 text-primary':
                         getStatusTone(dispute.status) === 'primary',
                     }"

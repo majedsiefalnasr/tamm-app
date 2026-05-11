@@ -67,6 +67,13 @@
     "failed_to_load_engineers": "فشل تحميل قائمة المهندسين",
     "contractor_not_invited": "هذا المقاول غير مدعو لتقديم عرض على هذا المشروع."
   },
+  "dispute": {
+    "status": {
+      "open": "مفتوح",
+      "mediating": "وساطة",
+      "resolved": "مغلق"
+    }
+  },
   "buttons": {
     "cancel": "إلغاء",
     "confirm": "تأكيد",
@@ -624,6 +631,7 @@
       "under_review": "قيد المراجعة",
       "contractor_selected": "تم اختيار المقاول",
       "active": "نشط",
+      "waiting": "بانتظار",
       "on_hold": "معلق",
       "completed": "مكتمل",
       "in_progress": "قيد التنفيذ"
@@ -1031,8 +1039,8 @@
         }
       },
       "disputes": {
-        "title": "النزاعات المفتوحة",
-        "view_all": "عرض المزيد",
+        "title": "النزاعات النشطة",
+        "view_all": "عرض الكل",
         "columns": {
           "dispute_number": "رقم النزاع",
           "project": "المشروع",
@@ -1042,7 +1050,91 @@
           "created_date": "التاريخ",
           "action": "إجراء"
         },
-        "mediate": "وساطة"
+        "mediate": "وساطة",
+        "view_full_record": "فتح السجل الكامل"
+      },
+      "lovable": {
+        "demo_footer": "بيانات تجريبية — اربط GET /admin/dashboard عند جاهزية العقد مع الخادم.",
+        "alerts": {
+          "field_reports": "{count} تقارير ميدانية — رفعها مهندسو الموقع.",
+          "new_projects": "{count} طلب مشروع جديد — بانتظار المراجعة وتعيين المشرف."
+        },
+        "primary": {
+          "active_projects": "مشاريع نشطة",
+          "active_projects_sub": "+{delta} خلال آخر 7 أيام",
+          "contractors": "مقاولون مسجلون",
+          "contractors_sub": "+{delta} هذا الشهر",
+          "payments_volume": "إجمالي المدفوعات المعالجة",
+          "payments_volume_sub": "+{pct}% عن الشهر السابق",
+          "open_disputes": "نزاعات مفتوحة",
+          "open_disputes_sub": "{awaiting} بانتظار القرار"
+        },
+        "spark": {
+          "new_projects_week": "مشاريع جديدة / أسبوع",
+          "daily_booked": "مدفوعات محجوزة يومياً",
+          "milestone_approval_rate": "معدل اعتماد المراحل",
+          "csat": "رضا العملاء",
+          "plus_value": "+{value}",
+          "sar_compact": "{value} ر.س.",
+          "percent_value": "{value}٪",
+          "rating_value": "{value}/5",
+          "demo_new_projects_value": "+18",
+          "demo_daily_sar": "٤٨ ألف ر.س.",
+          "demo_milestone_pct": "٩٢٪",
+          "demo_csat": "٤٫٧/٥"
+        },
+        "distribution": {
+          "title": "توزيع المشاريع حسب الحالة",
+          "center_label": "مشاريع",
+          "in_execution": "قيد التنفيذ",
+          "waiting_funding": "بانتظار التمويل",
+          "waiting_assignment": "بانتظار التعيين",
+          "paused": "متوقف مؤقتاً"
+        },
+        "activity": {
+          "title": "نشاط المنصة",
+          "description": "مشاريع مغلقة شهرياً خلال السنة الحالية."
+        },
+        "registrations": {
+          "latest_title": "أحدث التسجيلات",
+          "weekly_title": "تسجيلات المستخدمين أسبوعياً",
+          "weekly_sub": "{total}+ ({pct}٪ عن الأسبوع الماضي)"
+        },
+        "roles": {
+          "project_owner": "مالكو المشاريع",
+          "contractor": "مقاولون",
+          "supervisor_engineer": "مهندسو إشراف",
+          "field_engineer": "مهندسو موقع"
+        },
+        "demo_users": {
+          "khaled": "م. خالد العبسي",
+          "north_construction": "شركة شمال للإنشاءات",
+          "sara": "سارة المقطري"
+        },
+        "demo_projects": {
+          "villa_yasmin": "فيلا الياسمين – صنعاء",
+          "coastal_aden": "مجمع ساحلي — عدن",
+          "clinic_taiz": "عيادة طبية — تعز",
+          "warehouse": "تطوير مستودع"
+        },
+        "demo_cities": {
+          "sanaa": "صنعاء",
+          "aden": "عدن",
+          "taiz": "تعز"
+        },
+        "demo_clients": {
+          "ahmed_shami": "م. أحمد الشامي",
+          "north_construction": "شركة شمال للإنشاءات",
+          "bayt_masarra": "بيت المسارة",
+          "logistics_partners": "شركاء اللوجستيات"
+        },
+        "disputes": {
+          "raised_by_owner": "مالك المشروع",
+          "raised_by_contractor": "المقاول",
+          "subject_plumbing": "نزاع حول جودة السباكة",
+          "subject_payment_delay": "تأخير في صرف الدفعة الإنشائية"
+        },
+        "projects_table_title": "مشاريع نشطة"
       },
       "empty_states": {
         "projects": "لا توجد مشاريع",
@@ -1055,6 +1147,8 @@
   "time": {
     "today": "اليوم",
     "yesterday": "أمس",
+    "minutes_ago": "منذ {count} د",
+    "hours_ago": "منذ {count} س",
     "days_ago": "منذ {count} أيام",
     "weeks_ago": "منذ {count} أسابيع",
     "months_ago": "منذ {count} أشهر",

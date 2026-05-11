@@ -10,6 +10,12 @@ import DashboardDisputes from '~/components/admin/DashboardDisputes.vue'
 import DashboardActionQueues from '~/components/admin/DashboardActionQueues.vue'
 import DashboardRecentActivity from '~/components/admin/DashboardRecentActivity.vue'
 import DashboardSuperAdminSection from '~/components/admin/DashboardSuperAdminSection.vue'
+import DashboardLovableAlertStrips from '~/components/admin/DashboardLovableAlertStrips.vue'
+import DashboardLovablePrimaryKpis from '~/components/admin/DashboardLovablePrimaryKpis.vue'
+import DashboardLovableSparklineRow from '~/components/admin/DashboardLovableSparklineRow.vue'
+import DashboardLovableProjectDonut from '~/components/admin/DashboardLovableProjectDonut.vue'
+import DashboardLovablePlatformActivity from '~/components/admin/DashboardLovablePlatformActivity.vue'
+import DashboardLovableRegistrationsRow from '~/components/admin/DashboardLovableRegistrationsRow.vue'
 import { useAuthStore } from '~/stores/auth'
 
 const auth = useAuthStore()
@@ -24,6 +30,7 @@ const {
   actionQueues,
   recentEventsFeed,
   superAdminFlags,
+  lovableOverview,
   retry,
 } = useAdminDashboard()
 
@@ -39,6 +46,10 @@ const welcomeDateFormatted = computed(() => {
     day: 'numeric',
   }).format(new Date())
 })
+
+const donutTotal = computed(
+  () => data.value?.summary_stats?.active_projects ?? 124
+)
 </script>
 
 <template>
@@ -63,38 +74,103 @@ const welcomeDateFormatted = computed(() => {
       @retry="retry"
     />
 
-    <DashboardBanners
-      :new-projects="bannerCounts.newProjects"
-      :pending-payments="bannerCounts.pendingPayments"
-      :pending-reports="bannerCounts.pendingReports"
-      :disputes="bannerCounts.disputes"
-    />
+    <template v-if="lovableOverview">
+      <DashboardLovableAlertStrips
+        :field-reports="lovableOverview.alert_field_reports"
+        :new-project-requests="lovableOverview.alert_new_project_requests"
+      />
 
-    <DashboardStats
-      :stats="stats"
-      :disputes-stat="disputesStat"
-      :loading="loading"
-    />
+      <DashboardLovablePrimaryKpis
+        :items="lovableOverview.primary_kpis"
+        :loading="loading"
+      />
 
-    <DashboardActionQueues :queues="actionQueues" :loading="loading" />
+      <DashboardLovableSparklineRow
+        :items="lovableOverview.sparkline_kpis"
+        :loading="loading"
+      />
 
-    <DashboardRecentActivity :events="recentEventsFeed" :loading="loading" />
+      <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <DashboardLovableProjectDonut
+          :slices="lovableOverview.project_distribution"
+          :total-projects="donutTotal"
+        />
+        <DashboardLovablePlatformActivity
+          :points="lovableOverview.platform_activity"
+        />
+      </div>
 
-    <DashboardSuperAdminSection
-      v-if="showSuperAdminSection"
-      :flags="superAdminFlags"
-    />
+      <DashboardProjects
+        :projects="data?.recent_projects ?? []"
+        :loading="loading"
+        title-key="admin.dashboard.lovable.projects_table_title"
+      />
 
-    <DashboardActivity :data="data?.activity_data ?? null" :loading="loading" />
+      <DashboardDisputes
+        :disputes="data?.open_disputes ?? []"
+        :loading="loading"
+        title-key="admin.dashboard.disputes.title"
+        view-all-key="admin.dashboard.disputes.view_full_record"
+      />
 
-    <DashboardProjects
-      :projects="data?.recent_projects ?? []"
-      :loading="loading"
-    />
+      <DashboardLovableRegistrationsRow
+        :latest="lovableOverview.latest_registrations"
+        :weekly="lovableOverview.weekly_registrations"
+        :weekly-total="lovableOverview.weekly_registrations_total"
+        :weekly-delta-percent="
+          lovableOverview.weekly_registrations_delta_percent
+        "
+      />
 
-    <DashboardDisputes
-      :disputes="data?.open_disputes ?? []"
-      :loading="loading"
-    />
+      <DashboardSuperAdminSection
+        v-if="showSuperAdminSection"
+        :flags="superAdminFlags"
+      />
+
+      <DashboardActionQueues :queues="actionQueues" :loading="loading" />
+
+      <p class="text-muted-foreground text-center text-xs">
+        {{ t('admin.dashboard.lovable.demo_footer') }}
+      </p>
+    </template>
+
+    <template v-else>
+      <DashboardBanners
+        :new-projects="bannerCounts.newProjects"
+        :pending-payments="bannerCounts.pendingPayments"
+        :pending-reports="bannerCounts.pendingReports"
+        :disputes="bannerCounts.disputes"
+      />
+
+      <DashboardStats
+        :stats="stats"
+        :disputes-stat="disputesStat"
+        :loading="loading"
+      />
+
+      <DashboardActionQueues :queues="actionQueues" :loading="loading" />
+
+      <DashboardRecentActivity :events="recentEventsFeed" :loading="loading" />
+
+      <DashboardSuperAdminSection
+        v-if="showSuperAdminSection"
+        :flags="superAdminFlags"
+      />
+
+      <DashboardActivity
+        :data="data?.activity_data ?? null"
+        :loading="loading"
+      />
+
+      <DashboardProjects
+        :projects="data?.recent_projects ?? []"
+        :loading="loading"
+      />
+
+      <DashboardDisputes
+        :disputes="data?.open_disputes ?? []"
+        :loading="loading"
+      />
+    </template>
   </div>
 </template>

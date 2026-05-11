@@ -12,13 +12,16 @@ import type { RecentProject } from '~/shared/types/admin'
 interface Props {
   projects: RecentProject[]
   loading?: boolean
+  /** i18n key for card title (default: admin dashboard projects table). */
+  titleKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
+  titleKey: 'admin.dashboard.projects.title',
 })
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const statusToneMap = {
   new: 'primary',
@@ -28,6 +31,7 @@ const statusToneMap = {
   active: 'success',
   in_progress: 'success',
   on_hold: 'warning',
+  waiting: 'warning',
   completed: 'default',
 }
 
@@ -38,14 +42,6 @@ function getStatusTone(status: string) {
     return 'default'
   }
   return tone
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat(locale.value, {
-    style: 'currency',
-    currency: 'EGP',
-    notation: 'compact',
-  }).format(value)
 }
 
 function clampProgress(percentage: number): number {
@@ -60,7 +56,7 @@ function clampProgress(percentage: number): number {
   >
     <CardHeader>
       <CardTitle class="text-foreground text-lg font-extrabold">
-        {{ t('admin.dashboard.projects.title') }}
+        {{ t(props.titleKey) }}
       </CardTitle>
       <CardAction>
         <NuxtLink
@@ -135,13 +131,17 @@ function clampProgress(percentage: number): number {
                   {{ project.project_number }}
                 </td>
                 <td class="text-foreground px-3 py-3 text-start">
-                  {{ project.name }}
+                  {{ project.name_key ? t(project.name_key) : project.name }}
                 </td>
                 <td class="text-muted-foreground px-3 py-3 text-start">
-                  {{ project.city }}
+                  {{ project.city_key ? t(project.city_key) : project.city }}
                 </td>
                 <td class="text-muted-foreground px-3 py-3 text-start">
-                  {{ project.client_name }}
+                  {{
+                    project.client_name_key
+                      ? t(project.client_name_key)
+                      : project.client_name
+                  }}
                 </td>
                 <td class="px-3 py-3 text-start">
                   <div class="flex items-center gap-2">
@@ -174,7 +174,7 @@ function clampProgress(percentage: number): number {
                         getStatusTone(project.status) === 'default',
                     }"
                   >
-                    {{ t(`status.${project.status}`) }}
+                    {{ t(`project.status.${project.status}`) }}
                   </span>
                 </td>
                 <td class="px-3 py-3 text-start">

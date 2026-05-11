@@ -67,6 +67,13 @@
     "failed_to_load_engineers": "Failed to load engineers list",
     "contractor_not_invited": "This contractor is not invited to bid on this project."
   },
+  "dispute": {
+    "status": {
+      "open": "Open",
+      "mediating": "Mediation",
+      "resolved": "Resolved"
+    }
+  },
   "buttons": {
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -624,6 +631,7 @@
       "under_review": "Under Review",
       "contractor_selected": "Contractor Selected",
       "active": "Active",
+      "waiting": "Waiting",
       "on_hold": "On Hold",
       "completed": "Completed",
       "in_progress": "In Progress"
@@ -1031,8 +1039,8 @@
         }
       },
       "disputes": {
-        "title": "Open Disputes",
-        "view_all": "View All",
+        "title": "Active disputes",
+        "view_all": "View all",
         "columns": {
           "dispute_number": "Dispute #",
           "project": "Project",
@@ -1042,7 +1050,91 @@
           "created_date": "Date",
           "action": "Action"
         },
-        "mediate": "Mediate"
+        "mediate": "Mediate",
+        "view_full_record": "Open full record"
+      },
+      "lovable": {
+        "demo_footer": "Demo data — connect GET /admin/dashboard when the backend contract is ready.",
+        "alerts": {
+          "field_reports": "{count} field reports — uploaded by field engineers.",
+          "new_projects": "{count} new project request(s) — waiting for review and supervisor assignment."
+        },
+        "primary": {
+          "active_projects": "Active projects",
+          "active_projects_sub": "+{delta} in the last 7 days",
+          "contractors": "Registered contractors",
+          "contractors_sub": "+{delta} this month",
+          "payments_volume": "Total processed payments",
+          "payments_volume_sub": "+{pct}% from previous month",
+          "open_disputes": "Open disputes",
+          "open_disputes_sub": "{awaiting} awaiting decision"
+        },
+        "spark": {
+          "new_projects_week": "New projects / week",
+          "daily_booked": "Daily booked payments",
+          "milestone_approval_rate": "Milestone approval rate",
+          "csat": "Customer satisfaction",
+          "plus_value": "{value}+",
+          "sar_compact": "{value} SAR",
+          "percent_value": "{value}%",
+          "rating_value": "{value}/5",
+          "demo_new_projects_value": "18+",
+          "demo_daily_sar": "48K SAR",
+          "demo_milestone_pct": "92%",
+          "demo_csat": "4.7/5"
+        },
+        "distribution": {
+          "title": "Project distribution by status",
+          "center_label": "Projects",
+          "in_execution": "In execution",
+          "waiting_funding": "Waiting for funding",
+          "waiting_assignment": "Waiting for assignment",
+          "paused": "Paused"
+        },
+        "activity": {
+          "title": "Platform activity",
+          "description": "Monthly closed projects during the current year."
+        },
+        "registrations": {
+          "latest_title": "Latest registrations",
+          "weekly_title": "Weekly user registrations",
+          "weekly_sub": "{total}+ ({pct}% from last week)"
+        },
+        "roles": {
+          "project_owner": "Project owners",
+          "contractor": "Contractors",
+          "supervisor_engineer": "Supervisor engineers",
+          "field_engineer": "Field engineers"
+        },
+        "demo_users": {
+          "khaled": "Eng. Khaled Al-Absi",
+          "north_construction": "North Construction Co.",
+          "sara": "Sara Al-Maktari"
+        },
+        "demo_projects": {
+          "villa_yasmin": "Villa Al-Yasmin – Sana'a",
+          "coastal_aden": "Coastal compound — Aden",
+          "clinic_taiz": "Medical clinic — Taiz",
+          "warehouse": "Warehouse retrofit"
+        },
+        "demo_cities": {
+          "sanaa": "Sana'a",
+          "aden": "Aden",
+          "taiz": "Taiz"
+        },
+        "demo_clients": {
+          "ahmed_shami": "Eng. Ahmed Al-Shami",
+          "north_construction": "North Construction Co.",
+          "bayt_masarra": "Bayt Al-Masarra",
+          "logistics_partners": "Logistics Partners LLC"
+        },
+        "disputes": {
+          "raised_by_owner": "Project owner",
+          "raised_by_contractor": "Contractor",
+          "subject_plumbing": "Dispute over plumbing quality",
+          "subject_payment_delay": "Delay in releasing structural payment"
+        },
+        "projects_table_title": "Active projects"
       },
       "empty_states": {
         "projects": "No projects found",
@@ -1055,6 +1147,8 @@
   "time": {
     "today": "Today",
     "yesterday": "Yesterday",
+    "minutes_ago": "{count} min ago",
+    "hours_ago": "{count} h ago",
     "days_ago": "{count} days ago",
     "weeks_ago": "{count} weeks ago",
     "months_ago": "{count} months ago",
