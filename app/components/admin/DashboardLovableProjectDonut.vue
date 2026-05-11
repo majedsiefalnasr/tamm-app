@@ -37,7 +37,7 @@ const donutStyle = computed(() => {
 
 <template>
   <Card
-    class="shadow-card gap-4 rounded-2xl py-6 shadow-none"
+    class="shadow-card gap-2 rounded-2xl py-4 shadow-none"
     data-testid="dashboard-lovable-project-donut"
   >
     <CardHeader>
@@ -47,7 +47,7 @@ const donutStyle = computed(() => {
     </CardHeader>
     <CardContent>
       <div
-        class="flex flex-col items-center gap-6 md:flex-row md:items-center md:justify-between"
+        class="flex flex-col items-center gap-2 md:flex-row md:items-center md:justify-between"
       >
         <div
           class="relative flex h-44 w-44 shrink-0 items-center justify-center"

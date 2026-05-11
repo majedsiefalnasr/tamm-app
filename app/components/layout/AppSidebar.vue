@@ -93,23 +93,15 @@ function isItemActive(href: string): boolean {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" as-child>
-            <NuxtLink :to="homeHref" class="flex items-center gap-2">
-              <div
-                class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
-              >
-                <img
-                  src="/logo.svg"
-                  alt=""
-                  class="size-5"
-                  width="20"
-                  height="20"
-                />
-              </div>
-              <div class="grid min-w-0 flex-1 text-start text-sm leading-tight">
-                <span class="truncate font-semibold">{{
-                  $t('auth.appBrand')
-                }}</span>
-              </div>
+            <NuxtLink :to="homeHref" class="flex min-w-0 items-center gap-2">
+              <img
+                src="/tamm-logo.png"
+                :alt="t('auth.appBrand')"
+                class="object-start h-8 w-auto max-w-full object-contain select-none"
+                width="200"
+                height="40"
+                decoding="async"
+              />
             </NuxtLink>
           </SidebarMenuButton>
         </SidebarMenuItem>

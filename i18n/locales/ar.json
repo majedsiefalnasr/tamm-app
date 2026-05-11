@@ -295,7 +295,8 @@
     "error_occurred": "حدث خطأ",
     "error_description": "يرجى المحاولة مرة أخرى أو التواصل مع الدعم إذا استمرت المشكلة.",
     "field_help": "شرح هذا الحقل",
-    "field_help_status_payment": "شرح حالة العمل مقابل حالة الدفع"
+    "field_help_status_payment": "شرح حالة العمل مقابل حالة الدفع",
+    "view": "عرض"
   },
   "contextHelpers": {
     "milestone": {
@@ -953,6 +954,32 @@
         "submit": "حفظ التعيين",
         "cancel": "إلغاء"
       },
+      "creation_requests": {
+        "section_title": "طلبات إنشاء مشاريع جديدة ({count})",
+        "section_subtitle": "بانتظار قبولك وتعيين مهندس مشرف",
+        "review": "مراجعة",
+        "dialog_title": "مراجعة طلب مشروع",
+        "dialog_subtitle": "{number} • تم الإنشاء من: {owner} — {date}",
+        "type_label": "النوع",
+        "budget_label": "الميزانية",
+        "area_label": "المساحة",
+        "area_value": "{sqm} م²",
+        "assign_title": "تعيين مهندس مشرف",
+        "supervisor_label": "مهندس مشرف",
+        "supervisor_placeholder": "اختر المهندس المشرف",
+        "default_contractor_note": "المقاول الافتراضي: {name}",
+        "accept": "قبول وتعيين المشرف",
+        "reject": "رفض الطلب",
+        "supervisor_required": "يرجى اختيار مهندس مشرف أولاً.",
+        "toast_accepted_demo": "تم قبول الطلب (وضع تجريبي — سيتم الربط بالواجهة الخلفية لاحقاً).",
+        "toast_rejected_demo": "تم رفض الطلب (وضع تجريبي — سيتم الربط بالواجهة الخلفية لاحقاً).",
+        "status": {
+          "pending_admin_review": "بانتظار قبول الإدارة"
+        },
+        "types": {
+          "commercial": "تجاري"
+        }
+      },
       "submitProposal": {
         "button": "تقديم عرض",
         "dialogTitle": "تقديم عرض لـ",
@@ -1035,7 +1062,8 @@
           "owner": "المالك",
           "progress": "الإنجاز",
           "status": "الحالة",
-          "action": "إجراء"
+          "action": "إجراء",
+          "view_aria": "عرض المشروع"
         }
       },
       "disputes": {
@@ -1048,7 +1076,8 @@
           "subject": "الموضوع",
           "status": "الحالة",
           "created_date": "التاريخ",
-          "action": "إجراء"
+          "action": "إجراء",
+          "view_aria": "عرض النزاع"
         },
         "mediate": "وساطة",
         "view_full_record": "فتح السجل الكامل"
@@ -1155,6 +1184,67 @@
     "years_ago": "منذ {count} سنوات"
   },
   "projects": {
+    "detailLovable": {
+      "back": "العودة إلى المشاريع",
+      "download_report": "تحميل التقرير",
+      "chats": "المحادثات",
+      "start_chat": "بدء محادثة",
+      "download_demo": "سيُتاح تحميل التقرير عند جاهزية واجهة البرمجة.",
+      "client_section_title": "بيانات التواصل مع العميل",
+      "client_section_subtitle": "ظاهرة للمشرف والإدارة فقط.",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "metric_budget": "إجمالي الميزانية",
+      "metric_paid": "المدفوع للمقاول",
+      "metric_remaining": "المتبقي / المحجوز",
+      "metric_stages": "المراحل المكتملة",
+      "stages_title": "مراحل المشروع",
+      "milestone_phase_label": "المرحلة {n}",
+      "milestone_phase_value": "قيمة المرحلة",
+      "milestone_progress": "التقدم",
+      "milestone_locked": "مقفلة",
+      "client_email_action": "إرسال بريد",
+      "client_phone_action": "اتصال",
+      "activity_title": "سجل المشروع",
+      "activity_subtitle": "جميع الأحداث منذ إنشاء المشروع",
+      "activity_actor": {
+        "contractor": "المقاول",
+        "client": "العميل",
+        "platform": "المنصة",
+        "supervisor_engineer": "المهندس المشرف",
+        "site_team": "التنفيذ في الموقع",
+        "field_engineer": "المهندس الميداني"
+      },
+      "reports_title": "آخر التقارير الميدانية",
+      "schedule_title": "الجدول الزمني",
+      "reportStatus": {
+        "approved": "معتمد",
+        "pending": "قيد المراجعة"
+      },
+      "schedule_status": {
+        "completed": "مكتمل",
+        "in_progress": "قيد التنفيذ"
+      },
+      "activity": {
+        "offer_submitted": "تم تقديم عرض السعر",
+        "client_payment": "استلام دفعة العميل",
+        "payment_verified": "التحقق من الدفعة في الضمان",
+        "engineer_assigned": "تعيين مهندس مشرف",
+        "execution_started": "بدء التنفيذ في الموقع",
+        "foundations_done": "إنجاز الأعمال الأساسية",
+        "structure_done": "إنجاز الهيكل الإنشائي"
+      },
+      "reports": {
+        "report_floor": "تقرير يومي — إنشاء الطابق الأول",
+        "report_structure": "تقدم هيكلي — صب الأعمدة",
+        "report_foundations": "أساسات — فحص التسليح"
+      },
+      "schedule": {
+        "milestone_foundations": "الأساسات",
+        "milestone_structure": "الهيكل الإنشائي",
+        "milestone_brickwork": "البناء بالطوب والقواطع"
+      }
+    },
     "openForBids": {
       "button": "فتح باب العروض",
       "dialogTitle": "فتح باب العروض لـ ",

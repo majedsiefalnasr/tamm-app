@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAdminProjects } from '~/composables/useAdminProjects'
 import { usePermission } from '~/composables/usePermission'
+import ProjectCreationRequestsSection from '~/components/admin/ProjectCreationRequestsSection.vue'
 import ProjectOverviewCards from '~/components/admin/ProjectOverviewCards.vue'
 import ProjectSearch from '~/components/admin/ProjectSearch.vue'
 import ProjectOverviewTable from '~/components/admin/ProjectOverviewTable.vue'
@@ -51,6 +52,8 @@ const handleRetry = () => {
         {{ t('admin.projects.page_title') }}
       </h1>
     </div>
+
+    <ProjectCreationRequestsSection />
 
     <PageContentSkeleton
       v-if="showInitialSkeleton"

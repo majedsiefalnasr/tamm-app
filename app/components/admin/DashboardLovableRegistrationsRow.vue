@@ -42,7 +42,7 @@ function barWidth(count: number, max: number): string {
     class="grid grid-cols-1 gap-4 lg:grid-cols-2"
     data-testid="dashboard-lovable-registrations"
   >
-    <Card class="shadow-card gap-4 rounded-2xl py-6 shadow-none">
+    <Card class="shadow-card gap-2 rounded-2xl py-4 shadow-none">
       <CardHeader>
         <CardTitle class="text-foreground text-lg font-extrabold">
           {{ t('admin.dashboard.lovable.registrations.latest_title') }}
@@ -66,7 +66,7 @@ function barWidth(count: number, max: number): string {
       </CardContent>
     </Card>
 
-    <Card class="shadow-card gap-4 rounded-2xl py-6 shadow-none">
+    <Card class="shadow-card gap-2 rounded-2xl py-4 shadow-none">
       <CardHeader>
         <CardTitle class="text-foreground text-lg font-extrabold">
           {{ t('admin.dashboard.lovable.registrations.weekly_title') }}

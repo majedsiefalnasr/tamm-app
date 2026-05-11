@@ -17,7 +17,10 @@ const { t } = useI18n()
     class="grid grid-cols-1 gap-3 md:grid-cols-2"
     data-testid="dashboard-lovable-alerts"
   >
-    <Card class="border-blue-500/25 bg-blue-500/5 shadow-none" role="status">
+    <Card
+      class="gap-2 border-blue-500/25 bg-blue-500/5 py-3 shadow-none"
+      role="status"
+    >
       <div class="flex items-center justify-between gap-3 px-4 py-3">
         <div class="flex items-center gap-3">
           <FileText
@@ -42,7 +45,7 @@ const { t } = useI18n()
     </Card>
 
     <Card
-      class="border-emerald-500/25 bg-emerald-500/5 shadow-none"
+      class="gap-2 border-emerald-500/25 bg-emerald-500/5 py-3 shadow-none"
       role="status"
     >
       <div class="flex items-center justify-between gap-3 px-4 py-3">

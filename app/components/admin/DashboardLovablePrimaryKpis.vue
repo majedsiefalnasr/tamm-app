@@ -82,15 +82,15 @@ function subtitleFor(k: AdminLovablePrimaryKpi): string {
       <Card
         v-for="i in 4"
         :key="`pk-skel-${i}`"
-        class="rounded-2xl p-4 shadow-none"
+        class="gap-2 rounded-2xl p-4 py-4 shadow-none"
       >
         <Skeleton class="h-4 w-24" />
-        <Skeleton class="mt-2 h-8 w-20" />
+        <Skeleton class="h-8 w-20" />
       </Card>
     </template>
     <NuxtLink v-for="k in items" v-else :key="k.id" :to="k.href" class="block">
       <Card
-        class="hover:border-border rounded-2xl p-4 shadow-none transition hover:shadow-md"
+        class="hover:border-border gap-2 rounded-2xl p-4 py-4 shadow-none transition hover:shadow-md"
       >
         <div class="flex items-start justify-between gap-2">
           <p class="text-muted-foreground text-sm font-medium">
@@ -105,10 +105,10 @@ function subtitleFor(k: AdminLovablePrimaryKpi): string {
             aria-hidden="true"
           />
         </div>
-        <p class="text-foreground mt-2 text-2xl font-extrabold tabular-nums">
+        <p class="text-foreground text-2xl font-extrabold tabular-nums">
           {{ formatValue(k.value, k.format) }}
         </p>
-        <p class="text-muted-foreground mt-1 text-xs">
+        <p class="text-muted-foreground text-xs">
           {{ subtitleFor(k) }}
         </p>
       </Card>

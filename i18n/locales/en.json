@@ -295,7 +295,8 @@
     "error_occurred": "Something went wrong",
     "error_description": "Please try again or contact support if the problem persists.",
     "field_help": "Explain this field",
-    "field_help_status_payment": "Explain work status versus payment status"
+    "field_help_status_payment": "Explain work status versus payment status",
+    "view": "View"
   },
   "contextHelpers": {
     "milestone": {
@@ -953,6 +954,32 @@
         "submit": "Save Assignment",
         "cancel": "Cancel"
       },
+      "creation_requests": {
+        "section_title": "New project creation requests ({count})",
+        "section_subtitle": "Waiting for your acceptance and supervising engineer assignment.",
+        "review": "Review",
+        "dialog_title": "Review project request",
+        "dialog_subtitle": "{number} • Created by {owner} — {date}",
+        "type_label": "Type",
+        "budget_label": "Budget",
+        "area_label": "Area",
+        "area_value": "{sqm} m²",
+        "assign_title": "Assign supervising engineer",
+        "supervisor_label": "Supervising engineer",
+        "supervisor_placeholder": "Select supervising engineer",
+        "default_contractor_note": "Default contractor: {name}",
+        "accept": "Accept and assign supervisor",
+        "reject": "Reject request",
+        "supervisor_required": "Select a supervising engineer first.",
+        "toast_accepted_demo": "Request accepted (demo — connect API when ready).",
+        "toast_rejected_demo": "Request rejected (demo — connect API when ready).",
+        "status": {
+          "pending_admin_review": "Pending management acceptance"
+        },
+        "types": {
+          "commercial": "Commercial"
+        }
+      },
       "submitProposal": {
         "button": "Submit Proposal",
         "dialogTitle": "Submit Proposal for ",
@@ -1035,7 +1062,8 @@
           "owner": "Owner",
           "progress": "Progress",
           "status": "Status",
-          "action": "Action"
+          "action": "Action",
+          "view_aria": "View project"
         }
       },
       "disputes": {
@@ -1048,7 +1076,8 @@
           "subject": "Subject",
           "status": "Status",
           "created_date": "Date",
-          "action": "Action"
+          "action": "Action",
+          "view_aria": "View dispute"
         },
         "mediate": "Mediate",
         "view_full_record": "Open full record"
@@ -1155,6 +1184,67 @@
     "years_ago": "{count} years ago"
   },
   "projects": {
+    "detailLovable": {
+      "back": "Back to projects",
+      "download_report": "Download report",
+      "chats": "Chats",
+      "start_chat": "Start chat",
+      "download_demo": "Report download will be available when the API is ready.",
+      "client_section_title": "Client contact details",
+      "client_section_subtitle": "Visible to the supervisor and management only.",
+      "email": "Email",
+      "phone": "Phone",
+      "metric_budget": "Total budget",
+      "metric_paid": "Paid to contractor",
+      "metric_remaining": "Remaining / reserved",
+      "metric_stages": "Completed stages",
+      "stages_title": "Project stages",
+      "milestone_phase_label": "Phase {n}",
+      "milestone_phase_value": "Phase value",
+      "milestone_progress": "Progress",
+      "milestone_locked": "Locked",
+      "client_email_action": "Send email",
+      "client_phone_action": "Call",
+      "activity_title": "Project log",
+      "activity_subtitle": "All events since the project was created.",
+      "activity_actor": {
+        "contractor": "Contractor",
+        "client": "Client",
+        "platform": "Platform",
+        "supervisor_engineer": "Supervising engineer",
+        "site_team": "Site execution",
+        "field_engineer": "Field engineer"
+      },
+      "reports_title": "Latest field reports",
+      "schedule_title": "Schedule",
+      "reportStatus": {
+        "approved": "Approved",
+        "pending": "Pending"
+      },
+      "schedule_status": {
+        "completed": "Completed",
+        "in_progress": "In progress"
+      },
+      "activity": {
+        "offer_submitted": "Price offer submitted",
+        "client_payment": "Client payment received",
+        "payment_verified": "Payment verified in escrow",
+        "engineer_assigned": "Supervising engineer assigned",
+        "execution_started": "Site execution started",
+        "foundations_done": "Foundations completed",
+        "structure_done": "Structural skeleton completed"
+      },
+      "reports": {
+        "report_floor": "Daily report — first floor construction",
+        "report_structure": "Structural progress — column casting",
+        "report_foundations": "Foundations — reinforcement inspection"
+      },
+      "schedule": {
+        "milestone_foundations": "Foundations",
+        "milestone_structure": "Structural skeleton",
+        "milestone_brickwork": "Brickwork and partitions"
+      }
+    },
     "openForBids": {
       "button": "Open for Bids",
       "dialogTitle": "Open for Bids — ",

@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
+  Eye,
 } from 'lucide-vue-next'
 import type { AdminProjectOverviewItem } from '#shared/types/project'
 import { valueUpdater } from '../ui/table/utils'
@@ -348,14 +349,18 @@ const columns = computed<ColumnDef<AdminProjectOverviewItem>[]>(() => [
         h(
           'button',
           {
+            type: 'button',
             class:
-              'text-primary hover:bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition',
+              'text-primary hover:bg-primary/10 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition',
             onClick: (e: Event) => {
               e.stopPropagation()
               handleNavigateToProject(row.original.id)
             },
           },
-          t('admin.projects.table.view')
+          [
+            h(Eye, { class: 'size-3.5 shrink-0', 'aria-hidden': 'true' }),
+            t('admin.projects.table.view'),
+          ]
         )
       ),
   },

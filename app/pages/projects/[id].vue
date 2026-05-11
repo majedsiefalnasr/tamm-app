@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { ChevronLeft } from 'lucide-vue-next'
 import type { ProjectDetail, ProposalData } from '~/shared/types/project'
 import { mockAdminUsers } from '~/composables/__mocks__/admin-users'
 import type { SelectContractorFailure } from '~/composables/useProjects'
-import { formatCurrency } from '~/utils/formatters'
 import { canTransition } from '~/utils/statusMachine'
-import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import { Button } from '~/components/ui/button'
 import AssignEngineersDialog from '~/components/project/AssignEngineersDialog.vue'
 import CloseBiddingDialog from '~/components/project/CloseBiddingDialog.vue'
 import OpenForBidsDialog from '~/components/project/OpenForBidsDialog.vue'
+import ProjectDetailOverviewLovable from '~/components/project/ProjectDetailOverviewLovable.vue'
 import ProposalSummary from '~/components/project/ProposalSummary.vue'
 import ProposalsList from '~/components/project/ProposalsList.vue'
 import SubmitProposalDialog from '~/components/project/SubmitProposalDialog.vue'
@@ -53,10 +53,6 @@ const projectErrorMessage = computed(() => {
   return t('common.error_description')
 })
 
-const isAdmin = computed(() =>
-  ['admin', 'super_admin'].includes(auth.user?.role || '')
-)
-
 const progressPercent = computed(() => {
   if (!project.value?.milestones.length) return 0
   const completed = project.value.milestones.filter(
@@ -68,31 +64,6 @@ const progressPercent = computed(() => {
 const showFinancial = computed(
   () => (project.value?.milestones.length ?? 0) > 0
 )
-
-const canAddMilestone = computed(() => {
-  if (!project.value) return false
-  if (['admin', 'super_admin'].includes(auth.user?.role || '')) return true
-  if (
-    auth.user?.role === 'contractor' &&
-    auth.user?.id === project.value?.contractor_id
-  )
-    return true
-  return false
-})
-
-const showContractor = computed(() => {
-  if (!project.value) return false
-  return ['contractor_selected', 'active', 'on_hold', 'completed'].includes(
-    project.value.status
-  )
-})
-
-const showEngineers = computed(() => {
-  if (!project.value) return false
-  return ['contractor_selected', 'active', 'on_hold', 'completed'].includes(
-    project.value.status
-  )
-})
 
 const showOpenForBidsButton = computed(() => {
   if (!project.value || !can('manage_project')) return false
@@ -130,27 +101,6 @@ const showSubmittedProposal = computed(() => {
   if (!project.value || !canSubmitProposal.value) return false
   return hasSubmittedProposal(project.value.id)
 })
-
-const getTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    villa: 'Villa',
-    apartment: 'Apartment',
-    commercial: 'Commercial',
-    other: 'Other',
-  }
-  return labels[type] || type
-}
-
-const getMilestoneStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    draft: 'Draft',
-    submitted: 'Submitted',
-    under_review: 'Under Review',
-    approved: 'Approved',
-    rejected: 'Rejected',
-  }
-  return labels[status] || status
-}
 
 // Open for bids dialog
 const isOpenForBidsDialogOpen = ref(false)
@@ -519,97 +469,58 @@ const handleCloseBiddingConfirmed = async () => {
 
   <!-- Main content -->
   <div v-else-if="project" class="space-y-6">
-    <!-- Header card -->
-    <div
-      class="border-border bg-card shadow-card rounded-3xl border p-6 md:p-8"
-      :style="{
-        background: `linear-gradient(to inline-start, rgba(var(--color-primary-rgb), 0.1), var(--color-card))`,
-      }"
+    <Button
+      variant="ghost"
+      size="sm"
+      class="text-muted-foreground -ms-2 gap-1"
+      as-child
     >
-      <div class="flex flex-col gap-4 md:gap-6">
-        <h1 class="text-ink text-2xl font-extrabold md:text-3xl">
-          {{ project.name }}
-        </h1>
-
-        <!-- Meta information -->
-        <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-          <div>
-            <p class="text-muted-foreground text-xs">Client</p>
-            <p class="text-ink text-sm font-semibold">
-              {{ project.client_name }}
-            </p>
-          </div>
-          <div>
-            <p class="text-muted-foreground text-xs">Address</p>
-            <p class="text-ink text-sm font-semibold">{{ project.city }}</p>
-          </div>
-          <div>
-            <p class="text-muted-foreground text-xs">Type</p>
-            <p class="text-ink text-sm font-semibold">
-              {{ getTypeLabel(project.type) }}
-            </p>
-          </div>
-          <div>
-            <p class="text-muted-foreground text-xs">Area</p>
-            <p class="text-ink text-sm font-semibold">
-              {{ project.area_m2 }} m²
-            </p>
-          </div>
+      <NuxtLink to="/projects" class="inline-flex items-center gap-1">
+        <ChevronLeft class="size-4 rtl:rotate-180" aria-hidden="true" />
+        {{ t('projects.detailLovable.back') }}
+      </NuxtLink>
+    </Button>
+    <ProjectDetailOverviewLovable
+      :project="project"
+      :progress-percent="progressPercent"
+      :show-financial="showFinancial"
+    >
+      <template #adminActions>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <Button
+            v-if="showOpenForBidsButton"
+            :disabled="isSubmittingBids"
+            @click="isOpenForBidsDialogOpen = true"
+          >
+            {{ t('projects.openForBids.button') }}
+          </Button>
+          <Button
+            v-if="showCloseBiddingButton"
+            :disabled="!canCloseBidding"
+            @click="isCloseBiddingDialogOpen = true"
+          >
+            {{ t('projects.closeBidding.button') }}
+          </Button>
+          <Button
+            v-if="showAssignEngineersButton"
+            @click="isAssignEngineersDialogOpen = true"
+          >
+            {{
+              project.supervisor_engineer_id && project.field_engineer_id
+                ? t('projects.assignEngineers.updateButton')
+                : t('projects.assignEngineers.button')
+            }}
+          </Button>
+          <Button
+            v-if="showSubmitProposalButton"
+            variant="secondary"
+            @click="isSubmitProposalDialogOpen = true"
+          >
+            {{ t('projects.submitProposal.button') }}
+          </Button>
         </div>
-
-        <!-- Progress bar -->
-        <div v-if="showFinancial" class="space-y-2">
-          <div class="flex items-center justify-between">
-            <p class="text-ink text-sm font-semibold">Progress</p>
-            <p class="text-muted-foreground text-xs">{{ progressPercent }}%</p>
-          </div>
-          <div class="bg-muted-foreground/20 h-2 w-full rounded-full">
-            <div
-              class="bg-primary h-2 rounded-full transition-all duration-300"
-              :style="{ width: progressPercent + '%' }"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Open for Bids button (admin only, status = new) -->
-    <div v-if="showOpenForBidsButton" class="flex gap-3">
-      <Button
-        :disabled="isSubmittingBids"
-        @click="isOpenForBidsDialogOpen = true"
-      >
-        {{ t('projects.openForBids.button') }}
-      </Button>
-    </div>
-
-    <!-- Close Bidding button (admin only, status = open_for_bids) -->
-    <div v-if="showCloseBiddingButton" class="flex gap-3">
-      <Button
-        :disabled="!canCloseBidding"
-        @click="isCloseBiddingDialogOpen = true"
-      >
-        {{ t('projects.closeBidding.button') }}
-      </Button>
-    </div>
-
-    <!-- Assign Engineers button (admin only, status = contractor_selected) -->
-    <div v-if="showAssignEngineersButton" class="flex gap-3">
-      <Button @click="isAssignEngineersDialogOpen = true">
-        {{
-          project.supervisor_engineer_id && project.field_engineer_id
-            ? t('projects.assignEngineers.updateButton')
-            : t('projects.assignEngineers.button')
-        }}
-      </Button>
-    </div>
-
-    <!-- Submit Proposal button (contractor, if invited and status = open_for_bids) -->
-    <div v-if="showSubmitProposalButton" class="flex gap-3">
-      <Button @click="isSubmitProposalDialogOpen = true">
-        {{ t('projects.submitProposal.button') }}
-      </Button>
-    </div>
+      </template>
+    </ProjectDetailOverviewLovable>
 
     <!-- Proposal Summary (after submission) -->
     <div
@@ -617,32 +528,6 @@ const handleCloseBiddingConfirmed = async () => {
       class="space-y-2"
     >
       <ProposalSummary :proposal="getProposal(project.id)!" />
-    </div>
-
-    <!-- Contractor section -->
-    <div
-      v-if="showContractor"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Contractor</h2>
-      <p class="text-ink text-sm font-semibold">
-        {{ project.contractor_name }}
-      </p>
-    </div>
-
-    <!-- Awaiting contractor badge -->
-    <div
-      v-else
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Contractor</h2>
-      <div
-        class="border-primary/30 bg-primary/10 inline-flex rounded-full border px-3 py-1"
-      >
-        <p class="text-primary text-xs font-semibold">
-          Awaiting contractor selection
-        </p>
-      </div>
     </div>
 
     <!-- Proposals section -->
@@ -657,121 +542,6 @@ const handleCloseBiddingConfirmed = async () => {
         :confirm-contractor-selection="confirmContractorSelection"
         @retry-load="loadProposals"
       />
-    </div>
-
-    <!-- Engineers section -->
-    <div
-      v-if="showEngineers"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Team</h2>
-      <div class="space-y-2">
-        <div v-if="project.supervisor_name">
-          <p class="text-muted-foreground text-xs">Supervisor Engineer</p>
-          <p class="text-ink text-sm font-semibold">
-            {{ project.supervisor_name }}
-          </p>
-        </div>
-        <div v-if="project.field_engineer_name">
-          <p class="text-muted-foreground text-xs">Field Engineer</p>
-          <p class="text-ink text-sm font-semibold">
-            {{ project.field_engineer_name }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Not yet assigned -->
-    <div
-      v-else
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-3 text-lg font-bold">Team</h2>
-      <div
-        class="border-muted-foreground/30 bg-muted-foreground/10 inline-flex rounded-full border px-3 py-1"
-      >
-        <p class="text-muted-foreground text-xs font-semibold">
-          Not yet assigned
-        </p>
-      </div>
-    </div>
-
-    <!-- Financial summary -->
-    <div
-      v-if="showFinancial"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-4 text-lg font-bold">Financial Summary</h2>
-      <div class="grid gap-4 sm:grid-cols-3">
-        <div>
-          <p class="text-muted-foreground text-xs">Total Amount</p>
-          <p class="text-ink mt-1 text-lg font-bold">
-            {{ formatCurrency(project.total_amount) }}
-          </p>
-        </div>
-        <div>
-          <p class="text-muted-foreground text-xs">Paid Amount</p>
-          <p class="text-success mt-1 text-lg font-bold">
-            {{ formatCurrency(project.total_paid) }}
-          </p>
-        </div>
-        <div>
-          <p class="text-muted-foreground text-xs">Remaining</p>
-          <p class="text-warning mt-1 text-lg font-bold">
-            {{ formatCurrency(project.total_amount - project.total_paid) }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Milestones section -->
-    <div class="border-border bg-card shadow-card rounded-2xl border p-4">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-ink text-lg font-bold">Milestones</h2>
-        <Button v-if="canAddMilestone" size="sm" variant="outline">
-          Add Milestone
-        </Button>
-      </div>
-
-      <EmptyState
-        v-if="!project.milestones.length"
-        icon="folder"
-        class="border-0 bg-transparent py-6 shadow-none"
-        title="project.details.noMilestones"
-      />
-
-      <div v-else class="space-y-3">
-        <div
-          v-for="milestone in project.milestones"
-          :key="milestone.id"
-          class="border-border flex items-center justify-between rounded-lg border p-3"
-        >
-          <div class="flex-1">
-            <h3 class="text-ink text-sm font-semibold">{{ milestone.name }}</h3>
-            <p class="text-muted-foreground text-xs">
-              {{ formatCurrency(milestone.amount) }}
-            </p>
-          </div>
-          <div
-            class="bg-muted-foreground/10 inline-flex rounded-full px-2 py-1"
-          >
-            <span class="text-muted-foreground text-xs font-semibold">
-              {{ getMilestoneStatusLabel(milestone.status) }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Admin actions (placeholder for Story 02-05) -->
-    <div
-      v-if="isAdmin"
-      class="border-border bg-card shadow-card rounded-2xl border p-4"
-    >
-      <h2 class="text-ink mb-4 text-lg font-bold">Admin Actions</h2>
-      <p class="text-muted-foreground text-sm">
-        Admin actions will be available here (Story 02-05)
-      </p>
     </div>
   </div>
 

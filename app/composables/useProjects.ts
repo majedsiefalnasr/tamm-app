@@ -1,11 +1,13 @@
 import { ref, computed } from 'vue'
 import type {
+  AdminProjectOverviewItem,
   Project,
   ProjectDetail,
   Milestone,
   ProjectStatus,
 } from '~/shared/types/project'
 import { useApi, type ApiError } from '~/composables/useApi'
+import { mockAdminProjects } from '~/composables/__mocks__/admin-projects'
 import { canTransition } from '~/utils/statusMachine'
 
 export type SelectContractorFailure =
@@ -225,6 +227,65 @@ export const useProjects = () => {
     },
   }
 
+  /**
+   * Synthesizes `ProjectDetail` from admin list mock when UUID exists there but not in `mockProjectDetails`.
+   * TODO: remove when GET /projects/:id returns full detail for all IDs.
+   */
+  function buildProjectDetailFromAdminRow(
+    row: AdminProjectOverviewItem
+  ): ProjectDetail {
+    const mCount = Math.max(row.milestones.length, 1)
+    const approvedCount = row.milestones.filter(
+      m => m.status === 'approved'
+    ).length
+    const share = approvedCount / mCount
+    const total_paid =
+      row.milestones.length === 0
+        ? 0
+        : Math.min(
+            row.total_value,
+            Math.round(
+              row.total_value *
+                (row.status === 'completed'
+                  ? 0.95
+                  : Math.max(share * 0.85, 0.1))
+            )
+          )
+
+    const milestones: Milestone[] = row.milestones.map((m, idx) => ({
+      id: m.id,
+      name: `${row.project_number} — ${idx + 1}`,
+      amount: Math.round(row.total_value / mCount),
+      order: idx + 1,
+      status: m.status,
+      tasks: [],
+      payment_status: m.status === 'approved' ? 'paid' : 'pending',
+      allowed_actions: [],
+      created_at: row.created_at,
+      updated_at: m.status === 'approved' ? row.created_at : undefined,
+    }))
+
+    return {
+      id: row.id,
+      name: row.name,
+      description: '',
+      city: '—',
+      area_m2: 0,
+      type: 'other',
+      budget: row.total_value,
+      currency: 'EGP',
+      status: row.status,
+      client_id: row.client.id,
+      client_name: row.client.name,
+      contractor_id: row.contractor?.id,
+      contractor_name: row.contractor?.name ?? undefined,
+      total_amount: row.total_value,
+      total_paid,
+      created_at: row.created_at,
+      milestones,
+    }
+  }
+
   // Get role-filtered projects
   const getFilteredProjects = (allProjects: Project[]): Project[] => {
     const userRole = auth.user?.role
@@ -293,11 +354,17 @@ export const useProjects = () => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 300))
 
-    const detail = mockProjectDetails[id]
-    if (!detail) {
-      throw new Error(`Project ${id} not found`)
+    const fromCore = mockProjectDetails[id]
+    if (fromCore) {
+      return fromCore
     }
-    return detail
+
+    const adminRow = mockAdminProjects.find(p => String(p.id) === String(id))
+    if (adminRow) {
+      return buildProjectDetailFromAdminRow(adminRow)
+    }
+
+    throw new Error(`Project ${id} not found`)
   }
 
   const retryFetch = async () => {

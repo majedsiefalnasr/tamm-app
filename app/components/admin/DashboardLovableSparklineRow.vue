@@ -41,11 +41,11 @@ const toneLine: Record<AdminLovableSparklineKpi['tone'], string> = {
       <Card
         v-for="i in 4"
         :key="`sp-skel-${i}`"
-        class="rounded-2xl p-4 shadow-none"
+        class="gap-2 rounded-2xl p-4 py-4 shadow-none"
       >
         <Skeleton class="h-4 w-32" />
-        <Skeleton class="mt-2 h-6 w-16" />
-        <Skeleton class="mt-2 h-8 w-full" />
+        <Skeleton class="h-6 w-16" />
+        <Skeleton class="h-8 w-full" />
       </Card>
     </template>
     <NuxtLink
@@ -56,15 +56,15 @@ const toneLine: Record<AdminLovableSparklineKpi['tone'], string> = {
       class="block"
     >
       <Card
-        class="hover:border-border rounded-2xl p-4 shadow-none transition hover:shadow-md"
+        class="hover:border-border gap-2 rounded-2xl p-4 py-4 shadow-none transition hover:shadow-md"
       >
         <p class="text-muted-foreground text-sm font-medium">
           {{ t(item.title_key) }}
         </p>
-        <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
+        <p class="text-foreground text-lg font-bold tabular-nums">
           {{ sparklineValueLabel(item) }}
         </p>
-        <div class="text-muted-foreground mt-2">
+        <div class="text-muted-foreground">
           <DashboardLovableMiniSparkline
             :series="item.series"
             :tone-class="toneLine[item.tone] ?? toneLine.primary"

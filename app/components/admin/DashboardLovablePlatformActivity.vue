@@ -68,7 +68,7 @@ const chart = computed(() => {
 
 <template>
   <Card
-    class="shadow-card gap-4 rounded-2xl py-6 shadow-none"
+    class="shadow-card gap-2 rounded-2xl py-4 shadow-none"
     data-testid="dashboard-lovable-platform-activity"
   >
     <CardHeader>

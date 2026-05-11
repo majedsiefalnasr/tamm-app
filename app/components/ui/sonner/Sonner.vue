@@ -1,10 +1,19 @@
 <script lang="ts" setup>
+import { computed } from "vue"
+import { reactiveOmit } from "@vueuse/core"
 import type { ToasterProps } from "vue-sonner"
 import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon, XIcon } from "lucide-vue-next"
 import { Toaster as Sonner } from "vue-sonner"
 import { cn } from "@/lib/utils"
 
 const props = defineProps<ToasterProps>()
+
+/**
+ * Default: **top center**. Pass `position` on `<Toaster>` to override.
+ */
+const position = computed(() => props.position ?? "top-center")
+
+const delegatedProps = reactiveOmit(props, "position")
 </script>
 
 <template>
@@ -16,7 +25,8 @@ const props = defineProps<ToasterProps>()
       '--normal-border': 'var(--border)',
       '--border-radius': 'var(--radius)',
     }"
-    v-bind="props"
+    v-bind="delegatedProps"
+    :position="position"
   >
     <template #success-icon>
       <CircleCheckIcon class="size-4" />
