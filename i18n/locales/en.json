@@ -752,6 +752,12 @@
         "activate": "Activate",
         "deactivate": "Deactivate"
       },
+      "status_toast": {
+        "loading": "Updating user status...",
+        "activated": "User activated successfully.",
+        "deactivated": "User deactivated successfully.",
+        "failed": "Failed to update user status."
+      },
       "deactivate_confirm": {
         "title": "Deactivate user?",
         "description": "They will lose access until an administrator activates them again.",

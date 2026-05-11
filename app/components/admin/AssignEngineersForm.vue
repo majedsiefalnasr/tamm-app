@@ -30,6 +30,7 @@ interface Props {
 type Emits = {
   success: []
   close: []
+  'submitting-change': [submitting: boolean]
 }
 
 const props = defineProps<Props>()
@@ -102,18 +103,34 @@ const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
   }
 
   assigningEngineers.value = true
+  emit('submitting-change', true)
   try {
-    const result = await assignEngineers(
-      props.projectId,
-      formValues.supervisor_engineer_id,
-      formValues.field_engineer_id
+    const result = await notify.promise(
+      async () => {
+        const mutationResult = await assignEngineers(
+          props.projectId,
+          formValues.supervisor_engineer_id,
+          formValues.field_engineer_id
+        )
+        if (!mutationResult.success) {
+          throw new Error(
+            mutationResult.error || t('errors.engineers_assignment_failed')
+          )
+        }
+        return mutationResult
+      },
+      {
+        loading: t('projects.assignEngineers.assigningMessage'),
+        success: () => t('errors.engineers_assigned'),
+        error: err =>
+          err instanceof Error
+            ? err.message
+            : t('errors.engineers_assignment_failed'),
+      }
     )
 
     if (result.success) {
-      notify.success(t('errors.engineers_assigned'))
       emit('success')
-    } else {
-      notify.error(result.error || t('errors.engineers_assignment_failed'))
     }
   } catch (error: any) {
     if (error?.data?.error?.errors) {
@@ -125,10 +142,12 @@ const onSubmit = handleSubmit(async (formValues: AssignEngineersPayload) => {
     }
   } finally {
     assigningEngineers.value = false
+    emit('submitting-change', false)
   }
 })
 
 const handleCancel = () => {
+  if (assigningEngineers.value) return
   resetForm()
   emit('close')
 }

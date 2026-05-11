@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAdminUsers } from '~/composables/useAdminUsers'
+import { useNotifications } from '~/composables/useNotifications'
 import { usePermission } from '~/composables/usePermission'
 import { useAuthStore } from '~/stores/auth'
 import { Button } from '~/components/ui/button'
@@ -42,8 +43,10 @@ const {
   selectedRole,
   userCountByRole,
   toggleUserStatus,
+  togglingStatusIds,
   refetch,
 } = useAdminUsers()
+const { notify } = useNotifications()
 
 const showCreateDialog = ref(false)
 const editingUserId = ref<string | null>(null)
@@ -92,9 +95,11 @@ const handleEditUser = (userId: string) => {
 
 const deactivateAlertOpen = ref(false)
 const deactivateTargetId = ref<string | null>(null)
+const deactivatingUser = ref(false)
 
-const handleToggleStatus = (userId: string) => {
+const handleToggleStatus = async (userId: string) => {
   if (!can('toggle_user_status')) {
+    notify.error(t('errors.permission_denied'))
     return
   }
   const user = users.value.find(u => u.id === userId)
@@ -104,10 +109,29 @@ const handleToggleStatus = (userId: string) => {
     deactivateAlertOpen.value = true
     return
   }
-  void toggleUserStatus(userId)
+  await notify.promise(
+    async () => {
+      await toggleUserStatus(userId)
+      return user.status === 'active' ? 'active' : 'inactive'
+    },
+    {
+      loading: t('admin.users.status_toast.loading'),
+      success: status =>
+        status === 'active'
+          ? t('admin.users.status_toast.activated')
+          : t('admin.users.status_toast.deactivated'),
+      error: err =>
+        err instanceof Error
+          ? err.message
+          : t('admin.users.status_toast.failed'),
+    }
+  )
 }
 
 function onDeactivateAlertOpenChange(open: boolean) {
+  if (deactivatingUser.value) {
+    return
+  }
   deactivateAlertOpen.value = open
   if (!open) {
     deactivateTargetId.value = null
@@ -117,15 +141,32 @@ function onDeactivateAlertOpenChange(open: boolean) {
 async function confirmDeactivateUser() {
   const id = deactivateTargetId.value
   if (!id) return
-  await toggleUserStatus(id)
-  deactivateAlertOpen.value = false
-  deactivateTargetId.value = null
+  deactivatingUser.value = true
+  try {
+    await notify.promise(
+      async () => {
+        await toggleUserStatus(id)
+        return true
+      },
+      {
+        loading: t('admin.users.status_toast.loading'),
+        success: t('admin.users.status_toast.deactivated'),
+        error: err =>
+          err instanceof Error
+            ? err.message
+            : t('admin.users.status_toast.failed'),
+      }
+    )
+    deactivateAlertOpen.value = false
+    deactivateTargetId.value = null
+  } finally {
+    deactivatingUser.value = false
+  }
 }
 
 const handleUserCreated = () => {
   showCreateDialog.value = false
   editingUserId.value = null
-  refetch()
 }
 </script>
 
@@ -191,6 +232,7 @@ const handleUserCreated = () => {
       <UserTable
         :users="users"
         :loading="loading"
+        :toggling-status-ids="togglingStatusIds"
         @edit-user="handleEditUser"
         @toggle-status="handleToggleStatus"
       />
@@ -217,12 +259,14 @@ const handleUserCreated = () => {
           }}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{{
+          <AlertDialogCancel :disabled="deactivatingUser">{{
             t('admin.users.deactivate_confirm.cancel')
           }}</AlertDialogCancel>
           <AlertDialogAction as-child>
             <Button
               variant="destructive"
+              :disabled="deactivatingUser"
+              :loading="deactivatingUser"
               @click.prevent="confirmDeactivateUser"
             >
               {{ t('admin.users.deactivate_confirm.confirm') }}

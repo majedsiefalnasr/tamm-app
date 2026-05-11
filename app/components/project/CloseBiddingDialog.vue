@@ -33,12 +33,18 @@ const handleConfirm = () => {
 }
 
 const handleCancel = () => {
+  if (props.confirmPending) return
   emit('update:isOpen', false)
+}
+
+const handleOpenChange = (open: boolean) => {
+  if (props.confirmPending) return
+  emit('update:isOpen', open)
 }
 </script>
 
 <template>
-  <Dialog :open="isOpen" @update:open="emit('update:isOpen', $event)">
+  <Dialog :open="isOpen" @update:open="handleOpenChange">
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>

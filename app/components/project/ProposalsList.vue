@@ -46,6 +46,7 @@ const sortedProposals = computed(() => {
 })
 
 const onSelectionDialogOpenChange = (open: boolean) => {
+  if (isConfirming.value) return
   showConfirmDialog.value = open
   if (!open) {
     pendingProposal.value = null

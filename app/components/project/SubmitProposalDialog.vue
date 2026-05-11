@@ -119,6 +119,7 @@ const applyFieldErrors = (fieldErrors?: Record<string, string[]>) => {
 }
 
 const onOpenChange = (newOpen: boolean) => {
+  if (isSubmitting.value) return
   if (!newOpen) {
     resetForm()
     priceInput.value = ''
@@ -140,27 +141,40 @@ const onSubmit = handleSubmit(async formValues => {
 
   isSubmitting.value = true
   try {
-    const result = await submitProposal(props.projectId, {
-      price: formValues.price,
-      estimated_days: formValues.estimatedDays,
-      notes: formValues.notes,
-    })
+    const result = await notify.promise(
+      async () => {
+        const proposalResult = await submitProposal(props.projectId, {
+          price: formValues.price,
+          estimated_days: formValues.estimatedDays,
+          notes: formValues.notes,
+        })
+        if (!proposalResult.success) {
+          const hasFieldErrors = applyFieldErrors(proposalResult.fieldErrors)
+          throw new Error(
+            proposalResult.error ||
+              (hasFieldErrors
+                ? t('projects.submitProposal.errorMessage')
+                : t('projects.submitProposal.errorMessage'))
+          )
+        }
+        return proposalResult
+      },
+      {
+        loading: t('projects.submitProposal.loadingMessage'),
+        success: t('projects.submitProposal.successMessage'),
+        error: err =>
+          err instanceof Error
+            ? err.message
+            : t('projects.submitProposal.errorMessage'),
+      }
+    )
 
     if (result.success) {
-      notify.success(t('projects.submitProposal.successMessage'))
       onOpenChange(false)
       emit('submitted', formValues)
-    } else if (applyFieldErrors(result.fieldErrors)) {
-      notify.error(result.error || t('projects.submitProposal.errorMessage'))
-    } else {
-      notify.error(result.error || t('projects.submitProposal.errorMessage'))
     }
-  } catch (error: unknown) {
-    const errorMsg =
-      error instanceof Error
-        ? error.message
-        : t('projects.submitProposal.errorMessage')
-    notify.error(errorMsg)
+  } catch {
+    // Error toast is handled by notify.promise.
   } finally {
     isSubmitting.value = false
   }

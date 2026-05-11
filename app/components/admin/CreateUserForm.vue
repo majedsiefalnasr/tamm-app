@@ -35,17 +35,24 @@ const auth = useAuthStore()
 const { createUser, updateUser, creating } = useAdminUsers()
 const { notify } = useNotifications()
 
-const { values, handleSubmit, errors, setFieldError, submitCount, resetForm } =
-  useForm<CreateUserPayload>({
-    validationSchema: toTypedSchema(createUserSchema),
-    validateOnMount: false,
-    initialValues: {
-      name: '',
-      email: '',
-      role: undefined,
-      phone: '',
-    },
-  })
+const {
+  values,
+  handleSubmit,
+  errors,
+  setFieldError,
+  setFieldValue,
+  submitCount,
+  resetForm,
+} = useForm<CreateUserPayload>({
+  validationSchema: toTypedSchema(createUserSchema),
+  validateOnMount: false,
+  initialValues: {
+    name: '',
+    email: '',
+    role: undefined,
+    phone: '',
+  },
+})
 
 const availableRoles = computed(() => {
   const roles = [
@@ -69,11 +76,21 @@ const availableRoles = computed(() => {
 const onSubmit = handleSubmit(async formValues => {
   try {
     if (props.user?.id) {
-      await updateUser(props.user.id, formValues as CreateUserPayload)
-      notify.success(t('errors.user_updated'))
+      const userId = props.user.id
+      await notify.promise(
+        () => updateUser(userId, formValues as CreateUserPayload),
+        {
+          loading: t('loading'),
+          success: t('errors.user_updated'),
+          error: t('errors.user_update_failed'),
+        }
+      )
     } else {
-      await createUser(formValues as CreateUserPayload)
-      notify.success(t('errors.user_created'))
+      await notify.promise(() => createUser(formValues as CreateUserPayload), {
+        loading: t('loading'),
+        success: t('errors.user_created'),
+        error: t('errors.user_creation_failed'),
+      })
     }
     emit('success')
   } catch (error: any) {
@@ -93,11 +110,7 @@ const onSubmit = handleSubmit(async formValues => {
         }
       })
     } else {
-      notify.error(
-        props.user?.id
-          ? t('errors.user_update_failed')
-          : t('errors.user_creation_failed')
-      )
+      // Error toast is handled by notify.promise.
     }
   }
 })
@@ -139,9 +152,10 @@ watch(
       }}</FieldLabel>
       <Input
         id="name"
-        v-model="values.name"
+        :model-value="values.name"
         :placeholder="t('admin.users.create.full_name_placeholder')"
         :class="{ 'border-destructive': submitCount > 0 && errors.name }"
+        @update:model-value="setFieldValue('name', String($event))"
       />
       <FieldError
         :errors="submitCount > 0 ? [errors.name] : []"
@@ -156,10 +170,11 @@ watch(
       }}</FieldLabel>
       <Input
         id="email"
-        v-model="values.email"
+        :model-value="values.email"
         type="email"
         :placeholder="t('admin.users.create.email_placeholder')"
         :class="{ 'border-destructive': submitCount > 0 && errors.email }"
+        @update:model-value="setFieldValue('email', String($event))"
       />
       <FieldError
         :errors="submitCount > 0 ? [errors.email] : []"
@@ -172,7 +187,12 @@ watch(
       <FieldLabel for="role" class="text-start">{{
         t('admin.users.create.role')
       }}</FieldLabel>
-      <Select v-model="values.role">
+      <Select
+        :model-value="values.role"
+        @update:model-value="
+          value => setFieldValue('role', value as CreateUserPayload['role'])
+        "
+      >
         <SelectTrigger
           :class="{ 'border-destructive': submitCount > 0 && errors.role }"
         >
@@ -206,7 +226,7 @@ watch(
         :model-value="values.phone ?? ''"
         type="tel"
         :placeholder="t('admin.users.create.phone_placeholder')"
-        @update:model-value="values.phone = String($event)"
+        @update:model-value="setFieldValue('phone', String($event))"
       />
     </Field>
 

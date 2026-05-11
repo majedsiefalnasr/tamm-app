@@ -36,12 +36,14 @@ interface Props {
   users?: User[]
   loading?: boolean
   densityPreset?: AdminUserListTablePreset
+  togglingStatusIds?: Set<string>
 }
 
 const props = withDefaults(defineProps<Props>(), {
   users: () => [],
   loading: false,
   densityPreset: 'default',
+  togglingStatusIds: () => new Set<string>(),
 })
 
 const emit = defineEmits<{
@@ -313,6 +315,7 @@ function formatRelativeTime(dateString: string): string {
               >
                 <UserActionMenu
                   :user="user"
+                  :toggling="props.togglingStatusIds.has(user.id)"
                   @edit="emit('edit-user', user.id)"
                   @toggle-status="emit('toggle-status', user.id)"
                 />

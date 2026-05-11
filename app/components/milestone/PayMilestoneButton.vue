@@ -39,16 +39,18 @@ const handlePaymentSubmit = async (payload: PaymentPayload) => {
   isSubmitting.value = true
 
   try {
-    await payForMilestone(props.milestone.id, payload)
+    await notify.promise(
+      () => payForMilestone(props.milestone.id, payload),
+      {
+        loading: t('payment.button.loading'),
+        success: t('payment.success.message'),
+        error: t('payment.error.message'),
+      },
+      { id: milestoneMutationToastId('pay', props.milestone.id) }
+    )
     dialogOpen.value = false
-    notify.success(t('payment.success.message'), {
-      id: milestoneMutationToastId('pay', props.milestone.id),
-    })
   } catch (error) {
     console.error('Payment error:', error)
-    notify.error(t('payment.error.message'), {
-      id: milestoneMutationToastId('pay-error', props.milestone.id),
-    })
   } finally {
     isSubmitting.value = false
   }

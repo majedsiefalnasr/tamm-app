@@ -18,6 +18,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
+const isSubmitting = ref(false)
 
 const handleSuccess = () => {
   emit('update:open', false)
@@ -25,12 +26,18 @@ const handleSuccess = () => {
 }
 
 const handleClose = () => {
+  if (isSubmitting.value) return
   emit('update:open', false)
+}
+
+const handleOpenChange = (open: boolean) => {
+  if (isSubmitting.value) return
+  emit('update:open', open)
 }
 </script>
 
 <template>
-  <Dialog :open="props.open" @update:open="emit('update:open', $event)">
+  <Dialog :open="props.open" @update:open="handleOpenChange">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle class="text-start">{{
@@ -40,6 +47,7 @@ const handleClose = () => {
       <AssignEngineersForm
         :project-id="projectId"
         :project="project"
+        @submitting-change="isSubmitting = $event"
         @success="handleSuccess"
         @close="handleClose"
       />

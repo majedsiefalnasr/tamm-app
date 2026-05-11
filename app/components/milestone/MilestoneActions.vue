@@ -160,18 +160,20 @@ const handleAction = async (actionType: string) => {
 const handlePaymentSubmit = async (payload: PaymentPayload) => {
   isPaymentSubmitting.value = true
   try {
-    await payForMilestone(props.milestone.id, payload)
+    await notify.promise(
+      () => payForMilestone(props.milestone.id, payload),
+      {
+        loading: t('payment.button.loading'),
+        success: t('payment.success.message'),
+        error: t('payment.error.message'),
+      },
+      { id: milestoneMutationToastId('pay', props.milestone.id) }
+    )
     paymentDialogOpen.value = false
-    notify.success(t('payment.success.message'), {
-      id: milestoneMutationToastId('pay', props.milestone.id),
-    })
     // Emit actionComplete only after success confirmed (decision #1 + patch #27)
     emits('actionComplete')
   } catch (error) {
     console.error('Payment error:', error)
-    notify.error(t('payment.error.message'), {
-      id: milestoneMutationToastId('pay-error', props.milestone.id),
-    })
   } finally {
     isPaymentSubmitting.value = false
   }
@@ -214,16 +216,19 @@ const handleReleasePaymentConfirm = async () => {
 
   isReleasePaymentSubmitting.value = true
   try {
-    await releaseMilestonePayment(props.milestone.id)
-    releasePaymentDialogOpen.value = false
-    notify.success(
-      t('payment.message.released', {
-        amount: formatCurrency(props.milestone.amount || 0),
-      }),
+    await notify.promise(
+      () => releaseMilestonePayment(props.milestone.id),
       {
-        id: milestoneMutationToastId('release', props.milestone.id),
-      }
+        loading: t('payment.action.release_confirm_loading'),
+        success: t('payment.message.released', {
+          amount: formatCurrency(props.milestone.amount || 0),
+        }),
+        error: error =>
+          error instanceof Error ? error.message : t('errors.release_failed'),
+      },
+      { id: milestoneMutationToastId('release', props.milestone.id) }
     )
+    releasePaymentDialogOpen.value = false
     emits('actionComplete')
   } catch (error) {
     const errorMsg =

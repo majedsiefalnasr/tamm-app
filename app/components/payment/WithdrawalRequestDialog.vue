@@ -40,6 +40,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const handleOpenChange = (isOpen: boolean) => {
+  if (props.isSubmitting || formIsSubmitting.value) return
   if (!isOpen) {
     emit('close')
   }

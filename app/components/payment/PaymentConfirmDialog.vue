@@ -34,6 +34,7 @@ const selectedFile = ref<File | null>(null)
 const filePreviewUrl = ref<string | null>(null)
 
 const handleOpenChange = (isOpen: boolean) => {
+  if (isSubmitting.value) return
   if (!isOpen) {
     emit('close')
   }

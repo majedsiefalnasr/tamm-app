@@ -13,13 +13,29 @@ export interface User {
   updated_at: string
 }
 
-const API_ENDPOINT = '/admin/users'
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
+type ApiUserStatus =
+  | 'active'
+  | 'suspended'
+  | 'pending_verification'
+  | 'banned'
+  | 'inactive'
+
+const API_ENDPOINT = '/users'
+// Admin users must always use real backend persistence.
+const USE_MOCK = false
 // List fetch: 10s (may load many users); mutation: 5s (faster feedback for user creation)
 const TIMEOUT_MS = {
   fetch: 10000,
   mutate: 5000,
 }
+
+// Shared module state so all consumers stay in sync (list, dialogs, menus).
+const allUsersState = ref<User[]>([])
+const loadingState = ref(true)
+const errorState = ref<string | null>(null)
+const creatingState = ref(false)
+const togglingStatusIdsState = ref<Set<string>>(new Set())
+const hasFetchedUsersState = ref(false)
 
 // Helper to add timeout to async operations with configurable durations
 function withTimeout<T>(
@@ -37,12 +53,100 @@ function withTimeout<T>(
   ])
 }
 
+function normalizeUser(raw: any): User {
+  const createdAtRaw = raw?.created_at ?? raw?.createdAt ?? raw?.created
+  const updatedAtRaw = raw?.updated_at ?? raw?.updatedAt ?? createdAtRaw
+  const rawStatus = String(raw?.status ?? '').toLowerCase() as ApiUserStatus
+  const uiStatus: User['status'] =
+    rawStatus === 'active' ? 'active' : 'inactive'
+  return {
+    id: String(raw?.id ?? ''),
+    name: String(raw?.name ?? ''),
+    email: String(raw?.email ?? ''),
+    phone: raw?.phone == null ? null : String(raw.phone),
+    role: (raw?.role ?? 'client') as Role,
+    status: uiStatus,
+    created_at:
+      typeof createdAtRaw === 'string'
+        ? createdAtRaw
+        : new Date().toISOString(),
+    updated_at:
+      typeof updatedAtRaw === 'string'
+        ? updatedAtRaw
+        : new Date().toISOString(),
+  }
+}
+
+function toApiStatus(uiStatus: User['status']): ApiUserStatus {
+  return uiStatus === 'active' ? 'active' : 'suspended'
+}
+
+function isSamePhone(a: string | null, b: string | null): boolean {
+  return (a ?? '') === (b ?? '')
+}
+
+function extractUsersList(payload: any): User[] {
+  const list = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.data)
+      ? payload.data
+      : []
+  return list.map(normalizeUser)
+}
+
+function assertApiSuccess(response: any, fallbackMessage: string): void {
+  if (response?.success === false) {
+    const message =
+      response?.error?.message || response?.message || fallbackMessage
+    throw new Error(message)
+  }
+}
+
+async function fetchAllUsersFromApi(): Promise<User[]> {
+  const first = await withTimeout(useApi(API_ENDPOINT), TIMEOUT_MS.fetch)
+  const firstPageUsers = extractUsersList(first.data)
+
+  const pagination = (first as any)?.meta?.pagination
+  const lastPage = Number(pagination?.last_page ?? 1)
+  const currentPage = Number(pagination?.current_page ?? 1)
+  const limit = Number(pagination?.limit ?? 50)
+
+  if (!Number.isFinite(lastPage) || lastPage <= currentPage) {
+    return firstPageUsers
+  }
+
+  const allUsers = [...firstPageUsers]
+  for (let page = currentPage + 1; page <= lastPage; page++) {
+    const pageResponse = await withTimeout(
+      useApi(`${API_ENDPOINT}?page=${page}&limit=${limit}`),
+      TIMEOUT_MS.fetch
+    )
+    allUsers.push(...extractUsersList(pageResponse.data))
+  }
+
+  return allUsers
+}
+
+async function fetchUserByIdFromApi(userId: string): Promise<User | null> {
+  const response = await withTimeout(
+    useApi(`/users/${userId}`),
+    TIMEOUT_MS.fetch
+  )
+  assertApiSuccess(response, 'Failed to fetch user')
+  const payload = response?.data
+  const raw =
+    payload && !Array.isArray(payload) && typeof payload === 'object'
+      ? ((payload as any).data ?? payload)
+      : null
+  return raw ? normalizeUser(raw) : null
+}
+
 export function useAdminUsers(initialRole?: Role | 'all' | null) {
   /** Full list from API/mock — tab counts and filters derive from this */
-  const allUsers = ref<User[]>([])
+  const allUsers = allUsersState
   /** True until first onMounted fetch completes */
-  const loading = ref(true)
-  const error = ref<string | null>(null)
+  const loading = loadingState
+  const error = errorState
   const selectedRole = ref<Role | 'all'>(initialRole || 'all')
 
   const users = computed<User[]>(() => {
@@ -67,11 +171,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
       if (USE_MOCK) {
         result = [...mockAdminUsers]
       } else {
-        const response = await withTimeout(
-          useApi(API_ENDPOINT),
-          TIMEOUT_MS.fetch
-        )
-        result = response.data as User[]
+        result = await fetchAllUsersFromApi()
       }
 
       allUsers.value = result
@@ -89,7 +189,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     }
   }
 
-  const creating = ref(false)
+  const creating = creatingState
 
   const toggleUserStatus = async (userId: string) => {
     const user = allUsers.value.find(u => u.id === userId)
@@ -100,6 +200,14 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
 
     const previousStatus = user.status
     const newStatus = user.status === 'active' ? 'inactive' : 'active'
+    const apiStatus = toApiStatus(newStatus)
+
+    // Guard concurrent toggles for same user
+    if (togglingStatusIdsState.value.has(userId)) {
+      return
+    }
+
+    togglingStatusIdsState.value.add(userId)
 
     // Optimistic update
     user.status = newStatus
@@ -107,13 +215,23 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     try {
       // API call would go here when endpoint is available
       if (!USE_MOCK) {
-        await withTimeout(
-          useApi(`/admin/users/${userId}`, {
+        const response = await withTimeout(
+          useApi(`/users/${userId}`, {
             method: 'PUT',
-            body: { status: newStatus },
+            body: { status: apiStatus },
           }),
           TIMEOUT_MS.mutate
         )
+        assertApiSuccess(response, 'Failed to update user status')
+        const persistedUser = await fetchUserByIdFromApi(userId)
+        if (persistedUser) {
+          if (persistedUser.status !== newStatus) {
+            throw new Error('User status was not persisted by backend')
+          }
+          Object.assign(user, persistedUser)
+        } else if (response?.data) {
+          Object.assign(user, normalizeUser(response.data))
+        }
       }
     } catch (e) {
       // Rollback on error
@@ -125,6 +243,9 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
             ? e
             : 'Failed to update user status'
       error.value = message
+      throw new Error(message)
+    } finally {
+      togglingStatusIdsState.value.delete(userId)
     }
   }
 
@@ -153,16 +274,12 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
           }),
           TIMEOUT_MS.mutate
         )
-
-        // Refetch users list to include new user
-        try {
+        assertApiSuccess(response, 'Failed to create user')
+        if (response?.data) {
+          allUsers.value.unshift(normalizeUser(response.data))
+        } else {
+          // Fallback when backend returns success without user payload.
           await fetchUsers()
-        } catch (refetchError) {
-          // Log refetch failure but don't block success; user was created server-side
-          console.warn(
-            'Failed to refetch users after creation (user was created):',
-            refetchError
-          )
         }
       }
 
@@ -196,13 +313,30 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
 
     try {
       if (!USE_MOCK) {
-        await withTimeout(
-          useApi(`/admin/users/${userId}`, {
+        const response = await withTimeout(
+          useApi(`/users/${userId}`, {
             method: 'PUT',
             body: payload,
           }),
           TIMEOUT_MS.mutate
         )
+        assertApiSuccess(response, 'Failed to update user')
+        const persistedUser = await fetchUserByIdFromApi(userId)
+        if (persistedUser) {
+          const expectedPhone = payload.phone ?? null
+          const persistedRole = persistedUser.role as Role
+          const didPersist =
+            persistedUser.name === payload.name &&
+            persistedUser.email === payload.email &&
+            persistedRole === payload.role &&
+            isSamePhone(persistedUser.phone, expectedPhone)
+          if (!didPersist) {
+            throw new Error('User changes were not persisted by backend')
+          }
+          Object.assign(user, persistedUser)
+        } else if (response?.data) {
+          Object.assign(user, normalizeUser(response.data))
+        }
       }
       return user
     } catch (e) {
@@ -233,7 +367,10 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
 
   // Fetch on mount
   onMounted(() => {
-    fetchUsers()
+    if (!hasFetchedUsersState.value) {
+      hasFetchedUsersState.value = true
+      fetchUsers()
+    }
   })
 
   const fetchEngineersByRole = async (
@@ -285,6 +422,7 @@ export function useAdminUsers(initialRole?: Role | 'all' | null) {
     creating: readonly(creating),
     fetchUsers,
     toggleUserStatus,
+    togglingStatusIds: readonly(togglingStatusIdsState),
     createUser,
     updateUser,
     refetch: () => fetchUsers(),

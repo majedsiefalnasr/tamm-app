@@ -32,6 +32,7 @@ const reason = ref('')
 const localOpen = computed({
   get: () => props.open,
   set: value => {
+    if (props.loading) return
     if (!value) {
       reason.value = ''
     }
@@ -58,6 +59,7 @@ const handleConfirm = () => {
 }
 
 const handleCancel = () => {
+  if (props.loading) return
   localOpen.value = false
   emit('cancel')
   reason.value = ''

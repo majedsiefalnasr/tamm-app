@@ -86,8 +86,18 @@ const onSubmit = handleSubmit(async data => {
 })
 
 const closeDialog = () => {
+  if (props.isSubmitting) return
   emit('update:open', false)
   resetForm()
+}
+
+const handleOpenChange = (open: boolean) => {
+  if (props.isSubmitting) return
+  if (!open) {
+    closeDialog()
+    return
+  }
+  emit('update:open', true)
 }
 
 const dialogTitle = computed(() => {
@@ -98,7 +108,7 @@ const dialogTitle = computed(() => {
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="closeDialog">
+  <Dialog :open="open" @update:open="handleOpenChange">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>{{ dialogTitle }}</DialogTitle>

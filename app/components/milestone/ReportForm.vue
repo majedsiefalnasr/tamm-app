@@ -134,12 +134,19 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    await submitReport(props.projectId, props.milestoneId, {
-      content: content.value,
-      images: selectedImages.value,
-    })
-
-    notify.success(t('success.report_submitted'))
+    await notify.promise(
+      () =>
+        submitReport(props.projectId, props.milestoneId, {
+          content: content.value,
+          images: selectedImages.value,
+        }),
+      {
+        loading: t('loading'),
+        success: t('success.report_submitted'),
+        error: err =>
+          err instanceof Error ? err.message : t('errors.submission_failed'),
+      }
+    )
     content.value = ''
     selectedImages.value = []
     imagePreviews.value = []
@@ -148,7 +155,7 @@ const handleSubmit = async () => {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : t('errors.submission_failed')
-    notify.error(message)
+    contentError.value = message
   } finally {
     isSubmitting.value = false
   }

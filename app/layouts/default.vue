@@ -2,8 +2,10 @@
 import AppSidebar from '~/components/layout/AppSidebar.vue'
 import GlobalCommandPalette from '~/components/layout/GlobalCommandPalette.vue'
 import Topbar from '~/components/layout/Topbar.vue'
+import { Toaster } from '~/components/ui/sonner'
 import { provideCommandPalette } from '~/composables/useCommandPalette'
 import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
+import 'vue-sonner/style.css'
 
 provideCommandPalette()
 </script>
@@ -23,6 +25,7 @@ provideCommandPalette()
         </div>
       </div>
       <GlobalCommandPalette />
+      <Toaster />
     </SidebarInset>
   </SidebarProvider>
 </template>

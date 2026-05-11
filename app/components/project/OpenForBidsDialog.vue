@@ -112,6 +112,7 @@ const handleConfirm = async () => {
 }
 
 const handleCancel = () => {
+  if (isSubmitting.value) return
   emit('update:isOpen', false)
 }
 
@@ -131,7 +132,10 @@ const isSelected = (contractorId: string) => {
 </script>
 
 <template>
-  <Dialog :open="isOpen" @update:open="emit('update:isOpen', $event)">
+  <Dialog
+    :open="isOpen"
+    @update:open="value => (isSubmitting ? null : emit('update:isOpen', value))"
+  >
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>
@@ -196,6 +200,7 @@ const isSelected = (contractorId: string) => {
             <Checkbox
               :id="`contractor-${contractor.id}`"
               :checked="isSelected(contractor.id)"
+              :disabled="isSubmitting"
               @update:checked="toggleContractor(contractor.id)"
             />
             <label
@@ -220,7 +225,11 @@ const isSelected = (contractorId: string) => {
       </FieldSet>
 
       <DialogFooter>
-        <Button variant="outline" @click="handleCancel">
+        <Button
+          variant="outline"
+          :disabled="isSubmitting"
+          @click="handleCancel"
+        >
           {{ t('projects.openForBids.cancelButton') }}
         </Button>
         <Button

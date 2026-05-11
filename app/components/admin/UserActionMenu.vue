@@ -6,14 +6,17 @@ import {
   DropdownMenuItem,
 } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
-import { MoreVertical } from 'lucide-vue-next'
+import { Loader2, MoreVertical } from 'lucide-vue-next'
 import type { User } from '../../composables/useAdminUsers'
 
 interface Props {
   user: User
+  toggling?: boolean
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), {
+  toggling: false,
+})
 
 const emit = defineEmits<{
   edit: []
@@ -39,12 +42,15 @@ const { t } = useI18n()
       <DropdownMenuItem @click="emit('edit')">
         {{ t('admin.users.actions.edit') }}
       </DropdownMenuItem>
-      <DropdownMenuItem @click="emit('toggle-status')">
-        {{
-          user.status === 'active'
-            ? t('admin.users.actions.deactivate')
-            : t('admin.users.actions.activate')
-        }}
+      <DropdownMenuItem :disabled="toggling" @click="emit('toggle-status')">
+        <Loader2 v-if="toggling" class="me-2 size-4 animate-spin" />
+        <span>
+          {{
+            user.status === 'active'
+              ? t('admin.users.actions.deactivate')
+              : t('admin.users.actions.activate')
+          }}
+        </span>
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

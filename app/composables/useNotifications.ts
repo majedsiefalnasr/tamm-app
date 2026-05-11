@@ -8,6 +8,11 @@ export type SonnerToastOptions = {
   id?: string
   duration?: number
 }
+export type SonnerPromiseMessages<T> = {
+  loading: string
+  success: string | ((data: T) => string)
+  error: string | ((error: unknown) => string)
+}
 
 const POLLING_INTERVAL = 30000 // 30 seconds
 let globalPollTimer: number | undefined
@@ -117,6 +122,11 @@ export const useNotifications = () => {
       opts ? toast.info(message, opts) : toast.info(message),
     warning: (message: string, opts?: SonnerToastOptions) =>
       opts ? toast.warning(message, opts) : toast.warning(message),
+    promise: <T>(
+      promiseFactory: () => Promise<T>,
+      messages: SonnerPromiseMessages<T>,
+      opts?: SonnerToastOptions
+    ) => toast.promise(promiseFactory, messages, opts),
   }
 
   const pushLocalNotification = (notification: Notification) => {

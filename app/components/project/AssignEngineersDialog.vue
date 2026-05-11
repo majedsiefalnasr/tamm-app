@@ -80,21 +80,39 @@ const handleSave = async () => {
   error.value = null
 
   try {
-    const result = await assignEngineers(
-      props.projectId,
-      selectedSupervisor.value!,
-      selectedFieldEngineer.value!
+    const result = await notify.promise(
+      async () => {
+        const mutationResult = await assignEngineers(
+          props.projectId,
+          selectedSupervisor.value!,
+          selectedFieldEngineer.value!
+        )
+        if (!mutationResult.success) {
+          throw new Error(
+            mutationResult.error || t('projects.assignEngineers.saveError')
+          )
+        }
+        return mutationResult
+      },
+      {
+        loading: t('projects.assignEngineers.assigningMessage'),
+        success: t('projects.assignEngineers.successMessage'),
+        error: err =>
+          err instanceof Error
+            ? err.message
+            : t('projects.assignEngineers.saveError'),
+      }
     )
 
     if (result.success) {
-      notify.success(t('projects.assignEngineers.successMessage'))
       emit('assigned')
       emit('close')
-    } else {
-      const msg = result.error || t('projects.assignEngineers.saveError')
-      error.value = msg
-      notify.error(msg)
     }
+  } catch (err) {
+    error.value =
+      err instanceof Error
+        ? err.message
+        : t('projects.assignEngineers.saveError')
   } finally {
     saving.value = false
   }

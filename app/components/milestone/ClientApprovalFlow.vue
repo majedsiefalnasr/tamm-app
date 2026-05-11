@@ -40,7 +40,10 @@ const showRejectDialog = ref(false)
 
 const localOpen = computed({
   get: () => props.open,
-  set: value => emit('update:open', value),
+  set: value => {
+    if (loading.value) return
+    emit('update:open', value)
+  },
 })
 
 const handleApprove = () => {
@@ -52,26 +55,23 @@ const handleConfirmApprove = async () => {
   error.value = null
 
   try {
-    await approveMilestone(props.milestone.id, 'client')
-    notify.success(t('success.client_milestone_approved'), {
-      id: milestoneMutationToastId('client-approve', props.milestone.id),
-    })
+    await notify.promise(
+      () => approveMilestone(props.milestone.id, 'client'),
+      {
+        loading: t('loading'),
+        success: t('success.client_milestone_approved'),
+        error: err =>
+          t('errors.client_milestone_approval_failed', {
+            message: err instanceof Error ? err.message : '',
+          }),
+      },
+      { id: milestoneMutationToastId('client-approve', props.milestone.id) }
+    )
     emit('approved')
     localOpen.value = false
     step.value = 'review'
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Unknown error'
-    notify.error(
-      t('errors.client_milestone_approval_failed', {
-        message: error.value,
-      }),
-      {
-        id: milestoneMutationToastId(
-          'client-approve-error',
-          props.milestone.id
-        ),
-      }
-    )
   } finally {
     loading.value = false
   }
@@ -87,23 +87,23 @@ const handleConfirmReject = async (reason: string) => {
   showRejectDialog.value = false
 
   try {
-    await rejectMilestone(props.milestone.id, reason, 'client')
-    notify.success(t('success.client_milestone_rejected'), {
-      id: milestoneMutationToastId('client-reject', props.milestone.id),
-    })
+    await notify.promise(
+      () => rejectMilestone(props.milestone.id, reason, 'client'),
+      {
+        loading: t('loading'),
+        success: t('success.client_milestone_rejected'),
+        error: err =>
+          t('errors.client_milestone_rejection_failed', {
+            message: err instanceof Error ? err.message : '',
+          }),
+      },
+      { id: milestoneMutationToastId('client-reject', props.milestone.id) }
+    )
     emit('rejected')
     localOpen.value = false
     step.value = 'review'
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Unknown error'
-    notify.error(
-      t('errors.client_milestone_rejection_failed', {
-        message: error.value,
-      }),
-      {
-        id: milestoneMutationToastId('client-reject-error', props.milestone.id),
-      }
-    )
   } finally {
     loading.value = false
   }
