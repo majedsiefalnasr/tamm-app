@@ -213,6 +213,8 @@ Check `docs/api-contracts.md` before every API task.
 2. **If yes** → implement against the contract exactly
 3. **If no** → build UI + composable fully, create mock in `app/composables/__mocks__/`, add `// TODO: replace mock — <endpoint name>` comment
 
+**UI-first with mocks (until the endpoint is live):** Finish pages and flows using **mock data inside composables** (prefer `app/composables/__mocks__/` or a clearly named mock branch the composable imports), not ad-hoc data in `.vue` files. Match shapes to `docs/api-contracts.md` and, where Swagger lags, to agreed rules in `docs/BACKEND_BLOCKERS.md`. Model **loading, empty, and error** states like production. When `api-contracts.md` marks the route **Available**, switch that composable to `useApi`, delete the mock path, and remove the `// TODO: replace mock` comment in the **same** change.
+
 Never block progress waiting for the API. Never assume an API shape not in the contract.
 
 **API calls always go through composables:**
