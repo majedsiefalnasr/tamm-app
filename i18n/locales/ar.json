@@ -126,6 +126,23 @@
       "noAssignmentsCompleted": "لا توجد مهام مكتملة",
       "projectAddress": "{address}"
     },
+    "assignment_queue": {
+      "col_project": "المشروع",
+      "col_milestone": "المرحلة",
+      "col_status": "الحالة",
+      "col_updated": "آخر تحديث",
+      "col_action": "إجراء",
+      "open_milestone": "فتح",
+      "empty_title_admin": "لا عناصر في قائمة التعيين",
+      "empty_desc_admin": "عندما تحتاج مشاريع إلى مطابقة مهندسين أو إعادة تعيين، ستظهر هنا.",
+      "empty_title_supervisor": "لا تعيينات إشرافية",
+      "empty_desc_supervisor": "عندما تحتاج مراحل إلى تعيينك أو متابعة، ستظهر هنا.",
+      "status": {
+        "pending_match": "بانتظار المطابقة",
+        "awaiting_supervisor": "بانتظار المشرف",
+        "awaiting_field_acceptance": "بانتظار قبول المهندس الميداني"
+      }
+    },
     "reviews": {
       "title": "المراجعات",
       "pending": "مراجعات قيد الانتظار",
@@ -154,7 +171,77 @@
     "disputes_empty_description": "ستُربط إدارة النزاعات بالواجهة البرمجية عند توفرها.",
     "disputes_detail_placeholder": "عرض تفاصيل النزاع غير مفعّل بعد.",
     "admin_payments_title": "المدفوعات (مسؤول)",
-    "admin_payments_description": "ستظهر أدوات المدفوعات وسحوبات المنظمة هنا عند إطلاق مساحة مدفوعات المسؤول."
+    "admin_payments_description": "ستظهر أدوات المدفوعات وسحوبات المنظمة هنا عند إطلاق مساحة مدفوعات المسؤول.",
+    "admin_payments_subtitle": "مراحل بانتظار الصرف والمدفوعة عبر المشاريع (بيانات تجريبية من mock المراحل حتى توفر واجهة المسؤول).",
+    "admin_payments_empty_title": "لا بيانات دفع",
+    "admin_payments_empty_description": "لم تُرجع أي مراحل بحالات دفع. أعد المحاولة أو راجع المشاريع للمراحل المعلقة.",
+    "messages_title": "المحادثات",
+    "messages_subtitle": "ستظهر محادثاتك مع جهات اتصال المشروع هنا عند ربط نظام المراسلة.",
+    "messages_empty_title": "لا توجد محادثات بعد",
+    "messages_empty_description": "عند توفر المراسلة داخل التطبيق، ستظهر محادثاتك هنا.",
+    "admin_assignments_title": "طلبات التعيين",
+    "admin_assignments_description": "ستظهر قوائم انتظار تعيين المهندسين والمطابقات المعلقة هنا عند ربط مساحة التعيينات بالواجهة البرمجية.",
+    "admin_workflow_title": "إعدادات سير العمل",
+    "admin_workflow_description": "ستظهر إعدادات دورة حياة المشروع وخطوات الاعتماد هنا عند توفر واجهة إدارة سير العمل.",
+    "admin_workflow_rules_title": "قواعد دورة الحياة",
+    "admin_workflow_rules_empty_title": "لا توجد قواعد",
+    "admin_workflow_rules_empty_description": "عند ربط واجهة سير العمل ستُعرض خطوات الاعتماد والانتقالات هنا.",
+    "admin_finance_title": "المالية",
+    "admin_finance_description": "ستظهر إيرادات المنصة والسحوبات والضوابط المالية هنا عند ربط مساحة المالية بالواجهة البرمجية.",
+    "admin_finance_stat_revenue": "إيرادات المنصة (ج.م)",
+    "admin_finance_stat_pending_withdrawals": "سحوبات معلقة (ج.م)",
+    "admin_finance_stat_settled": "مدفوعات مسوّاة (ج.م)",
+    "admin_finance_activity_title": "نشاط التسوية الأخير",
+    "admin_finance_activity_empty": "ستظهر بنود التسوية عند ربط واجهة المالية.",
+    "supervisor_assignments_title": "طلبات التعيين",
+    "supervisor_assignments_description": "ستظهر طلبات الإشراف ومراحل عروض الأسعار وإجراءات تعيين المهندس الميداني هنا عند ربط واجهة تعيينات المشرف.",
+    "supervisor_field_team_title": "الفريق الميداني",
+    "supervisor_field_team_description": "سيُدرج المهندسون الميدانيون العاملون تحت إشرافك هنا عند ربط مساحة الفريق الميداني بالواجهة البرمجية.",
+    "contractor_tasks_title": "المهام",
+    "contractor_tasks_subtitle": "عناصر قائمة التحقق والعمل النشط على المراحل في مشاريعك.",
+    "contractor_tasks_empty_title": "لا توجد مهام مفتوحة",
+    "contractor_tasks_empty_description": "عندما تتضمن المراحل مهام أو عملاً نشطاً، ستظهر هنا.",
+    "contractor_tasks_task_pending": "قيد الانتظار",
+    "contractor_tasks_badge_task": "مهمة",
+    "contractor_tasks_badge_milestone": "مرحلة",
+    "new_project_title": "مشروع جديد",
+    "new_project_description": "ستُضاف تجربة إنشاء المشروع الموجّهة عند ربط واجهة إنشاء المشاريع. استخدم هذا المسار من الشريط الجانبي أو قائمة المشاريع.",
+    "new_project_back": "العودة إلى المشاريع",
+    "system_flags_title": "إشارات النظام",
+    "system_flags_description": "ستظهر أعلام الميزات ومفاتيح الإيقاف هنا عند توفر واجهة العمليات.",
+    "system_logs_title": "سجلات النظام",
+    "system_logs_description": "ستظهر سجلات التدقيق والأخطاء هنا عند ربط مساحة المراقبة.",
+    "system_flags_table_title": "أعلام الميزات",
+    "system_flags_col_key": "مفتاح العلم",
+    "system_flags_col_state": "الحالة",
+    "system_flags_state_on": "مفعّل",
+    "system_flags_state_off": "معطّل",
+    "system_flags_empty_title": "لا أعلام",
+    "system_flags_empty_description": "ستُدرج أعلام التشغيل هنا عند توفر واجهة إعدادات النظام.",
+    "system_logs_table_title": "آخر السجلات",
+    "system_logs_col_level": "المستوى",
+    "system_logs_col_message": "الرسالة",
+    "system_logs_col_source": "المصدر",
+    "system_logs_col_time": "الوقت",
+    "system_logs_empty_title": "لا سجلات",
+    "system_logs_empty_description": "ستُعرض أحداث التدقيق والأخطاء هنا عند ربط نظام السجلات.",
+    "system_logs_level": {
+      "info": "معلومات",
+      "warning": "تنبيه",
+      "error": "خطأ"
+    },
+    "projects_role_context": {
+      "client_title": "العمل من هذه القائمة",
+      "client_desc": "انتقل إلى المدفوعات أو التقارير أو ابدأ مشروعاً جديداً عند الجاهزية.",
+      "contractor_title": "قائمة التسليم",
+      "contractor_desc": "استخدم المهام لعناصر القائمة؛ افتح المراحل من البطاقات أدناه عند الحاجة للتفاصيل.",
+      "field_title": "عملك في الموقع",
+      "field_desc": "تعرض التعيينات مراحلك في الموقع؛ تُظهر التقارير الأدلة للمشرفين.",
+      "supervisor_title": "التنسيق",
+      "supervisor_desc": "أدر التعيينات وقائمة الفريق الميداني وقائمة الاعتمادات من هنا."
+    },
+    "contractor_tasks_empty_next": "تصفح المشاريع",
+    "messages_empty_next": "العودة إلى لوحة التحكم"
   },
   "roles": {
     "client": {
@@ -232,9 +319,13 @@
     "withdrawals": "السحوبات",
     "settings": "الإعدادات",
     "tasks": "المهام",
+    "new_project": "مشروع جديد",
     "approvals": "الاعتمادات",
     "users": "المستخدمون",
     "assignments": "طلبات التعيين",
+    "field_team": "الفريق الميداني",
+    "workflow": "سير العمل",
+    "finance": "المالية",
     "system_flags": "إشارات النظام",
     "system_logs": "سجلات النظام"
   },
@@ -401,14 +492,14 @@
         "description": "حصة المراحل المكتملة عبر المشاريع التي لديها إجمالي مراحل محدد.",
         "emptyTitle": "لا يوجد مخطط إنجاز بعد",
         "emptyDescription": "يظهر المخطط عندما تحتوي المشاريع على إجمالي مراحل.",
-        "emptyAction": "عرض المشاريع"
+        "emptyAction": "إنشاء مشروع"
       },
       "contractor": {
         "title": "المراحل المدفوعة حسب الشهر",
         "description": "عدد المراحل التي تم تصفيتها كمدفوعة، مجمّعة حسب شهر الدفع.",
         "emptyTitle": "لا يوجد سجل دفع بعد",
         "emptyDescription": "بعد اكتمال الدفعات مع تواريخ مسجلة ستظهر الإجماليات الشهرية هنا.",
-        "emptyAction": "عرض المشاريع"
+        "emptyAction": "فتح قائمة المهام"
       },
       "fieldEngineer": {
         "title": "التقارير المرفوعة حسب الشهر",
@@ -453,7 +544,9 @@
       "proposalSubmitted": "تم تقديم العرض",
       "submitProposal": "تقديم عرض",
       "viewProposal": "عرض العرض",
-      "engineer": "المهندس: {name}"
+      "engineer": "المهندس: {name}",
+      "link_tasks": "قائمة المهام",
+      "link_projects": "كل المشاريع"
     },
     "supervisor": {
       "submittedAt": "تم الرفع {date}",
@@ -544,6 +637,7 @@
     "no_projects_description": "ليس لديك أي مشاريع حتى الآن. أنشئ مشروعاً للبدء.",
     "filter_empty_title": "لا توجد مشاريع مطابقة",
     "filter_empty_description": "لا توجد مشاريع تطابق هذا التصفية. جرّب عرض كل المشاريع.",
+    "filter_clear_action": "عرض كل المشاريع",
     "types": {
       "villa": "فيلا",
       "apartment": "شقة",
@@ -571,6 +665,8 @@
       "progressLabel": "التقدم"
     },
     "milestone": {
+      "draft": "مسودة",
+      "submitted": "مُقدَّم",
       "not_started": "لم تبدأ",
       "in_progress": "قيد التنفيذ",
       "under_review": "قيد المراجعة",

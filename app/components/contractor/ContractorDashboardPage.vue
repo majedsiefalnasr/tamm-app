@@ -5,6 +5,7 @@ import ContractorReviewMilestones from '~/components/contractor/ContractorReview
 import ContractorPaymentStatus from '~/components/contractor/ContractorPaymentStatus.vue'
 import ContractorOpenBids from '~/components/contractor/ContractorOpenBids.vue'
 import RoleDashboardPrimaryChart from '~/components/dashboard/RoleDashboardPrimaryChart.vue'
+import { Button } from '~/components/ui/button'
 import type { ChartConfig } from '~/components/ui/chart'
 import { useMilestones } from '~/composables/useMilestones'
 import { useProjects } from '~/composables/useProjects'
@@ -171,6 +172,21 @@ const payoutChartConfig = computed<ChartConfig>(() => ({
       </p>
     </div>
 
+    <div
+      class="border-border bg-muted/30 flex flex-wrap gap-2 rounded-xl border px-4 py-3"
+    >
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/tasks">{{
+          $t('dashboard.contractor.link_tasks')
+        }}</NuxtLink>
+      </Button>
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/projects">
+          {{ $t('dashboard.contractor.link_projects') }}
+        </NuxtLink>
+      </Button>
+    </div>
+
     <div class="grid gap-6">
       <RoleDashboardPrimaryChart
         :loading="milestonesLoading || initialDashboardLoad"
@@ -180,7 +196,7 @@ const payoutChartConfig = computed<ChartConfig>(() => ({
         description-key="dashboard.chart.contractor.description"
         empty-title-key="dashboard.chart.contractor.emptyTitle"
         empty-description-key="dashboard.chart.contractor.emptyDescription"
-        empty-action-href="/projects"
+        empty-action-href="/tasks"
         empty-action-label-key="dashboard.chart.contractor.emptyAction"
       />
 

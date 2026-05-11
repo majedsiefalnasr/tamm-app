@@ -10,6 +10,7 @@ import EmptyState from '~/components/common/EmptyState.vue'
 import PageSkeleton from '~/components/common/PageSkeleton.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import { Badge } from '~/components/ui/badge'
+import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Card } from '~/components/ui/card'
 import { formatDate } from '~/utils/formatters'
@@ -103,6 +104,20 @@ const handleReviewActionComplete = async () => {
       <p class="text-muted-foreground text-sm">
         {{ $t('pages.supervisor_dashboard_subtitle') }}
       </p>
+    </div>
+
+    <div
+      class="border-border bg-muted/30 flex flex-wrap gap-2 rounded-xl border px-4 py-3"
+    >
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/assignments">{{ $t('nav.assignments') }}</NuxtLink>
+      </Button>
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/field-team">{{ $t('nav.field_team') }}</NuxtLink>
+      </Button>
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/reviews">{{ $t('nav.approvals') }}</NuxtLink>
+      </Button>
     </div>
 
     <!-- KPI row -->

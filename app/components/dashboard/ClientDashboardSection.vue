@@ -65,7 +65,7 @@ const chartConfig = computed<ChartConfig>(() => ({
         description-key="dashboard.chart.client.description"
         empty-title-key="dashboard.chart.client.emptyTitle"
         empty-description-key="dashboard.chart.client.emptyDescription"
-        empty-action-href="/projects"
+        empty-action-href="/projects/new"
         empty-action-label-key="dashboard.chart.client.emptyAction"
       />
 

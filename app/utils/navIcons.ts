@@ -2,14 +2,20 @@ import type { Component } from 'vue'
 import {
   BriefcaseIcon,
   BuildingOffice2Icon,
+  ChartBarIcon,
   ChatBubbleLeftRightIcon,
   ClipboardDocumentCheckIcon,
   ClipboardDocumentListIcon,
   CreditCardIcon,
   DocumentTextIcon,
   FolderIcon,
+  ListBulletIcon,
+  PlusIcon,
+  QueueListIcon,
   ShieldCheckIcon,
   Squares2X2Icon,
+  UserPlusIcon,
+  UserGroupIcon,
   UsersIcon,
   WalletIcon,
   Cog6ToothIcon,
@@ -29,6 +35,12 @@ const iconMap: Record<string, Component> = {
   Users: UsersIcon,
   ShieldCheck: ShieldCheckIcon,
   FileText: DocumentTextIcon,
+  UserPlus: UserPlusIcon,
+  UserGroup: UserGroupIcon,
+  ListBullet: ListBulletIcon,
+  Plus: PlusIcon,
+  QueueList: QueueListIcon,
+  ChartBar: ChartBarIcon,
 }
 
 export function getNavIcon(name: string): Component {

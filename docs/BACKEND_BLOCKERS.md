@@ -3,9 +3,19 @@
 **Purpose:** Track which backend endpoints block frontend work. Sequenced by what the team needs to build first.
 
 **Current API Status:** `/api/v1` — Version 1.0.0  
-**Last Updated:** 2026-05-10 — Full review against live server (https://tamm.ultimate-dev2.com/docs?api-docs.json)
+**Last Updated:** 2026-05-11 — Reviewed **exported** OpenAPI [`/public/docs?api-docs.json`](https://tamm.ultimate-dev2.com/public/docs?api-docs.json) (**80 routes**). Human-readable mirror: [`/docs?api-docs.json`](https://tamm.ultimate-dev2.com/docs?api-docs.json).
 
-**Detailed route reference:** [`api-contracts.md`](./api-contracts.md) — per-endpoint notes, request/response shapes from OpenAPI, pagination envelope, and TypeScript starter types. Use this file first when wiring composables; use **this** doc for blockers, divergences, and backend questions.
+**Detailed route reference:** [`api-contracts.md`](./api-contracts.md) — per-endpoint notes, request/response shapes from OpenAPI, pagination envelope, and TypeScript starter types. **Frozen route list:** [`openapi-inventory-2026-05-11.md`](./openapi-inventory-2026-05-11.md). Use `api-contracts.md` first when wiring composables; use **this** doc for blockers, divergences, and backend questions.
+
+### Send to backend — remaining asks (2026-05-11)
+
+After your Q1–Q17 reply, we still need:
+
+1. **OpenAPI export parity (Q18)** — placeholder `200 OK` responses, missing `components.schemas`, and whether `GET /admin/projects` / `POST …/assign-engineers` are intentionally omitted; CI + version bumps on breaking changes.
+2. **Client final approval (Q11 follow-up)** — how the client-facing step ties to the supervisor-assigned approval when that flow is defined (**TBD** per your note).
+3. **Post–Swagger drop** — confirm published schemas for **Project**, **FieldReport**, **Task**, **PATCH /payments** body, and **permission list** match the verbal answers below.
+4. **User profile (Q8 remainder)** — is `avatar_url` exposed anywhere? is `updated_at` on profile/`GET /me`?
+5. **`GET /projects` and `GET /users` filters/sort (Q10 remainder)** — supported query params once those list endpoints are fully documented.
 
 ---
 
@@ -26,6 +36,25 @@ The live API has been updated significantly. The following previously-missing en
 | Field Engineer Assignments    | ❓ Not anticipated | ✅ Available |
 
 > **Frontend team action required:** See [🔴 CRITICAL FRONTEND DIVERGENCES](#-critical-frontend-divergences) below before building against any milestone or approval flow.
+
+---
+
+## OpenAPI export review (2026-05-11)
+
+**Machine-readable source of truth:** [`https://tamm.ultimate-dev2.com/public/docs?api-docs.json`](https://tamm.ultimate-dev2.com/public/docs?api-docs.json)
+
+**Deliverable for backend:** [`docs/openapi-inventory-2026-05-11.md`](./openapi-inventory-2026-05-11.md) — full method + path table (80 entries) and explicit “not in export” gaps.
+
+### Drift vs `api-contracts.md` / older assumptions
+
+| Item                                                            | In export?                                                                       | Backend / docs action                                                                                                                                                                                                                                             |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`GET /admin/projects`**                                       | **No**                                                                           | Confirm whether admins must use **`GET /projects`** with role-scoped filtering, **or** add `GET /admin/projects` to OpenAPI + implement. Frontend admin project table cannot rely on an undocumented path.                                                        |
+| **`POST /admin/projects/{id}/assign-engineers`**                | **No**                                                                           | **`POST /api/v1/projects/{project}/field-engineer/assign`** and **`POST …/field-engineer/revoke`** (+ **`GET …/field-engineer-history`**) **are** in the export — treat these as canonical for engineer placement; remove or alias the old path in internal docs. |
+| **Path segment names**                                          | `{milestone}`, `{payment}`, `{withdrawal}`, `{task}`, `{report}`, `{assignment}` | Align Swagger `components` + examples with these names; frontend `$fetch` URLs must match export segments.                                                                                                                                                        |
+| **`GET /admin/dashboard`**                                      | **No**                                                                           | Still expected for admin home (mock today) — add to export when ready.                                                                                                                                                                                            |
+| **Messaging, workflow admin, finance admin, system flags/logs** | **No**                                                                           | Product-only shells on frontend today — add OpenAPI + schemas when scope is fixed.                                                                                                                                                                                |
+| **Response bodies**                                             | Most routes still `200: OK` only                                                 | Publish **`components.schemas`** for Project, Milestone, Payment, Withdrawal, FieldReport, Task, Approval, Notification list items, and all POST bodies (verbal shapes for several are logged under **Backend answers**; confirm in export).                      |
 
 ---
 
@@ -67,7 +96,7 @@ The frontend is built in phases. Each phase lists:
 | `POST /auth/otp/resend`      | ✅ Available | Resend OTP             | 🟡 LOW      |
 
 **✅ READY TO BUILD:** Auth flow, login page, session persistence  
-**❓ AWAITING:** See questions #1, #2, #3 below
+**✅ Q1–Q2:** JWT + OTP rules logged under **Backend answers**; refresh at 55m + 401 in `app/stores/auth.ts`. **Q3:** registration role `owner` → client mapping in `normalizeRole`.
 
 ---
 
@@ -83,7 +112,7 @@ The frontend is built in phases. Each phase lists:
 | `POST /auth/register` | ✅ Available | Self-registration | 🟡 LOW      |
 
 **✅ READY TO BUILD:** Profile page, avatar upload  
-**❓ AWAITING:** See question #3, #8 below
+**✅ Q3:** `owner` at registration. **Q8 remainder:** `avatar_url` / `updated_at` — see **Send to backend** at top.
 
 ---
 
@@ -91,26 +120,29 @@ The frontend is built in phases. Each phase lists:
 
 **Frontend Goal:** All roles can view projects; clients create; admins manage.
 
-| Backend Endpoint                              | Status       | Frontend Use          | Severity    |
-| --------------------------------------------- | ------------ | --------------------- | ----------- |
-| `GET /projects`                               | ✅ Available | Projects list page    | 🔴 CRITICAL |
-| `POST /projects`                              | ✅ Available | Create project form   | 🔴 CRITICAL |
-| `GET /projects/{id}`                          | ✅ Available | Project detail page   | 🔴 CRITICAL |
-| `PUT /projects/{id}`                          | ✅ Available | Edit project form     | 🟠 HIGH     |
-| `DELETE /projects/{id}`                       | ✅ Available | Admin delete project  | 🟡 LOW      |
-| `GET /projects/{id}/documents`                | ✅ Available | Project documents tab | 🟠 HIGH     |
-| `POST /projects/{id}/documents`               | ✅ Available | Document uploader     | 🟠 HIGH     |
-| `DELETE /projects/{id}/documents/{docId}`     | ✅ Available | Delete document       | 🟡 LOW      |
-| `GET /projects/{id}/status-history`           | ✅ Available | Status timeline       | 🟡 LOW      |
-| `GET /admin/projects`                         | ✅ Available | Admin project list    | 🟠 HIGH     |
-| `GET /admin/projects/pending`                 | ✅ Available | Pending approvals     | 🟠 HIGH     |
-| `POST /admin/projects/{id}/approve`           | ✅ Available | Approve project       | 🟠 HIGH     |
-| `POST /admin/projects/{id}/reject`            | ✅ Available | Reject project        | 🟠 HIGH     |
-| `POST /admin/projects/{id}/assign-supervisor` | ✅ Available | Assign supervisor     | 🟠 HIGH     |
-| `POST /admin/projects/{id}/assign-engineers`  | ✅ Available | Assign engineers      | 🟠 HIGH     |
+| Backend Endpoint                                 | Status                                      | Frontend Use                                                                                            | Severity    |
+| ------------------------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------- |
+| `GET /projects`                                  | ✅ Available                                | Projects list page                                                                                      | 🔴 CRITICAL |
+| `POST /projects`                                 | ✅ Available                                | Create project form                                                                                     | 🔴 CRITICAL |
+| `GET /projects/{id}`                             | ✅ Available                                | Project detail page                                                                                     | 🔴 CRITICAL |
+| `PUT /projects/{id}`                             | ✅ Available                                | Edit project form                                                                                       | 🟠 HIGH     |
+| `DELETE /projects/{id}`                          | ✅ Available                                | Admin delete project                                                                                    | 🟡 LOW      |
+| `GET /projects/{id}/documents`                   | ✅ Available                                | Project documents tab                                                                                   | 🟠 HIGH     |
+| `POST /projects/{id}/documents`                  | ✅ Available                                | Document uploader                                                                                       | 🟠 HIGH     |
+| `DELETE /projects/{id}/documents/{docId}`        | ✅ Available                                | Delete document                                                                                         | 🟡 LOW      |
+| `GET /projects/{id}/status-history`              | ✅ Available                                | Status timeline                                                                                         | 🟡 LOW      |
+| `GET /admin/projects`                            | ❓ **Not in exported OpenAPI** (2026-05-11) | Admin org-wide list — confirm **`GET /projects`** replacement or add route + export                     | 🟠 HIGH     |
+| `GET /admin/projects/pending`                    | ✅ Available                                | Pending approvals                                                                                       | 🟠 HIGH     |
+| `POST /admin/projects/{id}/approve`              | ✅ Available                                | Approve project                                                                                         | 🟠 HIGH     |
+| `POST /admin/projects/{id}/reject`               | ✅ Available                                | Reject project                                                                                          | 🟠 HIGH     |
+| `POST /admin/projects/{id}/assign-supervisor`    | ✅ Available                                | Assign supervisor                                                                                       | 🟠 HIGH     |
+| `POST /admin/projects/{id}/assign-engineers`     | ❌ **Not in export** — superseded           | **Use** `POST /projects/{project}/field-engineer/assign` (+ `…/revoke`, `GET …/field-engineer-history`) | 🟠 HIGH     |
+| `POST /projects/{project}/field-engineer/assign` | ✅ Available                                | Assign field engineer to project                                                                        | 🟠 HIGH     |
+| `POST /projects/{project}/field-engineer/revoke` | ✅ Available                                | Revoke field engineer                                                                                   | 🟠 HIGH     |
+| `GET /projects/{project}/field-engineer-history` | ✅ Available                                | FE assignment history                                                                                   | 🟡 LOW      |
 
-**✅ READY TO BUILD:** All project features  
-**❓ AWAITING:** See question #5, #9, #10 below
+**✅ READY TO BUILD:** Core project CRUD, pending admin approvals, supervisor assignment on project, **field-engineer assign/revoke/history**  
+**Q5/Q6:** Full Project schema + permission list — **next Swagger export**. **Q9:** pagination confirmed. **Q10:** `GET /projects` / `GET /users` filters + sort — **Send to backend**. **Q18:** OpenAPI parity — section below.
 
 ---
 
@@ -120,17 +152,17 @@ The frontend is built in phases. Each phase lists:
 
 > **⚠️ CRITICAL:** Read the [schema divergence notes](#milestone-status-names-are-different) before building!
 
-| Backend Endpoint                | Status       | Frontend Use        | Severity    |
-| ------------------------------- | ------------ | ------------------- | ----------- |
-| `GET /milestones`               | ✅ Available | Milestone list      | 🔴 CRITICAL |
-| `POST /milestones`              | ✅ Available | Create milestone    | 🔴 CRITICAL |
-| `GET /milestones/{id}`          | ✅ Available | Milestone detail    | 🔴 CRITICAL |
-| `PUT /milestones/{id}`          | ✅ Available | Update milestone    | 🔴 CRITICAL |
-| `DELETE /milestones/{id}`       | ✅ Available | Delete milestone    | 🟡 LOW      |
-| `POST /milestones/{id}/submit`  | ✅ Available | Contractor submits  | 🔴 CRITICAL |
-| `POST /milestones/{id}/approve` | ✅ Available | Supervisor approves | 🔴 CRITICAL |
-| `POST /milestones/{id}/reject`  | ✅ Available | Supervisor rejects  | 🔴 CRITICAL |
-| `GET /milestones/{id}/progress` | ✅ Available | Progress stats      | 🟡 LOW      |
+| Backend Endpoint                       | Status       | Frontend Use                                 | Severity    |
+| -------------------------------------- | ------------ | -------------------------------------------- | ----------- |
+| `GET /milestones`                      | ✅ Available | Milestone list                               | 🔴 CRITICAL |
+| `POST /milestones`                     | ✅ Available | Create milestone                             | 🔴 CRITICAL |
+| `GET /milestones/{milestone}`          | ✅ Available | Milestone detail (export uses `{milestone}`) | 🔴 CRITICAL |
+| `PUT /milestones/{milestone}`          | ✅ Available | Update milestone                             | 🔴 CRITICAL |
+| `DELETE /milestones/{milestone}`       | ✅ Available | Delete milestone                             | 🟡 LOW      |
+| `POST /milestones/{milestone}/submit`  | ✅ Available | Contractor submits                           | 🔴 CRITICAL |
+| `POST /milestones/{milestone}/approve` | ✅ Available | Supervisor approves                          | 🔴 CRITICAL |
+| `POST /milestones/{milestone}/reject`  | ✅ Available | Supervisor rejects                           | 🔴 CRITICAL |
+| `GET /milestones/{milestone}/progress` | ✅ Available | Progress stats                               | 🟡 LOW      |
 
 **✅ READY TO BUILD:** Milestone flows — but update status machine first (see below)
 
@@ -151,7 +183,7 @@ The frontend is built in phases. Each phase lists:
 
 **Query params for `GET /approvals`:** `status` (pending|approved|rejected|cancelled), `type` (e.g. `milestone`), `page`, `limit`
 
-**❓ AWAITING:** See question #11 — clarify when an `Approval` record is created (auto vs manual)
+**✅ Backend (2026-05-11):** When milestone status becomes **`submitted`**, backend auto-creates **one** `Approval` per milestone; **`assigned_to` = supervisor**. Client final approval is a **separate flow (TBD)** — not the same record semantics until specified.
 
 ---
 
@@ -159,17 +191,17 @@ The frontend is built in phases. Each phase lists:
 
 **Frontend Goal:** Contractors and supervisors manage individual tasks within milestones.
 
-| Backend Endpoint                 | Status       | Frontend Use             | Severity |
-| -------------------------------- | ------------ | ------------------------ | -------- |
-| `GET /milestones/{id}/tasks`     | ✅ Available | Task list for milestone  | 🟠 HIGH  |
-| `POST /milestones/{id}/tasks`    | ✅ Available | Create task              | 🟠 HIGH  |
-| `POST /tasks/{id}/start`         | ✅ Available | Start task               | 🟠 HIGH  |
-| `POST /tasks/{id}/mark-complete` | ✅ Available | Mark task complete       | 🟠 HIGH  |
-| `POST /tasks/{id}/approve`       | ✅ Available | Supervisor approves task | 🟠 HIGH  |
-| `POST /tasks/{id}/reject`        | ✅ Available | Supervisor rejects task  | 🟠 HIGH  |
-| `GET /contractor/tasks`          | ✅ Available | Contractor's task list   | 🟠 HIGH  |
+| Backend Endpoint                     | Status       | Frontend Use                      | Severity |
+| ------------------------------------ | ------------ | --------------------------------- | -------- |
+| `GET /milestones/{milestone}/tasks`  | ✅ Available | Task list for milestone           | 🟠 HIGH  |
+| `POST /milestones/{milestone}/tasks` | ✅ Available | Create task                       | 🟠 HIGH  |
+| `POST /tasks/{task}/start`           | ✅ Available | Start task (export uses `{task}`) | 🟠 HIGH  |
+| `POST /tasks/{task}/mark-complete`   | ✅ Available | Mark task complete                | 🟠 HIGH  |
+| `POST /tasks/{task}/approve`         | ✅ Available | Supervisor approves task          | 🟠 HIGH  |
+| `POST /tasks/{task}/reject`          | ✅ Available | Supervisor rejects task           | 🟠 HIGH  |
+| `GET /contractor/tasks`              | ✅ Available | Contractor's task list            | 🟠 HIGH  |
 
-**❓ AWAITING:** See question #12 — full Task resource schema
+**✅ Backend (2026-05-11):** Tasks are created by the **supervisor** when defining milestones; **contractor** is the default assignee. Status flow: `pending` → `in_progress` → `completed` → `approved` | `rejected`. (Full `Task` resource still to be copied from Swagger when published.)
 
 ---
 
@@ -191,7 +223,7 @@ The frontend is built in phases. Each phase lists:
 | `GET /field-engineer/reports/me`           | ✅ Available | FE's own report list | 🟠 HIGH     |
 
 **Create report body:** `{ type: string (required), report_date: date (required) }`  
-**❓ AWAITING:** See question #13 — full FieldReport resource schema and `type` enum values
+**✅ Backend (2026-05-11):** Valid **`type`** values: `daily` | `weekly` | `incident` | `milestone_completion`. Full FieldReport schema in upcoming Swagger update.
 
 ---
 
@@ -201,15 +233,15 @@ The frontend is built in phases. Each phase lists:
 
 > **Note:** Payment model and status enums are different from what we assumed (see divergence notes).
 
-| Backend Endpoint       | Status       | Frontend Use          | Severity    |
-| ---------------------- | ------------ | --------------------- | ----------- |
-| `GET /payments`        | ✅ Available | Payment list          | 🔴 CRITICAL |
-| `POST /payments`       | ✅ Available | Create payment record | 🔴 CRITICAL |
-| `GET /payments/{id}`   | ✅ Available | Payment detail        | 🔴 CRITICAL |
-| `PATCH /payments/{id}` | ✅ Available | Update payment status | 🔴 CRITICAL |
+| Backend Endpoint            | Status       | Frontend Use                             | Severity    |
+| --------------------------- | ------------ | ---------------------------------------- | ----------- |
+| `GET /payments`             | ✅ Available | Payment list                             | 🔴 CRITICAL |
+| `POST /payments`            | ✅ Available | Create payment record                    | 🔴 CRITICAL |
+| `GET /payments/{payment}`   | ✅ Available | Payment detail (export uses `{payment}`) | 🔴 CRITICAL |
+| `PATCH /payments/{payment}` | ✅ Available | Update payment status                    | 🔴 CRITICAL |
 
 **Payment status enum:** `pending | awaiting_release | processing | paid | failed`  
-**❓ AWAITING:** See question #14 — `UpdatePaymentStatusRequestBody` schema and release flow
+**✅ Backend (2026-05-11):** `PATCH /payments/{payment}` body: `{ status, notes?, proof_url? }`. Setting **`status: "paid"`** triggers escrow release.
 
 ---
 
@@ -217,21 +249,21 @@ The frontend is built in phases. Each phase lists:
 
 **Frontend Goal:** Contractors request withdrawals; admins process them.
 
-| Backend Endpoint                               | Status       | Frontend Use                    | Severity    |
-| ---------------------------------------------- | ------------ | ------------------------------- | ----------- |
-| `POST /withdrawals`                            | ✅ Available | Contractor requests withdrawal  | 🔴 CRITICAL |
-| `GET /withdrawals/me`                          | ✅ Available | Contractor's withdrawal history | 🔴 CRITICAL |
-| `POST /withdrawals/{id}/cancel`                | ✅ Available | Cancel withdrawal               | 🟠 HIGH     |
-| `GET /admin/withdrawals`                       | ✅ Available | Admin withdrawal list           | 🟠 HIGH     |
-| `GET /admin/withdrawals/pending`               | ✅ Available | Pending withdrawals queue       | 🟠 HIGH     |
-| `POST /admin/withdrawals/{id}/start-review`    | ✅ Available | Start review                    | 🟠 HIGH     |
-| `POST /admin/withdrawals/{id}/approve`         | ✅ Available | Approve withdrawal              | 🟠 HIGH     |
-| `POST /admin/withdrawals/{id}/reject`          | ✅ Available | Reject withdrawal               | 🟠 HIGH     |
-| `POST /admin/withdrawals/{id}/mark-processing` | ✅ Available | Mark as processing              | 🟠 HIGH     |
-| `POST /admin/withdrawals/{id}/mark-completed`  | ✅ Available | Mark completed + proof URL      | 🟠 HIGH     |
+| Backend Endpoint                                       | Status       | Frontend Use                                  | Severity    |
+| ------------------------------------------------------ | ------------ | --------------------------------------------- | ----------- |
+| `POST /withdrawals`                                    | ✅ Available | Contractor requests withdrawal                | 🔴 CRITICAL |
+| `GET /withdrawals/me`                                  | ✅ Available | Contractor's withdrawal history               | 🔴 CRITICAL |
+| `POST /withdrawals/{withdrawal}/cancel`                | ✅ Available | Cancel withdrawal (path param name in export) | 🟠 HIGH     |
+| `GET /admin/withdrawals`                               | ✅ Available | Admin withdrawal list                         | 🟠 HIGH     |
+| `GET /admin/withdrawals/pending`                       | ✅ Available | Pending withdrawals queue                     | 🟠 HIGH     |
+| `POST /admin/withdrawals/{withdrawal}/start-review`    | ✅ Available | Start review (export uses `{withdrawal}`)     | 🟠 HIGH     |
+| `POST /admin/withdrawals/{withdrawal}/approve`         | ✅ Available | Approve withdrawal                            | 🟠 HIGH     |
+| `POST /admin/withdrawals/{withdrawal}/reject`          | ✅ Available | Reject withdrawal                             | 🟠 HIGH     |
+| `POST /admin/withdrawals/{withdrawal}/mark-processing` | ✅ Available | Mark as processing                            | 🟠 HIGH     |
+| `POST /admin/withdrawals/{withdrawal}/mark-completed`  | ✅ Available | Mark completed + proof URL                    | 🟠 HIGH     |
 
 **Create withdrawal body:** `{ milestone_id: integer, amount: float, bank_account_details: object }`  
-**❓ AWAITING:** See question #15 — full withdrawal schema and `bank_account_details` structure
+**✅ Backend (2026-05-11):** `bank_account_details` shape: `{ bank_name, account_holder, iban, swift_code }`.
 
 ---
 
@@ -258,18 +290,20 @@ The frontend is built in phases. Each phase lists:
 
 **Frontend Goal:** Supervisors accept/reject project assignments; Field engineers accept/reject tasks.
 
-| Backend Endpoint                                 | Status       | Frontend Use            | Severity |
-| ------------------------------------------------ | ------------ | ----------------------- | -------- |
-| `GET /supervisor/projects/pending-acceptance`    | ✅ Available | Supervisor pending list | 🟠 HIGH  |
-| `POST /supervisor/projects/{id}/accept`          | ✅ Available | Accept assignment       | 🟠 HIGH  |
-| `POST /supervisor/projects/{id}/reject`          | ✅ Available | Reject assignment       | 🟠 HIGH  |
-| `POST /projects/{project}/field-engineer/assign` | ✅ Available | Assign FE to project    | 🟠 HIGH  |
-| `POST /projects/{project}/field-engineer/revoke` | ✅ Available | Revoke FE assignment    | 🟠 HIGH  |
-| `GET /projects/{project}/field-engineer-history` | ✅ Available | FE assignment history   | 🟡 LOW   |
-| `GET /field-engineer/assignments/pending`        | ✅ Available | FE pending assignments  | 🟠 HIGH  |
-| `GET /field-engineer/assignments/active`         | ✅ Available | FE active assignments   | 🟠 HIGH  |
-| `POST /field-engineer/assignments/{id}/accept`   | ✅ Available | FE accepts assignment   | 🟠 HIGH  |
-| `POST /field-engineer/assignments/{id}/reject`   | ✅ Available | FE rejects assignment   | 🟠 HIGH  |
+| Backend Endpoint                                       | Status       | Frontend Use                                       | Severity |
+| ------------------------------------------------------ | ------------ | -------------------------------------------------- | -------- |
+| `GET /supervisor/projects/pending-acceptance`          | ✅ Available | Supervisor pending list                            | 🟠 HIGH  |
+| `POST /supervisor/projects/{id}/accept`                | ✅ Available | Accept assignment                                  | 🟠 HIGH  |
+| `POST /supervisor/projects/{id}/reject`                | ✅ Available | Reject assignment                                  | 🟠 HIGH  |
+| `POST /projects/{project}/field-engineer/assign`       | ✅ Available | Assign FE to project                               | 🟠 HIGH  |
+| `POST /projects/{project}/field-engineer/revoke`       | ✅ Available | Revoke FE assignment                               | 🟠 HIGH  |
+| `GET /projects/{project}/field-engineer-history`       | ✅ Available | FE assignment history                              | 🟡 LOW   |
+| `GET /field-engineer/assignments/pending`              | ✅ Available | FE pending assignments                             | 🟠 HIGH  |
+| `GET /field-engineer/assignments/active`               | ✅ Available | FE active assignments                              | 🟠 HIGH  |
+| `POST /field-engineer/assignments/{assignment}/accept` | ✅ Available | FE accepts assignment (export uses `{assignment}`) | 🟠 HIGH  |
+| `POST /field-engineer/assignments/{assignment}/reject` | ✅ Available | FE rejects assignment                              | 🟠 HIGH  |
+
+> **Note:** Admin placement of engineers on a project is also listed under **Phase 3** (`field-engineer/assign`, `revoke`, `history`).
 
 ---
 
@@ -321,10 +355,10 @@ The **live API uses different status names** than what was in our design spec:
 **Actual milestone status flow (from API):**
 
 ```
-draft → submitted (via POST /milestones/{id}/submit)
+draft → submitted (via POST /milestones/{milestone}/submit)
 submitted → under_review (supervisor picks up)
-under_review → approved (via POST /milestones/{id}/approve)
-under_review → rejected (via POST /milestones/{id}/reject)
+under_review → approved (via POST /milestones/{milestone}/approve)
+under_review → rejected (via POST /milestones/{milestone}/reject)
 ```
 
 **Action required:**
@@ -340,12 +374,12 @@ under_review → rejected (via POST /milestones/{id}/reject)
 
 **Impact:** 🔴 CRITICAL — Client approval flow
 
-We assumed `POST /milestones/{id}/final-approve`. This endpoint does **not exist**.
+We assumed `POST /milestones/{milestone}/final-approve`. This endpoint does **not exist**.
 
-The client final approval goes through a separate **Approvals resource**:
+Supervisor-side queue: backend **auto-creates** an `Approval` when the milestone hits **`submitted`** (`assigned_to` = supervisor). **Client** final approval still goes through **Approvals** endpoints, but the **exact client UX / record linkage** is **TBD** per backend (separate from supervisor assignment).
 
 ```
-POST /approvals/{approval}/approve   ← client approves
+POST /approvals/{approval}/approve   ← client approves (when flow is defined)
 POST /approvals/{approval}/reject    ← client rejects
 ```
 
@@ -355,7 +389,7 @@ POST /approvals/{approval}/reject    ← client rejects
 
 - [ ] Implement `useApprovals` composable
 - [ ] Update approval flow to fetch approval record from `GET /approvals?type=milestone`
-- [ ] Client-role milestone actions must call `/approvals/{id}/approve` not milestone endpoints
+- [ ] Client-role milestone actions must call `/approvals/{id}/approve` not milestone endpoints (pending **client** branch of flow)
 
 ---
 
@@ -399,7 +433,7 @@ Confirmed notification schema from API:
 
 - [ ] Update `NotificationResource` TypeScript type
 - [ ] Update `NotificationItem` component props
-- [ ] Check `data.link` or equivalent field name with backend (see Q#16)
+- [x] **`data` keys (backend 2026-05-11):** `resource_type`, `resource_id`, `action_url`, `actor_name` — navigate via `action_url` or compose from `resource_type` + `resource_id`
 
 ---
 
@@ -411,8 +445,8 @@ Confirmed notification schema from API:
 
 **Action required:**
 
-- [ ] Confirm with backend whether IDs are integers across all resources (see Q#17)
-- [ ] Update `shared/types/user.ts` and `shared/types/api.ts` accordingly
+- [x] **Backend (2026-05-11):** All resource IDs are **integers** except **notifications** (**UUID**).
+- [ ] Sweep remaining frontend types (e.g. any `string` IDs on non-notification entities) for consistency.
 
 ---
 
@@ -455,235 +489,50 @@ meta: {
 
 ---
 
-### OTP Verify Returns Message, Not Auth Token
+### OTP verify — answered (2026-05-11)
 
-**Impact:** 🟠 HIGH — Auth flow
+**Impact:** Auth / registration
 
-We assumed `POST /auth/otp/verify` returns a JWT token. The live API shows it returns `ApiSuccessMessageResponse` (just a success message). This means OTP verification is for **account verification only**, not 2FA login.
-
-This answers Question #2 (partially). See Q#2 below for remaining clarification.
+`POST /auth/otp/verify` returns a message (not JWT): OTP is **account verification only** (not 2FA), **required** for registration, and after verify the account status becomes **`active`** — consistent with `ApiSuccessMessageResponse`.
 
 ---
 
-## 📋 Critical Questions — Get Backend to Answer These Now
+## Backend answers logged (2026-05-11) — Q1–Q17
 
-### Question #1: JWT Token Lifecycle _(still open)_
-
-**Impact:** Auth flow reliability  
-Schema shows `expires_in: 3600` but does not clarify:
-
-```
-Does the frontend refresh proactively (before expiry), or only on 401?
-Is the refresh token separate from the access token?
-```
-
----
-
-### Question #2: OTP Role — Account Verification Only? _(partially answered)_
-
-**Impact:** Auth flow design  
-OTP verify now returns a message (not a token), confirming it is NOT login 2FA.
-
-```
-Is OTP purely for account email/phone verification after registration?
-Is it optional or mandatory?
-After OTP verify, is the user automatically active (status → "active")?
-```
+| Q   | Topic               | Confirmed answer                                                                                                                                           |
+| --- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1  | JWT                 | Access **1h**, refresh **2 weeks**; refresh at **55 min** or on **401**. Frontend: proactive timer + 14d refresh cookie in `app/stores/auth.ts`.           |
+| Q2  | OTP                 | Verification only; **not** 2FA; **required** for registration; status → **`active`** after verify.                                                         |
+| Q3  | Registration role   | **`owner`** = our **client**; backend adds alias support. `normalizeRole` maps `owner` → `client` in `app/utils/roleRoutes.ts`.                            |
+| Q4  | Response envelope   | Already documented above (`success`, `data`, `meta`, `error`).                                                                                             |
+| Q5  | Project schema      | Swagger update in flight; full `Project` schemas expected in that export.                                                                                  |
+| Q6  | Permissions         | Full permission list published with the same Swagger update.                                                                                               |
+| Q7  | Multi-role          | DB supports multiple roles; **API exposes a single `role` string** — **UI assumes one role**.                                                              |
+| Q8  | User schema gaps    | Partially documented below; **avatar / `updated_at`** still listed under “Send to backend” at top.                                                         |
+| Q9  | Pagination          | Confirmed (`last_page`, `limit`, …) — see envelope section above.                                                                                          |
+| Q10 | Filtering           | Confirmed on milestones, payments, approvals, notifications; **`GET /projects` / `GET /users`** + global **sort** still open (see top).                    |
+| Q11 | Approvals           | Auto-created when milestone → **`submitted`**; **one** per milestone; **`assigned_to`** = **supervisor**. Client final approval = **separate flow (TBD)**. |
+| Q12 | Tasks               | **Supervisor** creates tasks with milestones; **contractor** default assignee. Status: `pending` → `in_progress` → `completed` → `approved` \| `rejected`. |
+| Q13 | Field report `type` | `daily` \| `weekly` \| `incident` \| `milestone_completion`; full `FieldReport` schema with Swagger update.                                                |
+| Q14 | PATCH `/payments`   | Body `{ status, notes?, proof_url? }`; **`status: "paid"`** triggers escrow release.                                                                       |
+| Q15 | Withdrawal bank     | `bank_account_details`: `{ bank_name, account_holder, iban, swift_code }`.                                                                                 |
+| Q16 | Notification `data` | `{ resource_type, resource_id, action_url, actor_name }` — navigate via **`action_url`** or derive from **`resource_type` + `resource_id`**.               |
+| Q17 | ID types            | **Integer IDs** for resources; **notifications** use **UUID** `id`.                                                                                        |
 
 ---
 
-### Question #3: Registration Policy & Role Examples _(still open)_
+## OpenAPI export parity — Q18 (still open)
 
-**Impact:** User onboarding
+**Impact:** Contract drift, broken client assumptions, false “missing API” reports
 
-The registration example uses `"role": "owner"` which is **not one of the 6 defined roles** (`super_admin`, `admin`, `client`, `contractor`, `field_engineer`, `supervisor_engineer`).
-
-```
-Is "owner" an alias for "client"?
-Which roles can self-register vs must be admin-created?
-```
-
----
-
-### Question #4: Error Response Format _(ANSWERED ✅)_
-
-Confirmed from schema: `{ success, data, meta, error }`. See "Confirmed" section above.
-
----
-
-### Question #5: Complete Project Schema _(still open)_
-
-The Swagger spec shows project endpoints but NO detailed request/response schemas for `GET /projects`, `POST /projects`, or `GET /projects/{id}`. These have placeholder `200: OK` responses only.
+The export at [`/public/docs?api-docs.json`](https://tamm.ultimate-dev2.com/public/docs?api-docs.json) lists **80** operations but still uses many placeholder **`200: OK`** responses without `components.schemas` where we need them.
 
 ```
-What fields does a Project resource return?
-What are the project status values?
-What are the project_type values (villa, commercial, etc.)?
-Does the Project include nested milestones in the list response?
-```
-
----
-
-### Question #6: Permission System _(still open)_
-
-`GET /admin/permissions` is live. We need the actual permission name list to map to UI actions.
-
-```
-Can you share the full list of permission names from GET /admin/permissions?
-Which permissions are checked for: approve_milestone, reject_milestone,
-submit_report, approve_report, release_payment, create_project?
-```
-
----
-
-### Question #7: User Roles Model _(still open)_
-
-```
-Can a single user have multiple roles?
-The UserResource schema shows role as a string (not array) — is multi-role possible?
-```
-
----
-
-### Question #8: Complete User Schema _(partially answered)_
-
-`UserResource` schema confirmed from API:
-
-```ts
-{
-  id: integer
-  name: string
-  email: string | null
-  phone: string | null
-  role: string // single role, not array
-  status: 'active' | 'suspended' | 'pending_verification' | 'banned'
-  created_at: datetime
-}
-```
-
-Missing from schema:
-
-```
-Is avatar_url returned anywhere?
-Are created_at/updated_at both present on GET /me/profile?
-```
-
----
-
-### Question #9: Pagination _(ANSWERED ✅)_
-
-Confirmed: `meta.pagination` with `current_page`, `limit`, `total`, `last_page`.  
-Use `?page=N&limit=N` for pagination. Confirmed from milestone, payment, approval, notification schemas.
-
----
-
-### Question #10: Filtering _(partially answered)_
-
-Confirmed filters for milestones: `project_id`, `status`, `assigned_to`, `limit`  
-Confirmed filters for payments: `status`, `milestone_id`, `page`, `limit`  
-Confirmed filters for approvals: `status`, `type`, `page`, `limit`  
-Confirmed filters for notifications: `unread_only`, `type`, `page`, `limit`
-
-Still missing:
-
-```
-Filters for GET /projects and GET /users (no schemas in Swagger)
-Sorting parameters — does ?sort=-created_at work anywhere?
-```
-
----
-
-### Question #11: Approvals — When Is an Approval Record Created? _(NEW)_
-
-**Impact:** Client approval flow design
-
-```
-When a milestone reaches "under_review" status, does the backend
-automatically create an Approval record, or must the frontend call
-something to initiate the approval?
-
-What does GET /approvals?type=milestone&status=pending return —
-one approval per milestone or can there be multiple?
-
-Who is the "assigned_to" on an Approval (the client? the supervisor?)?
-```
-
----
-
-### Question #12: Task Resource Schema _(NEW)_
-
-**Impact:** Task management feature
-
-```
-What does a Task resource look like? (fields, status enum, timestamps)
-What status values does a task have?
-Who creates tasks — the contractor? the supervisor? the admin?
-```
-
----
-
-### Question #13: Field Report Schema and Type Enum _(NEW)_
-
-**Impact:** Reports feature
-
-```
-What fields does a FieldReport resource return (beyond type and report_date)?
-What are the valid values for the "type" field? (daily? weekly? incident?)
-Is there a GET /field-reports/{id} endpoint for single report detail?
-```
-
----
-
-### Question #14: Payment Status Update Body _(NEW)_
-
-**Impact:** Payment release flow
-
-`PATCH /payments/{payment}` uses `UpdatePaymentStatusRequestBody` schema but it is not defined in the Swagger spec.
-
-```
-What is the body structure for PATCH /payments/{payment}?
-What status values can the frontend set via this endpoint?
-Is "release from escrow" done via this endpoint? If so, what status value?
-```
-
----
-
-### Question #15: Withdrawal Schema — `bank_account_details` _(NEW)_
-
-**Impact:** Contractor withdrawal flow
-
-```
-What is the structure of `bank_account_details` in POST /withdrawals?
-(bank name, IBAN, account holder name, etc.)
-What fields does a Withdrawal resource return?
-```
-
----
-
-### Question #16: Notification `data` Field Navigation Target _(NEW)_
-
-**Impact:** Notification click-through
-
-The `NotificationResource.data` is an open `object`. We need to know what fields are inside for navigation.
-
-```
-What keys are in the "data" object for each notification type?
-Is there a "link" or "url" key that tells the frontend where to navigate?
-```
-
----
-
-### Question #17: Are All Resource IDs Integers? _(NEW)_
-
-**Impact:** TypeScript types across the app
-
-`UserResource.id` and `MilestoneResource.id` are defined as `integer` in the Swagger schema. But notification IDs are `uuid` strings.
-
-```
-Which resources use integer IDs vs UUID strings?
-Projects: integer or UUID?
-Payments: integer or UUID?
-Tasks: integer or UUID?
+1) Is GET /admin/projects intentionally omitted — should admins use GET /projects only?
+2) Is POST /admin/projects/{id}/assign-engineers permanently removed in favour of
+   POST /projects/{project}/field-engineer/assign + revoke?
+3) Will you publish a CI check so every production route appears in this export?
+4) Can you version the export (e.g. info.version bump) when breaking changes ship?
 ```
 
 ---
@@ -702,33 +551,33 @@ Tasks: integer or UUID?
 
 ### Immediate (This Week)
 
-- [ ] **Share Q#11–17** with backend team lead
+- [ ] **Share “Send to backend” + Q18** with backend team lead (attach [`openapi-inventory-2026-05-11.md`](./openapi-inventory-2026-05-11.md))
+- [ ] **Re-pull OpenAPI** after their Swagger drop — sync `docs/api-contracts.md` for Project, permissions, FieldReport, Task, Payment PATCH body
 - [ ] **Fix milestone status machine** — update `utils/statusMachine.ts` with confirmed status names
 - [ ] **Update milestone TypeScript types** — `draft | submitted | under_review | approved | rejected`
 - [ ] **Update pagination consumers** — `last_page` not `pages`, `limit` not `per_page`
 - [ ] **Build milestone composables** against live endpoint (endpoints now available)
-- [ ] **Build notification composable** against live endpoint
+- [ ] **Build notification composable** — use `data.action_url` / `resource_*` per Q16
 
 ### Parallel Work (Can Start Now)
 
-- [ ] Build `useFieldReports.ts` composable (endpoints ready ✅)
-- [ ] Build `usePayments.ts` composable (endpoints ready, schema Q#14 pending)
-- [ ] Build `useApprovals.ts` composable (endpoints ready, flow Q#11 pending)
-- [ ] Build `useTasks.ts` composable (endpoints ready, schema Q#12 pending)
-- [ ] Build `useWithdrawals.ts` composable (endpoints ready, schema Q#15 pending)
+- [ ] Build `useFieldReports.ts` composable (endpoints ready ✅; enum Q13 confirmed, full schema pending Swagger)
+- [ ] Build `usePayments.ts` composable (Q14 body + `paid` release rule confirmed; align types to OpenAPI when updated)
+- [ ] Build `useApprovals.ts` composable (Q11 lifecycle confirmed; **client final path still TBD**)
+- [ ] Build `useTasks.ts` composable (Q12 rules confirmed; full `Task` schema pending Swagger)
+- [ ] Build `useWithdrawals.ts` composable (Q15 bank object confirmed)
 - [ ] Build supervisor assignment pages (endpoints ready ✅)
 - [ ] Build field engineer assignment pages (endpoints ready ✅)
 
-### Once Questions Are Answered
+### After Q18 + Swagger alignment
 
-- [ ] Swap all mocks → real API calls
-- [ ] Update `docs/api-contracts.md` with confirmed schemas for Project, Task, FieldReport, Withdrawal
-- [ ] Verify approval flow end-to-end
+- [ ] Swap remaining mocks → real API calls where schemas match export
+- [ ] Verify approval + milestone `submitted` integration end-to-end
 - [ ] Test all status transitions with live data
 
 ---
 
 **Document owner:** Frontend team  
-**Last updated:** 2026-05-10  
-**Next review:** When backend answers Q#11–17 or delivers Project/Task/FieldReport schemas  
-**API Verification:** Full Swagger review 2026-05-10 — Milestones, Notifications, Payments, FieldReports, Approvals, Tasks, Withdrawals, Supervisor/FE Assignments all confirmed available. Admin dashboard still pending.
+**Last updated:** 2026-05-11  
+**Next review:** When **Q18** (OpenAPI export parity) is addressed and published schemas match verbal answers for **Project**, **permissions**, **FieldReport**, **Task**, **Payment PATCH**; plus **client final approval** flow when no longer TBD  
+**API Verification:** Exported OpenAPI at [`/public/docs?api-docs.json`](https://tamm.ultimate-dev2.com/public/docs?api-docs.json) — **80** paths confirmed. **`GET /admin/projects`** and **`POST …/assign-engineers`** absent from export; field-engineer **assign/revoke/history** present. Admin dashboard (`GET /admin/dashboard`) still pending.

@@ -60,6 +60,7 @@ export const useAuthStore = defineStore('auth', () => {
           // Silent failure fallback: request-time 401 path still handles logout.
         })
       },
+      // Backend: access token 1h — refresh at 55m or on 401 (see docs/BACKEND_BLOCKERS.md).
       55 * 60 * 1000
     )
   }

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { Skeleton } from '~/components/ui/skeleton'
+import PageContentSkeleton from '~/components/common/PageContentSkeleton.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
 import ErrorState from '~/components/common/ErrorState.vue'
 import PaymentSection from '~/components/payment/PaymentSection.vue'
@@ -20,11 +22,23 @@ definePageMeta({
 })
 
 const auth = useAuthStore()
+const route = useRoute()
 
 const isContractorPayments = computed(() => auth.user?.role === 'contractor')
 
 const isAdminPayments = computed(() =>
   ['admin', 'super_admin'].includes(auth.user?.role ?? '')
+)
+
+watch(
+  [isAdminPayments, () => route.path],
+  () => {
+    const meta = route.meta as { pageTitle?: string }
+    meta.pageTitle = isAdminPayments.value
+      ? 'pages.admin_payments_title'
+      : 'payment.heading'
+  },
+  { immediate: true }
 )
 const {
   milestones: allMilestones,
@@ -131,6 +145,12 @@ onMounted(async () => {
     } finally {
       paymentsBootstrap.value = false
     }
+  } else if (isAdminPayments.value) {
+    try {
+      await fetchMilestones()
+    } finally {
+      paymentsBootstrap.value = false
+    }
   } else {
     paymentsBootstrap.value = false
   }
@@ -146,11 +166,83 @@ onUnmounted(() => {
 <template>
   <div class="bg-background min-h-0 flex-1">
     <template v-if="isAdminPayments">
-      <EmptyState
-        icon="card"
-        title="pages.admin_payments_title"
-        description="pages.admin_payments_description"
-      />
+      <div class="space-y-6">
+        <div class="mb-8 space-y-2">
+          <h1 class="text-3xl font-bold">
+            {{ $t('pages.admin_payments_title') }}
+          </h1>
+          <p class="text-muted-foreground">
+            {{ $t('pages.admin_payments_description') }}
+          </p>
+          <p class="text-muted-foreground text-sm">
+            {{ $t('pages.admin_payments_subtitle') }}
+          </p>
+        </div>
+
+        <PageContentSkeleton
+          v-if="loading || paymentsBootstrap"
+          :show-cards="true"
+          :rows="5"
+        />
+
+        <ErrorState
+          v-else-if="error"
+          :message="error || undefined"
+          @action="retryFetch"
+        />
+
+        <EmptyState
+          v-else-if="!hasAnyPayments"
+          icon="card"
+          title="pages.admin_payments_empty_title"
+          description="pages.admin_payments_empty_description"
+        />
+
+        <template v-else>
+          <div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="border-border bg-card rounded-lg border p-4 shadow-sm">
+              <p class="text-muted-foreground mb-2 text-sm">
+                {{ $t('payment.label.pending_total') }}
+              </p>
+              <p class="text-accent text-2xl font-extrabold">
+                {{ formatCurrency(pendingTotal) }}
+              </p>
+              <p
+                v-if="pendingPayments.length > 0"
+                class="text-muted-foreground mt-2 text-xs"
+              >
+                {{ pendingPayments.length }} {{ $t('common.payment_plural') }}
+              </p>
+            </div>
+            <div class="border-border bg-card rounded-lg border p-4 shadow-sm">
+              <p class="text-muted-foreground mb-2 text-sm">
+                {{ $t('payment.label.received_total') }}
+              </p>
+              <p class="text-primary text-2xl font-extrabold">
+                {{ formatCurrency(receivedTotal) }}
+              </p>
+              <p
+                v-if="receivedPayments.length > 0"
+                class="text-muted-foreground mt-2 text-xs"
+              >
+                {{ receivedPayments.length }} {{ $t('common.payment_plural') }}
+              </p>
+            </div>
+          </div>
+          <div class="space-y-8">
+            <PaymentSection
+              :title="$t('payment.section.pending')"
+              :payments="pendingPayments"
+              :count="pendingPayments.length"
+            />
+            <PaymentSection
+              :title="$t('payment.section.received')"
+              :payments="receivedPayments"
+              :count="receivedPayments.length"
+            />
+          </div>
+        </template>
+      </div>
     </template>
 
     <template v-else>

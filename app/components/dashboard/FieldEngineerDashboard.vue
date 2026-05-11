@@ -6,6 +6,7 @@ import { useMilestones } from '~/composables/useMilestones'
 import { useReports } from '~/composables/useReports'
 import { useAuthStore } from '~/stores/auth'
 import { buildFieldEngineerMonthlyReportsChart } from '~/utils/roleDashboardCharts'
+import { Button } from '~/components/ui/button'
 
 const auth = useAuthStore()
 
@@ -59,6 +60,17 @@ const chartLoading = computed(
       </h1>
     </div>
 
+    <div
+      class="border-border bg-muted/30 flex flex-wrap gap-2 rounded-xl border px-4 py-3"
+    >
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/assignments">{{ $t('nav.assignments') }}</NuxtLink>
+      </Button>
+      <Button variant="outline" size="sm" as-child>
+        <NuxtLink to="/reports">{{ $t('nav.reports') }}</NuxtLink>
+      </Button>
+    </div>
+
     <RoleDashboardPrimaryChart
       :loading="chartLoading"
       :definition="reportsChartDefinition"
@@ -67,7 +79,7 @@ const chartLoading = computed(
       description-key="dashboard.chart.fieldEngineer.description"
       empty-title-key="dashboard.chart.fieldEngineer.emptyTitle"
       empty-description-key="dashboard.chart.fieldEngineer.emptyDescription"
-      empty-action-href="/dashboard"
+      empty-action-href="/assignments"
       empty-action-label-key="dashboard.chart.fieldEngineer.emptyAction"
     />
 

@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review then back to DS if fixes needed
 
 generated: 2026-05-10T10:43:50Z
-last_updated: 2026-05-10T19:15:00Z
+last_updated: 2026-05-11T14:30:00Z
 project: TAMM
 project_key: NOKEY
 tracking_system: file-system
@@ -140,3 +140,15 @@ development_status:
   10-07-shortcut-transparency-panel: done
   10-08-epic-10-rtl-regression-sweep: done
   epic-10-retrospective: optional
+
+  # Epic 11 — Role Navigation & UX Parity (Lovable-Aligned, TAMM-Scoped)
+  epic-11: done
+  11-01-fix-universal-messages-route-baseline: done
+  11-02-admin-and-super-admin-operations-nav-parity: done
+  11-03-supervisor-operational-nav-parity: done
+  11-04-contractor-tasks-page-parity: done
+  11-05-client-new-project-entry-parity: done
+  11-06-role-page-content-parity-uplift: done
+  11-07-navigation-dead-link-and-permission-audit: done
+  11-08-epic-11-ux-rtl-i18n-regression-sweep: done
+  epic-11-retrospective: optional

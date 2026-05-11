@@ -10,6 +10,7 @@ export interface NavItem {
 
 export const normalizeRole = (role: string | null | undefined): string => {
   if (!role) return ''
+  // Registration/API may send "owner" for the client role (backend alias support).
   if (role === 'owner') return 'client'
   return role
 }
@@ -29,6 +30,12 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         label: 'nav.projects',
         icon: 'Folder',
         href: '/projects',
+      },
+      {
+        key: 'new-project',
+        label: 'nav.new_project',
+        icon: 'Plus',
+        href: '/projects/new',
       },
       {
         key: 'reports',
@@ -69,6 +76,12 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         href: '/projects',
       },
       {
+        key: 'tasks',
+        label: 'nav.tasks',
+        icon: 'ListBullet',
+        href: '/tasks',
+      },
+      {
         key: 'reports',
         label: 'nav.reports',
         icon: 'ClipboardList',
@@ -107,6 +120,12 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         href: '/projects',
       },
       {
+        key: 'assignments',
+        label: 'nav.assignments',
+        icon: 'UserPlus',
+        href: '/assignments',
+      },
+      {
         key: 'reports',
         label: 'nav.reports',
         icon: 'ClipboardList',
@@ -137,6 +156,18 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         label: 'nav.projects',
         icon: 'Building2',
         href: '/projects',
+      },
+      {
+        key: 'assignments',
+        label: 'nav.assignments',
+        icon: 'UserPlus',
+        href: '/assignments',
+      },
+      {
+        key: 'field-team',
+        label: 'nav.field_team',
+        icon: 'UserGroup',
+        href: '/field-team',
       },
       {
         key: 'reports',
@@ -177,6 +208,12 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         href: '/projects',
       },
       {
+        key: 'assignments',
+        label: 'nav.assignments',
+        icon: 'UserPlus',
+        href: '/assignments',
+      },
+      {
         key: 'payments',
         label: 'nav.payments',
         icon: 'CreditCard',
@@ -195,6 +232,18 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         href: '/messages',
       },
       { key: 'users', label: 'nav.users', icon: 'Users', href: '/users' },
+      {
+        key: 'workflow',
+        label: 'nav.workflow',
+        icon: 'QueueList',
+        href: '/admin/workflow',
+      },
+      {
+        key: 'finance',
+        label: 'nav.finance',
+        icon: 'ChartBar',
+        href: '/admin/finance',
+      },
       {
         key: 'settings',
         label: 'nav.settings',
@@ -217,6 +266,12 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         href: '/projects',
       },
       {
+        key: 'assignments',
+        label: 'nav.assignments',
+        icon: 'UserPlus',
+        href: '/assignments',
+      },
+      {
         key: 'payments',
         label: 'nav.payments',
         icon: 'CreditCard',
@@ -235,6 +290,18 @@ export const getNavigationForRole = (role: string): NavItem[] => {
         href: '/messages',
       },
       { key: 'users', label: 'nav.users', icon: 'Users', href: '/users' },
+      {
+        key: 'workflow',
+        label: 'nav.workflow',
+        icon: 'QueueList',
+        href: '/admin/workflow',
+      },
+      {
+        key: 'finance',
+        label: 'nav.finance',
+        icon: 'ChartBar',
+        href: '/admin/finance',
+      },
       {
         key: 'settings',
         label: 'nav.settings',

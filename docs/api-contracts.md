@@ -3,9 +3,20 @@
 **API Version:** 1.0.0  
 **Base URL:** `/api/v1`  
 **Authentication:** Bearer JWT token in `Authorization` header  
-**Last Updated:** 2026-05-10 — Verified against live OpenAPI (https://tamm.ultimate-dev2.com/docs?api-docs.json) and UI explorer (https://tamm.ultimate-dev2.com/api/documentation#/)
+**Last Updated:** 2026-05-11 — Re-verified against **exported** OpenAPI [`/public/docs?api-docs.json`](https://tamm.ultimate-dev2.com/public/docs?api-docs.json) (**80 paths**). Alternate UI entry: [`/docs?api-docs.json`](https://tamm.ultimate-dev2.com/docs?api-docs.json) · Swagger UI [`/api/documentation`](https://tamm.ultimate-dev2.com/api/documentation#/)
 
 **Companion doc:** [`BACKEND_BLOCKERS.md`](./BACKEND_BLOCKERS.md) — open questions, frontend/backend split, and divergences from older frontend assumptions.
+
+### OpenAPI export vs this document (2026-05-11)
+
+The machine-readable export is the **contract of record** for “does this path exist?”. This file may still describe endpoints the backend ships but **omits from the export**, or paths we assumed earlier.
+
+| Topic                                       | Export (`/public/docs?api-docs.json`)                                                 | Action                                                                                                                                                                                        |
+| ------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Admin project list**                      | No `GET /admin/projects`                                                              | Confirm whether admins must use `GET /projects` + auth scope, or add `GET /admin/projects` to the export and implement.                                                                       |
+| **Assign engineers**                        | No `POST /admin/projects/{id}/assign-engineers`                                       | **`POST /projects/{project}/field-engineer/assign`** and **`POST /projects/{project}/field-engineer/revoke`** are in the export — frontend should prefer these; update any legacy references. |
+| **Path parameter names**                    | Uses `{milestone}`, `{payment}`, `{withdrawal}`, `{task}`, `{report}`, `{assignment}` | Treat export segment names as canonical in `$fetch` URLs; they are equivalent to `{id}` semantically.                                                                                         |
+| **Messaging / workflow / finance / system** | No routes                                                                             | Admin “workflow”, “finance”, system flags/logs, and in-app **messaging** remain **frontend shells** until product + API exist.                                                                |
 
 ---
 
@@ -1155,8 +1166,9 @@ file: File (required)
 
 ### `POST /admin/projects/{id}/assign-engineers`
 
-**Status:** ✅ Available  
-**Purpose:** Assign supervisor engineer and field engineer to project
+**Status:** ❓ **Not present in exported OpenAPI (2026-05-11)** — use **`POST /api/v1/projects/{project}/field-engineer/assign`** (and **`…/revoke`**, **`GET …/field-engineer-history`**) from the live export instead until backend confirms a single canonical path.
+
+**Purpose:** Assign supervisor engineer and field engineer to project (legacy doc — verify with backend)
 
 **Auth Required:** Yes (admin/super_admin)
 
@@ -1215,7 +1227,8 @@ file: File (required)
 
 ### `GET /admin/projects`
 
-**Status:** ✅ Available  
+**Status:** ❓ **Not present in exported OpenAPI (2026-05-11)** — may still exist server-side undocumented, or admin list may be **`GET /projects`** with role-scoped results. **Backend:** either add this route to the export + document schemas, or explicitly deprecate and document the replacement.
+
 **Purpose:** List all projects across platform with filtering, search, and pagination (admin view)
 
 **Auth Required:** Yes (admin/super_admin)

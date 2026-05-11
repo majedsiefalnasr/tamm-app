@@ -126,6 +126,23 @@
       "noAssignmentsCompleted": "No completed assignments",
       "projectAddress": "{address}"
     },
+    "assignment_queue": {
+      "col_project": "Project",
+      "col_milestone": "Milestone",
+      "col_status": "Status",
+      "col_updated": "Updated",
+      "col_action": "Action",
+      "open_milestone": "Open",
+      "empty_title_admin": "No assignment queue items",
+      "empty_desc_admin": "When projects need engineer matching or reassignment, they will appear here.",
+      "empty_title_supervisor": "No supervision assignments",
+      "empty_desc_supervisor": "When milestones need your assignment or follow-up, they will appear here.",
+      "status": {
+        "pending_match": "Pending match",
+        "awaiting_supervisor": "Awaiting supervisor",
+        "awaiting_field_acceptance": "Awaiting field acceptance"
+      }
+    },
     "reviews": {
       "title": "Reviews",
       "pending": "Pending Reviews",
@@ -154,7 +171,77 @@
     "disputes_empty_description": "Detailed dispute handling will connect to the API when available.",
     "disputes_detail_placeholder": "Dispute detail view is not wired yet.",
     "admin_payments_title": "Payments (admin)",
-    "admin_payments_description": "Org-wide payment and withdrawal tools will appear here when the admin payments workspace ships."
+    "admin_payments_description": "Org-wide payment and withdrawal tools will appear here when the admin payments workspace ships.",
+    "admin_payments_subtitle": "Pending release and paid milestones across projects (demo data from milestones mock until the admin API is available).",
+    "admin_payments_empty_title": "No payment data",
+    "admin_payments_empty_description": "No milestones with payment states were returned. Try again or check projects for milestones awaiting release.",
+    "messages_title": "Messages",
+    "messages_subtitle": "Conversations with your project contacts will appear here when messaging is connected.",
+    "messages_empty_title": "No conversations yet",
+    "messages_empty_description": "When in-app messaging is available, your threads will show up here.",
+    "admin_assignments_title": "Assignments",
+    "admin_assignments_description": "Engineer assignment queues and pending matches will appear here when the assignments workspace is wired to the API.",
+    "admin_workflow_title": "Workflow settings",
+    "admin_workflow_description": "Project lifecycle and approval step configuration will appear here when the workflow admin API is available.",
+    "admin_workflow_rules_title": "Lifecycle rules",
+    "admin_workflow_rules_empty_title": "No rules configured",
+    "admin_workflow_rules_empty_description": "When the workflow API is connected, approval steps and transitions will be listed here.",
+    "admin_finance_title": "Finance",
+    "admin_finance_description": "Platform revenue, withdrawals, and financial controls will appear here when the finance workspace is connected.",
+    "admin_finance_stat_revenue": "Platform revenue (EGP)",
+    "admin_finance_stat_pending_withdrawals": "Pending withdrawals (EGP)",
+    "admin_finance_stat_settled": "Settled payouts (EGP)",
+    "admin_finance_activity_title": "Recent settlement activity",
+    "admin_finance_activity_empty": "Settlement lines will appear when the finance API is connected.",
+    "supervisor_assignments_title": "Assignments",
+    "supervisor_assignments_description": "Supervision requests, quote milestones, and field-engineer assignment actions will appear here when the supervisor assignments API is connected.",
+    "supervisor_field_team_title": "Field team",
+    "supervisor_field_team_description": "Field engineers working under your supervision will be listed here when the field-team workspace is connected to the API.",
+    "contractor_tasks_title": "Tasks",
+    "contractor_tasks_subtitle": "Open checklist items and active milestone work on your projects.",
+    "contractor_tasks_empty_title": "No open tasks",
+    "contractor_tasks_empty_description": "When milestones include tasks or active work, they will appear here.",
+    "contractor_tasks_task_pending": "Pending",
+    "contractor_tasks_badge_task": "Task",
+    "contractor_tasks_badge_milestone": "Milestone",
+    "new_project_title": "New project",
+    "new_project_description": "The guided create-project flow will be added when the project creation API is wired. Use this entry point from the sidebar or projects list.",
+    "new_project_back": "Back to projects",
+    "system_flags_title": "System flags",
+    "system_flags_description": "Feature flags and kill switches will appear here when the operations API is available.",
+    "system_logs_title": "System logs",
+    "system_logs_description": "Audit and error logs will appear here when the observability workspace is connected.",
+    "system_flags_table_title": "Feature flags",
+    "system_flags_col_key": "Flag key",
+    "system_flags_col_state": "State",
+    "system_flags_state_on": "On",
+    "system_flags_state_off": "Off",
+    "system_flags_empty_title": "No flags",
+    "system_flags_empty_description": "Operational flags will list here when the system configuration API is available.",
+    "system_logs_table_title": "Recent log lines",
+    "system_logs_col_level": "Level",
+    "system_logs_col_message": "Message",
+    "system_logs_col_source": "Source",
+    "system_logs_col_time": "Time",
+    "system_logs_empty_title": "No log entries",
+    "system_logs_empty_description": "Audit and error events will stream here when logging is connected.",
+    "system_logs_level": {
+      "info": "Info",
+      "warning": "Warning",
+      "error": "Error"
+    },
+    "projects_role_context": {
+      "client_title": "Operate from this list",
+      "client_desc": "Jump to payments, reports, or start another project when you are ready.",
+      "contractor_title": "Delivery queue",
+      "contractor_desc": "Use Tasks for checklist work; open milestones from the cards below when you need full detail.",
+      "field_title": "Your site work",
+      "field_desc": "Assignments list your milestones on site; reports capture evidence for supervisors.",
+      "supervisor_title": "Coordination",
+      "supervisor_desc": "Manage assignments, the field team roster, and the approval queue from here."
+    },
+    "contractor_tasks_empty_next": "Browse projects",
+    "messages_empty_next": "Back to dashboard"
   },
   "roles": {
     "client": {
@@ -232,9 +319,13 @@
     "withdrawals": "Withdrawals",
     "settings": "Settings",
     "tasks": "Tasks",
+    "new_project": "New project",
     "approvals": "Approvals",
     "users": "Users",
     "assignments": "Assignments",
+    "field_team": "Field team",
+    "workflow": "Workflow",
+    "finance": "Finance",
     "system_flags": "System Flags",
     "system_logs": "System Logs"
   },
@@ -401,14 +492,14 @@
         "description": "Share of milestones completed across projects that already define totals.",
         "emptyTitle": "No completion chart yet",
         "emptyDescription": "Charts appear once projects include milestone totals.",
-        "emptyAction": "View projects"
+        "emptyAction": "Create a project"
       },
       "contractor": {
         "title": "Paid milestones by month",
         "description": "Counts milestones marked paid out, grouped by payout month.",
         "emptyTitle": "No payout history yet",
         "emptyDescription": "After payouts complete with dates recorded, monthly totals appear here.",
-        "emptyAction": "View projects"
+        "emptyAction": "Open task queue"
       },
       "fieldEngineer": {
         "title": "Report submissions by month",
@@ -453,7 +544,9 @@
       "proposalSubmitted": "Proposal submitted",
       "submitProposal": "Submit Proposal",
       "viewProposal": "View Proposal",
-      "engineer": "Engineer: {name}"
+      "engineer": "Engineer: {name}",
+      "link_tasks": "Task queue",
+      "link_projects": "All projects"
     },
     "supervisor": {
       "submittedAt": "Submitted {date}",
@@ -544,6 +637,7 @@
     "no_projects_description": "You don't have any projects yet. Create one to get started.",
     "filter_empty_title": "No matching projects",
     "filter_empty_description": "No projects match this filter. Try viewing all projects.",
+    "filter_clear_action": "Show all projects",
     "types": {
       "villa": "Villa",
       "apartment": "Apartment",
@@ -571,6 +665,8 @@
       "progressLabel": "Progress"
     },
     "milestone": {
+      "draft": "Draft",
+      "submitted": "Submitted",
       "not_started": "Not Started",
       "in_progress": "In Progress",
       "under_review": "Under Review",
